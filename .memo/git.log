@@ -1,0 +1,493 @@
+commit b93c7b2fcc15a2f9096a22614240f8ff262b6d62
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat Jun 14 20:16:34 2025 +0200
+
+    hyprland: floating sushi window
+
+commit c48925ab0fe696f7450278c7ce6fa0bbc9748e82
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat Jun 14 18:33:37 2025 +0200
+
+    implement caffeine
+
+commit b86e1963b9d390716dc13749df91d067a9a5f663
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat Jun 14 18:32:10 2025 +0200
+
+    add backgrounds submodule
+
+commit c8dad9ed34a62114abdc84d7dd2eb473f1ddb6ef
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 13 09:43:16 2025 +0200
+
+    reduce scale and more
+
+commit 6c018eb378e4944f1e3e2032f3b5cf456f4dde36
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 13 03:46:44 2025 +0200
+
+    waybar
+
+commit b63704728d5481faf272ac2d2d959432b3e499ad
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 13 01:57:02 2025 +0200
+
+    ghostty shaders
+
+commit cba63a9e83e7abf62b93d875cd13b3a5939e5899
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 13 01:54:46 2025 +0200
+
+    borders
+
+commit 6103903860d1268b52895362f38876a674f8d939
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Jun 12 22:22:26 2025 +0200
+
+    ricing
+
+commit 9b2ad16f03795e61bb4b87472c4866e18a7235ea
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Jun 12 21:47:54 2025 +0200
+
+    remove fcitx5
+
+commit 8b805cc9aa4e46f9d0b1d6c73675422be520de40
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Jun 12 14:25:44 2025 +0200
+
+    hyprland ricing
+
+commit ff024497a8cf4095b7162fd2f19ce34b7a764fa6
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Jun 12 14:25:42 2025 +0200
+
+    hyprland ricing
+
+commit 3b2e8915590d1d37ddcfb4bf1169425d4743b48b
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Jun 12 00:59:05 2025 +0200
+
+    memo
+
+commit 69e6609e99be894111ab90b9637a7d17a1e65fb0
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Tue Jun 10 21:25:16 2025 +0200
+
+    .
+
+commit c996357ff11315ee7780d8d971ca27b42c7fc62c
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Tue Jun 10 21:25:11 2025 +0200
+
+    optimize shell config
+
+commit bda9c3d7ab457f6fb8faeee29f7d19b071a27dd6
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Mon Jun 9 03:29:36 2025 +0200
+
+    remove hyprland stuff
+
+commit 2f2d04e18645791dadd4c2aa255fcda8a41849ac
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat Jun 7 22:58:39 2025 +0200
+
+    nvim
+
+commit 14b4ad1ca56e181457d2addfb3d477dac933e2ff
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat Jun 7 07:05:01 2025 +0200
+
+    .
+
+commit 864c162d8dcd48477199fbebdf7d74bb81bef228
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat Jun 7 07:03:13 2025 +0200
+
+    fetch: get rid of dupilcate config files
+
+commit 48b664991c17efeb9ce3ff195866ae1ea78ecd24
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 6 00:53:35 2025 +0200
+
+    use arch logo
+
+commit 6120b1f9e12a8c57eace17e8f457ff007469c01d
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 6 01:22:55 2025 +0200
+
+    fish: save instead of set
+
+commit 10d3d748786c9d18df5c13503e23379037428c71
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 6 01:14:55 2025 +0200
+
+    fish: set theme automatically
+
+commit ea89e87f77e78b9d6adad1b4613be781baafabb1
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri Jun 6 00:44:55 2025 +0200
+
+    there's even a catppuccin theme for fish :O
+
+commit 01e969208d5d850cdc96313e95c41886d3e22781
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Jun 5 00:54:50 2025 +0200
+
+    fetch: remove cachy specific stuffs
+
+commit ef969e523ff2c9a35b7f713e68c05b127ff97251
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Jun 5 00:08:44 2025 +0200
+
+    grub: change directory
+
+commit 2eacaed5e90c69ce86430a5cffad2b3315a35d06
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Jun 4 21:31:27 2025 +0200
+
+    mocha
+
+commit c1fae6cb63b4d52168c78788267efc0ad3ebfa86
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Jun 4 20:43:37 2025 +0200
+
+    mpv: init
+
+commit ab1ddfc1f1fa6dcc42e101529c7e918f489fe5e8
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Jun 4 20:27:44 2025 +0200
+
+    kitty: zoom keybindings
+
+commit eb4c83c4fc0a65989ebc4baa3cc196e39730f204
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Jun 4 06:16:48 2025 +0200
+
+    alacritty: init
+
+commit 764906a3ced2b1b8c615f048d8ebb9fc58ac75bd
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Jun 4 06:00:32 2025 +0200
+
+    posh: use the logo of archlinux instead
+
+commit f4afaec6d67640dcc4e4320c8beb211651685d31
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Jun 4 05:52:59 2025 +0200
+
+    .
+
+commit b80993c0ff44b4ccdcbe037af885cc3e3c3b2e9c
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Jun 4 05:52:51 2025 +0200
+
+    grub: init
+
+commit dd2d54361659084c875dee76ae255cbd4f5fd8c1
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Tue Jun 3 12:09:14 2025 +0200
+
+    fetcb: add sixel mode
+
+commit 84b895db393329f4f8d37b79b0b555e0bf91218a
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Tue Jun 3 09:47:37 2025 +0200
+
+    fish: move files of conf.d to prev.d
+
+commit 0d4cb2529ff31c40c3f18aa7d86fee41e431736a
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Tue Jun 3 09:36:55 2025 +0200
+
+    fetch: more logo types
+
+commit 61271337bd9f35cc0a84479c6276c9acb17e1505
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Tue Jun 3 09:17:04 2025 +0200
+
+    fetch & kitty
+
+commit 03f99c5740f5a403fe849b04f2546676ac1042f0
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Tue Jun 3 05:02:28 2025 +0200
+
+    catppuccin🥰
+
+commit abc04b4f7945cff040b3d2fc8616b5d91d1013fc
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sun Jun 1 08:45:34 2025 +0200
+
+    yazi: one dark flavor
+
+commit d4de6a20e3019ec1e1df4ad18eb2c60dcd510b76
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sun Jun 1 08:42:45 2025 +0200
+
+    onedark-pro
+
+commit 99a063f6176f6c348a044465e00ecdbe48b8ebd6
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sun Jun 1 05:53:02 2025 +0200
+
+    fetch: make uptime the last entry instead of gpu in brief.jsonc
+
+commit 83217cba4f50b94a922e0186439af2ca49a451fc
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sun Jun 1 04:31:08 2025 +0200
+
+    fetch: short -> brief
+
+commit 709e110e201fcc99321259cc6a765ce85100d9b0
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sun Jun 1 02:14:29 2025 +0200
+
+    fish: set no_fetch to disable fetch when login
+
+commit bb69e0e577c82fbc01517ee214afde23abfa2378
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sun Jun 1 02:05:30 2025 +0200
+
+    optimize struct of fish config, add ff-short
+
+commit cb88f145bb9d421989bd5321b9f163771e31d88e
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat May 31 00:47:18 2025 +0200
+
+    kitty icon & clang-format
+
+commit 4cf84bfd8a869cb9f68eae08b28bfbee0311120f
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri May 30 23:36:49 2025 +0200
+
+    fetch: change logo
+
+commit 0b701ae6087b7b2fd3fc368bae3910b1900398e5
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Fri May 30 22:26:03 2025 +0200
+
+    temp
+
+commit 8db684e349d2a40db122cd0f4d6e201474c5b09d
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu May 29 02:20:01 2025 +0200
+
+    nvim & yazi
+
+commit 2e4bac3154b43febbc685a0ee81d7c9e9ee46a2e
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu May 29 02:10:53 2025 +0200
+
+    a lot
+
+commit ed66d23f6aeed578098af2b6d4879003406a45bd
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed May 28 18:03:33 2025 +0200
+
+    .
+
+commit 119e988db10e9ee2ab5fdf399a49b65cdf34cb77
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed May 28 18:01:20 2025 +0200
+
+    .
+
+commit 45b77f6eea198e8cdbd40cd1ed6610fa29786131
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed May 28 18:01:17 2025 +0200
+
+    fish: ignore custom files
+
+commit 88d7556545c862ebcf800751889dcc80be433982
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Apr 30 14:00:03 2025 +0200
+
+    update fish config and other stuff
+
+commit 99e332028501ef97e1ee04cf2ef39e2a313e38c3
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 24 04:18:10 2025 +0100
+
+    memo
+
+commit e127816e79223e004e3511c072c2675b52416181
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Sun Feb 23 03:17:02 2025 +0100
+
+    kitty: tokyo night
+
+commit a2538798b56c426cec543cf000d9379986de4a81
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Sat Feb 22 09:01:02 2025 +0100
+
+    yazi: upgrade
+
+commit e71e20630876c042778c312b17383343f6405f80
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Sat Feb 22 08:59:09 2025 +0100
+
+    yazi: upgrade
+
+commit 3928c36e1288f592f1492785c385eafda839f777
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Thu Feb 20 04:54:39 2025 +0100
+
+    memo: tailscale, nfs
+
+commit af16039beb5b21b564b9a027095d71c503047cea
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Wed Feb 19 08:27:41 2025 +0100
+
+    cava: idk what this is but it has been modified so...
+
+commit f5deae1f383a16193c388bcc62c7d53a4268b814
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Sun Feb 16 09:40:09 2025 +0100
+
+    nvim: update colorsheme (but commented out;)
+
+commit 8b67d3ddc08e1ce27e266737579152e2594a283a
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Fri Feb 14 06:03:37 2025 +0100
+
+    nvim: change tabwidth to 4 & add lang.go
+
+commit ea47bb190c9ebbf1eff0047afd2f29e906bdf7f3
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Thu Feb 13 02:26:01 2025 +0100
+
+    .
+
+commit e077c38a787270704520fe847a6347407de5b00c
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Thu Feb 13 02:25:37 2025 +0100
+
+    remove unnecessary config files
+
+commit e0408cbc308e3084bd76618b5e3203912ac595b7
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 10 16:17:53 2025 +0100
+
+    cava: add cava & fuzzel: change color
+
+commit acdc705bfd008da9d38a80ebe5dd9f1a8cc0d3db
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Sun Feb 9 16:29:25 2025 +0100
+
+    yazi: upgrade
+
+commit 214d2b4825825f7fd8b5b4d73d48b2997d51c8f8
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Sun Feb 9 04:58:54 2025 +0100
+
+    kitty: add config of kitty
+
+commit 1a9b8d4837ed7fd90f184403e57652b83d6c0c5e
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Sat Feb 8 22:48:28 2025 +0100
+
+    oh-my-posh
+
+commit e103b7d8e9569d8c3a6c39a5a78e2b24d3155a6b
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Sat Feb 8 20:27:09 2025 +0100
+
+    nvim: fix
+
+commit b80198edc5928085466a663d3b87fac2446a85ca
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Feb 5 00:59:01 2025 +0100
+
+    nvim: change dashboard header of snacks.nvim
+
+commit eecbaa5e93210813dbb688981a1204dd8d5544c1
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Wed Feb 5 00:35:26 2025 +0100
+
+    script: truecolor-test
+
+commit 4f153a0acd538efac8902bf73410009712c99cd3
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 18:49:50 2025 +0100
+
+    oh-my-posh
+
+commit 40752d091a9af4edd43ea2dbfebdde4d21e22f00
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 18:47:42 2025 +0100
+
+    oh-my-posh
+
+commit 851bf00ce284a79a2ec493eeaae19810da1b5a9a
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 18:21:36 2025 +0100
+
+    Revert "oh-my-posh"
+    
+    This reverts commit 90bb2089034ee85475cfd10c3971600385fc43b0.
+
+commit 90bb2089034ee85475cfd10c3971600385fc43b0
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 18:18:58 2025 +0100
+
+    oh-my-posh
+
+commit 2c72639e0ce27c23511ca43b099d2892622cf80a
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 07:57:17 2025 +0100
+
+    btop: no log
+
+commit 9aa1891ced56b772614fc7a4768e449780e5c094
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 07:52:59 2025 +0100
+
+    nvim: no spell checks
+
+commit bac29a542a3dbd6edd64bba85ffe5481f5aa8cef
+Author: kolkas <penyanide@gmail.com>
+Date:   Mon Feb 3 05:15:01 2025 +0100
+
+    fish: add bass
+
+commit 40a53920a51c2cf9905133e140e3a266fecaecac
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 04:37:01 2025 +0100
+
+    fish: add ~/.local/bin to PATH
+
+commit 0ae497dae729577d781d73da2a8937c7877e8d47
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 04:32:46 2025 +0100
+
+    fish: fix
+
+commit 47a00092c052bddc2f4edf060f7bfe319062a2da
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 04:22:20 2025 +0100
+
+    fish: fix sourcing custom.fish
+
+commit e452b2d263229d755cf783cf3e43a2fb8394bfdc
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 04:17:32 2025 +0100
+
+    fish: update config
+
+commit 6d8ec48e04339d92dcaf727a265e7c3c7585fb8e
+Author: Uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 03:56:05 2025 +0100
+
+    oh-my-posh: transient prompt
+
+commit a83b35133c88ed40c5d8234b1d865741795a6561
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 01:07:56 2025 +0100
+
+    oh-my-posh
+
+commit 2ed5dda579d8e9292a010a0faa5ea10c0bde09ac
+Author: uyanide <pywang0608@foxmail.com>
+Date:   Mon Feb 3 00:52:40 2025 +0100
+
+    first commit
