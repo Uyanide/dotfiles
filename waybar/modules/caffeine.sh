@@ -21,8 +21,8 @@ sleep 0.3 # Allow hypridle to start
 pid=$(pgrep -x "hypridle")
 if [ -n "$pid" ]; then
     output "inactive" "inactive"
-    notify-send "Caffeine disabled" "Caffeine mode is now inactive."
+    notify-send "Caffeine disabled" "zzz..."
 else
     output "active" "active"
-    notify-send "Caffeine enabled" "Caffeine mode is now active."
+    notify-send "Caffeine enabled" "POWERRR!!!"
 fi

@@ -1,7 +1,8 @@
 @import 'mocha.css';
 
 * {
-    font-family: 'Fira Sans Semibold', 'Font Awesome 6 Free', FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Fira Sans Semibold', 'Font Awesome 6 Free', FontAwesome, 'MesloLGM Nerd Font', 'Maple Mono CN ExtraLight',
+        Arial, sans-serif;
     font-size: 12px; /* Slightly smaller font size */
     font-weight: 900;
     margin: 0;
