@@ -1,0 +1,33 @@
+1. tailscale
+
+Tailscale 基于 WireGuard 实现 NAT 穿透。
+
+安装：
+    1) General: curl -fsSL https://tailscale.com/install.sh | sh
+    2) Archlinux: yay -S tailscale
+
+安装后：
+    1) systemctl 启动 tailscaled 服务；
+    2) sudo tailscale up 启动 tailscale；
+    3) sudo tailscale status 查看状态 / 网站 https://login.tailscale.com/admin/machines。
+
+
+2. nfs
+
+NFS 允许将文件系统挂载到远程主机上。
+
+安装：
+    1) 服务端: nfs-utils (Archlinux)
+    2) 客户端: nfs-common (ubuntu)
+
+安装后：
+    1) 服务端：
+        a）echo "/path/to/share *(rw,no_subtree_check,async)" | sudo tee -a /etc/exports
+        b) systemctl 启动 nfs-server 服务
+    2) 客户端
+        a) sudo mount -t nfs -o vers=4,noatime,async 100.x.y.z:/path/to/share /path/to/mount
+
+
+3. 解除
+    1) umount即可；
+    2) sudo tailscale down 关闭 tailscale。

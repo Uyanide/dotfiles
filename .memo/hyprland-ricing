@@ -1,0 +1,40 @@
+安装的东西:
+
+hyprland
+hyprpaper
+hypridle
+hyprlock
+hyprshot
+hyprland-plugin-hyprexpo    # 类似监控室老大爷视角 :/
+
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gnome
+xdg-desktop-portal-gtk
+
+mako                    # notification daemon
+gnome-keyring
+wl-clipboard
+network-manager-applet  # nm-applet
+slurp                   # region selector
+wf-recorder             # screen recorder
+brightnessctl
+
+waybar
+wlogout
+fuzzel
+hyprpicker
+cliphist
+blueman             # bluetooth GUI & applet
+pavucontrol
+easyeffects
+nautilus            # dolphin doesn't look nice in Hyprland
+gnome-text-editor   # neither does kwrite, even with Kvantum
+btop                # system monitor
+
+ttf-font-awesome
+nwg-look                    # theme of GTK apps
+catppuccin-gtk-theme-mocha  # theme of GTK apps
+polkit-gnome
+
+kitty       # normal terminal
+ghostty     # floating terminal, for btop for example

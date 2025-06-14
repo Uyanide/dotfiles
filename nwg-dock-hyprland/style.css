@@ -1,0 +1,42 @@
+@import 'mocha.css';
+
+window {
+    background: alpha(@base, 0.6);
+    border-radius: 20px;
+    border-style: none;
+}
+
+#box {
+    /* Define attributes of the box surrounding icons here */
+    padding: 10px;
+}
+
+#active {
+    /* This is to underline the button representing the currently active window */
+    border-color: @blue;
+}
+
+button,
+image {
+    background: none;
+    border-style: none;
+    box-shadow: none;
+    color: @overlay0;
+}
+
+button {
+    padding: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
+    color: @overlay2;
+    font-size: 12px;
+}
+
+button:hover {
+    background: @surface0;
+    border-radius: 14px;
+}
+
+button:focus {
+    box-shadow: none;
+}

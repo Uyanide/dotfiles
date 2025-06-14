@@ -1,0 +1,97 @@
+{
+    "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+    "blocks": [
+        {
+            "alignment": "left",
+            "segments": [
+                {
+                    "foreground": "#74c7ec",
+                    "properties": {
+                        "windows": "\ue62a"
+                    },
+                    "style": "plain",
+                    "template": "{{.Icon}}",
+                    "type": "os"
+                },
+                {
+                    "foreground": "#74c7ec",
+                    "style": "plain",
+                    "template": " {{.UserName}}",
+                    "type": "session"
+                },
+                {
+                    "foreground": "#74c7ec",
+                    "style": "plain",
+                    "template": "@{{.HostName}}",
+                    "type": "session"
+                },
+                {
+                    "foreground": "#94e2d5",
+                    "properties": {
+                        "folder_separator_icon": "/",
+                        "style": "letter"
+                    },
+                    "style": "powerline",
+                    "template": " \uf07b {{ .Path }} ",
+                    "type": "path"
+                },
+                {
+                    "foreground": "#a6e3a1",
+                    "powerline_symbol": "\ue0b1",
+                    "properties": {
+                        "branch_icon": " ",
+                        "fetch_stash_count": true,
+                        "fetch_status": true,
+                        "fetch_upstream_icon": true,
+                        "fetch_worktree_count": true
+                    },
+                    "style": "powerline",
+                    "template": " {{ url .UpstreamIcon .UpstreamURL }}{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} ",
+                    "type": "git"
+                },
+                {
+                    "foreground": "#f9e2af",
+                    "powerline_symbol": "\ue0b1",
+                    "template": " \ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} ",
+                    "style": "powerline",
+                    "type": "python"
+                }
+            ],
+            "type": "prompt"
+        },
+        {
+            "alignment": "left",
+            "newline": true,
+            "segments": [
+                {
+                    "foreground": "#fab387",
+                    "style": "plain",
+                    "template": "\ue3bf ",
+                    "type": "root"
+                },
+                {
+                    "foreground": "#74c7ec",
+                    "foreground_templates": [
+                        "{{ if gt .Code 0 }}#f38ba8{{ end }}"
+                    ],
+                    "properties": {
+                        "always_enabled": true
+                    },
+                    "style": "plain",
+                    "template": "{{ if gt .Code 0 }}{{ .Code }} {{ end }}# ",
+                    "type": "status"
+                }
+            ],
+            "type": "prompt"
+        }
+    ],
+    "transient_prompt": {
+        "background": "transparent",
+        "foreground_templates": [
+            "{{ if gt .Code 0 }}#f38ba8{{ end }}"
+        ],
+        "foreground": "#74c7ec",
+        "template": "# "
+    },
+    "version": 3
+}

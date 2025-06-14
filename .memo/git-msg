@@ -1,0 +1,17 @@
+✨ feat: ✨ 新功能
+🐛 fix: 🐛 修复 bug
+📝 docs: 📝 文档更新
+🎨 style: 🎨 代码格式（不影响功能）
+♻️ refactor: ♻️ 代码重构
+🚀 perf: 🚀 性能优化
+✅ test: ✅ 添加测试
+🔧 chore: 🔧 杂务（构建过程或辅助工具的变动）
+🔒 security: 🔒 安全性改进
+⬆️ upgrade: ⬆️ 升级依赖
+⬇️ downgrade: ⬇️ 降级依赖
+🚨 lint: 🚨 修复 linter 警告
+💄 ui: 💄 更新 UI 和样式文件
+🚧 wip: 🚧 工作进行中
+🔥 remove: 🔥 删除代码或文件
+🔀 merge: 🔀 合并分支
+🔖 release: 🔖 发布/版本标签

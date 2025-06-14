@@ -1,0 +1,58 @@
+* {
+    background-image: none;
+    transition: 20ms;
+    box-shadow: none;
+}
+
+window {
+    background-color: rgba(30, 30, 46, 0.9);
+}
+
+button {
+    border-radius: 0;
+    border-color: #89b4fa;
+    text-decoration-color: #cdd6f4;
+    color: #cdd6f4;
+    background-color: #181825;
+    border-style: solid;
+    border-width: 1px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 25%;
+}
+
+button:focus,
+button:active,
+button:hover {
+    /* 20% Overlay 2, 80% mantle */
+    background-color: rgb(48, 50, 66);
+    outline-style: none;
+}
+
+#lock {
+    background-image: image(url('./icons/lock.svg'));
+    border-radius: 32px 0 0 0;
+}
+
+#logout {
+    background-image: image(url('./icons/logout.svg'));
+}
+
+#suspend {
+    background-image: image(url('./icons/suspend.svg'));
+    border-radius: 0 32px 0 0;
+}
+
+#hibernate {
+    background-image: image(url('./icons/hibernate.svg'));
+    border-radius: 0 0 0 32px;
+}
+
+#shutdown {
+    background-image: image(url('./icons/shutdown.svg'));
+}
+
+#reboot {
+    background-image: image(url('./icons/reboot.svg'));
+    border-radius: 0 0 32px 0;
+}

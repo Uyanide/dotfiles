@@ -1,0 +1,19 @@
+theme = catppuccin-mocha
+
+background-opacity = 0.75
+background-blur = true
+
+window-padding-x = 10
+window-padding-y = 10
+
+keybind = ctrl+shift+r=reload_config
+
+command = exec fish
+
+confirm-close-surface = false
+
+font-family = MeloLGM Nerd Font
+font-size = 12
+
+# just for fun
+# custom-shader = ~/.config/ghostty/shaders/glitchy.glsl
