@@ -19,26 +19,28 @@
         "custom/mediaplayer"
     ],
     "modules-center": [
-        "clock#date",
-        "custom/caffeine"
+        "clock#date"
         //"custom/gammastep"
     ],
     "modules-right": [
-        "network#speed",
-        "memory",
-        "cpu",
-        "battery",
-        //"pulseaudio",
-        "backlight",
-        "wireplumber",
+        // "network#speed",
+        // "memory",
+        // "cpu",
+        // "battery",
+        // //"pulseaudio",
+        // "backlight",
+        // "wireplumber",
+        "group/monitors",
         // "bluetooth",
         // "network",
         "tray",
+        "custom/caffeine",
         "custom/power"
     ],
     // -------------------------------------------------------------------------
     // Modules
     // -------------------------------------------------------------------------
+    // Separators
     "custom/sp1": {
         "format": " | ",
         "tooltip": false
@@ -47,10 +49,50 @@
         "format": " |",
         "tooltip": false
     },
-    "custom/screenshot_t": {
-        "format": " ",
-        "on-click": "~/.config/hypr/scripts/screenshot_full",
-        "on-click-right": "~/.config/hypr/scripts/screenshot_area"
+
+    // Buttons
+    "custom/power": {
+        "format": "󰐥",
+        "tooltip": false,
+        "on-click": "wlogout",
+        "min-length": 2,
+        "max-length": 2
+    },
+    "custom/rofi": {
+        "format": "",
+        "tooltip": false,
+        "on-click-right": "fuzzel -l 0 -p '>> ' | xargs -r sh -c",
+        "on-click": "fuzzel",
+        "on-click-middle": "pkill -9 fuzzel",
+        "min-length": 2,
+        "max-length": 2
+    },
+    "custom/caffeine": {
+        "format": "{icon}",
+        "return-type": "json",
+        "interval": "once",
+        "exec": "$HOME/.config/waybar/modules/caffeine.sh",
+        "on-click": "$HOME/.config/waybar/modules/caffeine.sh toggle && sleep 1",
+        "exec-on-event": true,
+        "min-length": 2,
+        "max-length": 2,
+        "tooltip": false,
+        "format-icons": {
+            "active": "",
+            "inactive": "󰒲"
+        }
+    },
+
+    // Time and Date
+    "clock": {
+        "format": "  {:%H:%M   %e %b}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "today-format": "<b>{}</b>"
+    },
+    "clock#date": {
+        "format": "󰥔  {:%H:%M |  %e %b}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt>{calendar}</tt>",
+        "today-format": "<b>{}</b>"
     },
     "clock#1": {
         "format": " {:%a}",
@@ -67,18 +109,42 @@
         "tooltip": false,
         "on-click": "gsimplecal"
     },
+    "custom/screenshot_t": {
+        "format": " ",
+        "on-click": "~/.config/hypr/scripts/screenshot_full",
+        "on-click-right": "~/.config/hypr/scripts/screenshot_area"
+    },
+
+    // System monitors
+    "group/monitors": {
+        "modules": ["network#speed", "temperature", "memory", "cpu", "battery", "backlight", "wireplumber"],
+        "orientation": "inherit"
+    },
+    "network#speed": {
+        "interval": 1,
+        "format": "{ifname}",
+        "format-wifi": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
+        "format-ethernet": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
+        "format-disconnected": "󰌙",
+        "tooltip-format": "{ipaddr}",
+        "format-linked": "󰈁 {ifname} (No IP)",
+        "tooltip-format-wifi": "{essid} {signalStrength}%",
+        "tooltip-format-ethernet": "{ifname} 󰌘",
+        "tooltip-format-disconnected": "󰌙 Disconnected",
+        "max-length": 24,
+        "min-length": 20
+    },
     "temperature": {
         // "thermal-zone": 1,
         "interval": 4,
-        //"hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
+        "hwmon-path": "/sys/class/hwmon/hwmon6/temp1_input",
         "critical-threshold": 80,
         // "format-critical": " {temperatureC}°C",
         "format-critical": "  {temperatureC}°C",
         "format": "{icon}  {temperatureC}°C",
-        "format-icons": ["", "", ""],
+        "format-icons": ["", "", ""],
         "max-length": 7,
-        "min-length": 7,
-        "on-click": "xsensors"
+        "min-length": 7
     },
     "memory": {
         "interval": 30,
@@ -87,6 +153,14 @@
         "on-click": "ghostty -e btop",
         "min-length": 7,
         "max-length": 7
+    },
+    "cpu": {
+        "interval": 1,
+        //"format": " {}%", // Icon: microchip
+        "format": "  {usage}%",
+        "max-length": 7,
+        "min-length": 7,
+        "on-click": "ghostty -e btop"
     },
     "battery": {
         "interval": 2,
@@ -102,6 +176,75 @@
         "max-length": 7,
         "min-length": 7
     },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon} {percent}%",
+        "format-alt": "{percent}% {icon}",
+        "format-alt-click": "click-right",
+        //"format-icons": ["", ""],
+        "format-icons": ["", ""],
+        "on-scroll-down": "brightnessctl -d intel_backlight set 5%-",
+        "on-scroll-up": "brightnessctl -d intel_backlight set +5%",
+        "max-length": 7,
+        "min-length": 7
+    },
+    "wireplumber": {
+        "on-click": "pavucontrol",
+        //on-click: "${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 0.04-",
+        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 0.04+",
+        "format": "{icon} {volume}%",
+        "format-muted": "",
+        "format-source": "",
+        "format-source-muted": "",
+        //"format-muted": "<span foreground='#fab387'> </span>",
+        //"format-icons": [ "<span foreground='#fab387'></span>" ]
+        "format-icons": {
+            "headphone": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", "", "", "", ""]
+        },
+        "max-length": 7,
+        "min-length": 7
+    },
+
+    // Hyprland
+    "hyprland/workspaces": {
+        "all-outputs": true,
+        "format": "{name}",
+        "show-special": true,
+        "on-scroll-up": "hyprctl dispatch workspace e+1 1>/dev/null",
+        "on-scroll-down": "hyprctl dispatch workspace e-1 1>/dev/null",
+        "sort-by-number": true,
+        "active-only": false
+    },
+    "hyprland/window": {
+        "max-length": 40,
+        "separate-outputs": true,
+        "hide-empty-text": true
+    },
+    "custom/mediaplayer": {
+        "format": "{text}",
+        "return-type": "json",
+        "max-length": 40,
+        "format-icons": {
+            "spotify": "",
+            "default": ""
+        },
+        "escape": true,
+        "exec": "$HOME/.config/waybar/modules/mediaplayer.py 2> /dev/null",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
+    },
+    "tray": {
+        "icon-size": 15,
+        "spacing": 5
+    },
+
+    // Not used
     "network": {
         "format-wifi": " {essid} ({signalStrength}%)",
         "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
@@ -124,18 +267,7 @@
         "interval": 60,
         "exec": "~/.config/waybar/modules/storage.sh"
     },
-    "backlight": {
-        "device": "intel_backlight",
-        "format": "{icon} {percent}%",
-        "format-alt": "{percent}% {icon}",
-        "format-alt-click": "click-right",
-        //"format-icons": ["", ""],
-        "format-icons": ["", ""],
-        "on-scroll-down": "brightnessctl -d intel_backlight set 5%-",
-        "on-scroll-up": "brightnessctl -d intel_backlight set +5%",
-        "max-length": 7,
-        "min-length": 7
-    },
+
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
@@ -172,20 +304,6 @@
         "on-scroll-up": "playerctl next",
         "on-scroll-down": "playerctl previous"
     },
-    "custom/mediaplayer": {
-        "format": "{text}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": ""
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/modules/mediaplayer.py 2> /dev/null",
-        "on-click": "playerctl play-pause",
-        "on-scroll-up": "playerctl next",
-        "on-scroll-down": "playerctl previous"
-    },
     "custom/media": {
         "format": "{0} {1}",
         "return-type": "json",
@@ -197,47 +315,6 @@
         "escape": true
         //"exec": "~/.config/waybar/mediaplayer.py" // Script in resources folder
         // "exec": "~/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    },
-    "custom/power": {
-        "format": "󰐥",
-        "tooltip": false,
-        "on-click": "wlogout",
-        "min-length": 2,
-        "max-length": 2
-    },
-    "custom/rofi": {
-        "format": "",
-        "tooltip": false,
-        "on-click-right": "fuzzel -l 0 -p '>> ' | xargs -r sh -c",
-        "on-click": "fuzzel",
-        "on-click-middle": "pkill -9 fuzzel",
-        "min-length": 2,
-        "max-length": 2
-    },
-    "custom/caffeine": {
-        "format": "{icon}",
-        "return-type": "json",
-        "interval": "once",
-        "exec": "$HOME/.config/waybar/modules/caffeine.sh",
-        "on-click": "$HOME/.config/waybar/modules/caffeine.sh toggle && sleep 1",
-        "exec-on-event": true,
-        "min-length": 2,
-        "max-length": 2,
-        "tooltip": false,
-        "format-icons": {
-            "active": "",
-            "inactive": "󰒲"
-        }
-    },
-    "clock": {
-        "format": "  {:%H:%M   %e %b}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "today-format": "<b>{}</b>"
-    },
-    "clock#date": {
-        "format": "󰥔  {:%H:%M |  %e %b}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt>{calendar}</tt>",
-        "today-format": "<b>{}</b>"
     },
     "custom/gammastep": {
         "interval": 5,
@@ -262,14 +339,6 @@
             "active (Transition (Daytime)": " "
         },
         "on-click": "systemctl --user is-active gammastep && systemctl --user stop gammastep || systemctl --user start gammastep"
-    },
-    "cpu": {
-        "interval": 1,
-        //"format": " {}%", // Icon: microchip
-        "format": "  {usage}%",
-        "max-length": 7,
-        "min-length": 7,
-        "on-click": "ghostty -e btop"
     },
     "mpd": {
         "max-length": 25,
@@ -304,20 +373,7 @@
         "interval": 1,
         "exec": "$HOME/.config/waybar/get_kbdlayout.sh"
     },*/
-    "hyprland/workspaces": {
-        "all-outputs": true,
-        "format": "{name}",
-        "show-special": true,
-        "on-scroll-up": "hyprctl dispatch workspace e+1 1>/dev/null",
-        "on-scroll-down": "hyprctl dispatch workspace e-1 1>/dev/null",
-        "sort-by-number": true,
-        "active-only": false
-    },
-    "hyprland/window": {
-        "max-length": 100,
-        "separate-outputs": true,
-        "hide-empty-text": true
-    },
+
     "pulseaudio": {
         "scroll-step": 3, // %, can be a float
         "format": "{icon} {volume}% {format_source}",
@@ -348,44 +404,5 @@
         "on-click": "blueberry",
         "max-length": 3,
         "min-length": 3
-    },
-    "wireplumber": {
-        "on-click": "pavucontrol",
-        //on-click: "${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle";
-        "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 0.04-",
-        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 0.04+",
-        "format": "{icon} {volume}%",
-        "format-muted": "",
-        "format-source": "",
-        "format-source-muted": "",
-        //"format-muted": "<span foreground='#fab387'> </span>",
-        //"format-icons": [ "<span foreground='#fab387'></span>" ]
-        "format-icons": {
-            "headphone": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", "", "", "", ""]
-        },
-        "max-length": 7,
-        "min-length": 7
-    },
-    "tray": {
-        "icon-size": 15,
-        "spacing": 5
-    },
-    "network#speed": {
-        "interval": 1,
-        "format": "{ifname}",
-        "format-wifi": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
-        "format-ethernet": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
-        "format-disconnected": "󰌙",
-        "tooltip-format": "{ipaddr}",
-        "format-linked": "󰈁 {ifname} (No IP)",
-        "tooltip-format-wifi": "{essid} {signalStrength}%",
-        "tooltip-format-ethernet": "{ifname} 󰌘",
-        "tooltip-format-disconnected": "󰌙 Disconnected",
-        "max-length": 18,
-        "min-length": 18
     }
 }

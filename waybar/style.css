@@ -72,11 +72,18 @@ tooltip {
     background-color: alpha(@base, 0.6);
     font-size: 15px; /* Slightly smaller font size */
     font-weight: 800;
-    color: @foreground;
+    color: @subtext1;
     border-radius: 14px;
     padding: 3px 6px; /* Reduced padding */
     margin: 2px;
     opacity: 1;
+}
+
+#custom-mediaplayer {
+    background-color: alpha(@base, 0.6);
+    border-radius: 14px;
+    padding: 3px 12px;
+    color: @lavender;
 }
 
 #clock,
@@ -113,6 +120,60 @@ tooltip {
     padding: 6px; /* Adjusted padding */
 }
 
+#monitors {
+    background-color: alpha(@base, 0.6);
+    border-radius: 14px;
+    padding: 6px;
+}
+
+#network.speed {
+    background: transparent;
+    color: @lavender;
+    padding: 0;
+}
+
+#temperature {
+    background: transparent;
+    color: @maroon;
+    padding: 0px;
+}
+
+#memory {
+    color: @peach;
+    background: transparent;
+    padding: 0px;
+}
+
+#cpu {
+    color: @yellow;
+    background: transparent;
+    padding: 0px;
+}
+
+#battery {
+    background: transparent;
+    color: #c0caf5;
+    padding: 0;
+}
+
+#battery.charging,
+#battery.full,
+#battery.plugged {
+    color: @green;
+}
+
+#backlight {
+    background: transparent;
+    color: @teal;
+    padding: 0;
+}
+
+#wireplumber {
+    background: transparent;
+    color: @sapphire;
+    padding: 0;
+}
+
 #custom-screenshot_t {
     background-color: alpha(@base, 0.6);
     border-radius: 14px;
@@ -125,29 +186,11 @@ tooltip {
     padding: 3px 12px;
 }
 
-#custom-mediaplayer {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 3px 12px;
-}
-
 #tray {
     background-color: alpha(@base, 0.6);
     border-radius: 14px;
     padding: 6px; /* Adjusted padding */
     border: 3px solid @blue;
-}
-
-#cpu {
-    color: @maroon;
-    background-color: alpha(@base, 0.6);
-    padding: 6px;
-}
-
-#memory {
-    color: @yellow;
-    background-color: alpha(@base, 0.6);
-    padding: 6px;
 }
 
 #custom-power {
@@ -245,27 +288,9 @@ tooltip {
     color: #7d9bba;
 }
 
-#wireplumber {
-    color: @teal;
-}
-
-#backlight {
-    color: #8fbcbb;
-}
-
 #clock {
     color: #c8d2e0;
     border: 3px solid @blue;
-}
-
-#battery {
-    color: #c0caf5;
-}
-
-#battery.charging,
-#battery.full,
-#battery.plugged {
-    color: @green;
 }
 
 @keyframes blink {
@@ -300,10 +325,6 @@ label:focus {
     color: @red;
 }
 
-#network {
-    color: @lavender;
-}
-
 #network.disconnected {
     color: @red;
 }
@@ -320,10 +341,6 @@ label:focus {
 
 #custom-media.custom-vlc {
     background-color: #ffa000;
-}
-
-#temperature {
-    background-color: #f0932b;
 }
 
 #temperature.critical {
