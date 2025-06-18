@@ -1,3 +1,7 @@
+<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/desktop.jpg?raw=true"/>
+<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/tiling.png?raw=true"/>
+<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/grub.jpg?raw=true"/>
+
 ## Hyprland & most of Hypr\* ecosystem
 
 Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags.
