@@ -5,7 +5,7 @@
 
 .main-window {
     background-color: $bg;
-    font-family: 'Fira Sans Semibold', 'Font Awesome 6 Free', FontAwesome;
+    font-family: 'Font Awesome 6 Free';
     border-radius: 20px;
     border: 3px solid $blue;
 }
@@ -51,7 +51,7 @@
 }
 
 .weather-icon {
-    font-family: 'JetBrainsMono Nerd Font';
+    font-family: 'MesloLGM Nerd Font';
     font-size: 60px;
 }
 
@@ -88,22 +88,22 @@
 }
 
 .volume-scale highlight {
-    background-color: $green;
+    background-color: $sapphire;
     border-radius: 15px;
 }
 
 .brightness-scale highlight {
-    background-color: $yellow;
+    background-color: $teal;
     border-radius: 15px;
 }
 
 .cpu-scale highlight {
-    background-color: $red;
+    background-color: $yellow;
     border-radius: 15px;
 }
 
 .memory-scale highlight {
-    background-color: $blue;
+    background-color: $peach;
     border-radius: 15px;
 }
 
