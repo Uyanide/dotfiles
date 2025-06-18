@@ -94,5 +94,5 @@
   :windowtype "normal"
   :wm-ignore true
   :monitor 0
-  :geometry (geometry :x 2 :y 0 :width 600 :height 846)
+  :geometry (geometry :x 2 :y 0 :width 600 :height 868)
   (main))

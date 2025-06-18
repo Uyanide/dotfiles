@@ -7,7 +7,7 @@ hyprlock
 hyprshot
 hyprland-plugin-hyprexpo    # 类似监控室老大爷视角 :/
 
-xdg-desktop-portal-hyprland
+xdg-desktop-portal-hyprland # not working with my Intel iGPU, but fine with NVIDIA dGPU
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
 

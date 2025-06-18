@@ -65,6 +65,8 @@
         // "on-click": "fuzzel",
         // "on-click-middle": "pkill -9 fuzzel",
         "on-click": "eww open main --toggle",
+        "on-click-right": "pkill fuzzel || fuzzel",
+        "on-click-middle": "hyprctl dispatch killactive",
         "min-length": 2,
         "max-length": 2
     },
@@ -150,18 +152,18 @@
     "memory": {
         "interval": 30,
         // "format": "  {used:0.2f} / {total:0.0f} GB",
-        "format": "   {percentage}%",
-        "on-click": "ghostty -e btop",
+        "format": "󰍛  {percentage}%",
+        "on-click": "killall btop || ghostty -e btop",
         "min-length": 7,
         "max-length": 7
     },
     "cpu": {
         "interval": 1,
         //"format": " {}%", // Icon: microchip
-        "format": "  {usage}%",
+        "format": "󰘚  {usage}%",
         "max-length": 7,
         "min-length": 7,
-        "on-click": "ghostty -e btop"
+        "on-click": "killall btop || ghostty -e btop"
     },
     "battery": {
         "interval": 2,
@@ -183,7 +185,7 @@
         "format-alt": "{percent}% {icon}",
         "format-alt-click": "click-right",
         //"format-icons": ["", ""],
-        "format-icons": ["", ""],
+        "format-icons": [""],
         "on-scroll-down": "brightnessctl -d intel_backlight set 5%-",
         "on-scroll-up": "brightnessctl -d intel_backlight set +5%",
         "max-length": 7,
