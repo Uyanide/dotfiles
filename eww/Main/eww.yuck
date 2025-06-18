@@ -26,6 +26,12 @@
 (defpoll volume :interval "1s" "Main/scripts/system --vol")
 (defpoll brightness :interval "1s" "Main/scripts/system --bri")
 (defpoll fortune :interval "1h" "Main/scripts/fortune.py 32 9")
+(deflisten cava "Main/scripts/cava")
+(defpoll title :interval "1s" "Main/scripts/music-title --status")
+(defpoll artist :interval "1s" "Main/scripts/player --artist")
+(defpoll album :interval "1s" "Main/scripts/player --album")
+(defpoll length-info :interval "1s" "Main/scripts/player --length-info")
+(defpoll art :interval "1s" "Main/scripts/player --cover")
 
 
 ;; widgets
@@ -60,9 +66,18 @@
     (box :class "third-row" :orientation "h" :space-evenly "false"
       (box :class "music-art-box" :space-evenly "false" :orientation "v" :hexpand "false" :vexpand "false" :style "background-image: url(\"${music-art}\");"
         (box :class "music-stuff-box" :space-evenly "false" :hexpand "false" :vexpand "false" :orientation "v"
-          (label :class "music-title" :text music-title :halign "start" :limit-width 22 :tooltip music-title)
-          (label :class "music-artist" :text music-artist :halign "start" :limit-width 22 :tooltip music-artist)
-          (label :class "music-length" :text music-length :halign "start" :valign "end")))
+          (box :class "player-box" :hexpand "false" :vexpand "false" :space-evenly "true"
+            (box :class "player-info-box" :hexpand "false" :vexpand "false" :space-evenly "false" :orientation "v" :spacing 15
+              (label :class "player-info-title" :text "󰝚  Title: ${title}" :halign "start" :limit-width 30 :tooltip "${title}")
+              (label :class "player-info-artist" :text "󰠃  Artist: ${artist}" :halign "start" :limit-width 30 :tooltip "${artist}")
+              (label :class "player-info-album" :text "󰀥  Album: ${album}" :halign "start" :limit-width 30 :tooltip "${album}")
+              (label :class "player-info-length" :text "󰦚  Length: ${length-info}" :halign "start" :tooltip "${length-info}"))
+            (box :class "player-cover-box" :hexpand "false" :halign "end" :vexpand "false" :space-evenly "false" :style "background-image: url('${art}');"))
+          (box :class "cava-box" :hexpand "false" :vexpand "false"
+            (label :vexpand "false" :hexpand "false" :space-evenly "false"
+            :class "cavabar"
+            :text cava
+            ))))
       (box :class "music-controls-box" :space-evenly "true" :hexpand "true" :vexpand "false" :orientation "v"
         (button :class "music-previous" :halign "center" :onclick "playerctl previous" "󰒮")
         (button :class "music-pp" :halign "center" :onclick "playerctl play-pause" "${music-pp}")

@@ -18,15 +18,18 @@ network-manager-applet  # nm-applet
 slurp                   # region selector
 wf-recorder             # screen recorder
 brightnessctl
+qt5ct
+qt6ct
 
 waybar
+eww
 wlogout
 fuzzel
 hyprpicker
 cliphist
 blueman             # bluetooth GUI & applet
 pavucontrol
-easyeffects
+pamixer
 nautilus            # dolphin doesn't look nice in Hyprland
 gnome-text-editor   # neither does kwrite, even with Kvantum
 btop                # system monitor
@@ -37,4 +40,7 @@ catppuccin-gtk-theme-mocha  # theme of GTK apps
 polkit-gnome
 
 kitty       # normal terminal
-ghostty     # floating terminal, for btop for example
+ghostty     # floating terminal, for btop for example#
+
+bc
+jq
