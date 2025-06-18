@@ -23,7 +23,7 @@ mkfifo $pipe
 config_file="/tmp/waybar_cava_config"
 echo "
 [general]
-bars = 49
+bars = 33
 [output]
 method = raw
 raw_target = $pipe
