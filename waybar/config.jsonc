@@ -61,9 +61,10 @@
     "custom/rofi": {
         "format": "",
         "tooltip": false,
-        "on-click-right": "fuzzel -l 0 -p '>> ' | xargs -r sh -c",
-        "on-click": "fuzzel",
-        "on-click-middle": "pkill -9 fuzzel",
+        // "on-click-right": "fuzzel -l 0 -p '>> ' | xargs -r sh -c",
+        // "on-click": "fuzzel",
+        // "on-click-middle": "pkill -9 fuzzel",
+        "on-click": "eww open main --toggle",
         "min-length": 2,
         "max-length": 2
     },
@@ -221,14 +222,14 @@
         "active-only": false
     },
     "hyprland/window": {
-        "max-length": 40,
+        "max-length": 100,
         "separate-outputs": true,
         "hide-empty-text": true
     },
     "custom/mediaplayer": {
         "format": "{text}",
         "return-type": "json",
-        "max-length": 40,
+        "max-length": 100,
         "format-icons": {
             "spotify": "",
             "default": ""
@@ -236,6 +237,7 @@
         "escape": true,
         "exec": "$HOME/.config/waybar/modules/mediaplayer.py 2> /dev/null",
         "on-click": "playerctl play-pause",
+        "on-click-right": "eww open --toggle player",
         "on-scroll-up": "playerctl next",
         "on-scroll-down": "playerctl previous"
     },
