@@ -37,6 +37,7 @@ tooltip {
     border: 3px solid @overlay0;
 }
 
+#custom-workspacenew,
 #workspaces button {
     padding: 3px 5px; /* Adjusted padding to reduce height */
     margin: 3px 5px; /* Reduced margin slightly */
@@ -60,11 +61,20 @@ tooltip {
     background-color: @red;
 }
 
-#workspaces {
+#workspaceactions {
     background-color: alpha(@base, 0.6);
     border-radius: 14px;
     padding: 3px 6px; /* Adjusted padding to reduce height */
     border: 3px solid @blue;
+}
+
+#workspaces {
+    padding: 0px;
+    margin: 0px;
+}
+
+#custom-workspacenew:hover {
+    background-color: alpha(@blue, 0.3);
 }
 
 #window {

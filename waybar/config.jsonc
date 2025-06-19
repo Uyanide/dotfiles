@@ -11,7 +11,9 @@
     "spacing": 2, // Gaps between modules (px)
     "modules-left": [
         "custom/rofi",
-        "hyprland/workspaces",
+        // "hyprland/workspaces",
+        // "custom/workspacenew",
+        "group/workspaceactions",
         "hyprland/window",
         //"hyprland/submap",
         //"idle_inhibitor",
@@ -55,6 +57,7 @@
         "format": "󰐥",
         "tooltip": false,
         "on-click": "wlogout",
+        "on-click-right": "hyprctl dispatch killactive",
         "min-length": 2,
         "max-length": 2
     },
@@ -66,7 +69,6 @@
         // "on-click-middle": "pkill -9 fuzzel",
         "on-click": "eww open main --toggle",
         "on-click-right": "pkill fuzzel || fuzzel",
-        "on-click-middle": "hyprctl dispatch killactive",
         "min-length": 2,
         "max-length": 2
     },
@@ -214,6 +216,10 @@
     },
 
     // Hyprland
+    "group/workspaceactions": {
+        "modules": ["hyprland/workspaces", "custom/workspacenew"],
+        "orientation": "inherit"
+    },
     "hyprland/workspaces": {
         "all-outputs": true,
         "format": "{name}",
@@ -222,6 +228,11 @@
         "on-scroll-down": "hyprctl dispatch workspace e-1 1>/dev/null",
         "sort-by-number": true,
         "active-only": false
+    },
+    "custom/workspacenew": {
+        "format": "+",
+        "tooltip": false,
+        "on-click": "~/.scripts/workspace-new.sh"
     },
     "hyprland/window": {
         "max-length": 100,

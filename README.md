@@ -2,6 +2,20 @@
 <img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/tiling.png?raw=true"/>
 <img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/grub.jpg?raw=true"/>
 
+## Setup Overview
+
+-   **OS**: Archlinux
+-   **WM**: Hyprland
+-   **Bar**: Waybar
+-   **Shell**: Fish
+-   **Prompt**: Oh My Posh
+-   **Terminal**: Kitty & Ghostty (floating)
+-   **Colorscheme**: Catppuccin-mocha(-blue)
+-   **App Launcher**: Fuzzel
+-   **Logout Screen**: Wlogout
+-   **Desktop Widgets**: Eww
+-   **Notification Daemon**: Mako
+
 ## Hyprland & most of Hypr\* ecosystem
 
 Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags.
@@ -17,10 +31,6 @@ Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elega
 ## Waybar
 
 Gathered from internet, based on <s>I don't know who</s> (such config files had been laying in my disk before I could even notice and already looked nice without further configurations) (and I'm pretty sure they were not the default config files shipped with the waybar package)
-
-## Colorscheme for basically everything
-
-[Catppuccin-mocha(-blue)](https://catppuccin.com)
 
 ## Fonts
 
