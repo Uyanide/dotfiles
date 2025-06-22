@@ -1,5 +1,5 @@
 <img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/desktop.jpg?raw=true"/>
-<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/tiling.png?raw=true"/>
+<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/tiling.jpg?raw=true"/>
 <img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/grub.jpg?raw=true"/>
 
 ## Setup Overview

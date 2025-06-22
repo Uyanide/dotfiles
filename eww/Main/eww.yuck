@@ -26,7 +26,7 @@
 (defpoll music-art :interval "1s" "Main/scripts/music-art")
 (defpoll volume :interval "1s" "Main/scripts/system --vol")
 (defpoll brightness :interval "1s" "Main/scripts/system --bri")
-(defpoll fortune :interval "1h" "Main/scripts/fortune.py 32 9")
+(defpoll fortune :interval "1h" "Main/scripts/fortune-split 32 9")
 (deflisten cava "Main/scripts/cava")
 (defpoll title :interval "1s" "Main/scripts/music-title --status")
 (defpoll artist :interval "1s" "Main/scripts/player --artist")

@@ -140,8 +140,8 @@
         "min-length": 20
     },
     "temperature": {
-        // "thermal-zone": 1,
-        "interval": 4,
+        "interval": 5,
+        "thermal-zone": 6,
         "hwmon-path": "/sys/class/hwmon/hwmon6/temp1_input",
         "critical-threshold": 80,
         // "format-critical": " {temperatureC}°C",
@@ -152,7 +152,7 @@
         "min-length": 7
     },
     "memory": {
-        "interval": 30,
+        "interval": 11,
         // "format": "  {used:0.2f} / {total:0.0f} GB",
         "format": "󰍛  {percentage}%",
         "on-click": "killall btop || ghostty -e btop",
@@ -160,7 +160,7 @@
         "max-length": 7
     },
     "cpu": {
-        "interval": 1,
+        "interval": 3,
         //"format": " {}%", // Icon: microchip
         "format": "󰘚  {usage}%",
         "max-length": 7,
@@ -168,7 +168,7 @@
         "on-click": "killall btop || ghostty -e btop"
     },
     "battery": {
-        "interval": 2,
+        "interval": 30,
         "states": {
             "good": 95,
             "warning": 30,
