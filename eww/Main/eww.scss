@@ -7,7 +7,7 @@
     background-color: $bg;
     font-family: 'Font Awesome 6 Free';
     border-radius: 20px;
-    border: 3px solid $blue;
+    border: 2px solid $blue;
 }
 
 .date-box {
@@ -53,6 +53,12 @@
 .weather-icon {
     font-family: 'MesloLGM Nerd Font';
     font-size: 60px;
+}
+
+.weather-updatetime {
+    color: $fg-alt;
+    font-size: 12px;
+    margin-top: 10px;
 }
 
 .stats-box {

@@ -4,9 +4,10 @@
 (defpoll date :interval "1s" "date '+%A, %B %d'")
 (deflisten notifications-cards "Main/scripts/logger.zsh subscribe")
 (defpoll notifications-crits :interval "1s" "Main/scripts/logger.zsh crits")
-(defpoll weather-icon :interval "20m" "Main/scripts/weather --icon")
-(defpoll weather-temp :interval "20m" "Main/scripts/weather --temp")
-(defpoll weather-desc :interval "20m" "Main/scripts/weather --stat")
+(defpoll weather-icon :interval "5m" "Main/scripts/weather --icon")
+(defpoll weather-temp :interval "5m" "Main/scripts/weather --temp")
+(defpoll weather-desc :interval "5m" "Main/scripts/weather --stat")
+(defpoll weather-updatetime :interval "5m" "Main/scripts/weather --updatetime")
 (deflisten weather-color :initial "#7aa2f7" "Main/scripts/weather --hex")
 (defpoll calendar-day :interval "20h" "+%d")
 (defpoll calendar-year :interval "20h" "+%Y")
@@ -42,8 +43,9 @@
         (label :class "time" :text time)
         (label :class "date" :text date))
       (box :class "weather-box" :space-evenly "false" :hexpand "true" :orientation "v"
-        (label :class "weather-desc" :halign "start" :text weather-desc)
-        (label :class "weather-temp" :halign "start" :text weather-temp)
+      (label :class "weather-desc" :halign "start" :text weather-desc)
+      (label :class "weather-temp" :halign "start" :text weather-temp)
+      (label :class "weather-updatetime" :halign "start" :text weather-updatetime)
         (label :class "weather-icon" :halign "end" :valign "end" :text weather-icon :style "color: ${weather-color}")))
     (box :class "second-row" :orientation "h" :space-evenly "false"
       (box :class "stats-box" :space-evenly "false" :orientation "v" :spacing 8

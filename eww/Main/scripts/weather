@@ -6,6 +6,7 @@ cache_weather_stat=${cache_dir}/weather-stat
 cache_weather_degree=${cache_dir}/weather-degree
 cache_weather_hex=${cache_dir}/weather-hex
 cache_weather_icon=${cache_dir}/weather-icon
+cache_weather_updatetime=${cache_dir}/weather-updatetime
 
 if [[ -z "$OPENWEATHER_API_KEY" ]]; then
 	echo "Please set the OPENWEATHER_API_KEY environment variable."
@@ -33,8 +34,9 @@ fi
 
 ## Get data
 get_weather_data() {
-	weather=`curl -sf "http://api.openweathermap.org/data/3.0/onecall?lat=${LAT}&lon=${LON}&exclude=minutely,hourly,daily&appid=${KEY}&units=${UNITS}" | jq -r ".current"`
-	echo ${weather}
+	weather=`curl -sf "http://api.openweathermap.org/data/3.0/onecall?lat=${LAT}&lon=${LON}&exclude=minutely,hourly,daily&appid=${KEY}&units=${UNITS}"`
+	echo ${weather} >&2
+	weather=$(echo "$weather" | jq -r ".current")
 
 	if [ ! -z "$weather" ]; then
 		weather_temp=`echo "$weather" | jq ".temp" | cut -d "." -f 1`
@@ -110,17 +112,38 @@ get_weather_data() {
 		echo "$weather_description" > ${cache_weather_stat}
 		echo "$weather_temp""°C" > ${cache_weather_degree}
 		echo "$weather_hex" > ${cache_weather_hex}
+		date "+%Y-%m-%d %H:%M:%S" | tee ${cache_weather_updatetime} >/dev/null
 	else
 		echo "Weather Unavailable" > ${cache_weather_stat}
 		echo " " > ${cache_weather_icon}
 		echo "-" > ${cache_weather_degree}
 		echo "#adadff" > ${cache_weather_hex}
+		date "+%Y-%m-%d %H:%M:%S" | tee ${cache_weather_updatetime} >/dev/null
 	fi
+}
+
+check_network() {
+	local max=12
+	local cnt=0
+
+	while [ $cnt -lt $max ]; do
+        if ping -c1 8.8.8.8 &>/dev/null || ping -c1 1.1.1.1 &>/dev/null; then
+            return 0
+        fi
+        echo "Waiting for network connection... (attempt: $((cnt + 1))/$max)" >&2
+        sleep 5
+        ((cnt++))
+    done
+
+	echo "Network connection failed after $max attempts." >&2
+	return 1
 }
 
 ## Execute
 if [[ "$1" == "--getdata" ]]; then
-	get_weather_data
+	if check_network; then
+		get_weather_data
+	fi
 elif [[ "$1" == "--icon" ]]; then
 	cat ${cache_weather_icon}
 elif [[ "$1" == "--temp" ]]; then
@@ -129,4 +152,6 @@ elif [[ "$1" == "--hex" ]]; then
 	tail -F ${cache_weather_hex}
 elif [[ "$1" == "--stat" ]]; then
 	cat ${cache_weather_stat}
+elif [[ "$1" == "--updatetime" ]]; then
+	cat ${cache_weather_updatetime}
 fi

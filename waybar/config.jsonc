@@ -217,17 +217,49 @@
 
     // Hyprland
     "group/workspaceactions": {
-        "modules": ["hyprland/workspaces", "custom/workspacenew"],
+        "modules": ["hyprland/workspaces#special", "hyprland/workspaces", "custom/workspacenew"],
         "orientation": "inherit"
     },
     "hyprland/workspaces": {
         "all-outputs": true,
         "format": "{name}",
-        "show-special": true,
         "on-scroll-up": "hyprctl dispatch workspace e+1 1>/dev/null",
         "on-scroll-down": "hyprctl dispatch workspace e-1 1>/dev/null",
         "sort-by-number": true,
         "active-only": false
+    },
+    "hyprland/workspaces#special": {
+        "active-only": false,
+        // waiting for a smarter way in coming versions
+        "ignore-workspaces": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20"
+        ],
+        "show-special": true,
+        "special-visible-only": false,
+        "format": "{icon}",
+        "format-icons": {
+            "special": "S",
+            "default": "C"
+        }
     },
     "custom/workspacenew": {
         "format": "+",

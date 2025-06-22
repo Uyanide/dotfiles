@@ -1,23 +1,26 @@
-安装的东西:
+things installed:
 
 hyprland
 hyprpaper
 hypridle
 hyprlock
 hyprshot
-hyprland-plugin-hyprexpo    # 类似监控室老大爷视角 :/
+hyprlicker                  # kcolorchooser also works though
+hyprland-plugin-hyprexpo    # scale workspaces and put them in a grid
 
 xdg-desktop-portal-hyprland # not working with my Intel iGPU, but fine with NVIDIA dGPU
-xdg-desktop-portal-gnome
-xdg-desktop-portal-gtk
+xdg-desktop-portal-gnome    # not necessary maybe, but just in case
+xdg-desktop-portal-gtk      # required by nautilus for file picker
 
 mako                    # notification daemon
-gnome-keyring
+gnome-keyring           # --password-store=gnome-libsecret
 wl-clipboard
+cliphist                # clipboard history
 network-manager-applet  # nm-applet
 slurp                   # region selector
 wf-recorder             # screen recorder
 brightnessctl
+pamixer
 qt5ct
 qt6ct
 
@@ -25,19 +28,16 @@ waybar
 eww
 wlogout
 fuzzel
-hyprpicker
-cliphist
 blueman             # bluetooth GUI & applet
 pavucontrol
-pamixer
-nautilus            # dolphin doesn't look nice in Hyprland
-gnome-text-editor   # neither does kwrite, even with Kvantum
+nautilus            # file manager and file picker
+gnome-text-editor   # or kwrite, just notepad replacement
 btop                # system monitor
 
 ttf-font-awesome
 nwg-look                    # theme of GTK apps
 catppuccin-gtk-theme-mocha  # theme of GTK apps
-polkit-gnome
+polkit-gnome                # polkit authentication agent
 
 kitty       # normal terminal
 ghostty     # floating terminal, for btop for example#

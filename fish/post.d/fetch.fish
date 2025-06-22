@@ -3,17 +3,17 @@ if not set -q fetch_logo_type
 end
 
 if test "$fetch_logo_type" = "symbols"
-    set -g fetch_args "--logo-type raw --logo-width 32 --logo \"$HOME/.config/fastfetch/logo_mugi/32x.symbols\""
-    set -g fetch_args_brief "--logo-type raw --logo-width 24 --logo \"$HOME/.config/fastfetch/logo_mugi/24x.symbols\""
+    set -g fetch_args "--logo-type raw --logo-width 42 --logo \"$HOME/.config/fastfetch/logo_ros/42x.symbols\" --color \"#74c7ec\""
+    set -g fetch_args_brief "--logo-type raw --logo-width 24 --logo \"$HOME/.config/fastfetch/logo_ros/24x.symbols\" --color \"#74c7ec\""
 else if test "$fetch_logo_type" = "logo"
     set -g fetch_args "--logo-type builtin"
     set -g fetch_args_brief "--logo-type small"
 else if test "$fetch_logo_type" = "sixel"
-    set -g fetch_args "--logo-type raw --logo-width 32 --logo \"$HOME/.config/fastfetch/logo_mugi/32x.sixel\""
-    set -g fetch_args_brief "--logo-type raw --logo-width 24 --logo \"$HOME/.config/fastfetch/logo_mugi/24x.sixel\""
+    set -g fetch_args "--logo-type raw --logo-width 42 --logo \"$HOME/.config/fastfetch/logo_ros/42x.sixel\" --color \"#74c7ec\""
+    set -g fetch_args_brief "--logo-type raw --logo-width 24 --logo \"$HOME/.config/fastfetch/logo_ros/24x.sixel\" --color \"#74c7ec\""
 else # "kitty" or "auto" and others
-    set -g fetch_args "--logo-type $fetch_logo_type --logo-height 21 --logo \"$HOME/.config/fastfetch/logo_mugi/mugi_3.png\""
-    set -g fetch_args_brief "--logo-type $fetch_logo_type --logo-height 13 --logo \"$HOME/.config/fastfetch/logo_mugi/mugi_1.png\""
+    set -g fetch_args "--logo-type $fetch_logo_type --logo-width 42 --logo \"$HOME/.config/fastfetch/logo_ros/ros.png\" --color \"#74c7ec\""
+    set -g fetch_args_brief "--logo-type $fetch_logo_type --logo-width 24 --logo \"$HOME/.config/fastfetch/logo_ros/ros.png\" --color \"#74c7ec\""
 end
 
 if type -q fastfetch

@@ -1,32 +1,39 @@
 * {
     background-image: none;
-    transition: 20ms;
-    box-shadow: none;
+    font-size: 16px;
+    font-family: 'Font Awesome 6 Free', 'MesloLGM Nerd Font', 'Maple Mono CN ExtraLight', 'Noto Sans', Arial, sans-serif;
 }
 
 window {
-    background-color: rgba(30, 30, 46, 0.9);
+    background-color: rgba(30, 30, 46, 0.5);
 }
 
 button {
-    border-radius: 0;
-    border-color: #89b4fa;
-    text-decoration-color: #cdd6f4;
     color: #cdd6f4;
-    background-color: #181825;
-    border-style: solid;
-    border-width: 1px;
+    border-radius: 0;
+    outline-style: none;
+    background-color: #1e1e2e;
+    border: none;
+    border-width: 0px;
+    border-radius: 0px;
+    border-color: #89b4fa;
+    box-shadow: none;
+    text-shadow: none;
+    text-decoration-color: #cdd6f4;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 25%;
+    background-size: 20%;
+    animation: gradient_f 20s ease-in infinite;
 }
 
 button:focus,
 button:active,
 button:hover {
     /* 20% Overlay 2, 80% mantle */
-    background-color: rgb(48, 50, 66);
-    outline-style: none;
+    background-color: #313244;
+    background-size: 20%;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(0.55, 0, 0.28, 1.682);
 }
 
 #lock {
@@ -55,4 +62,60 @@ button:hover {
 #reboot {
     background-image: image(url('./icons/reboot.svg'));
     border-radius: 0 0 32px 0;
+}
+
+#lock:hover {
+    border-radius: 30px 0 0 0;
+    margin: -30px 0 0 -30px;
+}
+
+#logout:hover {
+    margin: -30px 0 0 0;
+}
+
+#suspend:hover {
+    border-radius: 0 30px 0 0;
+    margin: -30px -30px 0 0;
+}
+
+#hibernate:hover {
+    border-radius: 0 0 0 30px;
+    margin: 0 0 -30 -30px;
+}
+
+#shutdown:hover {
+    margin: 0 0 -30px 0;
+}
+
+#reboot:hover {
+    border-radius: 0 0 30px 0;
+    margin: 0 -30px -30px 0;
+}
+
+#lock:focus {
+    border-radius: 60px 0 0 0;
+    margin: -60px 0 0 -60px;
+}
+
+#logout:focus {
+    margin: -60px 0 0 0;
+}
+
+#suspend:focus {
+    border-radius: 0 60px 0 0;
+    margin: -60px -60px 0 0;
+}
+
+#hibernate:focus {
+    border-radius: 0 0 0 60px;
+    margin: 0 0 -60 -60px;
+}
+
+#shutdown:focus {
+    margin: 0 0 -60px 0;
+}
+
+#reboot:focus {
+    border-radius: 0 0 60px 0;
+    margin: 0 -60px -60px 0;
 }
