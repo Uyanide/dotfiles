@@ -37,7 +37,7 @@ Gathered from internet, based on <s>I don't know who</s> (such config files had 
 Not unified, combination of:
 
 -   MesloLGM Nerd Font (& Mono)
+-   Maple Mono Normal CN
 -   Font Awesome 6 Free
--   Maple Mono CN
 -   Noto Sans
 -   ...

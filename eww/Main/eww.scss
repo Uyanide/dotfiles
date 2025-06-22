@@ -22,7 +22,7 @@
 .time {
     font-weight: bold;
     font-size: 80px;
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
 .date {
@@ -53,6 +53,7 @@
 .weather-icon {
     font-family: 'MesloLGM Nerd Font';
     font-size: 60px;
+    margin-top: 5px;
 }
 
 .weather-updatetime {
@@ -235,7 +236,7 @@
 }
 
 .profile-stuff-box {
-    margin: 20px 20px 0px 20px;
+    margin: 20px 20px 20px 20px;
     background-color: $gray-alt;
     border-radius: 15px;
     padding: 15px 20px 15px 20px;

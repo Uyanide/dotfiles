@@ -1,8 +1,8 @@
 @import 'mocha.css';
 
 * {
-    font-family: 'Font Awesome 6 Free', 'Maple Mono CN ExtraLight', 'Noto Sans', Arial, sans-serif;
-    font-size: 12px; /* Slightly smaller font size */
+    font-family: 'Font Awesome 6 Free', 'Maple Mono Normal NF CN ExtraLight', 'Noto Sans', Arial, sans-serif;
+    font-size: 12px;
     font-weight: 900;
     margin: 0;
     padding: 0;

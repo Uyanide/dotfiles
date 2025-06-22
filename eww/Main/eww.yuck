@@ -46,7 +46,7 @@
       (label :class "weather-desc" :halign "start" :text weather-desc)
       (label :class "weather-temp" :halign "start" :text weather-temp)
       (label :class "weather-updatetime" :halign "start" :text weather-updatetime)
-        (label :class "weather-icon" :halign "end" :valign "end" :text weather-icon :style "color: ${weather-color}")))
+      (label :class "weather-icon" :halign "end" :valign "start" :text weather-icon :style "color: ${weather-color}")))
     (box :class "second-row" :orientation "h" :space-evenly "false"
       (box :class "stats-box" :space-evenly "false" :orientation "v" :spacing 8
         (label :class "stats-header" :halign "start" :text "Stats")
@@ -96,5 +96,5 @@
   :windowtype "normal"
   :wm-ignore true
   :monitor 0
-  :geometry (geometry :x 2 :y 0 :width 600 :height 895)
+  :geometry (geometry :x 2 :y 0)
   (main))
