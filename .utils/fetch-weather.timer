@@ -1,0 +1,10 @@
+[Unit]
+Description=Fetch weather information every hour
+Requires=fetch-weather.service
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

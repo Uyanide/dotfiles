@@ -18,11 +18,13 @@
 
 ## Hyprland & most of Hypr\* ecosystem
 
-Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags.
+Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags amd tons of other stuff.
 
 ## Eww
 
-Modified "Main Dashboard" from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
+-   **"main"**, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
+-   **"lyrics"**, dependent on api from [akashrchandran/spotify-lyrics-api](https://github.com/akashrchandran/spotify-lyrics-api) and [a small program](https://github.com/Uyanide/spotify-lyrics) from myself.
+-   weather API from [Openweather](https://openweathermap.org/), requires API Key and two systemd files in `.utils/`
 
 ## Grub theme
 
