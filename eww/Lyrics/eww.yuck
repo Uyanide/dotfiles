@@ -16,7 +16,7 @@
       )
       (box :class "control-row-1" :space-evenly "false" :orientation "h"
         (button :class "offset-reset" :onclick "Lyrics/scripts/lyric-offset.py" "󰾅")
-        (button :class "offset-clear" :onclick "spotify-lyrics clear" "󰑙")
+        (button :class "offset-clear" :onclick "Lyrics/scripts/lyric-clear.sh" "󰑙")
       )
     )
   )
