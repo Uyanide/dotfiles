@@ -1,0 +1,31 @@
+(defpoll lyriclines :interval "500ms" "Lyrics/scripts/lyric-lines.sh")
+
+(defwidget lyrics []
+  (box :class "lyrics-window" :space-evenly "false" :orientation "h"
+    (box :class "lyrics-box" :vexpand "false" :hexpand "false" :valign "center" :space-evenly "false" :orientation "v"
+      (label :class "lyrics-text"
+             :vexpand "false" :hexpand "false" :space-evenly "false"
+             :halign "start"
+             :text lyriclines
+      )
+    )
+    (box :class "control-box" :vexpand "false" :hexpand "false" :space-evenly "true" :orientation "v"
+      (box :class "control-row-1" :space-evenly "false" :orientation "h"
+        (button :class "offset-minus" :onclick "Lyrics/scripts/lyric-offset.py -500" "󰓅")
+        (button :class "offset-plus" :onclick "Lyrics/scripts/lyric-offset.py +500" "󰾆")
+      )
+      (box :class "control-row-1" :space-evenly "false" :orientation "h"
+        (button :class "offset-reset" :onclick "Lyrics/scripts/lyric-offset.py" "󰾅")
+        (button :class "offset-clear" :onclick "spotify-lyrics clear" "󰑙")
+      )
+    )
+  )
+)
+
+(defwindow lyrics
+    :windowtype "normal"
+    :wm-ignore false
+    :monitor 0
+    :geometry (geometry :anchor "top center")
+    (lyrics)
+)

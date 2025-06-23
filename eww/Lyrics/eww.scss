@@ -1,0 +1,53 @@
+* {
+    all: unset;
+    transition: 200ms ease-out;
+}
+
+.lyrics-window {
+    background-color: $bg;
+    border-radius: 16px;
+    border: 2px solid $blue;
+}
+
+.lyrics-box {
+    margin: 20px;
+    min-width: 500px;
+}
+
+.lyrics-text {
+    color: $fg;
+    font-size: 16px;
+    font-family: 'Maple Mono Normal NF CN', 'Maple Mono CN', monospace;
+}
+
+.control-box {
+    margin: 10px;
+    min-height: 90px;
+}
+
+.offset-minus,
+.offset-reset,
+.offset-plus,
+.offset-clear {
+    padding: 0px 6px;
+    margin: 0px 4px 0px 4px;
+    font-family: 'MesloLGM Nerd Font Mono';
+    font-size: 20px;
+    min-width: 16px;
+}
+
+.offset-minus {
+    color: $blue;
+}
+
+.offset-plus {
+    color: $yellow;
+}
+
+.offset-reset {
+    color: $green;
+}
+
+.offset-clear {
+    color: $red;
+}

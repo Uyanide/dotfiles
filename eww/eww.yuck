@@ -1,1 +1,2 @@
 (include "./Main/eww.yuck")
+(include "./Lyrics/eww.yuck")

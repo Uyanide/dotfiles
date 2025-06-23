@@ -34,7 +34,6 @@
 (defpoll length-info :interval "1s" "Main/scripts/player --length-info")
 (defpoll art :interval "1s" "Main/scripts/player --cover")
 
-
 ;; widgets
 (defwidget main []
   (box :class "main-window" :space-evenly "false" :orientation "v"

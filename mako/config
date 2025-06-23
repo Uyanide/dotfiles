@@ -27,3 +27,11 @@ format=<b>%s</b>\n%b
 [app-name=volume group-index=0]
 # Only show last notification
 invisible=0
+
+[app-name=spotify-lyrics]
+history=0
+group-by=app-name
+format=<b>%s</b>\n%b
+
+[app-name=spotify-lyrics group-index=0]
+invisible=0
