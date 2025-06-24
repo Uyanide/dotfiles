@@ -1,0 +1,12 @@
+# copy result to clipboard
+fzf | {clipboard manager} # e.g. wl-copy / win32yank.exe -i
+
+# do not sort results
+fzf +s
+
+# preview results in a preview window
+fzf --preview 'cat {}'
+fzf --preview 'bat --color=always {}' # for better syntax highlighting
+
+# select multiple items with tab
+fzf -m

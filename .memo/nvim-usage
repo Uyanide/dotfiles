@@ -1,0 +1,27 @@
+u           v       undo
+C-r         v       redo
+
+o           v       open new line below & insert mode
+O           v       open new line above & insert mode
+
+S-h         v       move to left buffer
+S-l         v       move to right buffer
+
+C-Enter     i       cancel auto-completion & move to next line
+
+Num j/k     v       move by num lines
+Num G       v       move to line num
+
+w           v       move to start of next word
+W           v       move to start next word, can contain punctuation
+e           v       move to end of current word
+E           v       move to end of current word, can contain punctuation
+b           v       move to start of previous word
+B           v       move to start of previous word, can contain punctuation
+ge          v       move to end of previous word
+gE          v       move to end of previous word, can contain punctuation
+
+0           v       move to start of line
+$           v       move to end of line
+
+<>+...      v       indent
