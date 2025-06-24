@@ -1,6 +1,6 @@
-<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/desktop.jpg?raw=true"/>
-<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/tiling.jpg?raw=true"/>
-<img src="https://github.com/Uyanide/dotfiles/blob/main/.chores/grub.jpg?raw=true"/>
+<img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
+<img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/tiling.jpg?raw=true"/>
+<img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
 
 ## Setup Overview
 
@@ -22,9 +22,9 @@ Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but witho
 
 ## Eww
 
--   **"main"**, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
--   **"lyrics"**, dependent on api from [akashrchandran/spotify-lyrics-api](https://github.com/akashrchandran/spotify-lyrics-api) and [a small program](https://github.com/Uyanide/spotify-lyrics) from myself.
--   weather API from [Openweather](https://openweathermap.org/), requires API Key and two systemd files in `.utils/`
+-   `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
+-   `lyrics`, scrolling lyrics player, dependents on api from [akashrchandran/spotify-lyrics-api](https://github.com/akashrchandran/spotify-lyrics-api) and [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
+-   `lyrics-single`, similars to `lyrics`, but limited to a single line and therefore fits well in statusbar.
 
 ## Grub theme
 
@@ -36,7 +36,7 @@ Gathered from internet, based on <s>I don't know who</s> (such config files had 
 
 ## Fonts
 
-Not unified, combination of:
+including:
 
 -   MesloLGM Nerd Font (& Mono)
 -   Maple Mono Normal CN

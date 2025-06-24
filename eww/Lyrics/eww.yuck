@@ -1,31 +1,64 @@
-(defpoll lyriclines :interval "500ms" "~/.local/bin/spotify-lyrics print -l 3 -f \"$HOME/.local/state/eww/lyrics/offset\" 2> temp.log")
-(deflisten lyricline "~/.local/bin/spotify-lyrics listen -l 1 -f \"$HOME/.local/state/eww/lyrics/offset\" 2> temp.log")
+(defpoll lyriclines :interval "500ms" "~/.local/bin/spotify-lyrics print -l 3 -f \"$HOME/.local/state/eww/lyrics/offset\"")
+(deflisten lyricline "~/.local/bin/spotify-lyrics listen -l 1 -f \"$HOME/.local/state/eww/lyrics/offset\"")
+(defpoll position :interval "1s" "~/.local/bin/spotify-lyrics position")
+(defpoll length :interval "1s" "~/.local/bin/spotify-lyrics length")
+(defpoll offset :interval "1s" "cat $HOME/.local/state/eww/lyrics/offset")
+(defvar hover false)
 
 (defwidget lyrics []
-  (box :class "lyrics-window" :space-evenly "false" :orientation "h"
-    (box :class "lyrics-box" :vexpand "false" :hexpand "false" :valign "center" :space-evenly "false" :orientation "v"
-      (label :class "lyrics-text"
-             :vexpand "false" :hexpand "false" :space-evenly "false"
-             :halign "start"
-             :text lyriclines
+  (box :class "lyrics-window" :space-evenly "false" :orientation "v"
+    (box :class "lyrics-container" :space-evenly "false" :orientation "h"
+      (box :class "lyrics-box" :vexpand "false" :hexpand "false" :valign "center" :space-evenly "true" :orientation "v"
+        (label :class "lyrics-text"
+               :vexpand "false" :hexpand "false" :space-evenly "false"
+               :halign "start"
+               :text lyriclines
+        )
+      )
+      (box :class "control-box" :vexpand "false" :hexpand "false" :space-evenly "true" :orientation "v"
+        (box :class "control-row-1" :space-evenly "false" :orientation "h"
+          (button :class "offset-plus" :onclick "Lyrics/scripts/lyric-offset.py +500" "󰾆")
+          (button :class "offset-minus" :onclick "Lyrics/scripts/lyric-offset.py -500" "󰓅")
+        )
+        (box :class "control-row-1" :space-evenly "false" :orientation "h"
+          (button :class "offset-reset" :onclick "Lyrics/scripts/lyric-offset.py" "󰾅")
+          (button :class "offset-clear" :onclick "Lyrics/scripts/lyric-clear.sh" "󰑙")
+        )
       )
     )
-    (box :class "control-box" :vexpand "false" :hexpand "false" :space-evenly "true" :orientation "v"
-      (box :class "control-row-1" :space-evenly "false" :orientation "h"
-        (button :class "offset-minus" :onclick "Lyrics/scripts/lyric-offset.py -500" "󰓅")
-        (button :class "offset-plus" :onclick "Lyrics/scripts/lyric-offset.py +500" "󰾆")
+    (box :class "player-controls" :space-evenly "false" :orientation "h"
+      (box :class "player-music-slider-box"
+           :vexpand "false" :hexpand "false" :valign "center" :space-evenly "false" :orientation "h"
+        (eventbox :onhover "eww update hover=true"
+                :onhoverlost "eww update hover=false"
+                :cursor "pointer"
+                :space-evenly "false"
+          (scale :orientation "h" :class "player-music-slider"
+                :min 0 :max length :value position
+                :onchange { hover ? "~/.local/bin/spotify-lyrics set-position {}" : "" })
+        )
       )
-      (box :class "control-row-1" :space-evenly "false" :orientation "h"
-        (button :class "offset-reset" :onclick "Lyrics/scripts/lyric-offset.py" "󰾅")
-        (button :class "offset-clear" :onclick "Lyrics/scripts/lyric-clear.sh" "󰑙")
+      (box :class "player-controls-box"
+           :vexpand "false" :hexpand "false" :valign "center" :space-evenly "false" :orientation "h"
+        (button :class "player-prev" :onclick "playerctl prev --player=spotify" "󰒮")
+        (button :class "player-pp" :onclick "playerctl play-pause --player=spotify" "󰏤")
+        (button :class "player-next" :onclick "playerctl next --player=spotify" "󰒭")
+        (button :class "lyrics-info" :onclick "ghostty -e '\"$HOME/.local/bin/spotify-lyrics\" fetch | less' &" "")
+      )
+      (box :class "offset-box"
+            :vexpand "false" :hexpand "true" :valign "center" :halign "center" :space-evenly "false" :orientation "h"
+          (label :class "offset-label" :text "Offset (ms): ")
+          (label :class "offset-value" :text offset)
       )
     )
   )
 )
 
 (defwidget lyrics-single []
-  (box :class "lyrics-window" :space-evenly "false" :orientation "h"
-    (box :class "lyrics-box-single" :vexpand "false" :hexpand "false" :valign "center" :space-evenly "false" :orientation "v"
+  (box :class "lyrics-window-single" :space-evenly "false" :orientation "h"
+    (box :class "lyrics-box-single"
+         :vexpand "false" :hexpand "false"
+         :valign "center" :space-evenly "false" :orientation "v"
       (label :class "lyrics-text-single"
              :vexpand "false" :hexpand "false" :space-evenly "false"
              :halign "start"
@@ -34,8 +67,10 @@
     )
     (box :class "control-box-single" :vexpand "false" :hexpand "false" :space-evenly "true" :orientation "v"
       (box :class "control-row-1-single" :space-evenly "false" :orientation "h"
-        (button :class "offset-minus-single" :onclick "Lyrics/scripts/lyric-offset.py -500" "󰓅")
+        (button :class "info-single" :onclick "ghostty -e '\"$HOME/.local/bin/spotify-lyrics\" fetch | less' &" "")
         (button :class "offset-plus-single" :onclick "Lyrics/scripts/lyric-offset.py +500" "󰾆")
+        (button :class "offset-reset-single" :onclick "Lyrics/scripts/lyric-offset.py" "󰾅")
+        (button :class "offset-minus-single" :onclick "Lyrics/scripts/lyric-offset.py -500" "󰓅")
       )
     )
   )
@@ -53,6 +88,6 @@
     :windowtype "normal"
     :wm-ignore true
     :monitor 0
-    :geometry (geometry :anchor "top right")
+    :geometry (geometry :x 1100 :y -49)
     (lyrics-single)
 )

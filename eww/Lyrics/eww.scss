@@ -9,14 +9,25 @@
     border: 2px solid $blue;
 }
 
+.lyrics-window-single {
+    background-color: rgba(30, 30, 46, 0.6);
+    border-radius: 14px;
+    border: 2px solid $blue;
+}
+
 .lyrics-box {
-    margin: 20px;
+    margin: 20px 10px 0 20px;
     min-width: 500px;
+    min-height: 70px;
+    background-color: $gray-alt;
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .lyrics-box-single {
-    margin: 10px;
-    min-width: 300px;
+    margin: 5px 0px 5px 10px;
+    min-width: 634px;
 }
 
 .lyrics-text {
@@ -27,17 +38,15 @@
 
 .lyrics-text-single {
     color: $fg;
-    font-size: 14px;
-    font-family: 'Noto Sans', sans-serif;
+    font-size: 15px;
+    font-family: 'Maple Mono Normal NF CN', 'Maple Mono CN', monospace;
+    min-height: 29px;
 }
 
 .control-box {
+    margin: 20px 10px 0 0;
     padding: 6px;
     min-height: 90px;
-}
-
-.control-box-single {
-    min-height: 40px;
 }
 
 .offset-minus,
@@ -52,7 +61,9 @@
 }
 
 .offset-minus-single,
-.offset-plus-single {
+.offset-plus-single,
+.offset-reset-single,
+.info-single {
     padding: 0px 6px;
     margin: 0;
     font-family: 'MesloLGM Nerd Font Mono';
@@ -70,10 +81,94 @@
     color: $yellow;
 }
 
-.offset-reset {
+.offset-reset,
+.offset-reset-single {
     color: $green;
 }
 
 .offset-clear {
     color: $red;
+}
+
+.info-single {
+    color: $cyan;
+}
+
+.offset-minus:hover,
+.offset-reset:hover,
+.offset-plus:hover,
+.offset-clear:hover,
+.offset-minus-single:hover,
+.offset-plus-single:hover,
+.offset-reset-single:hover,
+.lyrics-info:hover,
+.info-single:hover,
+.player-prev:hover,
+.player-next:hover,
+.player-pp:hover {
+    color: $fg;
+}
+
+.player-music-slider-box {
+    padding: 12px;
+    margin: 10px 0 20px 20px;
+    border-radius: 15px;
+    background-color: $gray-alt;
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+    min-height: 16px;
+}
+
+.player-music-slider trough {
+    background-color: $gray;
+}
+
+.player-music-slider highlight {
+    background-color: $blue;
+    padding: 3px;
+}
+
+.player-music-slider {
+    min-width: 200px;
+}
+
+.player-controls-box {
+    margin: 10px 0 20px 20px;
+}
+
+.player-pp,
+.player-next,
+.player-prev,
+.lyrics-info {
+    padding: 0px 6px;
+    margin: 0px 4px 0px 4px;
+    font-family: 'MesloLGM Nerd Font Mono';
+    font-size: 25px;
+    min-width: 16px;
+    color: $fg-alt;
+}
+
+.lyrics-info {
+    color: $cyan;
+}
+
+.offset-box {
+    padding: 11px;
+    margin: 10px 20px 20px 10px;
+    border-radius: 15px;
+    background-color: $gray-alt;
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+}
+
+.offset-label {
+    color: $fg-alt;
+    font-size: 15px;
+    font-family: 'Maple Mono Normal NF CN', 'Maple Mono CN', monospace;
+    margin-right: 10px;
+}
+
+.offset-value {
+    color: $fg;
+    font-size: 15px;
+    font-family: 'Maple Mono Normal NF CN', 'Maple Mono CN', monospace;
+    margin-right: 10px;
 }
