@@ -23,6 +23,8 @@ brightnessctl
 pamixer
 qt5ct
 qt6ct
+spicetify               # spotify tweaks
+spicetify-maketplace    # spotify themes
 
 waybar
 eww
@@ -33,8 +35,11 @@ pavucontrol
 nautilus            # file manager and file picker
 gnome-text-editor   # or kwrite, just notepad replacement
 btop                # system monitor
+activate-linux      # :/
 
+maplemonol-nf-cn
 ttf-font-awesome
+meslo font                  # I installed manually
 nwg-look                    # theme of GTK apps
 catppuccin-gtk-theme-mocha  # theme of GTK apps
 polkit-gnome                # polkit authentication agent
