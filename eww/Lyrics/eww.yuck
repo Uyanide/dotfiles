@@ -1,4 +1,5 @@
-(defpoll lyriclines :interval "500ms" "Lyrics/scripts/lyric-lines.sh")
+(defpoll lyriclines :interval "500ms" "~/.local/bin/spotify-lyrics print -l 3 -f \"$HOME/.local/state/eww/lyrics/offset\" 2> temp.log")
+(deflisten lyricline "~/.local/bin/spotify-lyrics listen -l 1 -f \"$HOME/.local/state/eww/lyrics/offset\" 2> temp.log")
 
 (defwidget lyrics []
   (box :class "lyrics-window" :space-evenly "false" :orientation "h"
@@ -22,10 +23,36 @@
   )
 )
 
+(defwidget lyrics-single []
+  (box :class "lyrics-window" :space-evenly "false" :orientation "h"
+    (box :class "lyrics-box-single" :vexpand "false" :hexpand "false" :valign "center" :space-evenly "false" :orientation "v"
+      (label :class "lyrics-text-single"
+             :vexpand "false" :hexpand "false" :space-evenly "false"
+             :halign "start"
+             :text lyricline
+      )
+    )
+    (box :class "control-box-single" :vexpand "false" :hexpand "false" :space-evenly "true" :orientation "v"
+      (box :class "control-row-1-single" :space-evenly "false" :orientation "h"
+        (button :class "offset-minus-single" :onclick "Lyrics/scripts/lyric-offset.py -500" "󰓅")
+        (button :class "offset-plus-single" :onclick "Lyrics/scripts/lyric-offset.py +500" "󰾆")
+      )
+    )
+  )
+)
+
 (defwindow lyrics
     :windowtype "normal"
-    :wm-ignore false
+    :wm-ignore true
     :monitor 0
     :geometry (geometry :anchor "top center")
     (lyrics)
+)
+
+(defwindow lyrics-single
+    :windowtype "normal"
+    :wm-ignore true
+    :monitor 0
+    :geometry (geometry :anchor "top right")
+    (lyrics-single)
 )

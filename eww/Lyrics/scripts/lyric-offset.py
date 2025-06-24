@@ -7,7 +7,7 @@ STATE_FILE_NAME = "offset"
 
 def notify_send(title, message):
     import subprocess
-    subprocess.run(["notify-send", "-a", APP_NAME, title, message], check=True)
+    subprocess.run(["notify-send", "-t", "1000", "-a", APP_NAME, title, message], check=True)
 
 
 def main():

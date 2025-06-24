@@ -14,15 +14,30 @@
     min-width: 500px;
 }
 
+.lyrics-box-single {
+    margin: 10px;
+    min-width: 300px;
+}
+
 .lyrics-text {
     color: $fg;
-    font-size: 16px;
+    font-size: 15px;
     font-family: 'Maple Mono Normal NF CN', 'Maple Mono CN', monospace;
 }
 
+.lyrics-text-single {
+    color: $fg;
+    font-size: 14px;
+    font-family: 'Noto Sans', sans-serif;
+}
+
 .control-box {
-    margin: 10px;
+    padding: 6px;
     min-height: 90px;
+}
+
+.control-box-single {
+    min-height: 40px;
 }
 
 .offset-minus,
@@ -32,15 +47,26 @@
     padding: 0px 6px;
     margin: 0px 4px 0px 4px;
     font-family: 'MesloLGM Nerd Font Mono';
+    font-size: 25px;
+    min-width: 16px;
+}
+
+.offset-minus-single,
+.offset-plus-single {
+    padding: 0px 6px;
+    margin: 0;
+    font-family: 'MesloLGM Nerd Font Mono';
     font-size: 20px;
     min-width: 16px;
 }
 
-.offset-minus {
+.offset-minus,
+.offset-minus-single {
     color: $blue;
 }
 
-.offset-plus {
+.offset-plus,
+.offset-plus-single {
     color: $yellow;
 }
 
