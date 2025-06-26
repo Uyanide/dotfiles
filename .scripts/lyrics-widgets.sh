@@ -10,8 +10,11 @@ if [ -z "$LYRICS" ] && [ -z "$LYRICS_SINGLE" ]; then
 # only lyrics is open
 elif [ -n "$LYRICS" ] && [ -z "$LYRICS_SINGLE" ]; then
     eww close lyrics
-    sleep 0.5
-    eww open lyrics-single
+    # if waybar is running, open lyrics-single
+    if pgrep -x "waybar" > /dev/null; then
+        sleep 0.5
+        eww open lyrics-single
+    fi
 
 # only lyrics-single is open
 elif [ -z "$LYRICS" ] && [ -n "$LYRICS_SINGLE" ]; then

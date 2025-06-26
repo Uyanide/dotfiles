@@ -182,14 +182,14 @@
         "min-length": 7
     },
     "backlight": {
-        "device": "intel_backlight",
+        "device": "$DISPLAY_DEVICE",
         "format": "{icon} {percent}%",
         "format-alt": "{percent}% {icon}",
         "format-alt-click": "click-right",
         //"format-icons": ["", ""],
         "format-icons": [""],
-        "on-scroll-down": "brightnessctl -d intel_backlight set 5%-",
-        "on-scroll-up": "brightnessctl -d intel_backlight set +5%",
+        "on-scroll-down": "brightnessctl -d $DISPLAY_DEVICE set 5%-",
+        "on-scroll-up": "brightnessctl -d $DISPLAY_DEVICE set +5%",
         "max-length": 7,
         "min-length": 7
     },

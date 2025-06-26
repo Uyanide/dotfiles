@@ -1,6 +1,9 @@
 #!/bin/sh
 
-killall spotify-lyrics
-sleep 0.1
-"$HOME/.local/bin/spotify-lyrics" clear
-notify-send -a "spotify-lyrics" "Cache Cleared" "The lyrics cache have been cleared."
+if [ -z $1 ]; then
+    "$HOME/.local/bin/spotify-lyrics" clear
+    notify-send -a "spotify-lyrics" "Cache Cleared" "Lyrics cache have been cleared."
+else
+    "$HOME/.local/bin/spotify-lyrics" clear "$1"
+    notify-send -a "spotify-lyrics" "Cache Cleared" "Lyrics cache for track $1 have been cleared."
+fi

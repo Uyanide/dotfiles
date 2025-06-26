@@ -7,6 +7,11 @@ function close() {
         # Wait until the processes have been shut down
         while pgrep -x waybar >/dev/null; do sleep 1; done
     fi
+
+    # Also close the lyrics widget if open
+    if eww active-windows | grep -q "lyrics-single"; then
+        eww close lyrics-single
+    fi
 }
 
 function open() {

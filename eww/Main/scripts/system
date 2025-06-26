@@ -51,7 +51,11 @@ get_vol() {
 
 ## Get Brightness
 get_brightness() {
-	brightnessctl i --machine-readable -d intel_backlight | tr ',' ' ' | awk '{print $4}' | tr -d '%'
+	if [ -z "$DISPLAY_DEVICE" ]; then
+		brightnessctl i --machine-readable | tr ',' ' ' | awk '{print $4}' | tr -d '%'
+	else
+		brightnessctl i -d $DISPLAY_DEVICE --machine-readable | tr ',' ' ' | awk '{print $4}' | tr -d '%'
+	fi
 }
 
 ## Execute accordingly

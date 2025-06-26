@@ -142,7 +142,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     min-width: 455px;
-    min-height: 200px;
+    min-height: 240px;
     border-radius: 17px;
     background-position: center;
     margin: 20px 0px 0px 20px;
@@ -170,9 +170,9 @@
 }
 
 .music-stuff-box {
-    min-height: 200px;
     border-radius: 15px;
     background: linear-gradient(to right, $bg-alt, transparent);
+    min-height: 240px;
 }
 
 .player-cover-box {
@@ -213,7 +213,7 @@
 
 .cavabar {
     font-size: 14px;
-    color: $lavender;
+    color: $blue;
 }
 
 .music-controls-box {

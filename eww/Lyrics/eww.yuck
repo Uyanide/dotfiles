@@ -3,7 +3,8 @@
 (defpoll position :interval "1s" "~/.local/bin/spotify-lyrics position")
 (defpoll length :interval "1s" "~/.local/bin/spotify-lyrics length")
 (defpoll offset :interval "1s" "cat $HOME/.local/state/eww/lyrics/offset")
-(defpoll play-button :interval "1s" "if ~/.local/bin/spotify-lyrics status; then echo \"󰏤\"; else echo \"󰐊\"; fi")(defvar hover false)
+(defpoll play-button :interval "1s" "if ~/.local/bin/spotify-lyrics status; then echo \"󰏤\"; else echo \"󰐊\"; fi")
+(defvar hover false)
 
 (defwidget lyrics []
   (box :class "lyrics-window" :space-evenly "false" :orientation "v"
@@ -22,7 +23,7 @@
         )
         (box :class "control-row-1" :space-evenly "false" :orientation "h"
           (button :class "offset-reset" :onclick "Lyrics/scripts/lyric-offset.py" "󰾅")
-          (button :class "offset-clear" :onclick "Lyrics/scripts/lyric-clear.sh" "󰑙")
+          (button :class "offset-clear" :onclick "Lyrics/scripts/lyric-clear.sh $(~/.local/bin/spotify-lyrics trackid)" "󰑙")
         )
       )
     )

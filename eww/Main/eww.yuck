@@ -1,6 +1,6 @@
 ;; variables
 (defvar window false)
-(defpoll time :interval "1s" "date '+%I %M'")
+(defpoll time :interval "1s" "date '+%H %M'")
 (defpoll date :interval "1s" "date '+%A, %B %d'")
 (deflisten notifications-cards "Main/scripts/logger.zsh subscribe")
 (defpoll notifications-crits :interval "1s" "Main/scripts/logger.zsh crits")
@@ -24,6 +24,7 @@
 (defpoll music-pp :interval "1s" "Main/scripts/music-title --icon")
 (defpoll music-artist :interval "1s" "Main/scripts/music-artist")
 (defpoll music-art :interval "1s" "Main/scripts/music-art")
+(defpoll music-art-blur :interval "1s" "Main/scripts/music-art --blur")
 (defpoll volume :interval "1s" "Main/scripts/system --vol")
 (defpoll brightness :interval "1s" "Main/scripts/system --bri")
 (defpoll fortune :interval "1h" "Main/scripts/fortune-split 32 9")
@@ -32,7 +33,8 @@
 (defpoll artist :interval "1s" "Main/scripts/player --artist")
 (defpoll album :interval "1s" "Main/scripts/player --album")
 (defpoll length-info :interval "1s" "Main/scripts/player --length-info")
-(defpoll art :interval "1s" "Main/scripts/player --cover")
+(defvar volume-hover false)
+(defvar brightness-hover false)
 
 ;; widgets
 (defwidget main []
@@ -51,10 +53,27 @@
         (label :class "stats-header" :halign "start" :text "Stats")
         (box :class "volume-stats" :hexpand "false" :vexpand "false" :space-evenly "false"
           (label :tooltip "${volume}%" :class "volume-icon" :text "󰕾")
-          (scale :min 0 :max 101 :active false :value {volume == "" ? 0 : volume} :class "volume-scale" :width 150))
+          (eventbox :class "volume-eventbox"
+                    :onhover "eww update volume-hover=true"
+                    :onhoverlost "eww update volume-hover=false"
+                    :cursor "pointer"
+                    :space-evenly "false"
+            (scale :min 0 :max 101 :class "volume-scale" :width 150
+                   :value {volume == "" ? 0 : volume}
+                   :round-digits 0
+                   :onchange { volume-hover ? "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ {}%" : "" }
+                  )))
         (box :class "brightness-stats" :hexpand "false" :vexpand "false" :space-evenly "false"
           (label :tooltip "${brightness}%" :class "brightness-icon" :text "󰃠")
-          (scale :min 0 :max 101 :active false :value {brightness == "" ? 0 : brightness} :class "brightness-scale" :width 150))
+          (eventbox :class "brightness-eventbox"
+                    :onhover "eww update brightness-hover=true"
+                    :onhoverlost "eww update brightness-hover=false"
+                    :cursor "pointer"
+                    :space-evenly "false"
+            (scale :min 0 :max 101 :class "brightness-scale" :width 150
+                   :value {brightness == "" ? 0 : brightness}
+                   :round-digits 0
+                   :onchange { brightness-hover ? "brightnessctl set {}\% -d $DISPLAY_DEVICE" : "" })))
         (box :class "cpu-stats" :hexpand "false" :vexpand "false" :space-evenly "false"
           (label :tooltip "${cpu}%" :class "cpu-icon" :text "󰘚")
           (scale :min 0 :max 101 :active false :value {cpu == "" ? 0 : cpu} :class "cpu-scale" :width 150))
@@ -65,7 +84,7 @@
         (label :class "fortune-header" :halign "start" :text "Fortune")
         (label :class "fortune-text" :halign "start" :text fortune :show-truncated true :wrap true)))
     (box :class "third-row" :orientation "h" :space-evenly "false"
-      (box :class "music-art-box" :space-evenly "false" :orientation "v" :hexpand "false" :vexpand "false" :style "background-image: url(\"${music-art}\");"
+      (box :class "music-art-box" :space-evenly "false" :orientation "v" :hexpand "false" :vexpand "false" :style "background-image: url(\"${music-art-blur}\");"
         (box :class "music-stuff-box" :space-evenly "false" :hexpand "false" :vexpand "false" :orientation "v"
           (box :class "player-box" :hexpand "false" :vexpand "false" :space-evenly "true"
             (box :class "player-info-box" :hexpand "false" :vexpand "false" :space-evenly "false" :orientation "v" :spacing 15
@@ -73,12 +92,10 @@
               (label :class "player-info-artist" :text "󰠃  Artist: ${artist}" :halign "start" :limit-width 30 :tooltip "${artist}")
               (label :class "player-info-album" :text "󰀥  Album: ${album}" :halign "start" :limit-width 30 :tooltip "${album}")
               (label :class "player-info-length" :text "󰦚  Length: ${length-info}" :halign "start" :tooltip "${length-info}"))
-            (box :class "player-cover-box" :hexpand "false" :halign "end" :vexpand "false" :space-evenly "false" :style "background-image: url('${art}');"))
-          (box :class "cava-box" :hexpand "false" :vexpand "false"
-            (label :vexpand "false" :hexpand "false" :space-evenly "false"
-            :class "cavabar"
-            :text cava
-            ))))
+            (box :class "player-cover-box" :hexpand "false" :halign "end" :vexpand "false" :space-evenly "false" :style "background-image: url(\"${music-art}\");"))
+          (label :vexpand "true" :hexpand "false" :space-evenly "false" :valign "end"
+          :class "cavabar"
+          :text cava)))
       (box :class "music-controls-box" :space-evenly "true" :hexpand "true" :vexpand "false" :orientation "v"
         (button :class "music-previous" :halign "center" :onclick "playerctl previous" "󰒮")
         (button :class "music-pp" :halign "center" :onclick "playerctl play-pause" "${music-pp}")

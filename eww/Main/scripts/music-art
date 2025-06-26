@@ -1,8 +1,11 @@
 #!/bin/bash
 
 tmp_dir="$HOME/.config/eww/Main/images"
-tmp_cover_path=$tmp_dir/cover.png
 tmp_temp_path=$tmp_dir/temp.png
+tmp_blur_path="$tmp_dir/temp-blur.png"
+cache_path="$tmp_dir/temp.txt"
+default_path="$tmp_dir/default-music.svg"
+default_blur_path="$tmp_dir/default-music-blur.png"
 
 if [ ! -d $tmp_dir ]; then
 	mkdir -p $tmp_dir
@@ -10,13 +13,34 @@ fi
 
 artlink="$(playerctl -p spotify,$any,mpd,firefox,chromium,brave metadata mpris:artUrl | sed -e 's/open.spotify.com/i.scdn.co/g')"
 artFromBrowser=$(playerctl metadata mpris:artUrl | sed 's/file:\/\///g')
+cached=$(cat $cache_path 2>/dev/null)
 
 if [ $(playerctl -p spotify,%any,firefox,chromium,brave,mpd metadata mpris:artUrl) ]; then
-	curl -s "$artlink" --output $tmp_temp_path
-	echo $tmp_temp_path
+    # avoid unnecessary downloads
+	if [[ $cached != $artlink ]]; then
+		echo $artlink > $cache_path
+		curl -s "$artlink" --output $tmp_temp_path
+		outputUrl=$tmp_temp_path
+		magick $tmp_temp_path -blur 0x8 $tmp_blur_path
+	else
+		outputUrl=$cached
+	fi
 elif [[ -n $artFromBrowser ]]; then
-	cp $artFromBrowser $tmp_temp_path
-	echo $tmp_temp_path
+	if [[ §cached != $artFromBrowser ]]; then
+		echo $artFromBrowser > $cache_path
+		cp $artFromBrowser $tmp_temp_path
+		magick $tmp_temp_path -blur 0x8 $tmp_blur_path
+		outputUrl=$tmp_temp_path
+	else
+		outputUrl=$cached
+	fi
 else
-	echo Main/images/default-music.svg
+	outputUrl=$default_path
+	tmp_blur_path=$default_blur_path
+fi
+
+if [[ $1 == "--blur" ]]; then
+	echo $tmp_blur_path
+else
+	echo $outputUrl
 fi

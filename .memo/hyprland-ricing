@@ -1,5 +1,14 @@
-things installed:
+things I have installed:
 
+full KDE Plasma 6 setup     # not essential for sure
+    which can provide:
+        SDDM theme          # Breeze is enough
+        kcalc/kalc          # calculator(s)
+        kcolorchooser       # works smoothly on hyprland
+        pipewire & friends
+        ...
+
+# hypr*
 hyprland
 hyprpaper
 hypridle
@@ -8,10 +17,17 @@ hyprshot
 hyprlicker                  # kcolorchooser also works though
 hyprland-plugin-hyprexpo    # scale workspaces and put them in a grid
 
+# xdg-desktop-portal*
+xdg-desktop-portal
 xdg-desktop-portal-hyprland # not working with my Intel iGPU, but fine with NVIDIA dGPU
 xdg-desktop-portal-gnome    # not necessary maybe, but just in case
 xdg-desktop-portal-gtk      # required by nautilus for file picker
 
+# terminal emulator(s)
+kitty       # normal terminal
+ghostty     # floating terminal, for btop for example#
+
+# under surface
 mako                    # notification daemon
 gnome-keyring           # --password-store=gnome-libsecret
 wl-clipboard
@@ -20,32 +36,35 @@ network-manager-applet  # nm-applet
 slurp                   # region selector
 wf-recorder             # screen recorder
 brightnessctl
+playerctl
 pamixer
 qt5ct
 qt6ct
-spicetify               # spotify tweaks
-spicetify-maketplace    # spotify themes
 
+# GUI
 waybar
 eww
 wlogout
 fuzzel
+mpv
 blueman             # bluetooth GUI & applet
 pavucontrol
 nautilus            # file manager and file picker
+sushi               # "Quicklook" for nautilus
 gnome-text-editor   # or kwrite, just notepad replacement
 btop                # system monitor
 activate-linux      # :/
+polkit-gnome        # polkit authentication agent
 
+# fonts & themes
 maplemonol-nf-cn
 ttf-font-awesome
-meslo font                  # I installed manually
+meslo font                  # I installed it manually
+spicetify                   # spotify tweaks
+spicetify-maketplace        # spotify themes
 nwg-look                    # theme of GTK apps
 catppuccin-gtk-theme-mocha  # theme of GTK apps
-polkit-gnome                # polkit authentication agent
 
-kitty       # normal terminal
-ghostty     # floating terminal, for btop for example#
-
+# utils
 bc
 jq
