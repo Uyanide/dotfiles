@@ -11,7 +11,7 @@
 -   **Prompt**: Oh My Posh
 -   **Terminal**: Kitty & Ghostty (floating)
 -   **Colorscheme**: Catppuccin-mocha(-blue)
--   **App Launcher**: Fuzzel
+-   **App Launcher**: Rofi
 -   **Logout Screen**: Wlogout
 -   **Desktop Widgets**: Eww
 -   **Notification Daemon**: Mako
@@ -24,7 +24,11 @@ Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but witho
 
 -   `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
 -   `lyrics`, scrolling lyrics player, dependents on api from [akashrchandran/spotify-lyrics-api](https://github.com/akashrchandran/spotify-lyrics-api) and [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
--   `lyrics-single`, similar to `lyrics`, but limited to a single line and therefore fits well in statusbars.
+-   `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
+
+## Rofi
+
+Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serves as cliphist browser and emojis picker.
 
 ## Grub theme
 
