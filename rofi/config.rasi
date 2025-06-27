@@ -1,10 +1,12 @@
 /*****----- ALL -----*****/
 * {
-    font: "Maple Mono Normal NF CN Bold 12";
-    bg: #1e1e2e;
-    bg-alt: #181825;
-    fg: #cdd6f4;
-    fg-alt: #a6adc8;
+    font: "Maple Mono Normal NF CN Semibold 12";
+    base: #1e1e2e;
+    mantle: #181825;
+    text: #cdd6f4;
+    subtext0: #a6adc8;
+    surface2: #585b70;
+    surface: #292a3c;
     red: #f38ba8;
     green: #a6e3a1;
     yellow: #f9e2af;
@@ -12,12 +14,11 @@
     blue: #89b4fa;
     purple: #cba6f7;
     cyan: #89dceb;
-    gray: #585b70;
-    gray-alt: #292a3c;
     lavender: #b4befe;
     sapphire: #74c7ec;
     teal: #94e2d5;
     peach: #fab387;
+    search: rgba(49, 50, 68, 0.5); // alpha(@surface, 0.5)
 }
 
 
@@ -52,7 +53,7 @@ window {
     border-radius:               24px;
     border-color:                @blue;
     cursor:                      "default";
-    background-color:            @bg;
+    background-color:            @base;
 }
 
 /*****----- Main Box -----*****/
@@ -72,8 +73,8 @@ inputbar {
     padding:                     100px 40px;
     border-radius:               14px 14px 0 0;
     background-color:            transparent;
-    background-image:            url("~/.config/backgrounds/gdd-street.jpg", width);
-    text-color:                  @fg;
+    background-image:            url("~/.config/backgrounds/nao-stars-crop-adjust-flop.jpg", width);
+    text-color:                  @text;
     children:                    [ "textbox-prompt-colon", "entry" ];
 }
 
@@ -87,7 +88,7 @@ textbox-prompt-colon {
     padding:                     12px 15px;
     expand:                      false;
     str:                         " ";
-    background-color:            rgba(30, 30, 36, 0.6);
+    background-color:            @search;
     border-radius:               14px;
     text-color:                  inherit;
 }
@@ -96,7 +97,7 @@ entry {
     padding:                     12px 16px;
     text-color:                  inherit;
     cursor:                      text;
-    background-color:            rgba(30, 30, 36, 0.6);
+    background-color:            @search;
     border-radius:               14px;
     placeholder:                 "Search...";
     placeholder-color:           inherit;
@@ -109,7 +110,7 @@ listview {
     lines:                       6;
     cycle:                       true;
     dynamic:                     true;
-    scrollbar:                   false;
+    scrollbar:                   true;
     layout:                      vertical;
     reverse:                     false;
     fixed-height:                true;
@@ -117,15 +118,15 @@ listview {
 
     padding:                     14px;
     spacing:                     5px;
-    background-color:            @gray-alt;
-    text-color:                  @fg;
+    background-color:            @surface;
+    text-color:                  @text;
     cursor:                      "default";
 }
 scrollbar {
     handle-width:                5px ;
     handle-color:                @blue;
     border-radius:               10px;
-    background-color:            @bg-alt;
+    background-color:            @mantle;
 }
 
 /*****----- Elements -----*****/
@@ -136,30 +137,30 @@ element {
     padding:                     6px;
     border-radius:               0px;
     background-color:            transparent;
-    text-color:                  @fg;
+    text-color:                  @text;
     cursor:                      pointer;
 }
 element normal.normal,
 element alternate.normal {
     background-color:            transparent;
-    text-color:                  @fg;
+    text-color:                  @text;
 }
 element normal.urgent,
 element alternate.urgent,
 element selected.active {
     background-color:            @blue;
-    text-color:                  @bg;
+    text-color:                  @base;
     border-radius:               10px;
 }
 element normal.active,
 element alternate.active,
 element selected.urgent {
     background-color:            @red;
-    text-color:                  @bg;
+    text-color:                  @base;
 }
 element selected.normal {
-    background-color:            @gray;
-    text-color:                  @fg;
+    background-color:            @surface2;
+    text-color:                  @text;
     border-radius:               10px;
 }
 element-icon {
@@ -184,17 +185,17 @@ mode-switcher{
     margin:                      0px;
     padding:                     0px;
     background-color:            transparent;
-    text-color:                  @fg;
+    text-color:                  @text;
 }
 button {
     padding:                     10px;
     border-radius:               10px;
-    background-color:            @bg;
+    background-color:            @base;
     text-color:                  inherit;
     cursor:                      pointer;
 }
 button selected {
-    background-color:            @gray-alt;
+    background-color:            @surface;
     text-color:                  @blue;
     border-radius:               0 0 14px 14px;
     border-color:		         @blue;
@@ -206,21 +207,21 @@ message {
     margin:                      0px;
     padding:                     10px;
     border-radius:               0px;
-    background-color:            @bg-alt;
-    text-color:                  @fg;
+    background-color:            @mantle;
+    text-color:                  @text;
 }
 textbox {
     background-color:            transparent;
-    text-color:                  @fg;
+    text-color:                  @text;
     vertical-align:              0.5;
     horizontal-align:            0.0;
     highlight:                   none;
-    placeholder-color:           @fg;
+    placeholder-color:           @text;
     blink:                       true;
     markup:                      true;
 }
 error-message {
     padding:                     30px;
-    background-color:            @bg;
-    text-color:                  @fg;
+    background-color:            @base;
+    text-color:                  @text;
 }
