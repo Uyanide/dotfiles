@@ -1,4 +1,4 @@
-(defpoll lyriclines :interval "500ms" "~/.local/bin/spotify-lyrics print -l 3 -f \"$HOME/.local/state/eww/lyrics/offset\"")
+(defpoll lyriclines :interval "500ms" "~/.local/bin/spotify-lyrics print -l 3 -a 1 -f \"$HOME/.local/state/eww/lyrics/offset\" | Lyrics/scripts/colorize.sh 2")
 (deflisten lyricline "~/.local/bin/spotify-lyrics listen -l 1 -f \"$HOME/.local/state/eww/lyrics/offset\"")
 (defpoll position :interval "1s" "~/.local/bin/spotify-lyrics position")
 (defpoll length :interval "1s" "~/.local/bin/spotify-lyrics length")
@@ -13,7 +13,8 @@
         (label :class "lyrics-text"
                :vexpand "false" :hexpand "false" :space-evenly "false"
                :halign "start"
-               :text lyriclines
+               :unindent "false" :truncate "false" :truncate-left "false"
+               :markup lyriclines
         )
       )
       (box :class "control-box" :vexpand "false" :hexpand "false" :space-evenly "true" :orientation "v"

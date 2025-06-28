@@ -1,6 +1,6 @@
 /*****----- ALL -----*****/
 * {
-    font: "Maple Mono Normal NF CN Semibold 12";
+    font: "Maple Mono Normal NF CN Semibold 10";
     base: #1e1e2e;
     mantle: #181825;
     text: #cdd6f4;
@@ -41,7 +41,7 @@ window {
     location:                    center;
     anchor:                      center;
     fullscreen:                  false;
-    width:                       720px;
+    width:                       600px;
     x-offset:                    0px;
     y-offset:                    0px;
 
@@ -70,7 +70,7 @@ mainbox {
 inputbar {
     enabled:                     true;
     spacing:                     0px;
-    padding:                     100px 40px;
+    padding:                     75px 30px;
     border-radius:               14px 14px 0 0;
     background-color:            transparent;
     background-image:            url("~/.config/backgrounds/nao-stars-crop-adjust-flop.jpg", width);

@@ -5,12 +5,12 @@ configuration {
 }
 
 window {
-    width:                      500px;
+    width:                      450px;
     children:                   [ "inputbar", "message", "listview" ];
 }
 
 inputbar {
-    padding:                    80px 40px;
+    padding:                    60px 30px;
 }
 
 listview {

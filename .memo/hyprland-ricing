@@ -45,7 +45,7 @@ qt6ct
 waybar
 eww
 wlogout
-fuzzel
+rofi(-wayland)
 mpv
 blueman             # bluetooth GUI & applet
 pavucontrol
