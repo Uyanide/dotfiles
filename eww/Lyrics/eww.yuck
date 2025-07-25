@@ -42,10 +42,10 @@
       )
       (box :class "player-controls-box"
            :vexpand "false" :hexpand "false" :valign "center" :space-evenly "false" :orientation "h"
-        (button :class "player-prev" :onclick "playerctl prev --player=spotify" "󰒮")
+        (button :class "player-prev" :onclick "playerctl previous --player=spotify" "󰒮")
         (button :class "player-pp" :onclick "playerctl play-pause --player=spotify" "${play-button}")
         (button :class "player-next" :onclick "playerctl next --player=spotify" "󰒭")
-        (button :class "lyrics-info" :onclick "ghostty -e '\"$HOME/.local/bin/spotify-lyrics\" fetch -p | less' &" "")
+        (button :class "lyrics-info" :onclick "ghostty -e '\"$HOME/.local/bin/spotify-lyrics\" fetch | less' &" "")
       )
       (box :class "offset-box"
             :vexpand "false" :hexpand "true" :valign "center" :halign "center" :space-evenly "false" :orientation "h"
@@ -69,7 +69,7 @@
     )
     (box :class "control-box-single" :vexpand "false" :hexpand "false" :space-evenly "true" :orientation "v"
       (box :class "control-row-1-single" :space-evenly "false" :orientation "h"
-        (button :class "info-single" :onclick "ghostty -e '\"$HOME/.local/bin/spotify-lyrics\" fetch -p | less' &" "")
+        (button :class "info-single" :onclick "ghostty -e '\"$HOME/.local/bin/spotify-lyrics\" fetch | less' &" "")
         (button :class "offset-plus-single" :onclick "Lyrics/scripts/lyric-offset.py +500" "󰾆")
         (button :class "offset-reset-single" :onclick "Lyrics/scripts/lyric-offset.py" "󰾅")
         (button :class "offset-minus-single" :onclick "Lyrics/scripts/lyric-offset.py -500" "󰓅")
