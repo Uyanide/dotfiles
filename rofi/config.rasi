@@ -1,6 +1,6 @@
 /*****----- ALL -----*****/
 * {
-    font: "Maple Mono Normal NF CN Semibold 10";
+    font: "Maple Mono NF CN Semibold 10";
     base: #1e1e2e;
     mantle: #181825;
     text: #cdd6f4;

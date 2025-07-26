@@ -4,17 +4,17 @@
 
 ## Setup Overview
 
--   **OS**: Archlinux
--   **WM**: Hyprland
--   **Bar**: Waybar
--   **Shell**: Fish
--   **Prompt**: Oh My Posh
--   **Terminal**: Kitty & Ghostty (floating)
--   **Colorscheme**: Catppuccin-mocha(-blue)
--   **App Launcher**: Rofi
--   **Logout Screen**: Wlogout
--   **Desktop Widgets**: Eww
--   **Notification Daemon**: Mako
+- **OS**: Archlinux
+- **WM**: Hyprland
+- **Bar**: Waybar
+- **Shell**: Fish
+- **Prompt**: Oh My Posh
+- **Terminal**: Kitty & Ghostty (floating)
+- **Colorscheme**: Catppuccin-mocha(-blue)
+- **App Launcher**: Rofi
+- **Logout Screen**: Wlogout
+- **Desktop Widgets**: Eww
+- **Notification Daemon**: Mako
 
 ## Hyprland & most of Hypr\* ecosystem
 
@@ -22,9 +22,9 @@ Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but witho
 
 ## Eww
 
--   `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
--   `lyrics`, scrolling lyrics player, dependents on api from [akashrchandran/spotify-lyrics-api](https://github.com/akashrchandran/spotify-lyrics-api) and [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
--   `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
+- `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
+- `lyrics`, scrolling lyrics player, dependents on api from [akashrchandran/spotify-lyrics-api](https://github.com/akashrchandran/spotify-lyrics-api) and [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
+- `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
 
 ## Rofi
 
@@ -42,8 +42,8 @@ Gathered from internet, based on <s>I don't know who</s> (such config files had 
 
 including:
 
--   MesloLGM Nerd Font (& Mono)
--   Maple Mono Normal CN
--   Font Awesome 6 Free
--   Noto Sans
--   ...
+- MesloLGM Nerd Font (& Mono)
+- Maple Mono NF CN
+- Font Awesome 6 Free
+- Noto Sans
+- ...

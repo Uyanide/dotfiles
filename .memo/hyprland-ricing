@@ -57,7 +57,7 @@ activate-linux      # :/
 polkit-gnome        # polkit authentication agent
 
 # fonts & themes
-maplemonol-nf-cn
+maplemono-nf-cn
 ttf-font-awesome
 meslo font                  # I installed it manually
 spicetify                   # spotify tweaks

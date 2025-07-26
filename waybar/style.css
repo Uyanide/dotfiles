@@ -1,102 +1,102 @@
 @import 'mocha.css';
 
 * {
-    font-family: 'Font Awesome 6 Free', 'Maple Mono Normal NF CN ExtraLight', 'Noto Sans', Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 900;
-    margin: 0;
-    padding: 0;
-    transition-property: background-color;
-    transition-duration: 0.5s;
+  font-family: 'Font Awesome 6 Free', 'Maple Mono NF CN ExtraLight', 'Noto Sans', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  margin: 0;
+  padding: 0;
+  transition-property: background-color;
+  transition-duration: 0.5s;
 }
 
 /* Reset all styles */
 * {
-    border: none;
-    border-radius: 3px;
-    min-height: 0;
-    margin: 2px 1px 2px 1px;
+  border: none;
+  border-radius: 3px;
+  min-height: 0;
+  margin: 2px 1px 2px 1px;
 }
 
 /* The whole bar */
 #waybar {
-    background-color: transparent;
-    color: #ffffff;
-    transition-property: background-color;
-    transition-duration: 0.5s;
-    border-radius: 0px;
-    margin: 0px;
+  background-color: transparent;
+  color: #ffffff;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  border-radius: 0px;
+  margin: 0px;
 }
 
 window#waybar.hidden {
-    opacity: 0.2;
+  opacity: 0.2;
 }
 
 tooltip {
-    background: @base;
-    border: 2px solid @overlay0;
+  background: @base;
+  border: 2px solid @overlay0;
 }
 
 #custom-workspacenew,
 #workspaces button {
-    padding: 3px 5px; /* Adjusted padding to reduce height */
-    margin: 3px 5px; /* Reduced margin slightly */
-    border-radius: 6px;
-    color: @foreground;
-    background-color: alpha(@base, 0);
-    transition: all 0.3s ease-in-out;
-    font-size: 13px; /* Slightly smaller font size */
+  padding: 3px 5px; /* Adjusted padding to reduce height */
+  margin: 3px 5px; /* Reduced margin slightly */
+  border-radius: 6px;
+  color: @foreground;
+  background-color: alpha(@base, 0);
+  transition: all 0.3s ease-in-out;
+  font-size: 13px; /* Slightly smaller font size */
 }
 
 #workspaces button:hover {
-    background: @surface0;
+  background: @surface0;
 }
 
 #workspaces button.active {
-    color: @foreground;
-    background: @blue;
+  color: @foreground;
+  background: @blue;
 }
 
 #workspaces button.urgent {
-    background-color: @red;
+  background-color: @red;
 }
 
 #workspaceactions {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 3px 6px; /* Adjusted padding to reduce height */
-    border: 2px solid @blue;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 3px 6px; /* Adjusted padding to reduce height */
+  border: 2px solid @blue;
 }
 
 #workspaces {
-    padding: 0px;
-    margin: 0px;
+  padding: 0px;
+  margin: 0px;
 }
 
 #custom-workspacenew:hover {
-    background-color: alpha(@blue, 0.3);
+  background-color: alpha(@blue, 0.3);
 }
 
 #custom-workspacespecial:hover {
-    background-color: alpha(@blue, 0.3);
+  background-color: alpha(@blue, 0.3);
 }
 
 #window {
-    background-color: alpha(@base, 0.6);
-    font-size: 15px; /* Slightly smaller font size */
-    font-weight: 800;
-    color: @subtext1;
-    border-radius: 14px;
-    padding: 3px 6px; /* Reduced padding */
-    margin: 2px;
-    opacity: 1;
+  background-color: alpha(@base, 0.6);
+  font-size: 15px; /* Slightly smaller font size */
+  font-weight: 800;
+  color: @subtext1;
+  border-radius: 14px;
+  padding: 3px 6px; /* Reduced padding */
+  margin: 2px;
+  opacity: 1;
 }
 
 #custom-mediaplayer {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 3px 12px;
-    color: @lavender;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 3px 12px;
+  color: @lavender;
 }
 
 #clock,
@@ -128,276 +128,276 @@ tooltip {
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight,
 #custom-weather.default {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px; /* Adjusted padding */
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px; /* Adjusted padding */
 }
 
 #monitors {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px;
 }
 
 #network.speed {
-    background: transparent;
-    color: @lavender;
-    padding: 0;
+  background: transparent;
+  color: @lavender;
+  padding: 0;
 }
 
 #temperature {
-    background: transparent;
-    color: @maroon;
-    padding: 0px;
+  background: transparent;
+  color: @maroon;
+  padding: 0px;
 }
 
 #memory {
-    color: @peach;
-    background: transparent;
-    padding: 0px;
+  color: @peach;
+  background: transparent;
+  padding: 0px;
 }
 
 #cpu {
-    color: @yellow;
-    background: transparent;
-    padding: 0px;
+  color: @yellow;
+  background: transparent;
+  padding: 0px;
 }
 
 #battery {
-    background: transparent;
-    color: #c0caf5;
-    padding: 0;
+  background: transparent;
+  color: #c0caf5;
+  padding: 0;
 }
 
 #battery.charging,
 #battery.full,
 #battery.plugged {
-    color: @green;
+  color: @green;
 }
 
 #backlight {
-    background: transparent;
-    color: @teal;
-    padding: 0;
+  background: transparent;
+  color: @teal;
+  padding: 0;
 }
 
 #wireplumber {
-    background: transparent;
-    color: @sapphire;
-    padding: 0;
+  background: transparent;
+  color: @sapphire;
+  padding: 0;
 }
 
 #custom-screenshot_t {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px;
 }
 
 #custom-spotify {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 3px 12px;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 3px 12px;
 }
 
 #tray {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px; /* Adjusted padding */
-    border: 2px solid @blue;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px; /* Adjusted padding */
+  border: 2px solid @blue;
 }
 
 #custom-power {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px;
-    border: 3px solid @maroon;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px;
+  border: 3px solid @maroon;
 }
 
 #custom-power:hover {
-    background-color: alpha(@maroon, 0.3);
+  background-color: alpha(@maroon, 0.3);
 }
 
 #custom-rofi {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px;
-    border: 3px solid @teal;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px;
+  border: 3px solid @teal;
 }
 
 #custom-rofi:hover {
-    background-color: alpha(@teal, 0.3);
+  background-color: alpha(@teal, 0.3);
 }
 
 #custom-caffeine {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px;
-    border: 3px solid @yellow;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px;
+  border: 3px solid @yellow;
 }
 
 #custom-caffeine:hover {
-    background-color: alpha(@yellow, 0.3);
+  background-color: alpha(@yellow, 0.3);
 }
 
 #custom-caffeine.active {
-    border: 3px solid @peach;
+  border: 3px solid @peach;
 }
 
 #custom-storage {
-    background-color: alpha(@base, 0.6);
-    border-radius: 14px;
-    padding: 6px;
+  background-color: alpha(@base, 0.6);
+  border-radius: 14px;
+  padding: 6px;
 }
 
 #custom-launcher {
-    background-color: #1b242b;
-    color: #6a92d7;
-    border-radius: 7.5px;
-    padding: 3px 6px; /* Adjusted padding */
+  background-color: #1b242b;
+  color: #6a92d7;
+  border-radius: 7.5px;
+  padding: 3px 6px; /* Adjusted padding */
 }
 
 #custom-weather.severe {
-    color: #eb937d;
+  color: #eb937d;
 }
 
 #custom-weather.sunnyDay {
-    color: #c2ca76;
+  color: #c2ca76;
 }
 
 #custom-weather.clearNight {
-    color: #cad3f5;
+  color: #cad3f5;
 }
 
 #custom-weather.cloudyFoggyDay,
 #custom-weather.cloudyFoggyNight {
-    color: #c2ddda;
+  color: #c2ddda;
 }
 
 #custom-weather.rainyDay,
 #custom-weather.rainyNight {
-    color: #5aaca5;
+  color: #5aaca5;
 }
 
 #custom-weather.showyIcyDay,
 #custom-weather.snowyIcyNight {
-    color: #d6e7e5;
+  color: #d6e7e5;
 }
 
 #custom-weather.default {
-    color: #dbd9d8;
+  color: #dbd9d8;
 }
 
 /* If workspaces is the leftmost module, omit left margin */
 .modules-left > widget:first-child > #workspaces {
-    margin-left: 0;
+  margin-left: 0;
 }
 
 /* If workspaces is the rightmost module, omit right margin */
 .modules-right > widget:last-child > #workspaces {
-    margin-right: 0;
+  margin-right: 0;
 }
 
 #pulseaudio {
-    color: #7d9bba;
+  color: #7d9bba;
 }
 
 #clock {
-    color: #c8d2e0;
-    border: 2px solid @blue;
+  color: #c8d2e0;
+  border: 2px solid @blue;
 }
 
 @keyframes blink {
-    to {
-        background-color: rgba(30, 34, 42, 0.5);
-        color: #abb2bf;
-    }
+  to {
+    background-color: rgba(30, 34, 42, 0.5);
+    color: #abb2bf;
+  }
 }
 
 #battery.critical:not(.charging) {
-    color: @red;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+  color: @red;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
 
 label:focus {
-    background-color: #000000;
+  background-color: #000000;
 }
 
 #disk {
-    background-color: #964b00;
+  background-color: #964b00;
 }
 
 #bluetooth {
-    color: @sapphire;
+  color: @sapphire;
 }
 
 #bluetooth.disconnected {
-    color: @red;
+  color: @red;
 }
 
 #network.disconnected {
-    color: @red;
+  color: @red;
 }
 
 #custom-media {
-    background-color: #66cc99;
-    color: #2a5c45;
-    min-width: 100px;
+  background-color: #66cc99;
+  color: #2a5c45;
+  min-width: 100px;
 }
 
 #custom-media.custom-spotify {
-    background-color: #66cc99;
+  background-color: #66cc99;
 }
 
 #custom-media.custom-vlc {
-    background-color: #ffa000;
+  background-color: #ffa000;
 }
 
 #temperature.critical {
-    background-color: #eb4d4b;
+  background-color: #eb4d4b;
 }
 
 #tray > .passive {
-    -gtk-icon-effect: dim;
+  -gtk-icon-effect: dim;
 }
 
 #tray > .needs-attention {
-    -gtk-icon-effect: highlight;
-    background-color: #eb4d4b;
+  -gtk-icon-effect: highlight;
+  background-color: #eb4d4b;
 }
 
 #idle_inhibitor {
-    background-color: #2d3436;
+  background-color: #2d3436;
 }
 
 #idle_inhibitor.activated {
-    background-color: #ecf0f1;
-    color: #2d3436;
+  background-color: #ecf0f1;
+  color: #2d3436;
 }
 
 #language {
-    background: #00b093;
-    color: #740864;
-    padding: 0 0px;
-    margin: 0 5px;
-    min-width: 16px;
+  background: #00b093;
+  color: #740864;
+  padding: 0 0px;
+  margin: 0 5px;
+  min-width: 16px;
 }
 
 #keyboard-state {
-    background: #97e1ad;
-    color: #000000;
-    padding: 0 0px;
-    margin: 0 5px;
-    min-width: 16px;
+  background: #97e1ad;
+  color: #000000;
+  padding: 0 0px;
+  margin: 0 5px;
+  min-width: 16px;
 }
 
 #keyboard-state > label {
-    padding: 0 0px;
+  padding: 0 0px;
 }
 
 #keyboard-state > label.locked {
-    background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }

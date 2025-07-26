@@ -12,7 +12,7 @@ command = exec fish
 
 confirm-close-surface = false
 
-font-family = Maple Mono Normal NF CN
+font-family = Maple Mono NF CN
 font-size = 12
 
 cursor-style = bar
