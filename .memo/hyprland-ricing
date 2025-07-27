@@ -19,9 +19,8 @@ hyprland-plugin-hyprexpo    # scale workspaces and put them in a grid
 
 # xdg-desktop-portal*
 xdg-desktop-portal
+xdg-desktop-portal-kde      # Dolphin as file picker (change value of widget.use-xdg-desktop-portal.file-picker in about:config if not working correctly in firefox)
 xdg-desktop-portal-hyprland # not working with my Intel iGPU, but fine with NVIDIA dGPU
-xdg-desktop-portal-gnome    # not necessary maybe, but just in case
-xdg-desktop-portal-gtk      # required by nautilus for file picker
 
 # terminal emulator(s)
 kitty       # normal terminal
@@ -49,17 +48,16 @@ rofi(-wayland)
 mpv
 blueman             # bluetooth GUI & applet
 pavucontrol
-nautilus            # file manager and file picker
-sushi               # "Quicklook" for nautilus
 gnome-text-editor   # or kwrite, just notepad replacement
 btop                # system monitor
 activate-linux      # :/
 polkit-gnome        # polkit authentication agent
 
 # fonts & themes
-maplemono-nf-cn
+maplemono-nf-cn / ttf-maplemono-nf-cn-unhinted (archlinuxcn)
 ttf-font-awesome
-meslo font                  # I installed it manually
+ttf-meslo-nerd
+ttf-jetbrains-mono-nerd
 spicetify                   # spotify tweaks
 spicetify-maketplace        # spotify themes
 nwg-look                    # theme of GTK apps

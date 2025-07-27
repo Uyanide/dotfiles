@@ -1,0 +1,9 @@
+#!/bin/bash
+
+[ -z "$SMB_MOUNT_POINT" ] && SMB_MOUNT_POINT="/mnt/smb"
+
+if sudo umount "$SMB_MOUNT_POINT" && sudo rmdir "$SMB_MOUNT_POINT"; then
+    echo "Unmounted and removed mount point $SMB_MOUNT_POINT"
+else
+    exit 1
+fi

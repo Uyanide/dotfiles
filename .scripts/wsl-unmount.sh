@@ -1,0 +1,15 @@
+#!/bin/sh
+
+[ -z "$1" ] && mount_point="/mnt/wsl" || mount_point="$1"
+
+sudo umount "$mount_point" || {
+    echo "Failed to unmount $mount_point. It may not be mounted or you may not have the necessary permissions."
+    exit 1
+}
+
+sudo rmdir "$mount_point" || {
+    echo "Failed to remove the mount point directory $mount_point. It may not be empty or you may not have the necessary permissions."
+    exit 1
+}
+
+echo "Successfully unmounted and removed $mount_point."
