@@ -6,7 +6,7 @@ full KDE Plasma 6 setup     # not essential for sure
         kcalc/kalc          # calculator(s), what's the difference?
         kcolorchooser       # or hyprpicker
         pipewire & friends
-        ...
+        ...                 # including other things I (may) have forgotten to list below
 
 # hypr*
 hyprland
@@ -19,8 +19,9 @@ hyprland-plugin-hyprexpo    # scale workspaces and put them in a grid
 
 # xdg-desktop-portal*
 xdg-desktop-portal
-xdg-desktop-portal-kde      # Dolphin as file picker (for firefox, change value of widget.use-xdg-desktop-portal.file-picker in about:config if not working correctly)
 xdg-desktop-portal-hyprland # not working with my Intel iGPU, but fine with NVIDIA dGPU
+xdg-desktop-portal-gtk      # for file picker
+xdg-desktop-portal-gnome    # why not?
 
 # terminal emulator(s)
 kitty       # normal terminal
