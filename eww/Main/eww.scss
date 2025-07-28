@@ -1,271 +1,271 @@
 * {
-    all: unset;
-    transition: 200ms ease-out;
+  all: unset;
+  transition: 200ms ease-out;
 }
 
 .main-window {
-    background-color: $bg;
-    font-family: 'Font Awesome 6 Free', FontAwesome;
-    border-radius: 20px;
-    border: 2px solid $blue;
+  background-color: $bg;
+  font-family: 'Font Awesome 6 Free', FontAwesome;
+  border-radius: 20px;
+  border: 2px solid $blue;
 }
 
 .date-box {
-    // background-color: $bg;
-    margin: 20px 20px 0px 20px;
-    min-width: 290px;
-    padding: 20px 10px 20px 10px;
-    border-radius: 15px;
-    color: $fg;
-    // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  // background-color: $bg;
+  margin: 20px 20px 0px 20px;
+  min-width: 290px;
+  padding: 20px 10px 20px 10px;
+  border-radius: 15px;
+  color: $fg;
+  // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .time {
-    font-weight: bold;
-    font-size: 80px;
-    margin-top: 24px;
+  font-weight: bold;
+  font-size: 80px;
+  margin-top: 24px;
 }
 
 .date {
-    font-family: 'Noto Sans';
-    font-size: 24px;
-    margin-top: 20px;
+  font-family: 'Noto Sans';
+  font-size: 24px;
+  margin-top: 20px;
 }
 
 .weather-box {
-    background-color: $gray-alt;
-    margin: 20px 20px 0px 0px;
-    padding: 20px 10px 10px 20px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  background-color: $gray-alt;
+  margin: 20px 20px 0px 0px;
+  padding: 20px 10px 10px 20px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .weather-desc {
-    font-family: 'Noto Sans';
-    color: $fg-alt;
-    font-size: 20px;
+  font-family: 'Noto Sans';
+  color: $fg-alt;
+  font-size: 20px;
 }
 
 .weather-temp {
-    font-size: 30px;
-    color: $fg;
-    padding-top: 10px;
+  font-size: 30px;
+  color: $fg;
+  padding-top: 10px;
 }
 
 .weather-icon {
-    font-family: 'MesloLGM Nerd Font';
-    font-size: 60px;
-    margin-top: 5px;
+  font-family: 'MesloLGM Nerd Font';
+  font-size: 60px;
+  margin-top: 5px;
 }
 
 .weather-updatetime {
-    color: $fg-alt;
-    font-size: 12px;
-    margin-top: 10px;
+  color: $fg-alt;
+  font-size: 12px;
+  margin-top: 10px;
 }
 
 .stats-box {
-    background-color: $gray-alt;
-    margin: 20px 20px 0px 20px;
-    padding: 20px 35px 20px 25px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  background-color: $gray-alt;
+  margin: 20px 20px 0px 20px;
+  padding: 20px 35px 20px 25px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .stats-header {
-    font-size: 20px;
-    font-weight: bold;
-    color: $gray;
+  font-size: 20px;
+  font-weight: bold;
+  color: $gray;
 }
 
 .volume-icon,
 .brightness-icon,
 .cpu-icon,
 .memory-icon {
-    font-size: 20px;
-    color: $fg;
+  font-size: 20px;
+  color: $fg;
 }
 
 .volume-scale trough,
 .brightness-scale trough,
 .cpu-scale trough,
 .memory-scale trough {
-    all: unset;
-    background-color: $gray;
-    min-height: 10px;
-    border-radius: 15px;
-    margin-left: 10px;
+  all: unset;
+  background-color: $gray;
+  min-height: 10px;
+  border-radius: 15px;
+  margin-left: 10px;
 }
 
 .volume-scale highlight {
-    background-color: $sapphire;
-    border-radius: 15px;
+  background-color: $sapphire;
+  border-radius: 15px;
 }
 
 .brightness-scale highlight {
-    background-color: $teal;
-    border-radius: 15px;
+  background-color: $teal;
+  border-radius: 15px;
 }
 
 .cpu-scale highlight {
-    background-color: $yellow;
-    border-radius: 15px;
+  background-color: $yellow;
+  border-radius: 15px;
 }
 
 .memory-scale highlight {
-    background-color: $peach;
-    border-radius: 15px;
+  background-color: $peach;
+  border-radius: 15px;
 }
 
 .fortune-box {
-    // background-color: $gray-alt;
-    margin: 20px 20px 0px 0px;
-    padding: 20px 35px 20px 25px;
-    border-radius: 15px;
-    // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  // background-color: $gray-alt;
+  margin: 20px 20px 0px 0px;
+  padding: 20px 35px 20px 25px;
+  border-radius: 15px;
+  // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .fortune-header {
-    font-size: 20px;
-    font-weight: bold;
-    color: $gray;
+  font-size: 20px;
+  font-weight: bold;
+  color: $gray;
 }
 
 .fortune-text {
-    font-family: 'Noto Sans';
-    font-size: 14px;
-    color: $fg;
-    margin-top: 10px;
+  font-family: 'Noto Sans';
+  font-size: 14px;
+  color: $fg;
+  margin-top: 10px;
 }
 
 .music-art-box {
-    background-size: cover;
-    background-repeat: no-repeat;
-    min-width: 455px;
-    min-height: 240px;
-    border-radius: 17px;
-    background-position: center;
-    margin: 20px 0px 0px 20px;
-    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-width: 455px;
+  min-height: 240px;
+  border-radius: 17px;
+  background-position: center;
+  margin: 20px 0px 0px 20px;
+  box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .music-title {
-    margin: 20px 0px 0px 20px;
-    font-size: 28px;
-    font-weight: bold;
-    color: $fg;
+  margin: 20px 0px 0px 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: $fg;
 }
 
 .music-artist {
-    margin: 10px 0px 0px 20px;
-    font-size: 20px;
-    color: $fg-alt;
+  margin: 10px 0px 0px 20px;
+  font-size: 20px;
+  color: $fg-alt;
 }
 
 .music-length {
-    margin: 90px 0px 0px 20px;
-    font-size: 18px;
-    font-weight: bold;
-    color: $fg-alt;
+  margin: 90px 0px 0px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: $fg-alt;
 }
 
 .music-stuff-box {
-    border-radius: 15px;
-    background: linear-gradient(to right, $bg-alt, transparent);
-    min-height: 240px;
+  border-radius: 15px;
+  background: linear-gradient(to right, $bg-alt, transparent);
+  min-height: 240px;
 }
 
 .player-cover-box {
-    background-size: 140px;
-    min-height: 140px;
-    min-width: 140px;
-    border-radius: 20px;
-    background-repeat: no-repeat;
-    background-position: center;
+  background-size: 140px;
+  min-height: 140px;
+  min-width: 140px;
+  border-radius: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .player-box {
-    margin: 40px 30px 30px 50px;
+  margin: 40px 30px 30px 50px;
 }
 
 .player-info-box {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .player-info-title,
 .player-info-artist {
-    color: $blue;
-    font-weight: bold;
+  color: $blue;
+  font-weight: bold;
 }
 
 .player-info-album,
 .player-info-length {
-    color: $fg-alt;
+  color: $fg-alt;
 }
 
 .player-info-button {
-    background-color: $gray-alt;
-    padding: 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    margin-top: 10px;
+  background-color: $gray-alt;
+  padding: 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 .cavabar {
-    font-size: 14px;
-    color: $blue;
+  font-size: 14px;
+  color: $blue;
 }
 
 .music-controls-box {
-    margin: 20px 20px 0px 20px;
-    // background-color: $gray-alt;
-    padding: 0px 23px 0px 23px;
-    border-radius: 15px;
-    text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
-    // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  margin: 20px 20px 0px 20px;
+  // background-color: $gray-alt;
+  padding: 0px 23px 0px 23px;
+  border-radius: 15px;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+  // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .music-next,
 .music-previous {
-    font-size: 30px;
+  font-size: 30px;
 }
 
 .music-pp {
-    font-size: 44px;
-    color: $fg;
+  font-size: 44px;
+  color: $fg;
 }
 
 .music-next:hover,
 .music-previous:hover,
 .music-pp:hover {
-    color: $orange;
+  color: $orange;
 }
 
 .profile-stuff-box {
-    margin: 20px 20px 20px 20px;
-    // background-color: $gray-alt;
-    border-radius: 15px;
-    padding: 15px 20px 15px 20px;
-    // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  margin: 20px 20px 20px 20px;
+  // background-color: $gray-alt;
+  border-radius: 15px;
+  padding: 15px 20px 15px 20px;
+  // box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .profile-img {
-    border-radius: 10px;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    min-width: 90px;
-    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  min-width: 90px;
+  box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
 }
 
 .profile-stuff {
-    font-family: 'Noto Sans';
-    padding: 7px 0px 0px 30px;
-    font-size: 16px;
-    color: $fg;
+  font-family: 'Noto Sans';
+  padding: 7px 0px 0px 30px;
+  font-size: 16px;
+  color: $fg;
 }
 
 .profile-name {
-    font-family: 'Font Awesome 6 Free', FontAwesome;
-    font-weight: bold;
+  font-family: 'Font Awesome 6 Free', FontAwesome;
+  font-weight: bold;
 }

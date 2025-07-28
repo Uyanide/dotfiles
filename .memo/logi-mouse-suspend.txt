@@ -1,0 +1,29 @@
+虽然不是很确定发生了什么，但总归记录一下
+
+问题：
+    休眠后立即唤醒
+
+环境：
+    hyprland (kde 下无此问题)
+    hybrid (独显直连没有测试)
+
+结论：
+    罗技 Bolt 接收器导致的
+
+解决1：
+    修改 /proc/acpi/wakeup 禁用 usb 唤醒
+    修改什么？问 LLM 吧，现在的我也不知道 :)
+
+解决2：
+    安装 solaar 并启动
+    步骤：
+        创建 plugdev 用户组：
+            sudo groupadd plugdev
+            sudo usermod $(whoami) -aG plugdev
+        安装 solaar
+        启用驱动：
+            sudo modprobe hid_logitech_dj
+        重载 udev 规则：
+            sudo udevadm control --reload-rules
+        插拔 Bolt 接收器
+        启动！

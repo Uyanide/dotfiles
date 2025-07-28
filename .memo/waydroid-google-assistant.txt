@@ -1,0 +1,6 @@
+安卓 13
+
+搜索 Assistant，点进 General，禁用
+搜索 Default Apps，将 Digital assistant app 设置为 None
+
+这样按 super 键就不会弹出 Google Assistant 了

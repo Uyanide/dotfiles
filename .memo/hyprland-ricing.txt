@@ -3,8 +3,8 @@ things I have installed:
 full KDE Plasma 6 setup     # not essential for sure
     which can provide:
         SDDM theme          # Breeze is enough
-        kcalc/kalc          # calculator(s)
-        kcolorchooser       # works smoothly on hyprland
+        kcalc/kalc          # calculator(s), what's the difference?
+        kcolorchooser       # or hyprpicker
         pipewire & friends
         ...
 
@@ -14,31 +14,28 @@ hyprpaper
 hypridle
 hyprlock
 hyprshot
-hyprlicker                  # kcolorchooser also works though
+hyprpicker
 hyprland-plugin-hyprexpo    # scale workspaces and put them in a grid
 
 # xdg-desktop-portal*
 xdg-desktop-portal
-xdg-desktop-portal-kde      # Dolphin as file picker (change value of widget.use-xdg-desktop-portal.file-picker in about:config if not working correctly in firefox)
+xdg-desktop-portal-kde      # Dolphin as file picker (for firefox, change value of widget.use-xdg-desktop-portal.file-picker in about:config if not working correctly)
 xdg-desktop-portal-hyprland # not working with my Intel iGPU, but fine with NVIDIA dGPU
 
 # terminal emulator(s)
 kitty       # normal terminal
-ghostty     # floating terminal, for btop for example#
+ghostty     # floating terminal, for btop for example
 
 # under surface
-mako                    # notification daemon
-gnome-keyring           # --password-store=gnome-libsecret
+mako            # notification daemon
+gnome-keyring   # --password-store=gnome-libsecret
 wl-clipboard
-cliphist                # clipboard history
-network-manager-applet  # nm-applet
-slurp                   # region selector
-wf-recorder             # screen recorder
+cliphist        # clipboard history
+slurp           # region selector
+wf-recorder     # screen recorder
 brightnessctl
 playerctl
 pamixer
-qt5ct
-qt6ct
 
 # GUI
 waybar
@@ -46,12 +43,13 @@ eww
 wlogout
 rofi(-wayland)
 mpv
-blueman             # bluetooth GUI & applet
+network-manager-applet  # nm-applet
+blueman                 # bluetooth GUI & applet
 pavucontrol
-gnome-text-editor   # or kwrite, just notepad replacement
-btop                # system monitor
-activate-linux      # :/
-polkit-gnome        # polkit authentication agent
+gnome-text-editor       # or kwrite, just notepad replacement
+btop                    # system monitor
+activate-linux          # :/
+polkit-gnome            # polkit authentication agent
 
 # fonts & themes
 maplemono-nf-cn / ttf-maplemono-nf-cn-unhinted (archlinuxcn)
@@ -62,6 +60,9 @@ spicetify                   # spotify tweaks
 spicetify-maketplace        # spotify themes
 nwg-look                    # theme of GTK apps
 catppuccin-gtk-theme-mocha  # theme of GTK apps
+kvantum
+qt5ct
+qt6ct
 
 # utils
 bc
