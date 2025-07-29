@@ -12,6 +12,10 @@ if [ "$LOGNAME" != "$USER" ]; then
     exit 1
 fi
 
-if [ "$(ps -o comm= -p $(ps -o ppid= -p $$) 2>/dev/null)" = "su" ]; then
-    exit 1
+ppid=$(ps -o ppid= -p $$ 2>/dev/null)
+if [ -n "$ppid" ]; then
+    parent_comm=$(ps -o comm= -p "$ppid" 2>/dev/null)
+    if [ "$parent_comm" = "su" ]; then
+        exit 1
+    fi
 fi
