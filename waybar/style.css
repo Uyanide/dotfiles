@@ -1,10 +1,9 @@
 @import 'mocha.css';
 
 * {
-  /*           main font           icons                       Chinese/Japanese/...           Fallback              */
-  font-family: 'Sour Gummy Light', 'Meslo LGM Nerd Font Mono', 'Maple Mono NF CN ExtraLight', 'Noto Sans', sans-serif;
+  /*           main font           icons                       CJK                    Fallback              */
+  font-family: 'Sour Gummy Light', 'Meslo LGM Nerd Font Mono', 'WenQuanYi Micro Hei', 'Noto Sans', sans-serif;
   font-size: 16px;
-  font-weight: 900;
   margin: 0;
   padding: 0;
   transition-property: background-color;

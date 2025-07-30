@@ -90,6 +90,6 @@
     :windowtype "normal"
     :wm-ignore true
     :monitor 0
-    :geometry (geometry :x 1100 :y -49)
+    :geometry (geometry :x 1092 :y -51)
     (lyrics-single)
 )

@@ -1,7 +1,7 @@
 <!--
  * @Author: Uyanide pywang0608@foxmail.com
  * @Date: 2025-06-24 17:56:20
- * @LastEditTime: 2025-07-30 13:00:43
+ * @LastEditTime: 2025-07-30 13:34:36
  * @Discription:
 -->
 
@@ -51,6 +51,7 @@ including:
 
 - MesloLGM Nerd Font (& Mono)
 - Maple Mono NF CN
+- WenQuanYi Micro Hei
 - Sour Gummy
 - Noto Sans
 - ...
