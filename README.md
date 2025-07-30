@@ -1,3 +1,10 @@
+<!--
+ * @Author: Uyanide pywang0608@foxmail.com
+ * @Date: 2025-06-24 17:56:20
+ * @LastEditTime: 2025-07-30 13:00:43
+ * @Discription:
+-->
+
 <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
 <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/tiling.jpg?raw=true"/>
 <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
@@ -44,6 +51,6 @@ including:
 
 - MesloLGM Nerd Font (& Mono)
 - Maple Mono NF CN
-- Font Awesome 6 Free
+- Sour Gummy
 - Noto Sans
 - ...

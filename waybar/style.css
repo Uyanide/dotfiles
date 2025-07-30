@@ -1,8 +1,9 @@
 @import 'mocha.css';
 
 * {
-  font-family: 'Font Awesome 6 Free Regular', 'Maple Mono NF CN ExtraLight', 'Noto Sans', Arial, sans-serif;
-  font-size: 12px;
+  /*           main font           icons                       Chinese/Japanese/...           Fallback              */
+  font-family: 'Sour Gummy Light', 'Meslo LGM Nerd Font Mono', 'Maple Mono NF CN ExtraLight', 'Noto Sans', sans-serif;
+  font-size: 16px;
   font-weight: 900;
   margin: 0;
   padding: 0;
@@ -39,7 +40,7 @@ tooltip {
 
 #custom-workspacenew,
 #workspaces button {
-  padding: 3px 5px; /* Adjusted padding to reduce height */
+  padding: 0px 5px; /* Adjusted padding to reduce height */
   margin: 3px 5px; /* Reduced margin slightly */
   border-radius: 6px;
   color: @foreground;

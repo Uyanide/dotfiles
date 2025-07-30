@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from gi.repository.Playerctl import Player
+from gi.repository import Playerctl, GLib
 from typing import List
 import os
 import json
@@ -10,8 +12,6 @@ import argparse
 import gi
 
 gi.require_version("Playerctl", "2.0")
-from gi.repository import Playerctl, GLib
-from gi.repository.Playerctl import Player
 
 
 logger = logging.getLogger(__name__)
@@ -137,9 +137,9 @@ class PlayerManager:
 
         if track_info:
             if player.props.status == "Playing":
-                track_info = " " + track_info
+                track_info = "  " + track_info
             else:
-                track_info = " " + track_info
+                track_info = "  " + track_info
         # only print output if no other player is playing
         current_playing = self.get_first_playing_player()
         if (

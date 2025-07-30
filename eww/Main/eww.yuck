@@ -1,6 +1,6 @@
 ;; variables
 (defvar window false)
-(defpoll time :interval "1s" "date '+%H %M'")
+(defpoll time :interval "1s" "date '+%H:%M'")
 (defpoll date :interval "1s" "date '+%A, %B %d'")
 (deflisten notifications-cards "Main/scripts/logger.zsh subscribe")
 (defpoll notifications-crits :interval "1s" "Main/scripts/logger.zsh crits")
@@ -27,7 +27,7 @@
 (defpoll music-art-blur :interval "1s" "Main/scripts/music-art --blur")
 (defpoll volume :interval "1s" "Main/scripts/system --vol")
 (defpoll brightness :interval "1s" "Main/scripts/system --bri")
-(defpoll fortune :interval "1h" "Main/scripts/fortune-split 32 9")
+(defpoll fortune :interval "1h" "Main/scripts/fortune-split 32 6")
 (deflisten cava "Main/scripts/cava")
 (defpoll title :interval "1s" "Main/scripts/music-title --status")
 (defpoll artist :interval "1s" "Main/scripts/player --artist")

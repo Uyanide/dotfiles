@@ -5,7 +5,7 @@
 
 .main-window {
   background-color: $bg;
-  font-family: 'Font Awesome 6 Free', FontAwesome;
+  font-family: 'Sour Gummy', 'MesloLGM Nerd Font Mono', 'Noto Sans';
   border-radius: 20px;
   border: 2px solid $blue;
 }
@@ -21,15 +21,15 @@
 }
 
 .time {
+  font-family: 'Sour Gummy ExtraLight';
   font-weight: bold;
-  font-size: 80px;
+  font-size: 100px;
   margin-top: 24px;
 }
 
 .date {
-  font-family: 'Noto Sans';
   font-size: 24px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .weather-box {
@@ -41,13 +41,12 @@
 }
 
 .weather-desc {
-  font-family: 'Noto Sans';
   color: $fg-alt;
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .weather-temp {
-  font-size: 30px;
+  font-size: 36px;
   color: $fg;
   padding-top: 10px;
 }
@@ -60,7 +59,7 @@
 
 .weather-updatetime {
   color: $fg-alt;
-  font-size: 12px;
+  font-size: 16px;
   margin-top: 10px;
 }
 
@@ -73,7 +72,7 @@
 }
 
 .stats-header {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   color: $gray;
 }
@@ -126,7 +125,7 @@
 }
 
 .fortune-header {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   color: $gray;
 }
@@ -189,7 +188,7 @@
 }
 
 .player-info-box {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .player-info-title,
@@ -212,6 +211,7 @@
 }
 
 .cavabar {
+  font-family: 'Noto Sans';
   font-size: 14px;
   color: $blue;
 }
@@ -259,13 +259,11 @@
 }
 
 .profile-stuff {
-  font-family: 'Noto Sans';
   padding: 7px 0px 0px 30px;
-  font-size: 16px;
+  font-size: 20px;
   color: $fg;
 }
 
 .profile-name {
-  font-family: 'Font Awesome 6 Free', FontAwesome;
   font-weight: bold;
 }

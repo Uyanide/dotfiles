@@ -54,7 +54,7 @@ polkit-gnome            # polkit authentication agent
 
 # fonts & themes
 maplemono-nf-cn / ttf-maplemono-nf-cn-unhinted (archlinuxcn)
-ttf-font-awesome
+Sour Gummy
 ttf-meslo-nerd
 ttf-jetbrains-mono-nerd
 spicetify                   # spotify tweaks

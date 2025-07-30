@@ -51,7 +51,6 @@
     "format": " |",
     "tooltip": false
   },
-
   // Buttons
   "custom/power": {
     "format": "󰐥",
@@ -87,7 +86,6 @@
       "inactive": ""
     }
   },
-
   // Time and Date
   "clock": {
     "format": "  {:%H:%M   %e %b}",
@@ -119,7 +117,6 @@
     "on-click": "~/.config/hypr/scripts/screenshot_full",
     "on-click-right": "~/.config/hypr/scripts/screenshot_area"
   },
-
   // System monitors
   "group/monitors": {
     "modules": ["network#speed", "temperature", "memory", "cpu", "battery", "backlight", "wireplumber"],
@@ -128,11 +125,11 @@
   "network#speed": {
     "interval": 1,
     "format": "{ifname}",
-    "format-wifi": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
-    "format-ethernet": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
+    "format-wifi": "  {bandwidthDownBytes}   {bandwidthUpBytes} ",
+    "format-ethernet": "  {bandwidthDownBytes}   {bandwidthUpBytes} ",
     "format-disconnected": "󰌙",
     "tooltip-format": "{ipaddr}",
-    "format-linked": "󰈁 {ifname} (No IP)",
+    "format-linked": "󰈁  {ifname} (No IP)",
     "tooltip-format-wifi": "{essid} {signalStrength}%",
     "tooltip-format-ethernet": "{ifname} 󰌘",
     "tooltip-format-disconnected": "󰌙 Disconnected",
@@ -214,7 +211,6 @@
     "max-length": 7,
     "min-length": 7
   },
-
   // Hyprland
   "group/workspaceactions": {
     "modules": ["hyprland/workspaces#special", "hyprland/workspaces", "custom/workspacenew"],
@@ -235,7 +231,7 @@
     "persistent-only": true,
     "show-special": true,
     "special-visible-only": false,
-    "format": "{icon}"
+    "format": "S"
   },
   "custom/workspacenew": {
     "format": "+",
@@ -266,7 +262,6 @@
     "icon-size": 15,
     "spacing": 5
   },
-
   // Not used
   "network": {
     "format-wifi": " {essid} ({signalStrength}%)",
@@ -290,7 +285,6 @@
     "interval": 60,
     "exec": "~/.config/waybar/modules/storage.sh"
   },
-
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
@@ -396,7 +390,6 @@
         "interval": 1,
         "exec": "$HOME/.config/waybar/get_kbdlayout.sh"
     },*/
-
   "pulseaudio": {
     "scroll-step": 3, // %, can be a float
     "format": "{icon} {volume}% {format_source}",
