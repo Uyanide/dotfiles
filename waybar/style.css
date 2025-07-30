@@ -45,7 +45,7 @@ tooltip {
   color: @foreground;
   background-color: alpha(@base, 0);
   transition: all 0.3s ease-in-out;
-  font-size: 13px; /* Slightly smaller font size */
+  font-size: 14px; /* Slightly smaller font size */
 }
 
 #workspaces button:hover {
@@ -83,8 +83,7 @@ tooltip {
 
 #window {
   background-color: alpha(@base, 0.6);
-  font-size: 15px; /* Slightly smaller font size */
-  font-weight: 800;
+  font-size: 14px; /* Slightly smaller font size */
   color: @subtext1;
   border-radius: 14px;
   padding: 3px 6px; /* Reduced padding */
@@ -94,6 +93,7 @@ tooltip {
 
 #custom-mediaplayer {
   background-color: alpha(@base, 0.6);
+  font-size: 14px; /* Slightly smaller font size */
   border-radius: 14px;
   padding: 3px 12px;
   color: @lavender;
