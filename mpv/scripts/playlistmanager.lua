@@ -1,4 +1,7 @@
 local settings = {
+
+  -- #### FUNCTIONALITY SETTINGS
+
   --navigation keybindings force override only while playlist is visible
   --if "no" then you can display the playlist by any of the navigation keys
   dynamic_binds = true,
@@ -111,12 +114,11 @@ local settings = {
   save_playlist_on_file_end = false,
 
 
-  --show file title every time a new file is loaded
-  show_title_on_file_load = false,
-  --show playlist every time a new file is loaded
-  show_playlist_on_file_load = false,
-  --close playlist when selecting file to play
-  close_playlist_on_playfile = false,
+  --show playlist or filename every time a new file is loaded
+  --2 shows playlist, 1 shows current file(filename strip applied) as osd text, 0 shows nothing
+  --instead of using this you can also call script-message playlistmanager show playlist/filename
+  --ex. KEY playlist-next ; script-message playlistmanager show playlist
+  show_playlist_on_fileload = 0,
 
   --sync cursor when file is loaded from outside reasons(file-ending, playlist-next shortcut etc.)
   --has the sideeffect of moving cursor if file happens to change when navigating
@@ -126,6 +128,8 @@ local settings = {
   --allow the playlist cursor to loop from end to start and vice versa
   loop_cursor = true,
 
+  --youtube-dl executable for title resolving if enabled, probably "youtube-dl" or "yt-dlp", can be absolute path
+  youtube_dl_executable = "youtube-dl",
 
   -- allow playlistmanager to write watch later config when navigating between files
   allow_write_watch_later_config = true,
@@ -134,11 +138,10 @@ local settings = {
   reset_cursor_on_close = true,
   reset_cursor_on_open = true,
 
+  --####  VISUAL SETTINGS
+
   --prefer to display titles for following files: "all", "url", "none". Sorting still uses filename.
   prefer_titles = "url",
-
-  --youtube-dl executable for title resolving if enabled, probably "youtube-dl" or "yt-dlp", can be absolute path
-  youtube_dl_executable = "yt-dlp",
 
   --call youtube-dl to resolve the titles of urls in the playlist
   resolve_url_titles = false,
@@ -158,23 +161,23 @@ local settings = {
   -- when peeking at playlist, show playlist at the very least for display timeout
   peek_respect_display_timeout = false,
 
-  -- the maximum amount of lines playlist will render. -1 will automatically calculate lines.
-  showamount = -1,
+  -- the maximum amount of lines playlist will render. Optimal value depends on font/video size etc.
+  showamount = 9,
 
+  --font size scales by window, if false requires larger font and padding sizes
+  scale_playlist_by_window=true,
   --playlist ass style overrides inside curly brackets, \keyvalue is one field, extra \ for escape in lua
-  --example {\\q2\\an7\\fnUbuntu\\fs10\\b0\\bord1} equals: line-wrap=no, align=top left, font=Ubuntu, size=10, bold=no, border=1
+  --example {\\fnUbuntu\\fs10\\b0\\bord1} equals: font=Ubuntu, size=10, bold=no, border=1
   --read http://docs.aegisub.org/3.2/ASS_Tags/ for reference of tags
   --undeclared tags will use default osd settings
   --these styles will be used for the whole playlist
-  --\\q2 style is recommended since filename wrapping may lead to unexpected rendering
-  --\\an7 style is recommended to align to top left otherwise, osd-align-x/y is respected
-  style_ass_tags = "{\\q2\\an7}",
-  --paddings for left right and top bottom
-  text_padding_x = 30,
-  text_padding_y = 60,
+  style_ass_tags = "{}",
+  --paddings from top left corner
+  text_padding_x = 10,
+  text_padding_y = 30,
   
   --screen dim when menu is open 0.0 - 1.0 (0 is no dim, 1 is black)
-  curtain_opacity=0.0,
+  curtain_opacity=0,
 
   --set title of window with stripped name
   set_title_stripped = false,
@@ -222,17 +225,6 @@ local utils = require("mp.utils")
 local msg = require("mp.msg")
 local assdraw = require("mp.assdraw")
 
-local alignment_table = {
-    [1] = { ["x"] = "left",   ["y"] = "bottom" },
-    [2] = { ["x"] = "center", ["y"] = "bottom" },
-    [3] = { ["x"] = "right",  ["y"] = "bottom" },
-    [4] = { ["x"] = "left",   ["y"] = "center" },
-    [5] = { ["x"] = "center", ["y"] = "center" },
-    [6] = { ["x"] = "right",  ["y"] = "center" },
-    [7] = { ["x"] = "left",   ["y"] = "top" },
-    [8] = { ["x"] = "center", ["y"] = "top" },
-    [9] = { ["x"] = "right",  ["y"] = "top" },
-}
 
 --check os
 if settings.system=="auto" then
@@ -244,47 +236,7 @@ if settings.system=="auto" then
   end
 end
 
--- auto calculate showamount
-if settings.showamount == -1 then
-  -- same as draw_playlist() height
-  local h = 720
-  
-  local playlist_h = h
-  -- both top and bottom with same padding
-  playlist_h = playlist_h - settings.text_padding_y * 2
-  
-  -- osd-font-size is based on 720p height
-  -- see https://mpv.io/manual/stable/#options-osd-font-size 
-  -- details in https://mpv.io/manual/stable/#options-sub-font-size
-  -- draw_playlist() is based on 720p, need some conversion
-  local fs = mp.get_property_native('osd-font-size') * h / 720
-  -- get the ass font size
-  if settings.style_ass_tags ~= nil then
-    local ass_fs_tag = settings.style_ass_tags:match('\\fs%d+')
-    if ass_fs_tag ~= nil then
-      fs = tonumber(ass_fs_tag:match('%d+'))
-    end
-  end
- 
-  settings.showamount = math.floor(playlist_h / fs)
-  
-  -- exclude the header line
-  if settings.playlist_header ~= "" then
-    settings.showamount = settings.showamount - 1
-    -- probably some newlines (%N or \N) in the header
-    for _ in settings.playlist_header:gmatch('%%N') do
-      settings.showamount = settings.showamount - 1
-    end
-    for _ in settings.playlist_header:gmatch('\\N') do
-      settings.showamount = settings.showamount - 1
-    end
-  end
-  
-  msg.info('auto showamount: ' .. settings.showamount)
-end
-
 --global variables
-local playlist_overlay = mp.create_osd_overlay("ass-events")
 local playlist_visible = false
 local strippedname = nil
 local path = nil
@@ -299,13 +251,6 @@ local title_table = {}
 local requested_titles = {}
 
 local filetype_lookup = {}
-
-function refresh_UI()
-  if not playlist_visible then return end
-  refresh_globals()
-  if plen == 0 then return end
-  draw_playlist()
-end
 
 function update_opts(changelog)
   msg.verbose('updating options')
@@ -343,56 +288,16 @@ function update_opts(changelog)
     keybindstimer:kill()
   end
 
-  refresh_UI()
+  if playlist_visible then showplaylist() end
 end
 
 update_opts({filename_replace = true, loadfiles_filetypes = true})
-
------ winapi start -----
--- in windows system, we can use the sorting function provided by the win32 API
--- see https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-strcmplogicalw
-local winapisort = nil
-if settings.system == "windows" then
-  -- ffiok is false usually means the mpv builds without luajit
-  local ffiok, ffi = pcall(require, "ffi")
-  if ffiok then
-    ffi.cdef[[
-      int MultiByteToWideChar(unsigned int CodePage, unsigned long dwFlags, const char *lpMultiByteStr, int cbMultiByte, wchar_t *lpWideCharStr, int cchWideChar);
-      int StrCmpLogicalW(const wchar_t * psz1, const wchar_t * psz2);        
-    ]]
-   
-    local shlwapi = ffi.load("shlwapi.dll")
-    
-    function MultiByteToWideChar(MultiByteStr)
-      local UTF8_CODEPAGE = 65001
-      if MultiByteStr then
-        local utf16_len = ffi.C.MultiByteToWideChar(UTF8_CODEPAGE, 0, MultiByteStr, -1, nil, 0)
-        if utf16_len > 0 then
-          local utf16_str = ffi.new("wchar_t[?]", utf16_len)
-          if ffi.C.MultiByteToWideChar(UTF8_CODEPAGE, 0, MultiByteStr, -1, utf16_str, utf16_len) > 0 then
-            return utf16_str
-          end
-        end
-      end
-      return ""
-    end
-    
-    winapisort = function (a, b)
-      return shlwapi.StrCmpLogicalW(MultiByteToWideChar(a), MultiByteToWideChar(b)) < 0
-    end
-    
-  end
-end
------ winapi end -----
 
 local sort_modes = {
   {
     id="name-asc",
     title="name ascending",
     sort_fn=function (a, b, playlist)
-      if winapisort ~= nil then 
-        return winapisort(playlist[a].string, playlist[b].string)
-      end
       return alphanumsort(playlist[a].string, playlist[b].string)
     end,
   },
@@ -400,9 +305,6 @@ local sort_modes = {
     id="name-desc",
     title="name descending",
     sort_fn=function (a, b, playlist)
-      if winapisort ~= nil then 
-        return winapisort(playlist[b].string, playlist[a].string)
-      end
       return alphanumsort(playlist[b].string, playlist[a].string)
     end,
   },
@@ -449,9 +351,6 @@ end
 
 function on_file_loaded()
   refresh_globals()
-  if settings.sync_cursor_on_load then cursor=pos end
-  refresh_UI() -- refresh only after moving cursor
-
   filename = mp.get_property("filename")
   path = mp.get_property('path')
   local media_title = mp.get_property("media-title")
@@ -459,12 +358,17 @@ function on_file_loaded()
     title_table[path] = media_title
   end
 
-  strippedname = stripfilename(mp.get_property('media-title'))
-  if settings.show_title_on_file_load then
-    mp.commandv('show-text', strippedname)
+  if settings.sync_cursor_on_load then
+    cursor=pos
+    --refresh playlist if cursor moved
+    if playlist_visible then draw_playlist() end
   end
-  if settings.show_playlist_on_file_load then
+
+  strippedname = stripfilename(mp.get_property('media-title'))
+  if settings.show_playlist_on_fileload == 2 then
     showplaylist()
+  elseif settings.show_playlist_on_fileload == 1 then
+    mp.commandv('show-text', strippedname)
   end
   if settings.set_title_stripped then
     mp.set_property("title", settings.title_prefix..strippedname..settings.title_suffix)
@@ -499,6 +403,7 @@ function on_end_file()
   path = nil
   directory = nil
   filename = nil
+  if playlist_visible then showplaylist() end
 end
 
 function refresh_globals()
@@ -522,28 +427,6 @@ local filename_replace_functions = {
   hex_to_char = function(x) return string.char(tonumber(x, 16)) end
 }
 
--- from http://lua-users.org/wiki/LuaUnicode
-local UTF8_PATTERN = '[%z\1-\127\194-\244][\128-\191]*'
-
--- return a substring based on utf8 characters
--- like string.sub, but negative index is not supported
-local function utf8_sub(s, i, j)
-  if i > j then
-    return s
-  end
-
-  local t = {}
-  local idx = 1
-  for char in s:gmatch(UTF8_PATTERN) do
-    if i <= idx and idx <= j then
-      local width = #char > 2 and 2 or 1
-      idx = idx + width
-      t[#t + 1] = char
-    end
-  end
-  return table.concat(t)
-end
-
 --strip a filename based on its extension or protocol according to rules in settings
 function stripfilename(pathfile, media_title)
   if pathfile == nil then return '' end
@@ -563,9 +446,8 @@ function stripfilename(pathfile, media_title)
       end
     end
   end
-  local tmp_clip = utf8_sub(tmp, 1, settings.slice_longfilenames_amount)
-  if settings.slice_longfilenames and tmp ~= tmp_clip then
-    tmp = tmp_clip .. "..."
+  if settings.slice_longfilenames and tmp:len()>settings.slice_longfilenames_amount+5 then
+    tmp = tmp:sub(1, settings.slice_longfilenames_amount).." ..."
   end
   return tmp
 end
@@ -592,10 +474,17 @@ function get_name_from_index(i, notitle)
   local name = mp.get_property('playlist/'..i..'/filename')
 
   local should_use_title = settings.prefer_titles == 'all' or is_protocol(name) and settings.prefer_titles == 'url'
-  
-  --check if file has a media title stored
-  if not title and should_use_title and title_table[name] then
-    title = title_table[name]
+  --check if file has a media title stored or as property
+  if not title and should_use_title then
+    local mtitle = mp.get_property('media-title')
+    if i == pos and mp.get_property('filename') ~= mtitle then
+      if not title_table[name] then
+        title_table[name] = mtitle
+      end
+      title = mtitle
+    elseif title_table[name] then
+      title = title_table[name]
+    end
   end
 
   --if we have media title use a more conservative strip
@@ -616,8 +505,6 @@ function parse_header(string)
   local esc_title = stripfilename(mp.get_property("media-title"), true):gsub("%%", "%%%%")
   local esc_file = stripfilename(mp.get_property("filename")):gsub("%%", "%%%%")
   return string:gsub("%%N", "\\N")
-               -- add a blank character at the end of each '\N'  to ensure that the height of the empty line is the same as the non empty line
-               :gsub("\\N", "\\N ")
                :gsub("%%pos", mp.get_property_number("playlist-pos",0)+1)
                :gsub("%%plen", mp.get_property("playlist-count"))
                :gsub("%%cursor", cursor+1)
@@ -664,21 +551,16 @@ function parse_filename_by_index(index)
   return parse_filename(template, get_name_from_index(index), index)
 end
 
-function is_terminal_mode()
-  local width, height, aspect_ratio = mp.get_osd_size()
-  return width == 0 and height == 0 and aspect_ratio == 0
-end
 
 function draw_playlist()
   refresh_globals()
   local ass = assdraw.ass_new()
-  local terminaloutput = ""
 	
   local _, _, a = mp.get_osd_size()
-  local h = 720
-  local w = math.ceil(h * a)
+  local h = 360
+  local w = h * a
 
-  if settings.curtain_opacity ~= nil and settings.curtain_opacity ~= 0 and settings.curtain_opacity <= 1.0 then
+  if settings.curtain_opacity ~= nil and settings.curtain_opacity ~= 0 and settings.curtain_opacity < 1.0 then
   -- curtain dim from https://github.com/christoph-heinrich/mpv-quality-menu/blob/501794bfbef468ee6a61e54fc8821fe5cd72c4ed/quality-menu.lua#L699-L707
     local alpha = 255 - math.ceil(255 * settings.curtain_opacity)
     ass.text = string.format('{\\pos(0,0)\\rDefault\\an7\\1c&H000000&\\alpha&H%X&}', alpha)
@@ -690,53 +572,13 @@ function draw_playlist()
 	
   ass:append(settings.style_ass_tags)
 
-  -- add \clip style
-  -- make both left and right follow text_padding_x
-  --      both top and bottom follow text_padding_y
-  local border_size = mp.get_property_number('osd-border-size')
-  if settings.style_ass_tags ~= nil then
-    local bord = tonumber(settings.style_ass_tags:match('\\bord(%d+%.?%d*)'))
-    if bord ~= nil then border_size = bord end
+  -- TODO: padding should work even on different osd alignments
+  if mp.get_property("osd-align-x") == "left" and mp.get_property("osd-align-y") == "top" then
+    ass:pos(settings.text_padding_x, settings.text_padding_y)
   end
-  ass:append(string.format('{\\clip(%f,%f,%f,%f)}',
-    settings.text_padding_x - border_size,         settings.text_padding_y - border_size,
-    w - 1 - settings.text_padding_x + border_size, h - 1 - settings.text_padding_y + border_size))
-
-  -- align from mpv.conf
-  local align_x = mp.get_property("osd-align-x")
-  local align_y = mp.get_property("osd-align-y")
-  -- align from style_ass_tags
-  if settings.style_ass_tags ~= nil then
-    local an = tonumber(settings.style_ass_tags:match('\\an(%d)'))
-    if an ~= nil and alignment_table[an] ~= nil then
-      align_x = alignment_table[an]["x"]
-      align_y = alignment_table[an]["y"]
-    end
-  end
-  -- range of x [0, w-1]
-  local pos_x
-  if align_x == 'left' then
-    pos_x = settings.text_padding_x
-  elseif align_x == 'right' then
-    pos_x = w - 1 - settings.text_padding_x
-  else
-    pos_x = math.floor((w - 1) / 2)
-  end
-  -- range of y [0, h-1]
-  local pos_y
-  if align_y == 'top' then
-    pos_y = settings.text_padding_y
-  elseif align_y == 'bottom' then
-    pos_y = h - 1 - settings.text_padding_y
-  else
-    pos_y = math.floor((h - 1) / 2)
-  end
-  ass:pos(pos_x, pos_y)
 
   if settings.playlist_header ~= "" then
-    local header = parse_header(settings.playlist_header)
-    ass:append(header.."\\N")
-    terminaloutput = terminaloutput..header.."\n"
+    ass:append(parse_header(settings.playlist_header).."\\N")
   end
 
   -- (visible index, playlist index) pairs of playlist entries that should be rendered
@@ -770,28 +612,16 @@ function draw_playlist()
   for display_index, playlist_index in pairs(visible_indices) do
     if display_index == 1 and playlist_index ~= 1 then
       ass:append(settings.playlist_sliced_prefix.."\\N")
-      terminaloutput = terminaloutput..settings.playlist_sliced_prefix.."\n"
     elseif display_index == settings.showamount and playlist_index ~= plen then
       ass:append(settings.playlist_sliced_suffix)
-      terminaloutput = terminaloutput..settings.playlist_sliced_suffix.."\n"
     else
       -- parse_filename_by_index expects 0 based index
-      local fname = parse_filename_by_index(playlist_index - 1)
-      ass:append(fname.."\\N")
-      terminaloutput = terminaloutput..fname.."\n"
+      ass:append(parse_filename_by_index(playlist_index - 1).."\\N")
     end
   end
 
-  if is_terminal_mode() then
-    local timeout_setting = settings.playlist_display_timeout
-    local timeout = timeout_setting == 0 and 2147483 or timeout_setting
-    -- TODO: probably have to strip ass tags from terminal output
-    -- would maybe be possible to use terminal color output instead
-    mp.osd_message(terminaloutput, timeout)
-  else
-    playlist_overlay.data = ass.text
-    playlist_overlay:update()
-  end
+  if settings.scale_playlist_by_window then w,h = 0, 0 end
+  mp.set_osd_ass(w, h, ass.text)
 end
 
 local peek_display_timer = nil
@@ -863,7 +693,7 @@ function showplaylist(duration)
   draw_playlist()
   keybindstimer:kill()
 
-  local dur = tonumber(duration) or settings.playlist_display_timeout
+  local dur = duration or settings.playlist_display_timeout
   if dur > 0 then
     keybindstimer = mp.add_periodic_timer(dur, remove_keybinds)
   end
@@ -879,7 +709,7 @@ function showplaylist_non_interactive(duration)
   draw_playlist()
   keybindstimer:kill()
 
-  local dur = tonumber(duration) or settings.playlist_display_timeout
+  local dur = duration or settings.playlist_display_timeout
   if dur > 0 then
     keybindstimer = mp.add_periodic_timer(dur, remove_keybinds)
   end
@@ -947,43 +777,25 @@ function movedown()
   showplaylist()
 end
 
-
 function movepageup()
   refresh_globals()
   if plen == 0 or cursor == 0 then return end
-  local offset = settings.showamount % 2 == 0 and 1 or 0
-  local last_file_that_doesnt_scroll = math.ceil(settings.showamount / 2)
-  local reverse_cursor = plen - cursor
-  local files_to_jump = math.max(last_file_that_doesnt_scroll + offset - reverse_cursor, 0) + settings.showamount - 2
   local prev_cursor = cursor
-  cursor = cursor - files_to_jump
-  if cursor < last_file_that_doesnt_scroll then
-    cursor = 0
-  end
-  if selection then
-    mp.commandv("playlist-move", prev_cursor, cursor)
-  end
+  cursor = cursor - settings.showamount
+  if cursor < 0 then cursor = 0 end
+  if selection then mp.commandv("playlist-move", prev_cursor, cursor) end
   showplaylist()
 end
 
 function movepagedown()
   refresh_globals()
-  if plen == 0 or cursor == plen - 1 then return end
-  local last_file_that_doesnt_scroll = math.ceil(settings.showamount / 2) - 1
-  local files_to_jump = math.max(last_file_that_doesnt_scroll - cursor, 0) + settings.showamount - 2
+  if plen == 0 or cursor == plen-1 then return end
   local prev_cursor = cursor
-  cursor = cursor + files_to_jump
-
-  local cursor_on_last_page = plen - (settings.showamount - 3)
-  if cursor > cursor_on_last_page then
-    cursor = plen - 1
-  end
-  if selection then
-    mp.commandv("playlist-move", prev_cursor, cursor + 1)
-  end
+  cursor = cursor + settings.showamount
+  if cursor >= plen then cursor = plen-1 end
+  if selection then mp.commandv("playlist-move", prev_cursor, cursor+1) end
   showplaylist()
 end
-
 
 function movebegin()
   refresh_globals()
@@ -1011,37 +823,14 @@ function write_watch_later(force_write)
   end
 end
 
-function playlist_next()
-  write_watch_later(true)
+function playlist_next(force_write)
+  write_watch_later(force_write)
   mp.commandv("playlist-next", "weak")
-  if settings.close_playlist_on_playfile then
-    remove_keybinds()
-  end
-  refresh_UI()
 end
 
-function playlist_prev()
-  write_watch_later(true)
+function playlist_prev(force_write)
+  write_watch_later(force_write)
   mp.commandv("playlist-prev", "weak")
-  if settings.close_playlist_on_playfile then
-    remove_keybinds()
-  end
-  refresh_UI()
-end
-
-function playlist_random()
-  write_watch_later()
-  refresh_globals()
-  if plen < 2 then return end
-  math.randomseed(os.time())
-  local random = pos
-  while random == pos do
-    random = math.random(0, plen-1)
-  end
-  mp.set_property("playlist-pos", random)
-  if settings.close_playlist_on_playfile then
-    remove_keybinds()
-  end
 end
 
 function playfile()
@@ -1059,10 +848,8 @@ function playfile()
     write_watch_later()
     mp.commandv("playlist-next", "weak")
   end
-  if settings.close_playlist_on_playfile then
+  if settings.show_playlist_on_fileload ~= 2 then
     remove_keybinds()
-  elseif playlist_visible then
-    showplaylist()
   end
 end
 
@@ -1105,13 +892,8 @@ function playlist(force_dir)
   if force_dir then dir = force_dir end
 
   local files = file_filter(utils.readdir(dir, "files"))
-  if winapisort ~= nil then
-    table.sort(files, winapisort)
-  else
-    table.sort(files, alphanumsort)
-  end
-  
-  
+  table.sort(files, alphanumsort)
+
   if files == nil then
     msg.verbose("no files in directory")
     return
@@ -1159,8 +941,7 @@ function playlist(force_dir)
   refresh_globals()
   if playlist_visible then
     showplaylist()
-  end
-  if settings.display_osd_feedback then
+  elseif settings.display_osd_feedback then
     if c2 > 0 or c>0 then
       mp.osd_message("Added "..c + c2.." files to playlist")
     else
@@ -1334,8 +1115,7 @@ function reverseplaylist()
   end
   if playlist_visible then
     showplaylist()
-  end
-  if settings.display_osd_feedback then
+  elseif settings.display_osd_feedback then
     mp.osd_message("Playlist reversed")
   end
 end
@@ -1361,8 +1141,7 @@ function shuffleplaylist()
   refresh_globals()
   if playlist_visible then
     showplaylist()
-  end
-  if settings.display_osd_feedback then
+  elseif settings.display_osd_feedback then
     mp.osd_message("Playlist shuffled")
   end
 end
@@ -1424,11 +1203,7 @@ function remove_keybinds()
   keybindstimer:kill()
   keybindstimer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
   keybindstimer:kill()
-  playlist_overlay.data = ""
-  playlist_overlay:remove()
-  if is_terminal_mode() then
-    mp.osd_message("")
-  end
+  mp.set_osd_ass(0, 0, "")
   playlist_visible = false
   if settings.reset_cursor_on_close then
     resetcursor()
@@ -1466,10 +1241,9 @@ mp.observe_property('playlist-count', "number", function(_, plcount)
     refresh_globals()
     sortplaylist()
   end
-  refresh_UI()
+  if playlist_visible then showplaylist() end
   resolve_titles()
 end)
-mp.observe_property('osd-dimensions', 'native', refresh_UI)
 
 
 url_request_queue = {}
@@ -1540,10 +1314,10 @@ function resolve_titles()
       and not requested_titles[filename]
     then
       requested_titles[filename] = true
-      if filename:match('^https?://') and settings.resolve_url_titles then
+      if filename:match('^https?://') then
         url_titles_to_fetch.push(filename)
         added_urls = true
-      elseif settings.prefer_titles == "all" and settings.resolve_local_titles then
+      elseif settings.prefer_titles == "all" then
         local_titles_to_fetch.push(filename)
         added_local = true
       end
@@ -1586,8 +1360,8 @@ function resolve_ytdl_title(filename)
           local title = (is_playlist and '[playlist]: ' or '') .. json['title']
           msg.verbose(filename .. " resolved to '" .. title .. "'")
           title_table[filename] = title
-          mp.set_property_native('user-data/playlistmanager/titles', title_table)
-          refresh_UI()
+          refresh_globals()
+          if playlist_visible then showplaylist() end
         else
           msg.error("Failed parsing json, reason: "..(err or "unknown"))
         end
@@ -1627,8 +1401,8 @@ function resolve_ffprobe_title(filename)
         if title then
           msg.verbose(filename .. " resolved to '" .. title .. "'")
           title_table[filename] = title
-          mp.set_property_native('user-data/playlistmanager/titles', title_table)
-          refresh_UI()
+          refresh_globals()
+          if playlist_visible then showplaylist() end
         end
       else
         msg.error("Failed to resolve local title "..filename.." Error: "..(res.error or "unknown"))
@@ -1668,9 +1442,8 @@ function handlemessage(msg, value, value2)
   if msg == "reverse" then reverseplaylist() ; return end
   if msg == "loadfiles" then playlist(value) ; return end
   if msg == "save" then save_playlist(value) ; return end
-  if msg == "playlist-next" then playlist_next() ; return end
-  if msg == "playlist-prev" then playlist_prev() ; return end
-  if msg == "playlist-next-random" then playlist_random() ; return end
+  if msg == "playlist-next" then playlist_next(true) ; return end
+  if msg == "playlist-prev" then playlist_prev(true) ; return end
   if msg == "enable-interactive-save" then interactive_save = true end
   if msg == "close" then remove_keybinds() end
 end
