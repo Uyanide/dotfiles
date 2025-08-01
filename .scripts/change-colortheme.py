@@ -28,6 +28,8 @@
 
 - wlogout:      edit $HOME/.config/wlogout/style.css
                 edit $HOME/.config/wlogout/icons/*.svg
+
+- fuzzel:       edit $HOME/.config/fuzzel/fuzzel.ini
 '''
 
 import os
@@ -184,6 +186,12 @@ def change_wlogout(flavor):
     for icon_template in Path.home().joinpath('.config', 'wlogout', 'icons').glob('*.svg.template'):
         icon_dist = copy_template(icon_template, Path.home().joinpath('.config', 'wlogout', 'icons'))
         apply_flavor(icon_dist, flavor)
+
+
+def change_fuzzel(flavor):
+    fuzzel_template = Path.home().joinpath('.config', 'fuzzel', 'fuzzel.ini.template')
+    fuzzel_dist = copy_template(fuzzel_template, Path.home().joinpath('.config', 'fuzzel'))
+    apply_flavor(fuzzel_dist, flavor)
 
 
 def match_color(color: str) -> str:
