@@ -1,7 +1,7 @@
 <!--
  * @Author: Uyanide pywang0608@foxmail.com
  * @Date: 2025-06-24 17:56:20
- * @LastEditTime: 2025-07-30 13:34:36
+ * @LastEditTime: 2025-08-01 18:51:56
  * @Discription:
 -->
 
@@ -17,7 +17,7 @@
 - **Shell**: Fish
 - **Prompt**: Oh My Posh
 - **Terminal**: Kitty & Ghostty (floating)
-- **Colorscheme**: Catppuccin-mocha(-blue)
+- **Colorscheme**: Catppuccin-mocha (dynamic flavor)
 - **App Launcher**: Rofi
 - **Logout Screen**: Wlogout
 - **Desktop Widgets**: Eww
