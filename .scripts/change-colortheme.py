@@ -188,7 +188,7 @@ def change_wlogout(flavor):
 
 def match_color(color: str) -> str:
     """ Matches a given color to the closest color in the palette."""
-    # HUE distance of the given and returned color must not exceed this value
+    # HUE distance of the given and returned color must no<t exceed this value
     HUE_THRESHOLD = 60.0  # degrees
 
     if not color.startswith('#'):
