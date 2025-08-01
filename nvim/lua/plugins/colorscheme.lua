@@ -1,8 +1,14 @@
+--[[
+Author: Uyanide pywang0608@foxmail.com
+Date: 2025-06-14 20:23:25
+LastEditTime: 2025-08-01 15:34:21
+Discription:
+--]]
 return {
   {
     "catppuccin/nvim",
     opts = {
-      flavor = "mocah",
+      flavor = "mocha",
       transparent_background = true,
       styles = {
         functions = { "bold" },

@@ -19,6 +19,8 @@
     teal: #94e2d5;
     peach: #fab387;
     search: rgba(49, 50, 68, 0.5); // alpha(@surface, 0.5)
+
+    accent: #f5c2e7;
 }
 
 
@@ -51,7 +53,7 @@ window {
     padding:                     0px;
     border:                      2px solid;
     border-radius:               24px;
-    border-color:                @blue;
+    border-color:                @accent;
     cursor:                      "default";
     background-color:            @base;
 }
@@ -124,7 +126,7 @@ listview {
 }
 scrollbar {
     handle-width:                5px ;
-    handle-color:                @blue;
+    handle-color:                @accent;
     border-radius:               10px;
     background-color:            @mantle;
 }
@@ -148,7 +150,7 @@ element alternate.normal {
 element normal.urgent,
 element alternate.urgent,
 element selected.active {
-    background-color:            @blue;
+    background-color:            @accent;
     text-color:                  @base;
     border-radius:               10px;
 }
@@ -196,9 +198,9 @@ button {
 }
 button selected {
     background-color:            @surface;
-    text-color:                  @blue;
+    text-color:                  @accent;
     border-radius:               0 0 14px 14px;
-    border-color:		         @blue;
+    border-color:		         @accent;
 }
 
 /*****----- Message -----*****/

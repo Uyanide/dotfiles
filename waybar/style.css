@@ -1,5 +1,7 @@
 @import 'mocha.css';
 
+@define-color accent #f5c2e7;
+
 * {
   /*           main font           icons                       CJK                    Fallback              */
   font-family: 'Sour Gummy Light', 'Meslo LGM Nerd Font Mono', 'WenQuanYi Micro Hei', 'Noto Sans', sans-serif;
@@ -53,7 +55,7 @@ tooltip {
 
 #workspaces button.active {
   color: @foreground;
-  background: @blue;
+  background: @accent;
 }
 
 #workspaces button.urgent {
@@ -64,7 +66,7 @@ tooltip {
   background-color: alpha(@base, 0.6);
   border-radius: 14px;
   padding: 3px 6px; /* Adjusted padding to reduce height */
-  border: 2px solid @blue;
+  border: 2px solid @accent;
 }
 
 #workspaces {
@@ -73,11 +75,11 @@ tooltip {
 }
 
 #custom-workspacenew:hover {
-  background-color: alpha(@blue, 0.3);
+  background-color: alpha(@accent, 0.3);
 }
 
 #custom-workspacespecial:hover {
-  background-color: alpha(@blue, 0.3);
+  background-color: alpha(@accent, 0.3);
 }
 
 #window {
@@ -93,7 +95,7 @@ tooltip {
   background-color: alpha(@base, 0.6);
   border-radius: 14px;
   padding: 3px 12px;
-  color: @lavender;
+  color: @accent;
 }
 
 #clock,
@@ -138,7 +140,7 @@ tooltip {
 
 #network.speed {
   background: transparent;
-  color: @lavender;
+  color: @accent;
   padding: 0;
 }
 
@@ -200,7 +202,7 @@ tooltip {
   background-color: alpha(@base, 0.6);
   border-radius: 14px;
   padding: 6px; /* Adjusted padding */
-  border: 2px solid @blue;
+  border: 2px solid @accent;
 }
 
 #custom-power {
@@ -300,7 +302,7 @@ tooltip {
 
 #clock {
   color: #c8d2e0;
-  border: 2px solid @blue;
+  border: 2px solid @accent;
 }
 
 @keyframes blink {

@@ -1,4 +1,10 @@
 #!/bin/env bash
+###
+ # @Author: Uyanide pywang0608@foxmail.com
+ # @Date: 2025-07-27 22:37:59
+ # @LastEditTime: 2025-08-01 18:18:25
+ # @Discription:
+###
 
 function close() {
     killall -q waybar
@@ -16,7 +22,8 @@ function open() {
             sleep 0.2
         done
     fi
-    waybar &
+    (setsid waybar > /dev/null 2> /dev/null &)&
+    disown
 }
 
 if [ -z "$1" ]; then

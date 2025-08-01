@@ -1,0 +1,12 @@
+# exec = export SLURP_ARGS='-d -c BFE9F8BB -b 214C5844 -s 00000000'
+
+general {
+    col.active_border = rgba(<FLAVOR_HEX>FF)
+    col.inactive_border = rgba(<FLAVOR_HEX>80)
+}
+
+misc {
+    background_color = rgba(181825FF)
+}
+
+windowrulev2 = bordercolor rgba(00DCE3AA) rgba(00DCE377),pinned:1

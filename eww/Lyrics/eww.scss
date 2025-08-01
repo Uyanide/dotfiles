@@ -6,13 +6,13 @@
 .lyrics-window {
   background-color: $bg;
   border-radius: 16px;
-  border: 2px solid $blue;
+  border: 2px solid $border;
 }
 
 .lyrics-window-single {
   background-color: rgba(30, 30, 46, 0.6);
   border-radius: 14px;
-  border: 2px solid $blue;
+  border: 2px solid $border;
 }
 
 .lyrics-box {
@@ -73,7 +73,7 @@
 
 .offset-minus,
 .offset-minus-single {
-  color: $blue;
+  color: $border;
 }
 
 .offset-plus,
@@ -123,7 +123,7 @@
 }
 
 .player-music-slider highlight {
-  background-color: $blue;
+  background-color: $border;
   padding: 3px;
 }
 
