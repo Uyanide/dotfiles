@@ -251,8 +251,8 @@ def match_color(color: str) -> str:
 
 def main():
     arguments = sys.argv[1:]
-    if len(arguments) < 1:
-        print("Usage: change-colortheme.py <flavor | #rrggbb> [<app1> <app2> ...]")
+    if len(arguments) < 1 or arguments[0] in ('-h', '--help'):
+        print("Usage: change-colortheme.py <flavor|#rrggbb> [<app1> <app2> ...]")
         sys.exit(1)
 
     flavor = arguments[0] if not arguments[0].startswith('#') else match_color(arguments[0])
@@ -285,11 +285,12 @@ def main():
                 except Exception as e:
                     print(f"Error while tweaking {purename}: {e}")
 
-    os.system(f'notify-send "Color theme changed" "Catppuccin Mocha - {flavor}"')
+        os.system(f'notify-send "Color theme changed" "Catppuccin Mocha - {flavor}"')
 
-    ans = input("execute \"exec fish\"? [y/N]: ").strip().lower()
-    if ans in ('y', 'yes'):
-        os.system('fish')
+    if not app or app == 'fastfetch':
+        ans = input("execute \"exec fish\"? [y/N]: ").strip().lower()
+        if ans in ('y', 'yes'):
+            os.system('fish')
 
 
 if __name__ == "__main__":
