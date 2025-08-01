@@ -1,7 +1,7 @@
 <!--
  * @Author: Uyanide pywang0608@foxmail.com
  * @Date: 2025-06-24 17:56:20
- * @LastEditTime: 2025-08-01 18:51:56
+ * @LastEditTime: 2025-08-01 19:17:57
  * @Discription:
 -->
 
@@ -23,7 +23,7 @@
 - **Desktop Widgets**: Eww
 - **Notification Daemon**: Mako
 
-## Hyprland & most of Hypr\* ecosystem
+## Hyprland & some scripts
 
 Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags amd tons of other stuff.
 
@@ -39,11 +39,19 @@ Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serve
 
 ## Grub theme
 
-Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453)
+Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453).
 
 ## Waybar
 
-Gathered from internet, based on <s>I don't know who</s> (such config files had been laying in my disk before I could even notice and already looked nice without further configurations) (and I'm pretty sure they were not the default config files shipped with the waybar package)
+Gathered from internet, based on <s>I don't know who</s> (such config files had been laying in my .config folder before I could even notice) (and I'm sure they were not the default config files shipped with the waybar package).
+
+## MPV
+
+Based on [noelsimbolon/mpv-config](https://github.com/noelsimbolon/mpv-config.git).
+
+## Wallpaper(s)
+
+See [backgrounds repo for personal usage](https://github.com/Uyanide/backgrounds).
 
 ## Fonts
 

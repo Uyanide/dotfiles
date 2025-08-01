@@ -68,3 +68,4 @@ qt6ct
 # utils
 bc
 jq
+python-colorthief
