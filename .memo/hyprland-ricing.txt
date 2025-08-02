@@ -15,7 +15,8 @@ hypridle
 hyprlock
 hyprshot
 hyprpicker
-hyprland-plugin-hyprexpo    # scale workspaces and put them in a grid
+plugin hyprexpo         # scale workspaces and put them in a grid
+plugin xtra-dispatchers # for "plugin:xtd:bringallfrom" dispatcher
 
 # xdg-desktop-portal*
 xdg-desktop-portal

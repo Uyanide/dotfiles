@@ -2,8 +2,8 @@
 '''
 Author: Uyanide pywang0608@foxmail.com
 Date: 2025-08-02 20:56:46
-LastEditTime: 2025-08-02 21:27:07
-Discription: Organize Hyprland workspaces from 1 to N, where N is the number of workspaces with windows,
+LastEditTime: 2025-08-03 00:33:13
+Description: Organize Hyprland workspaces from 1 to N, where N is the number of workspaces with windows,
              e.g. 3 5 6 -> 1 2 3.
              One must have xtra-dispatchers plugin installed and enabled to use this script.
 '''

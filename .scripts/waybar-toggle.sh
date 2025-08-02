@@ -2,8 +2,8 @@
 ###
  # @Author: Uyanide pywang0608@foxmail.com
  # @Date: 2025-07-27 22:37:59
- # @LastEditTime: 2025-08-01 18:18:25
- # @Discription:
+ # @LastEditTime: 2025-08-03 00:34:03
+ # @Description: Toggle Waybar and close the lyrics widget if open
 ###
 
 function close() {

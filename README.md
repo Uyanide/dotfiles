@@ -1,10 +1,3 @@
-<!--
- * @Author: Uyanide pywang0608@foxmail.com
- * @Date: 2025-06-24 17:56:20
- * @LastEditTime: 2025-08-02 17:27:06
- * @Discription:
--->
-
 ## Screenshots
 
 - desktop with a few widgets:

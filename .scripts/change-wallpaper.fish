@@ -1,8 +1,8 @@
 ###
  # @Author: Uyanide pywang0608@foxmail.com
  # @Date: 2025-06-14 20:23:25
- # @LastEditTime: 2025-08-01 18:38:47
- # @Discription:
+ # @LastEditTime: 2025-08-03 00:33:45
+ # @Description: Change the desktop wallpaper and update colortheme
 ###
 #!/bin/fish
 
