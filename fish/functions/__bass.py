@@ -1,3 +1,9 @@
+'''
+Author: Uyanide pywang0608@foxmail.com
+Date: 2025-06-14 20:23:25
+LastEditTime: 2025-08-03 01:15:54
+Description:
+'''
 """
 To be used with a companion fish function like this:
 
