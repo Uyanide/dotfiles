@@ -119,7 +119,7 @@
   },
   // System monitors
   "group/monitors": {
-    "modules": ["network#speed", "temperature", "memory", "cpu", "battery", "backlight", "wireplumber"],
+    "modules": ["network#speed", "custom/publicip", "temperature", "memory", "cpu", "battery", "backlight", "wireplumber"],
     "orientation": "inherit"
   },
   "network#speed": {
@@ -133,8 +133,17 @@
     "tooltip-format-wifi": "{essid} {signalStrength}%",
     "tooltip-format-ethernet": "{ifname} 󰌘",
     "tooltip-format-disconnected": "󰌙 Disconnected",
-    "max-length": 24,
     "min-length": 20
+  },
+  "custom/publicip": {
+    "interval": 60,
+    "return-type": "json",
+    "format": " {text}",
+    "tooltip-format": "{alt}",
+    "max-length": 6,
+    "min-length": 6,
+    "exec": "$HOME/.config/waybar/modules/publicip.sh",
+    "on-click": "rm -f $HOME/.config/waybar/modules/publicip.cache && sleep 0.1"
   },
   "temperature": {
     "interval": 5,
@@ -145,23 +154,23 @@
     "format-critical": "  {temperatureC}°C",
     "format": "{icon}  {temperatureC}°C",
     "format-icons": ["", "", ""],
-    "max-length": 7,
-    "min-length": 7
+    "max-length": 6,
+    "min-length": 6
   },
   "memory": {
     "interval": 11,
     // "format": "  {used:0.2f} / {total:0.0f} GB",
     "format": "󰍛  {percentage}%",
     "on-click": "killall btop || ghostty -e btop",
-    "min-length": 7,
-    "max-length": 7
+    "max-length": 6,
+    "min-length": 6
   },
   "cpu": {
     "interval": 3,
     //"format": " {}%", // Icon: microchip
     "format": "󰘚  {usage}%",
-    "max-length": 7,
-    "min-length": 7,
+    "max-length": 6,
+    "min-length": 6,
     "on-click": "killall btop || ghostty -e btop"
   },
   "battery": {
@@ -175,8 +184,8 @@
     "format-charging": "  {capacity}%",
     "format-plugged": "  {capacity}%",
     "format-icons": ["", "", "", "", ""],
-    "max-length": 7,
-    "min-length": 7
+    "max-length": 6,
+    "min-length": 6
   },
   "backlight": {
     "device": "$DISPLAY_DEVICE",
@@ -187,8 +196,8 @@
     "format-icons": [""],
     "on-scroll-down": "brightnessctl -d $DISPLAY_DEVICE set 5%-",
     "on-scroll-up": "brightnessctl -d $DISPLAY_DEVICE set +5%",
-    "max-length": 7,
-    "min-length": 7
+    "max-length": 6,
+    "min-length": 6
   },
   "wireplumber": {
     "on-click": "pavucontrol",
@@ -208,8 +217,8 @@
       "car": "",
       "default": ["", "", "", "", "", ""]
     },
-    "max-length": 7,
-    "min-length": 7
+    "max-length": 6,
+    "min-length": 6
   },
   // Hyprland
   "group/workspaceactions": {

@@ -116,6 +116,7 @@ tooltip {
 #custom-hyprPicker,
 #custom-power-menu,
 #custom-spotify,
+#custom-publicip,
 #custom-weather,
 #custom-weather.severe,
 #custom-weather.sunnyDay,
@@ -144,27 +145,33 @@ tooltip {
   padding: 0;
 }
 
+#custom-publicip {
+  background: transparent;
+  color: @peach;
+  padding: 0;
+}
+
 #temperature {
   background: transparent;
-  color: @maroon;
+  color: @yellow;
   padding: 0px;
 }
 
 #memory {
-  color: @peach;
+  color: @green;
   background: transparent;
   padding: 0px;
 }
 
 #cpu {
-  color: @yellow;
+  color: @teal;
   background: transparent;
   padding: 0px;
 }
 
 #battery {
   background: transparent;
-  color: #c0caf5;
+  color: @sapphire;
   padding: 0;
 }
 
@@ -176,13 +183,13 @@ tooltip {
 
 #backlight {
   background: transparent;
-  color: @teal;
+  color: @blue;
   padding: 0;
 }
 
 #wireplumber {
   background: transparent;
-  color: @sapphire;
+  color: @lavender;
   padding: 0;
 }
 
