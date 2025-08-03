@@ -42,10 +42,6 @@ Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serve
 
 Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453).
 
-## Waybar
-
-Gathered from internet, based on <s>I don't know who</s> (such config files had been laying in my .config folder before I could even notice) (and I'm sure they were not the default config files shipped with the waybar package).
-
 ## MPV
 
 Based on [noelsimbolon/mpv-config](https://github.com/noelsimbolon/mpv-config.git).

@@ -287,10 +287,18 @@ def main():
 
         os.system(f'notify-send "Color theme changed" "Catppuccin Mocha - {flavor}"')
 
-    if not app or app == 'fastfetch':
-        ans = input("execute \"exec fish\"? [y/N]: ").strip().lower()
-        if ans in ('y', 'yes'):
-            os.system('fish')
+    # def is_interactive_shell() -> bool:
+    #     return sys.stdin.isatty() and sys.stdout.isatty()
+
+    # def is_fish() -> bool:
+    #     import psutil
+    #     parent = psutil.Process().parent()
+    #     return parent is not None and 'fish' in parent.name().lower()
+
+    # if not app or app == 'fastfetch' \
+    #    and is_interactive_shell() \
+    #    and is_fish():
+    #     os.system('fish')
 
 
 if __name__ == "__main__":
