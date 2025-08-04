@@ -1,6 +1,8 @@
 @import 'mocha.css';
 
 @define-color flavor #<FLAVOR_HEX>;
+/* @define-color archlinux #1793d1; */
+@define-color archlinux @sapphire;
 
 /* Font(s) */
 * {
@@ -153,11 +155,12 @@ window#waybar.empty #window{
 }
 
 #custom-rofi {
-  border: 3px solid @teal;
+  color: @archlinux;
+  border: 3px solid @archlinux;
 }
 
 #custom-rofi:hover {
-  background-color: alpha(@teal, 0.3);
+  background-color: alpha(@archlinux, 0.3);
 }
 
 #custom-caffeine {

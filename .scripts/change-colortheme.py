@@ -2,6 +2,7 @@
 
 '''
 - kvantum:      kvantummanager --set catppuccin-mocha-"$flavor"
+                (a kvantum window will pop out if such theme is not installed)
 
 - nwg-look:     edit $HOME/.local/share/nwg-look/gsettings
                 nwg-look -a
@@ -17,14 +18,14 @@
 - waybar:       edit $HOME/.config/waybar/style.css
                 waybar-toggle.sh
 
-- ohmyposh:     edit $HOME/.config/posh_theme.omp.json
+- oh-my-posh:   edit $HOME/.config/posh_theme.omp.json
 
 - fastfetch:    edit $HOME/.config/fish/post.d/fetch.fish
 
 - mako:         edit $HOME/.config/mako/config
                 makoctl reload
 
-- yazi:         cp "$path"/../.yazi-themes/catppuccin-mocha-"$flavor".toml ~/.config/yazi/theme.toml
+- yazi:         cp -f "$path"/../.yazi-themes/catppuccin-mocha-"$flavor".toml ~/.config/yazi/theme.toml
 
 - wlogout:      edit $HOME/.config/wlogout/style.css
                 edit $HOME/.config/wlogout/icons/*.svg
@@ -36,30 +37,36 @@ import os
 import sys
 from pathlib import Path
 import shutil
+import argparse
+from typing import Callable
 
 FLAVOR_NAME_PLACEHOLDER = "<FLAVOR_NAME>"
 FLAVOR_HEX_PLACEHOLDER = "<FLAVOR_HEX>"
 
-CATPPUCIN_MOCHA_PALETTE = {
-    "rosewater": "f5e0dc",
-    "flamingo": "f2cdcd",
-    "pink": "f5c2e7",
-    "mauve": "cba6f7",
-    "red": "f38ba8",
-    "maroon": "eba0ac",
-    "peach": "fab387",
-    "yellow": "f9e2af",
-    "green": "a6e3a1",
-    "teal": "94e2d5",
-    "sky": "89dceb",
-    "sapphire": "74c7ec",
-    "blue": "89b4fa",
-    "lavender": "b4befe"}
+
+PALETTES = {
+    "catppuccin-mocha": {
+        "rosewater": "f5e0dc",
+        "flamingo": "f2cdcd",
+        "pink": "f5c2e7",
+        "mauve": "cba6f7",
+        "red": "f38ba8",
+        "maroon": "eba0ac",
+        "peach": "fab387",
+        "yellow": "f9e2af",
+        "green": "a6e3a1",
+        "teal": "94e2d5",
+        "sky": "89dceb",
+        "sapphire": "74c7ec",
+        "blue": "89b4fa",
+        "lavender": "b4befe",
+    },
+}
 
 CURRENT_DIR = Path(__file__).resolve().parent.resolve()
 
 
-def apply_flavor(file_path: Path, flavor: str):
+def replace_placeholders(file_path: Path, palette: dict[str, str], flavor: str):
     print(f"Applying flavor {flavor} to {file_path}")
 
     if not file_path.exists():
@@ -70,7 +77,7 @@ def apply_flavor(file_path: Path, flavor: str):
         content = file.read()
 
     content = content.replace(FLAVOR_NAME_PLACEHOLDER, flavor)
-    content = content.replace(FLAVOR_HEX_PLACEHOLDER, CATPPUCIN_MOCHA_PALETTE[flavor])
+    content = content.replace(FLAVOR_HEX_PLACEHOLDER, palette[flavor])
 
     with file_path.open('w') as file:
         file.write(content)
@@ -98,13 +105,13 @@ def copy_template(src: Path, dist_dir: Path | None) -> Path:
     return dist
 
 
-def change_kvantum(flavor):
+def _change_kvantum(_, flavor):
     os.system(f'kvantummanager --set catppuccin-mocha-{flavor}')
     # execute twice to ensure the theme is installed AND applied
     os.system(f'kvantummanager --set catppuccin-mocha-{flavor}')
 
 
-def change_nwglook(flavor):
+def _change_nwglook(_, flavor):
     lines: list[str] = []
     with Path.home().joinpath('.local', 'share', 'nwg-look', 'gsettings').open('r') as file:
         content = file.read()
@@ -122,183 +129,220 @@ def change_nwglook(flavor):
     os.system('nwg-look -a')
 
 
-def change_eww(flavor):
+def _change_eww(palette: dict[str, str], flavor: str):
     eww_template = Path.home().joinpath('.config', 'eww', 'eww.scss.template')
     eww_dist = copy_template(eww_template, Path.home().joinpath('.config', 'eww'))
-    apply_flavor(eww_dist, flavor)
+    replace_placeholders(eww_dist, palette, flavor)
 
     os.system('eww reload')
 
 
-def change_hypr(flavor):
+def _change_hypr(palette: dict[str, str], flavor: str):
     hypr_template = Path.home().joinpath('.config', 'hypr', 'hyprland', 'colors.conf.template')
     hypr_dist = copy_template(hypr_template, Path.home().joinpath('.config', 'hypr', 'hyprland'))
-    apply_flavor(hypr_dist, flavor)
+    replace_placeholders(hypr_dist, palette, flavor)
 
     os.system('hyprctl reload')
 
 
-def change_rofi(flavor):
+def _change_rofi(palette: dict[str, str], flavor: str):
     rofi_template = Path.home().joinpath('.config', 'rofi', 'config.rasi.template')
     rofi_dist = copy_template(rofi_template, Path.home().joinpath('.config', 'rofi'))
-    apply_flavor(rofi_dist, flavor)
+    replace_placeholders(rofi_dist, palette, flavor)
 
 
-def change_waybar(flavor):
+def _change_waybar(palette: dict[str, str], flavor: str):
     waybar_template = Path.home().joinpath('.config', 'waybar', 'style.css.template')
     waybar_dist = copy_template(waybar_template, Path.home().joinpath('.config', 'waybar'))
-    apply_flavor(waybar_dist, flavor)
+    replace_placeholders(waybar_dist, palette, flavor)
     os.system('waybar-toggle.sh')
 
 
-def change_ohmyposh(flavor):
+def _change_ohmyposh(palette: dict[str, str], flavor: str):
     posh_template = Path.home().joinpath('.config', 'posh_theme.omp.json.template')
     posh_dist = copy_template(posh_template, Path.home().joinpath('.config'))
-    apply_flavor(posh_dist, flavor)
+    replace_placeholders(posh_dist, palette, flavor)
 
 
-def change_fastfetch(flavor):
+def _change_fastfetch(palette: dict[str, str], flavor: str):
     fetch_template = Path.home().joinpath('.config', 'fish', 'post.d', 'fetch.fish.template')
     fetch_dist = copy_template(fetch_template, Path.home().joinpath('.config', 'fish', 'post.d'))
-    apply_flavor(fetch_dist, flavor)
+    replace_placeholders(fetch_dist, palette, flavor)
 
 
-def change_mako(flavor):
+def _change_mako(palette: dict[str, str], flavor: str):
     mako_template = Path.home().joinpath('.config', 'mako', 'config.template')
     mako_dist = copy_template(mako_template, Path.home().joinpath('.config', 'mako'))
-    apply_flavor(mako_dist, flavor)
+    replace_placeholders(mako_dist, palette, flavor)
 
     os.system('makoctl reload')
 
 
-def change_yazi(flavor):
+def _change_yazi(_, flavor):
     yazi_template = CURRENT_DIR / '..' / '.yazi-themes' / f'catppuccin-mocha-{flavor}.toml'
     yazi_dist = Path.home().joinpath('.config', 'yazi', 'theme.toml')
     shutil.copyfile(yazi_template, yazi_dist, follow_symlinks=True)
     print(f"Copied {yazi_template} to {yazi_dist}")
 
 
-def change_wlogout(flavor):
+def _change_wlogout(palette: dict[str, str], flavor: str):
     wlogout_template = Path.home().joinpath('.config', 'wlogout', 'style.css.template')
     wlogout_dist = copy_template(wlogout_template, Path.home().joinpath('.config', 'wlogout'))
-    apply_flavor(wlogout_dist, flavor)
+    replace_placeholders(wlogout_dist, palette, flavor)
 
     for icon_template in Path.home().joinpath('.config', 'wlogout', 'icons').glob('*.svg.template'):
         icon_dist = copy_template(icon_template, Path.home().joinpath('.config', 'wlogout', 'icons'))
-        apply_flavor(icon_dist, flavor)
+        replace_placeholders(icon_dist, palette, flavor)
 
 
-def change_fuzzel(flavor):
+def _change_fuzzel(palette: dict[str, str], flavor: str):
     fuzzel_template = Path.home().joinpath('.config', 'fuzzel', 'fuzzel.ini.template')
     fuzzel_dist = copy_template(fuzzel_template, Path.home().joinpath('.config', 'fuzzel'))
-    apply_flavor(fuzzel_dist, flavor)
+    replace_placeholders(fuzzel_dist, palette, flavor)
 
 
-def match_color(color: str) -> str:
-    """ Matches a given color to the closest color in the palette."""
+apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
+    'kvantum': _change_kvantum,
+    'nwg-look': _change_nwglook,
+    'eww': _change_eww,
+    'hypr': _change_hypr,
+    'rofi': _change_rofi,
+    'waybar': _change_waybar,
+    'oh-myposh': _change_ohmyposh,
+    'fastfetch': _change_fastfetch,
+    'mako': _change_mako,
+    'yazi': _change_yazi,
+    'wlogout': _change_wlogout,
+    'fuzzel': _change_fuzzel
+}
+
+
+def extract_color(image_path: str) -> str:
+    from colorthief import ColorThief
+    return "#{:02x}{:02x}{:02x}".format(*ColorThief(image_path).get_color(quality=10))
+
+
+def match_color(color: str, palette: dict[str, str]) -> str:
+    """ Matches a given color (rrggbb hex) to the closest color in the palette."""
     # HUE distance of the given and returned color must no<t exceed this value
     HUE_THRESHOLD = 60.0  # degrees
 
-    if not color.startswith('#'):
-        color = f'#{color}'
-    color = color.lstrip('#')
+    color = color.lower().strip().removeprefix('#')
 
     def hex2rgb(hex_color: str) -> tuple[int, int, int]:
-        return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+        return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))  # type: ignore
+
+    # weigh by CCIR 601 luminosity
+    fr, fg, fb = 0.299 / 255 / 255, 0.587 / 255 / 255, 0.114 / 255 / 255
+    lfr, lfg, lfb = 0.299 / 255, 0.587 / 255, 0.114 / 255
 
     def color_distance(c1: str, c2: str) -> float:
         r1, g1, b1 = hex2rgb(c1)
         r2, g2, b2 = hex2rgb(c2)
-        return (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
-
-    def rgb2hue(r, g, b) -> float:
-        r, g, b = r / 255.0, g / 255.0, b / 255.0
-        mx = max(r, g, b)
-        mn = min(r, g, b)
-        diff = mx - mn
-
-        if diff == 0:
-            return 0.0
-
-        if mx == r:
-            hue = (g - b) / diff + (6 if g < b else 0)
-        elif mx == g:
-            hue = (b - r) / diff + 2
-        else:
-            hue = (r - g) / diff + 4
-
-        return hue * 60
+        diff_l = (lfr * (r1 - r2) + lfg * (g1 - g2) + lfb * (b1 - b2))
+        diff_r = fr * (r1 - r2) ** 2
+        diff_g = fg * (g1 - g2) ** 2
+        diff_b = fb * (b1 - b2) ** 2
+        return (diff_r + diff_g + diff_b) * 0.75 + diff_l ** 2
 
     def color_distance_hue(c1: str, c2: str) -> float:
+        def rgb2hue(r, g, b) -> float:
+            r, g, b = r / 255.0, g / 255.0, b / 255.0
+            mx = max(r, g, b)
+            mn = min(r, g, b)
+            diff = mx - mn
+
+            if diff == 0:
+                return 0.0
+
+            if mx == r:
+                hue = (g - b) / diff + (6 if g < b else 0)
+            elif mx == g:
+                hue = (b - r) / diff + 2
+            else:
+                hue = (r - g) / diff + 4
+
+            return hue * 60
         r1, g1, b1 = hex2rgb(c1)
         r2, g2, b2 = hex2rgb(c2)
         return abs(rgb2hue(r1, g1, b1) - rgb2hue(r2, g2, b2))
 
-    closest_color = min(CATPPUCIN_MOCHA_PALETTE.keys(), key=lambda k: color_distance(color, CATPPUCIN_MOCHA_PALETTE[k]))
+    closest_color = min(palette.keys(), key=lambda k: color_distance(color, palette[k]))
     print(f"Matched color {color} to {closest_color}")
 
     # if the hue distance is too large, rematch
-    if abs(rgb2hue(*hex2rgb(color)) - rgb2hue(*hex2rgb(CATPPUCIN_MOCHA_PALETTE[closest_color]))) > HUE_THRESHOLD:
+    if color_distance_hue(color, palette[closest_color]) > HUE_THRESHOLD:
         print(f"Color {color} is too far from {closest_color}, rematching'")
     else:
         return closest_color
 
-    closest_color = min(CATPPUCIN_MOCHA_PALETTE.keys(), key=lambda k: color_distance_hue(color, CATPPUCIN_MOCHA_PALETTE[k]))
+    closest_color = min(palette.keys(), key=lambda k: color_distance_hue(color, palette[k]))
     print(f"Rematched color {color} to {closest_color}")
 
     return closest_color
 
 
 def main():
-    arguments = sys.argv[1:]
-    if len(arguments) < 1 or arguments[0] in ('-h', '--help'):
-        print("Usage: change-colortheme.py <flavor|#rrggbb> [<app1> <app2> ...]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Change color theme for various applications.")
+    parser.add_argument('-i', '--image', type=str, help="Path to the image")
+    parser.add_argument('-f', '--flavor', type=str, help="Flavor to apply")
+    parser.add_argument('-c', '--color', type=str, help="Color to match from the palette")
+    parser.add_argument('arguments', nargs='*', help="List of applications to change the color theme of")
 
-    flavor = arguments[0] if not arguments[0].startswith('#') else match_color(arguments[0])
-    app = arguments[1] if len(arguments) > 1 else None
+    arguments = parser.parse_args()
 
-    if flavor not in CATPPUCIN_MOCHA_PALETTE:
-        print(f"Unknown flavor: {flavor}. Available flavors: {', '.join(CATPPUCIN_MOCHA_PALETTE.keys())}")
-        sys.exit(1)
+    # for future use, probably
+    def parse_palette_name() -> str:
+        return "catppuccin-mocha"
 
-    if app:
-        function_name = f"change_{app}"
-        if function_name in globals():
-            func = globals()[function_name]
-            try:
-                print(f"Changing color theme for {app} with flavor {flavor}...")
-                func(flavor)
-                print("Success!")
-            except Exception as e:
-                print(f"Error while tweaking {app}: {e}")
+    def parse_flavor(palette: dict[str, str]) -> str:
+        if arguments.flavor:
+            if arguments.flavor not in palette:
+                print(f"Unknown flavor: {arguments.flavor}. Available flavors: {', '.join(palette.keys())}")
+                sys.exit(1)
+            flavor = arguments.flavor
+        elif arguments.color:
+            flavor = match_color(arguments.color, palette)
+            print(f"Matched color: {flavor}")
+        elif arguments.image:
+            if not Path(arguments.image).exists():
+                print(f"Image file {arguments.image} does not exist.")
+                sys.exit(1)
+            color = extract_color(arguments.image)
+            print(f"Extracted color {color} from image {arguments.image}")
+            flavor = match_color(color, palette)
+            print(f"Extracted color: {flavor}")
         else:
-            print(f"Unknown app: {app}")
-    else:
-        for name, func in globals().items():
-            if name.startswith('change_') and callable(func):
-                purename = name.removeprefix('change_')
-                try:
-                    print(f"Changing color theme for {purename} with flavor {flavor}...")
-                    func(flavor)
-                    print("Success!")
-                except Exception as e:
-                    print(f"Error while tweaking {purename}: {e}")
+            import random
+            flavor = random.choice(list(palette.keys()))
+        return flavor
 
-        os.system(f'notify-send "Color theme changed" "Catppuccin Mocha - {flavor}"')
+    def parse_apps() -> list[str]:
+        if not arguments.arguments:
+            return list(apply_theme_funcs.keys())
+        apps = []
+        for arg in arguments.arguments:
+            if arg not in apply_theme_funcs:
+                print(f"Unknown app: {arg}. Available apps: {', '.join(apply_theme_funcs.keys())}")
+                sys.exit(1)
+            apps.append(arg)
+        return apps
 
-    # def is_interactive_shell() -> bool:
-    #     return sys.stdin.isatty() and sys.stdout.isatty()
+    palette_name = parse_palette_name()
+    palette = PALETTES[palette_name]
+    flavor = parse_flavor(palette)
+    apps = parse_apps()
 
-    # def is_fish() -> bool:
-    #     import psutil
-    #     parent = psutil.Process().parent()
-    #     return parent is not None and 'fish' in parent.name().lower()
+    for app in apps:
+        func = apply_theme_funcs[app]
+        try:
+            print(f"Changing color theme of {app} to flavor {flavor}...")
+            func(palette, flavor)
+            print("Success!\n")
+        except Exception as e:
+            print(f"Error while tweaking {app}: {e}")
 
-    # if not app or app == 'fastfetch' \
-    #    and is_interactive_shell() \
-    #    and is_fish():
-    #     os.system('fish')
+    os.system(f'notify-send "Color theme changed" "Palette: {palette_name}\nFlavor: {flavor}"')
 
 
 if __name__ == "__main__":

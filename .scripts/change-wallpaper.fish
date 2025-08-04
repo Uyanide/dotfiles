@@ -1,9 +1,3 @@
-###
- # @Author: Uyanide pywang0608@foxmail.com
- # @Date: 2025-06-14 20:23:25
- # @LastEditTime: 2025-08-03 00:33:45
- # @Description: Change the desktop wallpaper and update colortheme
-###
 #!/bin/fish
 
 # if the path is given as an argument, use that
@@ -21,7 +15,7 @@ if not test -f "$image"
     exit 1
 end
 if string match -q "* *" "$image"
-    notify-send "Error" "Selected file path contains white spaces, please select a file without white spaces."
+    notify-send "Error" "The path of selected file contains white spaces, please select a file without white spaces."
     exit 1
 end
 
@@ -31,7 +25,5 @@ echo "wallpaper = , $image" >> ~/.config/hypr/hyprpaper.conf
 
 notify-send "Wallpaper Changed" "$image"
 
-change-colortheme.py "#$(
-    notify-send "Extracting color from wallpaper" "This may take a few seconds..."
-    extract-color.py "$image"
-)"
+notify-send "Extracting colors from wallpaper" "This may take a few seconds..."
+change-colortheme.py -i "$image"

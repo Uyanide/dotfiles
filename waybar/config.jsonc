@@ -36,7 +36,7 @@
     "max-length": 2
   },
   "custom/rofi": {
-    "format": "",
+    "format": "󰣇",
     "tooltip": false,
     // "on-click-right": "fuzzel -l 0 -p '>> ' | xargs -r sh -c",
     // "on-click": "fuzzel",
@@ -75,8 +75,8 @@
   "network#speed": {
     "interval": 1,
     "format": "{ifname}",
-    "format-wifi": "  {bandwidthDownBytes}   {bandwidthUpBytes} ",
-    "format-ethernet": "  {bandwidthDownBytes}   {bandwidthUpBytes} ",
+    "format-wifi": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
+    "format-ethernet": " {bandwidthDownBytes}  {bandwidthUpBytes} ",
     "format-disconnected": "󰌙",
     "tooltip-format": "{ipaddr}",
     "format-linked": "󰈁  {ifname} (No IP)",
@@ -102,7 +102,7 @@
     "critical-threshold": 80,
     // "format-critical": " {temperatureC}°C",
     "format-critical": "  {temperatureC}°C",
-    "format": "{icon}  {temperatureC}°C",
+    "format": "{icon} {temperatureC}°C",
     "format-icons": ["", "", ""],
     "max-length": 6,
     "min-length": 6
@@ -110,7 +110,7 @@
   "memory": {
     "interval": 11,
     // "format": "  {used:0.2f} / {total:0.0f} GB",
-    "format": "󰍛  {percentage}%",
+    "format": "󰍛 {percentage}%",
     "on-click": "killall btop || ghostty -e btop",
     "max-length": 6,
     "min-length": 6
@@ -118,7 +118,7 @@
   "cpu": {
     "interval": 3,
     //"format": " {}%", // Icon: microchip
-    "format": "󰘚  {usage}%",
+    "format": "󰘚 {usage}%",
     "max-length": 6,
     "min-length": 6,
     "on-click": "killall btop || ghostty -e btop"
@@ -130,9 +130,9 @@
       "warning": 30,
       "critical": 15
     },
-    "format": "{icon}  {capacity}%",
-    "format-charging": "  {capacity}%",
-    "format-plugged": "  {capacity}%",
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
     "format-icons": ["", "", "", "", ""],
     "max-length": 6,
     "min-length": 6
@@ -216,19 +216,16 @@
     "on-click": "~/.scripts/workspace-new.sh"
   },
   "hyprland/window": {
+    "format": "{class}",
     "max-length": 100,
     "separate-outputs": true,
     "icon": true,
-    "icon-size": 15
+    "icon-size": 14
   },
   "custom/mediaplayer": {
     "format": "{text}",
     "return-type": "json",
     "max-length": 100,
-    "format-icons": {
-      "spotify": "",
-      "default": ""
-    },
     "escape": true,
     "exec": "$HOME/.config/waybar/modules/mediaplayer.py 2> /dev/null",
     "on-click": "playerctl play-pause",
