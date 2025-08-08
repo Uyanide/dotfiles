@@ -25,6 +25,19 @@ time_log="$path/publicip.log"
 [ "$1" == "force" ] && rm -f "$cache_file"
 [ -f "$cache_file" ] && . "$cache_file"
 
+# Try to check network connectivity before querying
+if ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1; then
+    # No network, return cached values if available
+    [ -z "$CACHED_IP" ] && CACHED_IP="N/A"
+    [ -z "$CACHED_CODE" ] && CACHED_CODE="N/A"
+
+    jq -n --unbuffered --compact-output \
+        --arg ip "$CACHED_IP" \
+        --arg country "$CACHED_CODE" \
+        '{alt: $ip, text: $country}'
+    exit 0
+fi
+
 ip_current=$(curl -s -L -4 "$IP_QUERY_URL" | jq -r '.ip')
 [ -z "$ip_current" ] && exit 1
 

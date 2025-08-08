@@ -40,6 +40,7 @@ import shutil
 import argparse
 from typing import Callable
 
+
 FLAVOR_NAME_PLACEHOLDER = "<FLAVOR_NAME>"
 FLAVOR_HEX_PLACEHOLDER = "<FLAVOR_HEX>"
 
@@ -103,6 +104,10 @@ def copy_template(src: Path, dist_dir: Path | None) -> Path:
 
     shutil.copyfile(src, dist, follow_symlinks=True)
     return dist
+
+
+def hex2rgb(hex_color: str) -> tuple[int, int, int]:
+    return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))  # type: ignore
 
 
 def _change_kvantum(_, flavor):
@@ -208,7 +213,7 @@ apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
     'hypr': _change_hypr,
     'rofi': _change_rofi,
     'waybar': _change_waybar,
-    'oh-myposh': _change_ohmyposh,
+    'oh-my-posh': _change_ohmyposh,
     'fastfetch': _change_fastfetch,
     'mako': _change_mako,
     'yazi': _change_yazi,
@@ -228,9 +233,6 @@ def match_color(color: str, palette: dict[str, str]) -> str:
     HUE_THRESHOLD = 60.0  # degrees
 
     color = color.lower().strip().removeprefix('#')
-
-    def hex2rgb(hex_color: str) -> tuple[int, int, int]:
-        return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))  # type: ignore
 
     # weigh by CCIR 601 luminosity
     fr, fg, fb = 0.299 / 255 / 255, 0.587 / 255 / 255, 0.114 / 255 / 255
@@ -282,6 +284,39 @@ def match_color(color: str, palette: dict[str, str]) -> str:
     return closest_color
 
 
+def pick_flavor(palette: dict[str, str]) -> str:
+    def is_interactive() -> bool:
+        return sys.stdin.isatty() and sys.stdout.isatty()
+
+    def is_truecolor() -> bool:
+        colorterm = os.environ.get('COLORTERM', '')
+        term = os.environ.get('TERM', '')
+
+        return (
+            'truecolor' in colorterm or
+            '24bit' in colorterm or
+            term.endswith('-256color')
+        )
+
+    if is_interactive():
+        isTruecolor = is_truecolor()
+        print("Available flavors:")
+        for i, flavor in enumerate(palette.keys(), 1):
+            r, g, b = hex2rgb(palette[flavor])
+            if isTruecolor:
+                print(f"\033[38;2;{r};{g};{b}m█ {i}. {flavor}: #{palette[flavor]}\033[0m")
+            else:
+                print(f"{i}. {flavor}")
+        while True:
+            choice = input("Pick a flavor by number: ")
+            if choice.isdigit() and 1 <= int(choice) <= len(palette):
+                return list(palette.keys())[int(choice) - 1]
+            print("Invalid choice. Try again.")
+    else:
+        print("No flavor specified.")
+        sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Change color theme for various applications.")
     parser.add_argument('-i', '--image', type=str, help="Path to the image")
@@ -313,8 +348,7 @@ def main():
             flavor = match_color(color, palette)
             print(f"Extracted color: {flavor}")
         else:
-            import random
-            flavor = random.choice(list(palette.keys()))
+            flavor = pick_flavor(palette)
         return flavor
 
     def parse_apps() -> list[str]:

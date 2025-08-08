@@ -1,18 +1,3 @@
-'''
-Author: Uyanide pywang0608@foxmail.com
-Date: 2025-06-14 20:23:25
-LastEditTime: 2025-08-03 01:15:54
-Description:
-'''
-"""
-To be used with a companion fish function like this:
-
-        function refish
-            set -l _x (python /tmp/bass.py source ~/.nvm/nvim.sh ';' nvm use iojs); source $_x; and rm -f $_x
-        end
-
-"""
-
 from __future__ import print_function
 
 import json
@@ -31,8 +16,9 @@ FISH_READONLY = [
 ]
 
 IGNORED = [
- 'PS1', 'XPC_SERVICE_NAME'
+    'PS1', 'XPC_SERVICE_NAME'
 ]
+
 
 def ignored(name):
     if name == 'PWD':  # this is read only, but has special handling
@@ -46,15 +32,19 @@ def ignored(name):
         return True
     return False
 
+
 def escape(string):
     # use json.dumps to reliably escape quotes and backslashes
     return json.dumps(string).replace(r'$', r'\$')
 
+
 def escape_identifier(word):
     return escape(word.replace('?', '\\?'))
 
+
 def comment(string):
     return '\n'.join(['# ' + line for line in string.split('\n')])
+
 
 def gen_script():
     # Use the following instead of /usr/bin/env to read environment so we can
@@ -66,7 +56,7 @@ def gen_script():
 
     pipe_r, pipe_w = os.pipe()
     if sys.version_info >= (3, 4):
-      os.set_inheritable(pipe_w, True)
+        os.set_inheritable(pipe_w, True)
     command = 'eval $1 && ({}; alias) >&{}'.format(
         env_reader,
         pipe_w
@@ -126,6 +116,7 @@ def gen_script():
 
     return script + '\n' + alias
 
+
 script_file = os.fdopen(3, 'w')
 
 if not sys.argv[1:]:
@@ -138,7 +129,7 @@ except subprocess.CalledProcessError as e:
     sys.exit(e.returncode)
 except Exception:
     print('Bass internal error!', file=sys.stderr)
-    raise # traceback will output to stderr
+    raise  # traceback will output to stderr
 except KeyboardInterrupt:
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     os.kill(os.getpid(), signal.SIGINT)

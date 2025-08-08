@@ -1,0 +1,27 @@
+Intel_ID="$(lspci -d ::03xx | grep Intel | cut -f 1 -d ' ')"
+NVIDIA_ID="$(lspci -d ::03xx | grep NVIDIA | cut -f 1 -d ' ')"
+
+for file in /dev/dri/by-path/*card; do
+    real_target=$(readlink -f "$file")
+    if [[ "$file" == *"$Intel_ID"* ]]; then
+        Intel_DRI_PATH="$real_target"
+    elif [[ "$file" == *"$NVIDIA_ID"* ]]; then
+        NVIDIA_DRI_PATH="$real_target"
+    fi
+done
+
+if [ -n "$Intel_DRI_PATH" ]; then
+    export HYPR_DISPLAY_DEVICE=intel_backlight
+    # if [ -n "$NVIDIA_DRI_PATH" ]; then
+    #     export HYPR_AQ_DRM_DEVICES="$NVIDIA_DRI_PATH:$Intel_DRI_PATH"
+    # else
+    #     export HYPR_AQ_DRM_DEVICES="$Intel_DRI_PATH"
+    # fi
+elif [ -n "$NVIDIA_DRI_PATH" ]; then
+    export HYPR_DISPLAY_DEVICE=nvidia_0
+    # export HYPR_AQ_DRM_DEVICES="$NVIDIA_DRI_PATH"
+else
+    export HYPR_DISPLAY_DEVICE
+    # export HYPR_AQ_DRM_DEVICES=/dev/dri/card0
+fi
+

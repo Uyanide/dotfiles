@@ -73,7 +73,7 @@
     "min-length": 20
   },
   "custom/publicip": {
-    "interval": 60,
+    "interval": 30,
     "return-type": "json",
     "format": " {text}",
     "tooltip-format": "{alt}",
@@ -131,8 +131,8 @@
     "format-alt-click": "click-right",
     //"format-icons": ["", ""],
     "format-icons": [""],
-    "on-scroll-down": "brightnessctl -d $DISPLAY_DEVICE set 5%-",
-    "on-scroll-up": "brightnessctl -d $DISPLAY_DEVICE set +5%",
+    "on-scroll-down": "brightnessctl -d $HYPR_DISPLAY_DEVICE set 5%-",
+    "on-scroll-up": "brightnessctl -d $HYPR_DISPLAY_DEVICE set +5%",
     "max-length": 6,
     "min-length": 6
   },
