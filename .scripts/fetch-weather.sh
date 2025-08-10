@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 ## Collect data
 cache_dir="$HOME/.cache/eww/weather"

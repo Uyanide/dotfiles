@@ -1,9 +1,9 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 HIGHLIGHT_COLOR="#cdd6f4" # text
 NORMAL_COLOR="#7f849c" # overlay1
 TARGET_LINE=1
-[ -n $1 ] && TARGET_LINE="$1"
+[ -n "$1" ] && TARGET_LINE="$1"
 
 mapfile -t lines
 

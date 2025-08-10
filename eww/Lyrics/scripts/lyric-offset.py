@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 APP_NAME = "spotify-lyrics"
 STATE_DIR_NAME = "~/.local/state/eww/lyrics"

@@ -1,7 +1,7 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 function checkReturn {
-    echo "Executing: $@"
+    echo "Executing: $*"
     if ! "$@"; then
         echo "Error runnning command"
         exit 1

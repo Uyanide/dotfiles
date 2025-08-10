@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 if [ -z "$1" ]; then
     image=$(zenity --file-selection --title="Open File" --file-filter="*.jpg *.jpeg *.png *.webp *.bmp *.jfif *.tiff *.avif *.heic *.heif")
