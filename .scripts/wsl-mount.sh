@@ -2,7 +2,7 @@
 
 path="$(dirname "$(realpath "$0")")"
 
-"$path/issu.sh" || {
+"$path/issu.sh" && {
     echo "Do not run this script in sudo mode."
     exit 1
 }
@@ -20,6 +20,12 @@ username=$(whoami)
 sudo chown "$username:$username" "$mount_point"
 
 export LIBGUESTFS_BACKEND=direct
+
+# replay log
+# qemu-img check -r all "$VHDX_PATH" || {
+#     echo "Failed to check VHDX file."
+#     exit 1
+# }
 
 guestmount --add "$vhdx_path" --inspector --ro "$mount_point" || {
     echo "Failed to mount VHDX file."

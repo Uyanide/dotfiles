@@ -2,7 +2,7 @@
 
 path="$(dirname "$(realpath "$0")")"
 
-"$path/issu.sh" || {
+"$path/issu.sh" && {
     echo "Do not run this script in sudo mode."
     exit 1
 }

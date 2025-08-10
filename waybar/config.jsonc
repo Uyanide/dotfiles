@@ -10,7 +10,7 @@
   "spacing": 2, // Gaps between modules (px)
   "modules-left": ["custom/rofi", "group/workspaceactions", "hyprland/window", "custom/mediaplayer"],
   "modules-center": ["clock"],
-  "modules-right": ["group/monitors", "tray", "custom/caffeine", "custom/power"],
+  "modules-right": ["group/monitors", "tray", "idle_inhibitor", "custom/power"],
   // -------------------------------------------------------------------------
   // Modules
   // -------------------------------------------------------------------------
@@ -33,20 +33,14 @@
     "min-length": 2,
     "max-length": 2
   },
-  "custom/caffeine": {
+  "idle_inhibitor": {
     "format": "{icon}",
-    "return-type": "json",
-    "interval": "once",
-    "exec": "$HOME/.config/waybar/modules/caffeine.sh",
-    "on-click": "$HOME/.config/waybar/modules/caffeine.sh toggle && sleep 0.2",
-    "exec-on-event": true,
-    "min-length": 2,
-    "max-length": 2,
-    "tooltip": false,
     "format-icons": {
-      "active": "",
-      "inactive": ""
-    }
+      "activated": "",
+      "deactivated": ""
+    },
+    "min-length": 2,
+    "max-length": 2
   },
   // Time and Date
   "clock": {
