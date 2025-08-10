@@ -10,15 +10,14 @@
     { "type": "separator" },
     { "key": "  os", "type": "os" },
     { "key": "┠ kernel", "type": "kernel" },
-    { "key": "┠ cpu", "type": "cpu" },
-    { "key": "┠ gpu", "type": "gpu" },
+    { "key": "┠ cpu", "type": "cpu", "format": "{name}" },
+    { "key": "┠ gpu", "type": "gpu", "format": "{vendor} {name}" },
     { "key": "┖ host", "type": "host" },
     { "type": "break" },
-    { "key": "  wm", "type": "wm" },
-    { "key": "┠ de", "type": "de" },
-    { "key": "┠ shell", "type": "shell" },
+    { "key": "󰆍 shell", "type": "shell" },
     { "key": "┠ terminal", "type": "terminal" },
-    { "key": "┖ uptime", "type": "uptime" },
-    { "type": "break" }
+    { "key": "┠ wm", "type": "wm" },
+    { "key": "┠ de", "type": "de" },
+    { "key": "┖ uptime", "type": "uptime" }
   ]
 }
