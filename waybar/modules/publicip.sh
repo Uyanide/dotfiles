@@ -31,6 +31,8 @@ if ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1; then
     [ -z "$CACHED_IP" ] && CACHED_IP="N/A"
     [ -z "$CACHED_CODE" ] && CACHED_CODE="N/A"
 
+    echo "$(date +%Y-%m-%dT%H:%M:%S) - Waiting for network" >>"$time_log"
+
     jq -n --unbuffered --compact-output \
         --arg ip "$CACHED_IP" \
         --arg country "$CACHED_CODE" \

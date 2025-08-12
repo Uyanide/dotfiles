@@ -1,68 +1,45 @@
 #!/bin/bash
 
-tmp_dir="$HOME/.config/eww/Main/images"
-tmp_temp_path=$tmp_dir/temp.png
-tmp_blur_path="$tmp_dir/temp-blur.png"
+tmp_dir="$HOME/.cache/eww/music-art"
+art_path=$tmp_dir/temp.png
+art_blur_path="$tmp_dir/temp-blur.png"
 cache_path="$tmp_dir/cache.conf"
-default_path="$tmp_dir/default-music.svg"
-default_blur_path="$tmp_dir/default-music-blur.png"
+cache_blur_path="$tmp_dir/cache-blur.conf"
+log_path="$tmp_dir/log.txt"
+default_path="$HOME/.config/eww/Main/images/default-music.svg"
+default_blur_path="$HOME/.config/eww/Main/images/default-music-blur.png"
 
 mkdir -p "$tmp_dir"
 
 artlink="$(playerctl metadata mpris:artUrl)"
 [ -f "$cache_path" ] && . "$cache_path"
 
-# if [[ "$artlink" =~ ^https?:// ]]; then
-# 	# avoid unnecessary downloads
-# 	if [[ "$cached" != "$artlink" ]]; then
-# 		echo "$artlink" > "$cache_path"
-# 		curl -s "$artlink" --output "$tmp_temp_path" || exit 1
-# 		outputUrl="$tmp_temp_path"
-# 		magick "$tmp_temp_path" -blur 0x8 "$tmp_blur_path"
-# 	else
-# 		outputUrl="$cached"
-# 	fi
-# elif [[ "$artlink" =~ ^file:// ]]; then
-# 	if [[ §cached != "$artlink" ]]; then
-# 		echo "$artlink" > "$cache_path"
-# 		cp "$artFromBrowser" "$tmp_temp_path"
-# 		magick "$tmp_temp_path" -blur 0x8 "$tmp_blur_path"
-# 		outputUrl="$tmp_temp_path"
-# 	else
-# 		outputUrl="$cached"
-# 	fi
-# else
-# 	outputUrl="$default_path"
-# 	tmp_blur_path="$default_blur_path"
-# fi
-
 # avoid unnecessary downloads
 if [ -z "$artlink" ]; then
-	# No art URL, use default
-	outputUrl="$default_path"
-	tmp_blur_path="$default_blur_path"
-	echo "$outputUrl" > "$cache_path"
+	art_path="$default_path"
+	art_blur_path="$default_blur_path"
 elif [[ "$cachedlink" != "$artlink" ]]; then
-	echo "cachedlink=$artlink" > "$cache_path"
+	echo "cachedlink=\"$artlink\"" > "$cache_path"
+	echo "Updating music art: $artlink" >> "$log_path"
 
 	if [[ "$artlink" == "file://"* ]]; then
 		# Handle local file URLs
 		local_file_path="${artlink#file://}"
 		if [[ -f "$local_file_path" ]]; then
-			magick "$local_file_path" "$tmp_temp_path" || exit 1
+			magick "$local_file_path" "$art_path" || exit 1
 		fi
+		magick "$art_path" -blur 0x8 "$art_blur_path"
 	elif [[ "$artlink" =~ ^https?:// ]]; then
 		# Handle HTTP/HTTPS URLs
-		curl -s "$artlink" --output "$tmp_temp_path"_orig || exit 1
-		magick "$tmp_temp_path"_orig "$tmp_temp_path" || exit 1
+		curl -s "$artlink" --output "$art_path"_orig || exit 1
+		magick "$art_path"_orig "$art_path" || exit 1
+		magick "$art_path" -blur 0x8 "$art_blur_path"
+	else
+		echo "Unknown art link format: $artlink" >> "$log_path"
+		art_path="$default_path"
+		art_blur_path="$default_blur_path"
 	fi
-
-	outputUrl="$tmp_temp_path"
-	magick "$tmp_temp_path" -blur 0x8 "$tmp_blur_path"
 fi
 
-if [[ $1 == "--blur" ]]; then
-	echo "$tmp_blur_path"
-else
-	echo "$tmp_temp_path"
-fi
+echo "path=\"$art_blur_path\"" > "$cache_blur_path"
+echo "$art_path"
