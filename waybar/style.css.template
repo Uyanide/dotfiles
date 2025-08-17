@@ -178,7 +178,7 @@ window#waybar.empty #window {
 }
 
 #clock {
-  border: 2px solid @flavor;
+  color: @flavor
 }
 
 @keyframes blink {

@@ -7,6 +7,11 @@ set fish_greeting
 
 # ls alias
 alias ls="ls --hyperlink=auto --color=auto"
+alias ll="ls -lh"
+alias la="ls -lha"
+
+# grep alias
+alias grep="grep --color=auto"
 
 # nvim
 if type -q nvim

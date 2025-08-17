@@ -1,19 +1,58 @@
 {
-  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-  "modules": [
-    { "type": "title" },
-    { "type": "separator" },
-    { "key": " os", "type": "os", "keyColor": "#f5e0dc" },
-    { "key": "└ kernel", "type": "kernel", "keyColor": "#f5e0dc" },
-    { "type": "separator" },
-    { "key": " host", "type": "host", "keyColor": "#eba0ac" },
-    { "key": "├ gpu", "type": "gpu", "keyColor": "#eba0ac", "format": "{vendor} {name}" },
-    { "key": "└ cpu", "type": "cpu", "keyColor": "#eba0ac", "format": "{name}" },
-    { "type": "separator" },
-    { "key": " shell", "type": "shell", "keyColor": "#89b3fa" },
-    { "key": "├ wm", "type": "wm", "keyColor": "#89b3fa" },
-    { "key": "├󰇄 de", "type": "de", "keyColor": "#89b3fa" },
-    { "key": "└ up", "type": "uptime", "keyColor": "#89b3fa" },
-    { "type": "break" }
-  ]
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "modules": [
+        {
+            "type": "title"
+        },
+        {
+            "type": "separator"
+        },
+        {
+            "key": " os",
+            "type": "os"
+        },
+        {
+            "key": "└ kernel",
+            "type": "kernel"
+        },
+        {
+            "type": "separator"
+        },
+        {
+            "key": " host",
+            "type": "host"
+        },
+        {
+            "key": "├ gpu",
+            "type": "gpu",
+            "format": "{vendor} {name}"
+        },
+        {
+            "key": "└ cpu",
+            "type": "cpu",
+            "format": "{name}"
+        },
+        {
+            "type": "separator"
+        },
+        {
+            "key": " shell",
+            "type": "shell"
+        },
+        {
+            "key": "├ wm",
+            "type": "wm"
+        },
+        {
+            "key": "├󰇄 de",
+            "type": "de"
+        },
+        {
+            "key": "└ up",
+            "type": "uptime"
+        },
+        {
+            "type": "break"
+        }
+    ]
 }

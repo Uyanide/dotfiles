@@ -9,9 +9,17 @@ fi
 [ -z "$image" ] && exit 1
 
 ext=${image##*.}
-image_copied="$HOME/.config/hypr/wallpaper.$ext"
+current_dir="$HOME/.config/wallpaper_chooser/current"
+image_copied="$current_dir/wallpaper.$ext"
 
-cp -f "$image" "$image_copied" || exit 1
+temp_img=$(mktemp --suffix=.$ext) || exit 1
+cp "$image" "$temp_img" || exit 1
+rm -f "$current_dir"/wallpaper.*
+cp -f "$temp_img" "$image_copied" || (
+    rm -f "$temp_img"
+    exit 1
+)
+rm -f "$temp_img"
 
 hyprctl hyprpaper reload ,"$image_copied" || exit 1
 echo "preload = $image_copied" >"$HOME/.config/hypr/hyprpaper.conf"

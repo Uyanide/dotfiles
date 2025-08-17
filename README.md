@@ -2,7 +2,6 @@
 
 - desktop with a few widgets:
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/tiling.jpg?raw=true"/>
 
 - dynamic flavor based on Catppuccin Mocha:
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
