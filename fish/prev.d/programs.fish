@@ -14,5 +14,5 @@ if type -q zoxide
 end
 
 if type -q trash
-    alias rm="echo \"use 'trash' instead :)\"  && sh -c \"exit 42\""
+    alias rm="echo \"use 'trash' instead :)\"  && sh -c \"exit 42\" && echo why do you see this line :O"
 end
