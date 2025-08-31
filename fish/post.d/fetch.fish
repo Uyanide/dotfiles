@@ -2,7 +2,9 @@ if not set -q fetch_logo_type
     set -g fetch_logo_type "auto"
 end
 
-set -g fetch_color "#f5c2e7"
+if not set -q fetch_color
+    set -g fetch_color "#f5c2e7"
+end
 
 if test "$fetch_logo_type" = "symbols"
     set -g fetch_args "--logo-type raw --logo-width 42 --logo \"$HOME/.config/fastfetch/logo_ros/42x.symbols\" --color \"$fetch_color\""
