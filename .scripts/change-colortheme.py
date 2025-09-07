@@ -6,6 +6,7 @@
 
 - nwg-look:     edit $HOME/.local/share/nwg-look/gsettings
                 nwg-look -a
+                nwg-look & manually confirm
 
 - eww:          edit $HOME/.config/eww/eww.scss
                 eww reload
@@ -132,6 +133,7 @@ def _change_nwglook(_, flavor):
         file.write('\n'.join(lines))
 
     os.system('nwg-look -a')
+    os.system('nwg-look')
 
 
 def _change_eww(palette: dict[str, str], flavor: str):
@@ -208,7 +210,7 @@ def _change_fuzzel(palette: dict[str, str], flavor: str):
 
 apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
     'kvantum': _change_kvantum,
-    'nwg-look': _change_nwglook,
+    # 'nwg-look': _change_nwglook,
     'eww': _change_eww,
     'hypr': _change_hypr,
     'rofi': _change_rofi,

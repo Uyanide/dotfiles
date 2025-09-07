@@ -47,7 +47,7 @@ tooltip {
 #custom-power {
   background-color: alpha(@base, 0.6);
   border-radius: 14px;
-  padding: 3px 10px;
+  padding: 1px 10px;
 }
 
 #custom-rofi,
@@ -82,8 +82,8 @@ tooltip {
 }
 
 #workspaceactions {
-  padding-left: 3px;
-  padding-right: 3px;
+  padding-left: 1px;
+  padding-right: 1px;
   border: 2px solid @flavor;
 }
 
@@ -178,7 +178,7 @@ window#waybar.empty #window {
 }
 
 #clock {
-  color: @flavor
+  color: @flavor;
 }
 
 @keyframes blink {
