@@ -2,8 +2,6 @@
 
 # new_brightness="$1"
 # [ -z "$1" ] && new_brightness=1
-
-
 # sed -i "/sdrbrightness/c\    sdrbrightness = $new_brightness" <filename>
 
 import sys

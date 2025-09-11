@@ -44,7 +44,7 @@
   },
   // Time and Date
   "clock": {
-    "format": "󰥔 {:%H:%M |  %e %b}",
+    "format": "{:%H:%M  | %e %b}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt>{calendar}</tt>",
     "today-format": "<b>{}</b>"
   },

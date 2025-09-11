@@ -3,13 +3,12 @@
 
 # Entries in publicip.conf:
 #   IP_QUERY_URL: URL to query public IP of the system.
-#     param: none
 #     return: JSON object with "ip" field.
 #     note: This URL will be queried with short intervals (60s for example),
 #           therefore it may not be a good idea to use a public API with
 #           a limited number of calls.
 #   IP_INFO_URL: URL to query IP location.
-#     param: <ip>
+#     placeholder: <ip>
 #     return: JSON object with "country_code" field.
 #     note: This URL will only be quetried when public IP changes or when "force" is given as parameter.
 
