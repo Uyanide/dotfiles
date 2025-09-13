@@ -8,12 +8,23 @@
   "margin-bottom": 0,
   "margin-right": 0,
   "spacing": 2, // Gaps between modules (px)
-  "modules-left": ["custom/rofi", "group/workspaceactions", "hyprland/window", "custom/mediaplayer"],
+  "modules-left": [
+    "custom/rofi",
+    "custom/separator",
+    "group/workspaceactions",
+    "custom/separator",
+    "hyprland/window",
+    "custom/mediaplayer"
+  ],
   "modules-center": ["clock"],
-  "modules-right": ["group/monitors", "tray", "idle_inhibitor", "custom/power"],
+  "modules-right": ["group/monitors", "custom/separator", "tray", "custom/separator", "idle_inhibitor", "custom/power"],
   // -------------------------------------------------------------------------
   // Modules
   // -------------------------------------------------------------------------
+  // Separators
+  "custom/separator": {
+    "format": "|"
+  },
   // Buttons
   "custom/power": {
     "format": "󰐥",

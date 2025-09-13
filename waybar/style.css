@@ -45,9 +45,12 @@ tooltip {
 #custom-rofi,
 #idle_inhibitor,
 #custom-power {
-  background-color: alpha(@base, 0.6);
-  border-radius: 14px;
-  padding: 1px 10px;
+  padding: 0px 10px;
+}
+
+#custom-separator {
+  padding: 0px 5px;
+  font-size: 20px;
 }
 
 #custom-rofi,
@@ -55,6 +58,7 @@ tooltip {
 #custom-power {
   padding-left: 6px;
   padding-right: 6px;
+  font-size: 18px;
 }
 
 #custom-workspacenew,
@@ -62,7 +66,7 @@ tooltip {
   padding: 0px 5px;
   margin: 3px 3px;
   border-radius: 8px;
-  color: @text;
+  color: @flavor;
   background-color: transparent;
   transition: all 0.3s ease-in-out;
 }
@@ -84,7 +88,6 @@ tooltip {
 #workspaceactions {
   padding-left: 1px;
   padding-right: 1px;
-  border: 2px solid @flavor;
 }
 
 #workspaces {
@@ -144,12 +147,8 @@ window#waybar.empty #window {
   color: @lavender;
 }
 
-#tray {
-  border: 2px solid @flavor;
-}
-
 #custom-power {
-  border: 3px solid @maroon;
+  color: @maroon;
 }
 
 #custom-power:hover {
@@ -158,7 +157,6 @@ window#waybar.empty #window {
 
 #custom-rofi {
   color: @archlinux;
-  border: 3px solid @archlinux;
 }
 
 #custom-rofi:hover {
@@ -166,7 +164,7 @@ window#waybar.empty #window {
 }
 
 #idle_inhibitor {
-  border: 3px solid @yellow;
+  color: @yellow;
 }
 
 #idle_inhibitor:hover {
@@ -174,7 +172,7 @@ window#waybar.empty #window {
 }
 
 #idle_inhibitor.activated {
-  border: 3px solid @peach;
+  color: @peach;
 }
 
 #clock {
