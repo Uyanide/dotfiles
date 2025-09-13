@@ -1,4 +1,4 @@
-set -l theme 'Catpuccin Mocha'
+set -l theme 'Catppuccin Mocha'
 
 if not set -q fish_current_theme; or not string match -q "$theme" "$fish_current_theme"
     set -U fish_current_theme "$theme"
