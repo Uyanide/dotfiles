@@ -1,0 +1,5 @@
+#/bin/sh
+
+export NVPRESENT_ENABLE_SMOOTH_MOTION=1
+
+mpv --vo=gpu-next --gpu-api=vulkan --gpu-context=waylandvk --video-sync=audio "$@"

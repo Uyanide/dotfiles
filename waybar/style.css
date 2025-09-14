@@ -24,7 +24,8 @@
 
 /* The whole bar */
 #waybar {
-  background-color: transparent;
+  background: linear-gradient(to bottom, alpha(@base, 0.8), alpha(@base, 0.6), alpha(@base, 0.4), alpha(@base, 0));
+  /* background: transparent; */
   color: @text;
   border-radius: 0px;
   margin: 0px;

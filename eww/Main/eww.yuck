@@ -112,5 +112,5 @@
   :windowtype "normal"
   :wm-ignore true
   :monitor 0
-  :geometry (geometry :x 2 :y 0)
+  :geometry (geometry :x 0 :y 0)
   (main))
