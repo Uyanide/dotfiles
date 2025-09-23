@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+
+# autopep8: off
+import gi
+gi.require_version("Notify", "0.7")
+from gi.repository import Notify, GLib
+# autopep8: on
+
+SCREENSHOT_DIR = os.path.join(
+    os.environ.get("XDG_PICTURES_DIR", os.path.expanduser("~/Pictures")),
+    "Screenshots"
+)
+# full cmd: {cmd}{filename}
+SCREENSHOT_CMDS = {
+    "full": f"hyprshot -z -m output -m active -o {SCREENSHOT_DIR} -f ",  # since I only have one monitor
+    "area": f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
+    "window": f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
+}
+# full cmd: {cmd}{filename}
+EDIT_CMD = f"gradia {SCREENSHOT_DIR}{os.sep}"
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Take screenshots with hyprshot.")
+    parser.add_argument(
+        "type",
+        choices=SCREENSHOT_CMDS.keys(),
+        help="Type of screenshot to take.",
+    )
+    args = parser.parse_args()
+
+    # file path
+    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
+    filename = f"screenshot_{args.type}_{int(os.times().elapsed * 1000)}.png"
+    filepath = os.path.join(SCREENSHOT_DIR, filename)
+
+    # take screenshot
+    cmd = f"{SCREENSHOT_CMDS[args.type]} {filename}"
+    os.system(cmd)
+
+    # sleep for a short interval
+    # neccessary when in "window" mode
+    GLib.usleep(300000)  # 0.3 seconds
+
+    # check if successful
+    if not os.path.isfile(filepath):
+        print("Failed to take screenshot.")
+        exit(1)
+
+    # create loop instance
+    loop = GLib.MainLoop()
+    editing = False
+
+    # edit callback
+    def edit_callback(n, action, user_data):
+        global editing
+        editing = True
+        os.system(f"{EDIT_CMD}{filename}")
+        n.close()
+        loop.quit()
+
+    # close callback
+    def close_callback(n):
+        global editing
+        if not editing:
+            loop.quit()
+
+    # notification
+    Notify.init("Screenshot Utility")
+    n = Notify.Notification.new(
+        "Screenshot Taken",
+        "Click to edit"
+    )
+    n.add_action(
+        "default",
+        "Default",
+        edit_callback,
+        None
+    )
+    n.connect("closed", close_callback)
+    n.show()
+    loop.run()

@@ -52,6 +52,7 @@ gnome-text-editor       # or kwrite, just notepad replacement
 btop                    # system monitor
 activate-linux          # :/
 polkit-gnome            # polkit authentication agent
+gradia                  # screenshots editor
 
 # fonts & themes
 maplemono-nf-cn / ttf-maplemono-nf-cn-unhinted (archlinuxcn)
