@@ -205,7 +205,7 @@
   "custom/workspacenew": {
     "format": "+",
     "tooltip": false,
-    "on-click": "~/.scripts/workspace-new.sh"
+    "on-click": "workspace-new"
   },
   "hyprland/window": {
     "format": "",
@@ -222,7 +222,7 @@
     "escape": true,
     "exec": "$HOME/.config/waybar/modules/mediaplayer.py 2> /dev/null",
     "on-click": "playerctl play-pause",
-    "on-click-right": "~/.scripts/lyrics-widgets.sh",
+    "on-click-right": "lyrics-widgets",
     "on-scroll-up": "playerctl next",
     "on-scroll-down": "playerctl previous"
   },

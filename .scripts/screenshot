@@ -7,6 +7,7 @@ import os
 import gi
 gi.require_version("Notify", "0.7")
 from gi.repository import Notify, GLib
+from datetime import datetime
 # autopep8: on
 
 SCREENSHOT_DIR = os.path.join(
@@ -22,6 +23,12 @@ SCREENSHOT_CMDS = {
 # full cmd: {cmd}{filename}
 EDIT_CMD = f"gradia {SCREENSHOT_DIR}{os.sep}"
 
+
+def file_name(dir, prefix="screenshot", ext=".png"):
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    return f"{prefix}_{timestamp}{ext}"
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Take screenshots with hyprshot.")
     parser.add_argument(
@@ -33,7 +40,7 @@ if __name__ == "__main__":
 
     # file path
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
-    filename = f"screenshot_{args.type}_{int(os.times().elapsed * 1000)}.png"
+    filename = file_name(SCREENSHOT_DIR)
     filepath = os.path.join(SCREENSHOT_DIR, filename)
 
     # take screenshot
