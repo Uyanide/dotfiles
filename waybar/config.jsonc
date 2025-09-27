@@ -17,7 +17,7 @@
     "custom/mediaplayer"
   ],
   "modules-center": ["clock"],
-  "modules-right": ["group/monitors", "custom/separator", "tray", "custom/separator", "idle_inhibitor", "custom/power"],
+  "modules-right": ["group/monitors", "custom/separator", "group/tray-expander", "idle_inhibitor", "custom/power"],
   // -------------------------------------------------------------------------
   // Modules
   // -------------------------------------------------------------------------
@@ -225,6 +225,20 @@
     "on-click-right": "lyrics-widgets",
     "on-scroll-up": "playerctl next",
     "on-scroll-down": "playerctl previous"
+  },
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray", "custom/separator"]
+  },
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false,
+    "min-length": 2,
+    "max-length": 2
   },
   "tray": {
     "icon-size": 15,

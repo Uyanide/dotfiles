@@ -77,7 +77,7 @@ if __name__ == "__main__":
     # notification
     Notify.init("Screenshot Utility")
     n = Notify.Notification.new(
-        "Screenshot Taken",
+        "Screenshot taken",
         "Click to edit"
     )
     n.add_action(

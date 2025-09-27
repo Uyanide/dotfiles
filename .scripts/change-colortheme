@@ -162,7 +162,7 @@ def _change_waybar(palette: dict[str, str], flavor: str):
     waybar_template = Path.home().joinpath('.config', 'waybar', 'style.css.template')
     waybar_dist = copy_template(waybar_template, Path.home().joinpath('.config', 'waybar'))
     replace_placeholders(waybar_dist, palette, flavor)
-    os.system('waybar-toggle.sh')
+    os.system('waybar-toggle')
 
 
 def _change_ohmyposh(palette: dict[str, str], flavor: str):

@@ -56,9 +56,9 @@ tooltip {
 
 #custom-rofi,
 #idle_inhibitor,
-#custom-power {
-  padding-left: 6px;
-  padding-right: 6px;
+#custom-power,
+#custom-expand-icon {
+  padding: 0px 6px;
   font-size: 18px;
 }
 
@@ -162,6 +162,10 @@ window#waybar.empty #window {
 
 #custom-rofi:hover {
   background-color: alpha(@archlinux, 0.3);
+}
+
+#custom-expand-icon {
+  color: @green;
 }
 
 #idle_inhibitor {
