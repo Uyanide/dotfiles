@@ -17,7 +17,7 @@
 - rofi:         edit $HOME/.config/rofi/config.rasi
 
 - waybar:       edit $HOME/.config/waybar/style.css
-                waybar-toggle.sh
+                waybar-toggle restart
 
 - oh-my-posh:   edit $HOME/.config/posh_theme.omp.json
 
@@ -162,7 +162,7 @@ def _change_waybar(palette: dict[str, str], flavor: str):
     waybar_template = Path.home().joinpath('.config', 'waybar', 'style.css.template')
     waybar_dist = copy_template(waybar_template, Path.home().joinpath('.config', 'waybar'))
     replace_placeholders(waybar_dist, palette, flavor)
-    os.system('waybar-toggle')
+    os.system('waybar-toggle restart')
 
 
 def _change_ohmyposh(palette: dict[str, str], flavor: str):

@@ -1,42 +1,44 @@
 #!/usr/bin/env bash
 
+lyrics_widget_closed=0
+
 function close() {
     killall -q waybar
 
     # Also close the lyrics widget if open
     if eww active-windows | grep -q "lyrics-single"; then
         eww close lyrics-single
+        lyrics_widget_closed=1
     fi
 }
 
 function open() {
     # the system tray will not work with kded6 started
-    if killall -q "kded6"; then
+    if killall -q -9 "kded6"; then
         while pgrep -x "kded6" >/dev/null; do
             sleep 0.2
         done
     fi
     (setsid waybar > /dev/null 2> /dev/null &)&
     disown
+
+    # Reopen the lyrics widget if it was previously closed
+    if [ $lyrics_widget_closed -eq 1 ]; then
+        eww open lyrics-single
+    fi
 }
 
-if [ -z "$1" ]; then
+if [ "$1" = "restart" ]; then
     close
     while pgrep -x "waybar" >/dev/null; do
         sleep 0.2
     done
     open
-elif [ "$1" = "close" ]; then
-    if ! pgrep -x "waybar" >/dev/null; then
-        exit 1
-    fi
+elif pgrep -x "waybar" >/dev/null; then
     close
-elif [ "$1" = "open" ]; then
-    if pgrep -x "waybar" >/dev/null; then
-        exit 1
-    fi
+elif ! pgrep -x "waybar" >/dev/null; then
     open
 else
-    echo "Usage: $0 [close|open]"
+    echo "Usage: $0 [restart]"
     exit 1
 fi
