@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 export NVPRESENT_ENABLE_SMOOTH_MOTION=1
 

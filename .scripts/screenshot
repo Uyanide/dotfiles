@@ -2,12 +2,12 @@
 
 import argparse
 import os
+from datetime import datetime
 
 # autopep8: off
 import gi
 gi.require_version("Notify", "0.7")
 from gi.repository import Notify, GLib
-from datetime import datetime
 # autopep8: on
 
 SCREENSHOT_DIR = os.path.join(
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     os.system(cmd)
 
     # sleep for a short interval
-    # neccessary when in "window" mode
+    # neccessary for "window" mode
     GLib.usleep(300000)  # 0.3 seconds
 
     # check if successful
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     loop = GLib.MainLoop()
     editing = False
 
-    # edit callback
+    # callback on default action (edit)
     def edit_callback(n, action, user_data):
         global editing
         editing = True
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         n.close()
         loop.quit()
 
-    # close callback
+    # callback on close
     def close_callback(n):
         global editing
         if not editing:
