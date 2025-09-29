@@ -13,6 +13,7 @@ if type -q fzf
     end
 end
 
+
 # cd
 if type -q zoxide
     zoxide init fish | source
@@ -46,4 +47,9 @@ alias grep="grep --color=auto"
 if type -q nvim
     set -x EDITOR nvim
     set -x VISUAL nvim
+end
+
+# others
+if type -q tty-clock
+    alias clock="tty-clock -c -C 3"
 end

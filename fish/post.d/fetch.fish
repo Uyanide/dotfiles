@@ -30,7 +30,7 @@ if type -q fastfetch
     end
 end
 
-# add 'set -g no_fetch' somewhere in prev.d to disable auto-fetch
+# add 'set -g no_fetch' somewhere other than post.d to disable fetching
 if not set -q no_fetch
     if type -q ff-brief
 	    ff-brief
