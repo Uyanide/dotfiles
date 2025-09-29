@@ -1,12 +1,12 @@
 things I have installed:
 
-full KDE Plasma 6 setup     # not essential for sure
+full KDE Plasma 6 setup     # non-essential for sure
     which can provide:
         SDDM theme          # Breeze is enough
         kcalc/kalc          # calculator(s), what's the difference?
         kcolorchooser       # or hyprpicker
         pipewire & friends
-        ...                 # including other things I (may) have forgotten to list below
+        ...
 
 # hypr*
 hyprland
@@ -15,8 +15,8 @@ hypridle
 hyprlock
 hyprshot
 hyprpicker
-plugin hyprexpo         # scale workspaces and put them in a grid
-plugin xtra-dispatchers # for "plugin:xtd:bringallfrom" dispatcher
+plugin hyprexpo         # workspaces overview
+plugin hyprorganize     # https://github.com/Uyanide/hyprplug
 
 # xdg-desktop-portal*
 xdg-desktop-portal
@@ -38,6 +38,9 @@ wf-recorder     # screen recorder
 brightnessctl
 playerctl
 pamixer
+zoxide          # better cd
+eza             # better ls
+bat             # better cat
 
 # GUI
 waybar
@@ -48,7 +51,7 @@ mpv
 network-manager-applet  # nm-applet
 blueman                 # bluetooth GUI & applet
 pavucontrol
-gnome-text-editor       # or kwrite, just notepad replacement
+gnome-text-editor       # or kwrite, notepad replacement
 btop                    # system monitor
 activate-linux          # :/
 polkit-gnome            # polkit authentication agent

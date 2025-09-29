@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)" >/dev/null 2>&1
+    for key in "$HOME/.ssh/keys/"*; do
+        if [ -f "$key" ]; then
+            ssh-add "$key" >/dev/null 2>&1
+        fi
+    done
+fi

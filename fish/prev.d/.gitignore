@@ -1,7 +1,6 @@
 *
 !.gitignore
 !prompt.fish
-!ssh-agent.fish
 !theme.fish
-!programs.fish
+!alias.fish
 !env.fish
