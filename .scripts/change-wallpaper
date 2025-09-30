@@ -12,7 +12,7 @@ ext=${image##*.}
 current_dir="$HOME/.config/wallpaper-chooser/current"
 image_copied="$current_dir/wallpaper.$ext"
 
-temp_img=$(mktemp --suffix=.$ext) || exit 1
+temp_img=$(mktemp --suffix=."$ext") || exit 1
 cp "$image" "$temp_img" || exit 1
 rm -f "$current_dir"/wallpaper.*
 cp -f "$temp_img" "$image_copied" || (

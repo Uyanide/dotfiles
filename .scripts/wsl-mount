@@ -1,6 +1,6 @@
 #!/bin/sh
 
-"issu" && {
+issu && {
     echo "Do not run this script in sudo mode."
     exit 1
 }
