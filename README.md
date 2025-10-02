@@ -1,18 +1,18 @@
 ## Screenshots
 
 - desktop with a few widgets:
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
+  <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
 
 - dynamic flavor based on Catppuccin Mocha:
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
+  <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
 
 - the grub menu looks like:
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
+  <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
 
 ## Setup Overview
 
 - **OS**: Archlinux
-- **WM**: Hyprland
+- **WM**: Niri & Hyprland (looks similar through screenshots)
 - **Bar**: Waybar
 - **Shell**: Fish
 - **Prompt**: Oh My Posh
@@ -23,9 +23,13 @@
 - **Desktop Widgets**: Eww
 - **Notification Daemon**: Mako
 
-## Hyprland & some scripts
+## Hyprland & friends
 
 Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags amd tons of other stuff.
+
+## Niri
+
+Ported some of the exsiting Hyprland configs, e.g. windows rules & keybindings, even using hyprlock as lock screen.
 
 ## Eww
 

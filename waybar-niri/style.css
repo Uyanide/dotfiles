@@ -1,0 +1,217 @@
+@import 'mocha.css';
+
+@define-color flavor #f5c2e7;
+/* @define-color archlinux #1793d1; */
+@define-color archlinux @sapphire;
+
+/* Font(s) */
+* {
+  /*           main font           icons                       CJK                    fallback              */
+  font-family: 'Sour Gummy Light', 'Meslo LGM Nerd Font Mono', 'WenQuanYi Micro Hei', 'Noto Sans', sans-serif;
+  font-size: 16px;
+}
+
+/* Reset all styles */
+* {
+  border: none;
+  border-radius: 14px;
+  min-height: 0;
+  margin: 2px 1px 2px 1px;
+  padding: 0;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+}
+
+/* The whole bar */
+#waybar {
+  background: linear-gradient(to bottom, alpha(@base, 0.8), alpha(@base, 0));
+  /* background: transparent; */
+  color: @text;
+  border-radius: 0px;
+  margin: 0px;
+}
+
+tooltip {
+  background: @base;
+  border: 2px solid @overlay0;
+}
+
+#workspaceactions,
+#window,
+#clock,
+#monitors,
+#custom-mediaplayer,
+#custom-power-menu,
+#tray,
+#custom-rofi,
+#idle_inhibitor,
+#custom-power {
+  padding: 0px 10px;
+}
+
+#custom-separator {
+  padding: 0px 5px;
+  font-size: 20px;
+}
+
+#custom-rofi,
+#idle_inhibitor,
+#custom-power,
+#custom-expand-icon {
+  padding: 0px 6px;
+  font-size: 18px;
+}
+
+#custom-workspacenew,
+#workspaces button {
+  padding: 0px;
+  margin: 3px 3px;
+  border-radius: 8px;
+  color: @flavor;
+  background-color: transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+#workspaces button:hover {
+  background-color: alpha(@flavor, 0.3);
+}
+
+#workspaces button.active {
+  color: @base;
+  background: @flavor;
+}
+
+#workspaces button.urgent {
+  color: @base;
+  background-color: @red;
+}
+
+#workspaceactions {
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+#workspaces {
+  padding: 0px;
+  margin: 0px;
+}
+
+#window {
+  transition: none; /* Disable background transition */
+}
+
+window#waybar.empty #window {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+#custom-mediaplayer {
+  color: @flavor;
+}
+
+#network.speed {
+  color: @flavor;
+}
+
+#custom-publicip {
+  color: @peach;
+}
+
+#temperature {
+  color: @yellow;
+}
+
+#memory {
+  color: @green;
+}
+
+#cpu {
+  color: @teal;
+}
+
+#battery {
+  color: @sapphire;
+}
+
+#battery.charging,
+#battery.full,
+#battery.plugged {
+  color: @green;
+}
+
+#backlight {
+  color: @blue;
+}
+
+#wireplumber {
+  color: @lavender;
+}
+
+#custom-power {
+  color: @maroon;
+}
+
+#custom-power:hover {
+  background-color: alpha(@maroon, 0.3);
+}
+
+#custom-rofi {
+  color: @archlinux;
+}
+
+#custom-rofi:hover {
+  background-color: alpha(@archlinux, 0.3);
+}
+
+#custom-expand-icon {
+  color: @green;
+}
+
+#idle_inhibitor {
+  color: @yellow;
+}
+
+#idle_inhibitor:hover {
+  background-color: alpha(@yellow, 0.3);
+}
+
+#idle_inhibitor.activated {
+  color: @peach;
+}
+
+#clock {
+  color: @flavor;
+}
+
+@keyframes blink {
+  to {
+    background-color: alpha(@red, 0.5);
+  }
+}
+
+#battery.critical:not(.charging) {
+  color: @red;
+  animation-name: blink;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+#network.disconnected {
+  color: @red;
+}
+
+#temperature.critical {
+  background-color: #eb4d4b;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: #eb4d4b;
+}

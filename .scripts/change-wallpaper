@@ -16,16 +16,43 @@ temp_img=$(mktemp --suffix=."$ext") || exit 1
 cp "$image" "$temp_img" || exit 1
 rm -f "$current_dir"/wallpaper.*
 cp -f "$temp_img" "$image_copied" || (
+    notify-send "Error" "Could not copy image to $current_dir"
     rm -f "$temp_img"
     exit 1
 )
 rm -f "$temp_img"
 
-hyprctl hyprpaper reload ,"$image_copied" || exit 1
-echo "preload = $image_copied" >"$HOME/.config/hypr/hyprpaper.conf"
-echo "wallpaper = , $image_copied" >>"$HOME/.config/hypr/hyprpaper.conf"
+if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
+    hyprctl hyprpaper reload ,"$image_copied" || exit 1
+    echo "preload = $image_copied" >"$HOME/.config/hypr/hyprpaper.conf"
+    echo "wallpaper = , $image_copied" >>"$HOME/.config/hypr/hyprpaper.conf"
 
-notify-send "Wallpaper Changed" "$image"
+    notify-send "Wallpaper Changed" "$image"
+elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
+    killall swaybg
+    killall swww
+
+    cache_dir="$HOME/.cache/swaybg"
+    mkdir -p "$cache_dir" || (
+        notify-send "Error" "Could not create cache directory"
+        exit 1
+    )
+    blurred_image="$cache_dir/blurred.$ext"
+
+    # blur
+    magick "$image_copied" -blur 0x16 "$blurred_image" || (
+        notify-send "Error" "Could not create blurred image"
+        exit 1
+    )
+
+    (setsid swaybg -i "$blurred_image" -m fill > /dev/null 2> /dev/null &)&
+    disown
+Q
+    (setsid swww img "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null &)&
+    disown
+
+    notify-send "Wallpaper Changed" "$image"
+fi
 
 notify-send "Extracting colors from wallpaper" "This may take a few seconds..."
 change-colortheme -i "$image_copied" || exit 1

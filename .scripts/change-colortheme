@@ -32,6 +32,8 @@
                 edit $HOME/.config/wlogout/icons/*.svg
 
 - fuzzel:       edit $HOME/.config/fuzzel/fuzzel.ini
+
+- niri:         edit $HOME/.config/niri/config.kdl
 '''
 
 import os
@@ -208,6 +210,12 @@ def _change_fuzzel(palette: dict[str, str], flavor: str):
     replace_placeholders(fuzzel_dist, palette, flavor)
 
 
+def _change_niri(palette: dict[str, str], flavor: str):
+    niri_template = Path.home().joinpath('.config', 'niri', 'config.kdl.template')
+    niri_dist = copy_template(niri_template, Path.home().joinpath('.config', 'niri'))
+    replace_placeholders(niri_dist, palette, flavor)
+
+
 apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
     'kvantum': _change_kvantum,
     # 'nwg-look': _change_nwglook,
@@ -220,7 +228,8 @@ apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
     'mako': _change_mako,
     'yazi': _change_yazi,
     'wlogout': _change_wlogout,
-    'fuzzel': _change_fuzzel
+    'fuzzel': _change_fuzzel,
+    'niri': _change_niri,
 }
 
 
