@@ -232,7 +232,7 @@ cursor {
     hide-when-typing
 }
 
-screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+screenshot-path "~/Pictures/Screenshots/.niri_screenshot.png"
 
 // gestures {
 //     hot-corners {
@@ -270,9 +270,9 @@ binds {
     Mod+V { spawn-sh "pkill rofi || cliphist list | rofi -dmenu -config ~/.config/rofi/dmenu.rasi -display-columns 2 -i | cliphist decode | wl-copy"; }
     Mod+Period { spawn-sh "pkill rofi || rofi-emoji"; }
     Ctrl+Alt+Delete { spawn-sh "pkill wlogout || wlogout -p layer-shell"; }
-    Print { screenshot-screen; }
-    Mod+Shift+S { screenshot; }
-    Mod+Ctrl+Shift+S { screenshot-window; }
+    Print { spawn-sh "screenshot full"; }
+    Mod+Shift+S { spawn-sh "screenshot area"; }
+    Mod+Ctrl+Shift+S { spawn-sh "screenshot window"; }
     Mod+Shift+C { spawn-sh "hyprpicker -a"; }
 
     // Session

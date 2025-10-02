@@ -32,7 +32,7 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
     killall swaybg
     killall swww
 
-    cache_dir="$HOME/.cache/swaybg"
+    cache_dir="$HOME/.local/share/swaybg"
     mkdir -p "$cache_dir" || (
         notify-send "Error" "Could not create cache directory"
         exit 1

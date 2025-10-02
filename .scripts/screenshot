@@ -3,6 +3,8 @@
 import argparse
 import os
 from datetime import datetime
+from enum import Enum
+import time
 
 # autopep8: off
 import gi
@@ -10,18 +12,61 @@ gi.require_version("Notify", "0.7")
 from gi.repository import Notify, GLib
 # autopep8: on
 
+
+class ScreenshotType(Enum):
+    FULL = "full"
+    AREA = "area"
+    WINDOW = "window"
+
+
 SCREENSHOT_DIR = os.path.join(
     os.environ.get("XDG_PICTURES_DIR", os.path.expanduser("~/Pictures")),
     "Screenshots"
 )
-# full cmd: {cmd}{filename}
-SCREENSHOT_CMDS = {
-    "full": f"hyprshot -z -m output -m active -o {SCREENSHOT_DIR} -f ",  # since I only have one monitor
-    "area": f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
-    "window": f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
-}
-# full cmd: {cmd}{filename}
-EDIT_CMD = f"gradia {SCREENSHOT_DIR}{os.sep}"
+
+
+def wait_until_file_exists(filepath: str, timeout: int = 5):
+    """Wait until a file exists or timeout."""
+    start_time = time.time()
+    while not os.path.isfile(filepath):
+        if time.time() - start_time > timeout:
+            return False
+        time.sleep(0.1)
+    return True
+
+
+def take_screenshot(typeStr: str, filepath: str):
+    type = ScreenshotType(typeStr)
+    currentDesktop = os.environ.get("XDG_CURRENT_DESKTOP", "")
+    if "Hyprland" in currentDesktop:
+        cmd = {
+            ScreenshotType.FULL: f"hyprshot -z -m output -m active -o {SCREENSHOT_DIR} -f ",  # since I only have one monitor
+            ScreenshotType.AREA: f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
+            ScreenshotType.WINDOW: f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
+        }
+        os.system(f"{cmd[type]}{filepath}")
+        wait_until_file_exists(filepath)
+    elif "niri" in currentDesktop:
+        cmd = {
+            ScreenshotType.FULL: f"niri msg action screenshot-screen",
+            ScreenshotType.AREA: f"niri msg action screenshot",
+            ScreenshotType.WINDOW: f"niri msg action screenshot-window",
+        }
+        niriScreenshotPath = SCREENSHOT_DIR + os.sep + ".niri_screenshot.png"
+        if os.path.isfile(niriScreenshotPath):
+            os.remove(niriScreenshotPath)
+        os.system(cmd[type])
+        wait_until_file_exists(niriScreenshotPath)
+        if os.path.isfile(niriScreenshotPath):
+            os.rename(niriScreenshotPath, filepath)
+        wait_until_file_exists(filepath)
+    else:
+        print("Unsupported desktop environment.")
+        exit(1)
+
+
+def edit_screenshot(filepath: str):
+    os.system(f"gradia {SCREENSHOT_DIR}{os.sep}{filepath}")
 
 
 def file_name(dir, prefix="screenshot", ext=".png"):
@@ -33,7 +78,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Take screenshots with hyprshot.")
     parser.add_argument(
         "type",
-        choices=SCREENSHOT_CMDS.keys(),
+        choices=[t.value for t in ScreenshotType],
         help="Type of screenshot to take.",
     )
     args = parser.parse_args()
@@ -44,12 +89,7 @@ if __name__ == "__main__":
     filepath = os.path.join(SCREENSHOT_DIR, filename)
 
     # take screenshot
-    cmd = f"{SCREENSHOT_CMDS[args.type]} {filename}"
-    os.system(cmd)
-
-    # sleep for a short interval
-    # neccessary for "window" mode
-    GLib.usleep(300000)  # 0.3 seconds
+    take_screenshot(args.type, filepath)
 
     # check if successful
     if not os.path.isfile(filepath):
@@ -64,7 +104,7 @@ if __name__ == "__main__":
     def edit_callback(n, action, user_data):
         global editing
         editing = True
-        os.system(f"{EDIT_CMD}{filename}")
+        edit_screenshot(filename)
         n.close()
         loop.quit()
 
