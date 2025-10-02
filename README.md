@@ -29,7 +29,7 @@ Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but witho
 
 ## Niri
 
-Ported some of the exsiting Hyprland configs, e.g. windows rules & keybindings, even using hyprlock as lock screen.
+Ported some of the exsiting Hyprland configurations, e.g. windows rules & keybindings, even using hyprlock as lock screen.
 
 ## Eww
 
