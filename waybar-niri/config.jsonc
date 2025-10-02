@@ -170,15 +170,15 @@
   "niri/workspaces": {
     "all-outputs": true,
     "format": "{index}",
-    "on-scroll-up": "hyprctl dispatch workspace e+1 1>/dev/null",
-    "on-scroll-down": "hyprctl dispatch workspace e-1 1>/dev/null",
+    "on-scroll-up": "niri msg action focus-workspace-up",
+    "on-scroll-down": "niri msg action focus-workspace-down",
     "sort-by-number": true
   },
   "niri/window": {
     "format": "",
     "separate-outputs": true,
     "icon": true,
-    "on-click-middle": "hyprctl dispatch killactive",
+    "on-click-middle": "niri msg action close-window",
     "icon-size": 14
   },
   "custom/mediaplayer": {
