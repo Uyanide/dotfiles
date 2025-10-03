@@ -7,10 +7,16 @@ else
 fi
 
 [ -z "$image" ] && exit 1
+[ ! -f "$image" ] && exit 1
 
 ext=${image##*.}
 current_dir="$HOME/.config/wallpaper-chooser/current"
 image_copied="$current_dir/wallpaper.$ext"
+
+mkdir -p "$current_dir" || (
+    notify-send "Error" "Could not create directory $current_dir"
+    exit 1
+)
 
 temp_img=$(mktemp --suffix=."$ext") || exit 1
 cp "$image" "$temp_img" || exit 1
@@ -32,12 +38,13 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
     killall swaybg
     killall swww
 
-    cache_dir="$HOME/.local/share/swaybg"
-    mkdir -p "$cache_dir" || (
+    blur_dir="$HOME/.local/share/swaybg"
+    mkdir -p "$blur_dir" || (
         notify-send "Error" "Could not create cache directory"
         exit 1
     )
-    blurred_image="$cache_dir/blurred.$ext"
+    rm -rf "${blur_dir:?}"/*
+    blurred_image="$blur_dir/blurred.$ext"
 
     # blur
     magick "$image_copied" -blur 0x16 "$blurred_image" || (
@@ -45,10 +52,10 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
         exit 1
     )
 
-    (setsid swaybg -i "$blurred_image" -m fill > /dev/null 2> /dev/null &)&
+    (setsid swaybg -i "$blurred_image" -m fill)&
     disown
-Q
-    (setsid swww img "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null &)&
+
+    (setsid swww img "$image_copied" --transition-type fade --transition-duration 2)&
     disown
 
     notify-send "Wallpaper Changed" "$image"

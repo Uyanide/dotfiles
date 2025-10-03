@@ -49,15 +49,14 @@ output "eDP-2" {
 /************************Layout************************/
 
 layout {
-    // gaps in & out
-    gaps 2
+    gaps 0
 
     center-focused-column "never"
 
     preset-column-widths {
-        proportion 0.33333
+        proportion 0.3
         proportion 0.5
-        proportion 0.66667
+        proportion 0.7
     }
 
     preset-window-heights {
@@ -85,6 +84,13 @@ layout {
         spread 5
         offset x=0 y=5
         color "#0007"
+    }
+
+    struts {
+        top 2
+        right 2
+        bottom 3
+        left 2
     }
 
     background-color "#1e1e2e"
@@ -116,7 +122,7 @@ spawn-sh-at-startup "config-switch niri"
 spawn-at-startup "waybar"
 
 // Wallpaper
-spawn-sh-at-startup "swaybg -i $(find $HOME/.cache/swaybg -type f) -m fill"
+spawn-sh-at-startup "swaybg -i $(find $HOME/.local/share/swaybg -type f) -m fill"
 spawn-sh-at-startup "swww-daemon"
 
 // Not necessary maybe ...
@@ -128,6 +134,7 @@ spawn-at-startup "nm-applet"
 spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "mako"
+spawn-at-startup "xwayland-satellite"
 
 // idle
 spawn-sh-at-startup "swayidle -w timeout 300 'hyprlock &' timeout 600 'niri msg action power-off-monitors' before-sleep 'hyprlock &'"
@@ -168,6 +175,7 @@ environment {
     // Others
     XCURSOR_SIZE "24"
     ELECTRON_OZONE_PLATFORM_HINT "wayland"
+    DISPLAY ":0"
 }
 
 /************************Rules************************/
@@ -364,6 +372,7 @@ binds {
 
     Mod+Shift+Comma  { consume-window-into-column; }
     Mod+Shift+Period { expel-window-from-column; }
+    Mod+Shift+M { toggle-column-tabbed-display; }
 
     Mod+R { switch-preset-column-width; }
     Mod+Shift+R { switch-preset-window-height; }

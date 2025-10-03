@@ -57,8 +57,12 @@
   "clock": {
     "format": "{:%H:%M  | %e %b}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt>{calendar}</tt>",
-    "today-format": "<b>{}</b>"
+    "today-format": "<b>{}</b>",
+    "on-click": "niri msg action center-column",
+    "on-scroll-up": "niri msg action set-column-width +10%",
+    "on-scroll-down": "niri msg action set-column-width -10%"
   },
+
   // System monitors
   "group/monitors": {
     "modules": ["network#speed", "custom/publicip", "temperature", "memory", "cpu", "battery", "backlight", "wireplumber"],
