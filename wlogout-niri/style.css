@@ -1,0 +1,120 @@
+* {
+  background-image: none;
+  font-size: 24px;
+  font-family: 'Sour Gummy Light';
+}
+
+window {
+  background-color: rgba(30, 30, 46, 0.5);
+}
+
+button {
+  color: #cdd6f4;
+  border-radius: 0;
+  outline-style: none;
+  background-color: alpha(#1e1e2e, 0.8);
+  border: none;
+  border-width: 0px;
+  border-radius: 0px;
+  border-color: #f5c2e7;
+  box-shadow: none;
+  text-shadow: none;
+  text-decoration-color: #cdd6f4;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20%;
+  animation: gradient_f 20s ease-in infinite;
+}
+
+button:focus,
+button:active,
+button:hover {
+  background-size: 20%;
+  background-color: alpha(#1e1e2e, 0.7);
+  animation: gradient_f 20s ease-in infinite;
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.28, 1.682);
+}
+
+#lock {
+  background-image: image(url('./icons/lock.svg'));
+  border-radius: 32px 0 0 0;
+}
+
+#logout {
+  background-image: image(url('./icons/logout.svg'));
+}
+
+#suspend {
+  background-image: image(url('./icons/suspend.svg'));
+  border-radius: 0 32px 0 0;
+}
+
+#hibernate {
+  background-image: image(url('./icons/hibernate.svg'));
+  border-radius: 0 0 0 32px;
+}
+
+#shutdown {
+  background-image: image(url('./icons/shutdown.svg'));
+}
+
+#reboot {
+  background-image: image(url('./icons/reboot.svg'));
+  border-radius: 0 0 32px 0;
+}
+
+#lock:hover {
+  border-radius: 30px 0 0 0;
+  margin: -30px 0 0 -30px;
+}
+
+#logout:hover {
+  margin: -30px 0 0 0;
+}
+
+#suspend:hover {
+  border-radius: 0 30px 0 0;
+  margin: -30px -30px 0 0;
+}
+
+#hibernate:hover {
+  border-radius: 0 0 0 30px;
+  margin: 0 0 -30 -30px;
+}
+
+#shutdown:hover {
+  margin: 0 0 -30px 0;
+}
+
+#reboot:hover {
+  border-radius: 0 0 30px 0;
+  margin: 0 -30px -30px 0;
+}
+
+#lock:focus {
+  border-radius: 60px 0 0 0;
+  margin: -60px 0 0 -60px;
+}
+
+#logout:focus {
+  margin: -60px 0 0 0;
+}
+
+#suspend:focus {
+  border-radius: 0 60px 0 0;
+  margin: -60px -60px 0 0;
+}
+
+#hibernate:focus {
+  border-radius: 0 0 0 60px;
+  margin: 0 0 -60 -60px;
+}
+
+#shutdown:focus {
+  margin: 0 0 -60px 0;
+}
+
+#reboot:focus {
+  border-radius: 0 0 60px 0;
+  margin: 0 -60px -60px 0;
+}

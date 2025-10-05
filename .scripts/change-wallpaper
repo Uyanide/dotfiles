@@ -52,11 +52,9 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
         exit 1
     )
 
-    (setsid swaybg -i "$blurred_image" -m fill)&
-    disown
+    nohup swaybg -i "$blurred_image" -m fill > /dev/null 2> /dev/null &
 
-    (setsid swww img "$image_copied" --transition-type fade --transition-duration 2)&
-    disown
+    nohup swww img "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null &
 
     notify-send "Wallpaper Changed" "$image"
 fi

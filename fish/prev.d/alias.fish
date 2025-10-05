@@ -45,8 +45,8 @@ alias grep="grep --color=auto"
 
 # nvim
 if type -q nvim
-    set -x EDITOR nvim
-    set -x VISUAL nvim
+    set -x -g EDITOR nvim
+    set -x -g VISUAL nvim
 end
 
 # others

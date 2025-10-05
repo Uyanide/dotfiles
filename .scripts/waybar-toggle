@@ -19,8 +19,7 @@ function open() {
             sleep 0.2
         done
     fi
-    (setsid waybar > /dev/null 2> /dev/null &)&
-    disown
+    nohup waybar >/dev/null 2>/dev/null &
 
     # Reopen the lyrics widget if it was previously closed
     if [ $lyrics_widget_closed -eq 1 ]; then

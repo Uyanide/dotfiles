@@ -6,6 +6,6 @@ fish_add_path $HOME/.scripts
 
 # man
 if type -q bat
-    set -x MANPAGER "sh -c 'col -bx | bat -l man -p'"
-    set -x MANROFFOPT -c
+    set -x -g MANPAGER "sh -c 'col -bx | bat -l man -p'"
+    set -x -g MANROFFOPT -c
 end

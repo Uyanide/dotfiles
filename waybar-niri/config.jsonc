@@ -17,7 +17,7 @@
     "custom/mediaplayer"
   ],
   "modules-center": ["clock"],
-  "modules-right": ["group/monitors", "custom/separator", "group/tray-expander", "idle_inhibitor", "custom/power"],
+  "modules-right": ["group/monitors", "custom/separator", "group/tray-expander", "custom/caffeine", "custom/power"],
   // -------------------------------------------------------------------------
   // Modules
   // -------------------------------------------------------------------------
@@ -50,6 +50,21 @@
       "activated": "",
       "deactivated": ""
     },
+    "min-length": 2,
+    "max-length": 2
+  },
+  "custom/caffeine": {
+    "format": "{icon}",
+    "format-icons": {
+      "active": "",
+      "inactive": ""
+    },
+    "return-type": "json",
+    "interval": "once",
+    "exec": "$HOME/.config/waybar/modules/caffeine.sh",
+    "on-click": "$HOME/.config/waybar/modules/caffeine.sh toggle && sleep 0.2",
+    "exec-on-event": true,
+    "tooltip": false,
     "min-length": 2,
     "max-length": 2
   },
@@ -166,7 +181,7 @@
     "max-length": 6,
     "min-length": 6
   },
-  // Hyprland
+  // Niri
   "group/workspaceactions": {
     "modules": ["niri/workspaces", "custom/workspacenew"],
     "orientation": "inherit"

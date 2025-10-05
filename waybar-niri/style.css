@@ -45,6 +45,7 @@ tooltip {
 #tray,
 #custom-rofi,
 #idle_inhibitor,
+#custom-caffeine,
 #custom-power {
   padding: 0px 10px;
 }
@@ -55,6 +56,7 @@ tooltip {
 }
 
 #custom-rofi,
+#custom-caffeine
 #idle_inhibitor,
 #custom-power,
 #custom-expand-icon {
@@ -168,14 +170,17 @@ window#waybar.empty #window {
   color: @green;
 }
 
+#custom-caffeine,
 #idle_inhibitor {
   color: @yellow;
 }
 
+#custom-caffeine:hover,
 #idle_inhibitor:hover {
   background-color: alpha(@yellow, 0.3);
 }
 
+#custom-caffeine.active,
 #idle_inhibitor.activated {
   color: @peach;
 }

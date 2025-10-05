@@ -65,7 +65,7 @@ layout {
         proportion 1.0
     }
 
-    default-column-width { proportion 0.66667; }
+    default-column-width { proportion 0.7; }
 
     focus-ring {
         width 2
@@ -134,10 +134,9 @@ spawn-at-startup "nm-applet"
 spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "mako"
-spawn-at-startup "xwayland-satellite"
 
 // idle
-spawn-sh-at-startup "swayidle -w timeout 300 'hyprlock &' timeout 600 'niri msg action power-off-monitors' before-sleep 'hyprlock &'"
+spawn-sh-at-startup "niri-swayidle"
 
 // Clipboard history
 spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
@@ -175,7 +174,6 @@ environment {
     // Others
     XCURSOR_SIZE "24"
     ELECTRON_OZONE_PLATFORM_HINT "wayland"
-    DISPLAY ":0"
 }
 
 /************************Rules************************/
@@ -202,6 +200,25 @@ window-rule {
 window-rule {
     match app-id="com.mitchellh.ghostty"
     open-floating true
+    default-column-width { proportion 0.5; }
+}
+
+// Normal terminal
+window-rule {
+    match app-id="kitty"
+    default-column-width { proportion 0.5; }
+}
+
+// Scrcpy
+window-rule {
+    match app-id="scrcpy"
+    default-column-width { proportion 0.3; }
+}
+
+// Editor
+window-rule {
+    match app-id="org.gnome.TextEditor"
+    default-column-width { proportion 0.3; }
 }
 
 // Other floating
@@ -255,7 +272,7 @@ binds {
     Mod+C { spawn-sh "code --password-store=gnome-libsecret"; }
     Mod+E { spawn "dolphin"; }
     Mod+W { spawn "zen"; }
-    Mod+X { spawn "gnome-text-editor"; }
+    Mod+X { spawn "gnome-text-editor" "--new-window"; }
     Mod+B { spawn-sh "killall btop || ghostty -e btop"; }
     Mod+T { spawn "kitty"; }
     Mod+Return { spawn "kitty"; }
@@ -381,7 +398,7 @@ binds {
     Mod+Shift+F { fullscreen-window; }
     Mod+Ctrl+F { expand-column-to-available-width; }
 
-    Mod+Ctrl+C { center-column; }
+    Mod+Y { center-column; }
 
     Mod+Minus { set-column-width "-10%"; }
     Mod+Plus { set-column-width "+10%"; }
