@@ -3,7 +3,7 @@
 - desktop with a few widgets:
   <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
 
-- dynamic flavor based on Catppuccin Mocha:
+- dynamic colortheme based on Catppuccin Mocha:
   <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
 
 - the grub menu looks like:
@@ -17,7 +17,7 @@
 - **Shell**: Fish
 - **Prompt**: Oh My Posh
 - **Terminal**: Kitty & Ghostty
-- **Colorscheme**: Catppuccin-mocha
+- **Colorscheme**: Catppuccin Mocha
 - **App Launcher**: Rofi
 - **Logout Screen**: Wlogout
 - **Desktop Widgets**: Eww
@@ -29,7 +29,7 @@ Based on [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but witho
 
 ## Niri
 
-Ported some of the exsiting Hyprland configurations, e.g. windows rules & keybindings, even using hyprlock as lock screen.
+Ported from Hyprland, and shares most of the desktop components such as hyprlock & eww widgets & rofi & waybar & mako.
 
 ## Eww
 
