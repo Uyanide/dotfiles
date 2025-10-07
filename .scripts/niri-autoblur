@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+normal=$(find ~/.config/wallpaper-chooser/current -type f | head -n 1)
+blurred=$(find ~/.local/share/swaybg -type f | head -n 1)
+
+[ -n "$normal" ] || exit 1
+[ -n "$blurred" ] || exit 1
+
+while true; do
+    last=$target
+
+    mapfile -t focused_lines < <(niri msg focused-window 2>/dev/null)
+
+    if [ "${#focused_lines[@]}" -gt 1 ]; then
+        target="$blurred"
+    else
+        target="$normal"
+    fi
+
+    [ "$target" = "$last" ] || swww img "$target" --transition-type fade --transition-duration 0.5 > /dev/null 2> /dev/null
+
+    sleep 0.5
+done

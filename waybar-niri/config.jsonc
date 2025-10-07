@@ -75,7 +75,8 @@
     "today-format": "<b>{}</b>",
     "on-click": "niri msg action center-column",
     "on-scroll-up": "niri msg action set-column-width +10%",
-    "on-scroll-down": "niri msg action set-column-width -10%"
+    "on-scroll-down": "niri msg action set-column-width -10%",
+    "on-click-middle": "niri msg action close-window"
   },
 
   // System monitors
@@ -197,7 +198,6 @@
     "format": "",
     "separate-outputs": true,
     "icon": true,
-    "on-click-middle": "niri msg action close-window",
     "icon-size": 14
   },
   "custom/mediaplayer": {

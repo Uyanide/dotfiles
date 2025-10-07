@@ -67,7 +67,7 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
         notify-send "Blurred Wallpaper set" "Selected wallpaper has been successfully applied for overview"
     ) &
 
-    nohup swww img "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null &
+    swww img "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
 
     notify-send "Wallpaper Changed" "$image"
 else

@@ -123,7 +123,8 @@ spawn-at-startup "waybar"
 
 // Wallpaper
 spawn-sh-at-startup "swaybg -i $(find $HOME/.local/share/swaybg -type f) -m fill"
-spawn-sh-at-startup "swww-daemon"
+spawn-at-startup "swww-daemon"
+spawn-at-startup "niri-autoblur"
 
 // Not necessary maybe ...
 spawn-at-startup "fcitx5"
