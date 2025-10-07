@@ -20,7 +20,7 @@
     peach: #fab387;
     search: rgba(49, 50, 68, 0.5); // alpha(@surface, 0.5)
 
-    accent: #f5c2e7;
+    accent: #89b4fa;
 }
 
 

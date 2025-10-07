@@ -12,11 +12,11 @@ button {
   color: #cdd6f4;
   border-radius: 0;
   outline-style: none;
-  background-color: alpha(#1e1e2e, 0.8);
+  background-color: alpha(#1e1e2e, 1);
   border: none;
   border-width: 0px;
   border-radius: 0px;
-  border-color: #f5c2e7;
+  border-color: #89b4fa;
   box-shadow: none;
   text-shadow: none;
   text-decoration-color: #cdd6f4;
@@ -30,7 +30,7 @@ button:focus,
 button:active,
 button:hover {
   background-size: 20%;
-  background-color: alpha(#1e1e2e, 0.7);
+  background-color: alpha(#1c1c2c, 1);
   animation: gradient_f 20s ease-in infinite;
   transition: all 0.3s cubic-bezier(0.55, 0, 0.28, 1.682);
 }
