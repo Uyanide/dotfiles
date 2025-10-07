@@ -137,7 +137,7 @@ spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "mako"
 
 // idle
-spawn-sh-at-startup "niri-swayidle"
+spawn-sh-at-startup "hypridle"
 
 // Clipboard history
 spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
