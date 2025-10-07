@@ -1,23 +1,64 @@
 #!/usr/bin/env bash
 
-normal=$(find ~/.config/wallpaper-chooser/current -type f | head -n 1)
-blurred=$(find ~/.local/share/swaybg -type f | head -n 1)
+function update() {
+    normal=$(find ~/.local/share/wallpaper/current -type f | head -n 1)
+    blurred=$(find ~/.local/share/wallpaper/blurred -type f | head -n 1)
 
-[ -n "$normal" ] || exit 1
-[ -n "$blurred" ] || exit 1
+    [ -n "$normal" ] && [ -n "$blurred" ]
+}
 
-while true; do
-    last=$target
+function apply() {
+    swww img "$1" --transition-type fade --transition-duration 0.5 > /dev/null 2> /dev/null
+}
 
+function isdesktop() {
     mapfile -t focused_lines < <(niri msg focused-window 2>/dev/null)
 
-    if [ "${#focused_lines[@]}" -gt 1 ]; then
-        target="$blurred"
+    [ "${#focused_lines[@]}" -le 1 ]
+}
+
+# single shot
+[ -n "$1" ] && {
+    update || exit 1
+
+    if [ "$1" = "normal" ]; then
+        target=$normal
+    elif [ "$1" = "blurred" ]; then
+        target=$blurred
+    elif [ "$1" = "auto" ]; then
+        if isdesktop; then
+            target=$normal
+        else
+            target=$blurred
+        fi
     else
-        target="$normal"
+        echo "Usage: $0 [normal|blurred|auto]"
+        exit 1
     fi
 
-    [ "$target" = "$last" ] || swww img "$target" --transition-type fade --transition-duration 0.5 > /dev/null 2> /dev/null
+    apply "$target"
+
+    exit 0
+}
+
+while true; do
+    # wait until wallpapers are ready
+    update || {
+        last="" # force apply when ready
+        sleep 0.5
+        continue
+    }
+
+    if isdesktop; then
+        target="$normal"
+    else
+        target="$blurred"
+    fi
+
+    [ "$target" = "$last" ] || {
+        apply "$target"
+        last=$target
+    }
 
     sleep 0.5
 done

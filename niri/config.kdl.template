@@ -122,7 +122,7 @@ spawn-sh-at-startup "config-switch niri"
 spawn-at-startup "waybar"
 
 // Wallpaper
-spawn-sh-at-startup "swaybg -i $(find $HOME/.local/share/swaybg -type f) -m fill"
+spawn-sh-at-startup "swaybg -i $(find $HOME/.local/wallpaper/blurred -type f) -m fill"
 spawn-at-startup "swww-daemon"
 spawn-at-startup "niri-autoblur"
 

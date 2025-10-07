@@ -10,7 +10,7 @@ fi
 [ ! -f "$image" ] && exit 1
 
 ext=${image##*.}
-current_dir="$HOME/.config/wallpaper-chooser/current"
+current_dir="$HOME/.local/share/wallpaper/current"
 image_copied="$current_dir/wallpaper.$ext"
 
 mkdir -p "$current_dir" || (
@@ -37,7 +37,7 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
     killall swaybg
     killall swww
 
-    blur_dir="$HOME/.local/share/swaybg"
+    blur_dir="$HOME/.local/share/wallpaper/blurred"
     mkdir -p "$blur_dir" || (
         echo "Could not create cache directory"
         exit 1
