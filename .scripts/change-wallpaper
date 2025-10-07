@@ -14,19 +14,18 @@ current_dir="$HOME/.config/wallpaper-chooser/current"
 image_copied="$current_dir/wallpaper.$ext"
 
 mkdir -p "$current_dir" || (
-    notify-send "Error" "Could not create directory $current_dir"
+    echo "Could not create directory $current_dir"
     exit 1
 )
 
 temp_img=$(mktemp --suffix=."$ext") || exit 1
+trap 'rm -f "$temp_img"' EXIT
 cp "$image" "$temp_img" || exit 1
 rm -f "$current_dir"/wallpaper.*
 cp -f "$temp_img" "$image_copied" || (
-    notify-send "Error" "Could not copy image to $current_dir"
-    rm -f "$temp_img"
+    echo "Could not copy image to $current_dir"
     exit 1
 )
-rm -f "$temp_img"
 
 if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
     hyprctl hyprpaper reload ,"$image_copied" || exit 1
@@ -40,24 +39,41 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
 
     blur_dir="$HOME/.local/share/swaybg"
     mkdir -p "$blur_dir" || (
-        notify-send "Error" "Could not create cache directory"
+        echo "Could not create cache directory"
         exit 1
     )
     rm -rf "${blur_dir:?}"/*
     blurred_image="$blur_dir/blurred.$ext"
 
     # blur
-    magick "$image_copied" -blur 0x16 "$blurred_image" || (
-        notify-send "Error" "Could not create blurred image"
-        exit 1
-    )
+    (
+        # notify-send "Generating Blurred Wallpaper" "This may take a few seconds..."
 
-    nohup swaybg -i "$blurred_image" -m fill > /dev/null 2> /dev/null &
+        sigma=$(magick identify -format "%w %h" "$image_copied" | awk -v f=0.01 '{
+            m=($1>$2)?$1:$2;
+            s=m*f;
+            if(s<2) s=2;
+            if(s>200) s=200;
+            printf "%.2f", s
+        }')
+
+        magick "$image_copied" -blur 0x"$sigma" "$blurred_image" || (
+            echo "Could not create blurred image"
+            exit 1
+        )
+
+        nohup swaybg -i "$blurred_image" -m fill > /dev/null 2> /dev/null &
+
+        notify-send "Blurred Wallpaper set" "Selected wallpaper has been successfully applied for overview"
+    ) &
 
     nohup swww img "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null &
 
     notify-send "Wallpaper Changed" "$image"
+else
+    echo "Unsupported desktop environment: $XDG_CURRENT_DESKTOP"
+    exit 1
 fi
 
-notify-send "Extracting colors from wallpaper" "This may take a few seconds..."
+# notify-send "Extracting Colors from Wallpaper" "This may take a few seconds..."
 change-colortheme -i "$image_copied" || exit 1
