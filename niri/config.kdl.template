@@ -109,7 +109,7 @@ animations {
 }
 
 layer-rule {
-    match namespace="^wallpaper$"
+    match namespace="^swww-daemonbackdrop$"
     place-within-backdrop true
 }
 
@@ -122,8 +122,8 @@ spawn-sh-at-startup "config-switch niri"
 spawn-at-startup "waybar"
 
 // Wallpaper
-spawn-sh-at-startup "swaybg -i $(find $HOME/.local/wallpaper/blurred -type f) -m fill"
-spawn-at-startup "swww-daemon"
+spawn-sh-at-startup "swww-daemon -n background"
+spawn-sh-at-startup "swww-daemon -n backdrop"
 spawn-at-startup "niri-autoblur"
 
 // Not necessary maybe ...

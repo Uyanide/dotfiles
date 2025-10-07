@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+normal=""
+blurred=""
+last=""
+target=""
+
 function update() {
     normal=$(find ~/.local/share/wallpaper/current -type f | head -n 1)
     blurred=$(find ~/.local/share/wallpaper/blurred -type f | head -n 1)
@@ -8,7 +13,7 @@ function update() {
 }
 
 function apply() {
-    swww img "$1" --transition-type fade --transition-duration 0.5 > /dev/null 2> /dev/null
+    swww img -n background "$1" --transition-type fade --transition-duration 0.5 > /dev/null 2> /dev/null
 }
 
 function isdesktop() {

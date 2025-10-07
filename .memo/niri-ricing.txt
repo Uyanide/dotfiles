@@ -3,6 +3,5 @@ things I have installed:
 everything in `./hyprland-ricing.txt`, in addition to:
 
 swayidle            # hypridle shows a warning on Niri, so better to use another one
-swaybg              # background of overview (blurred)
-swww                # background of workspaces
+swww
 xwayland-satellite
