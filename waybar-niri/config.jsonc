@@ -17,7 +17,7 @@
     "custom/mediaplayer"
   ],
   "modules-center": ["clock"],
-  "modules-right": ["group/monitors", "custom/separator", "group/tray-expander", "custom/caffeine", "custom/power"],
+  "modules-right": ["group/monitors", "custom/separator", "group/tray-expander", "idle_inhibitor", "custom/power"],
   // -------------------------------------------------------------------------
   // Modules
   // -------------------------------------------------------------------------
