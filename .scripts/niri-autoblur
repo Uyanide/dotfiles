@@ -23,9 +23,15 @@ def get_niri_socket():
 
 def _log(msg: str):
     print(msg)
+    # logFIle = Path("/tmp/niri-autoblur.log")
+    # try:
+    #     with logFIle.open("a") as f:
+    #         f.write(msg + "\n")
+    # except Exception:
+    #     pass
 
 
-def swww_command(namespace: str, wallpaper: Path):
+def swwwCommand(namespace: str, wallpaper: Path):
     cmd = [
         "swww",
         "img",
@@ -42,11 +48,11 @@ def swww_command(namespace: str, wallpaper: Path):
     try:
         ret = subprocess.run(cmd, check=True).returncode
     except Exception as e:
-        _log(f"failed to set wallpaper: {e}")
+        _log(f"[SWWW] failed to set wallpaper: {e}")
         return False
 
     if ret != 0:
-        _log(f"failed to set wallpaper, exit code: {ret}")
+        _log(f"[SWWW] failed to set wallpaper, exit code: {ret}")
         return False
 
     return True
@@ -59,6 +65,7 @@ class AutoBlur:
     _isBlurred = threading.Event()
     _thread: threading.Thread | None = None
     _lastWallpaer: Path | None = None
+    _isFirst = True
 
     def __init__(self, normalDir, blurredDir, interval=0.2):
         self._interval = interval
@@ -78,16 +85,22 @@ class AutoBlur:
             lines = output.strip().splitlines()
             return len(lines) > 1
         except Exception as e:
-            _log(f"failed to check focused window, assuming none: {e}")
+            _log(f"[initIsBlurred] failed to check focused window, assuming none: {e}")
             return False
 
     def setBlurred(self, isBlurred: bool) -> None:
+        # Cache state, avoid starting thread unnecessarily
+        if not self._isFirst and self._isBlurred.is_set() == isBlurred:
+            _log("[AutoBlur] state unchanged")
+            return
+        self._isFirst = False
+
         if isBlurred:
             self._isBlurred.set()
-            _log("set to blurred")
+            _log("[AutoBlur] set to blurred")
         else:
             self._isBlurred.clear()
-            _log("set to normal")
+            _log("[AutoBlur] set to normal")
 
         if self._thread is None or not self._thread.is_alive():
             self._thread = threading.Thread(target=self._run, daemon=True)
@@ -97,7 +110,7 @@ class AutoBlur:
         if wallpaper == self._lastWallpaer:
             return True
 
-        if not swww_command("background", wallpaper):
+        if not swwwCommand("background", wallpaper):
             return False
 
         self._lastWallpaer = wallpaper
@@ -121,47 +134,48 @@ class AutoBlur:
 autoBlurInst = AutoBlur(NORMAL_WALLPAPER_DIR, BLURRED_WALLPAPER_DIR)
 
 
-def handle_event(event_name, payload):
+def handleEvent(event_name, payload):
     if event_name == "WindowFocusChanged":
         id = payload.get("id", "")
         if isinstance(id, int):
-            _log(f"focused window id: {id}")
+            _log(f"[EventHandler] focused window id: {id}")
             autoBlurInst.setBlurred(True)
         elif isinstance(id, str) and id == "None":
-            _log("no focused window")
+            _log("[EventHandler] no focused window")
             autoBlurInst.setBlurred(False)
         else:
-            _log(f"unknown id: {id}, assuming no focused window")
+            _log(f"[EventHandler] unknown id: {id}, assuming no focused window")
             autoBlurInst.setBlurred(False)
     elif event_name == "WindowsChanged":
         windows = payload.get("windows", [])
         for window in windows:
             if window.get("is_focused", False):
-                _log(f"found focused window")
+                _log(f"[EventHandler] found focused window")
                 autoBlurInst.setBlurred(True)
                 return
-        _log("no focused window found")
+        _log("[EventHandler] no focused window found")
         autoBlurInst.setBlurred(False)
     elif event_name == "WindowOpenedOrChanged":
         window = payload.get("window", {})
         if window.get("is_focused", False):
-            _log(f"opened/changed focused window")
+            _log(f"[EventHandler] opened/changed focused window")
             autoBlurInst.setBlurred(True)
     else:
-        _log(f"unhandled event: {event_name}")
+        _log(f"[EventHandler] unhandled event: {event_name}")
 
 
 def print_event(eventName, payload):
-    _log(f"event: {eventName}, payload:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")
+    _log(f"[EventHandler] event: {eventName}, payload:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")
 
 
-def connect_niri(niriSocket: str, handler):
+def connect_niri(niriSocket: str, handler) -> bool:
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     try:
         sock.connect(niriSocket)
     except Exception as e:
         sock.close()
-        exit(f"Failed to connect to {niriSocket}: {e}")
+        _log(f"[Socket] Failed to connect to {niriSocket}: {e}")
+        return False
 
     f = sock.makefile("rwb")
 
@@ -171,17 +185,19 @@ def connect_niri(niriSocket: str, handler):
 
         first = f.readline()
         if not first:
-            raise RuntimeError("connection closed by server before handshake")
+            # raise RuntimeError("connection closed by server before handshake")
+            _log("[Socket] connection closed by server before handshake")
+            return False
         try:
             resp = json.loads(first.decode())
         except Exception:
             resp = first.decode().strip()
-        _log(f"handshake response: {resp}")
+        _log(f"[Socket] handshake response: {resp}")
 
         while True:
             line = f.readline()
             if not line:
-                _log("socket closed by server")
+                _log("[Socket] socket closed by server")
                 break
             s = line.decode().strip()
             if s == "":
@@ -189,7 +205,7 @@ def connect_niri(niriSocket: str, handler):
             try:
                 obj = json.loads(s)
             except Exception as e:
-                _log(f"failed to parse line as JSON: {s}, error: {e}")
+                _log(f"[Socket] failed to parse line as JSON: {s}, error: {e}")
                 continue
 
             keys = list(obj.keys())
@@ -208,18 +224,20 @@ def connect_niri(niriSocket: str, handler):
         try:
             sock.close()
         except Exception:
-            pass
+            return False
+        return True
 
 
 if __name__ == "__main__":
     # Init wallpaper for backdrop
     wallpaper = _get_first_file(BLURRED_WALLPAPER_DIR)
     if wallpaper:
-        swww_command("backdrop", wallpaper)
+        swwwCommand("backdrop", wallpaper)
 
     niri_socket = get_niri_socket()
     if not niri_socket:
-        _log("NIRI_SOCKET environment variable is not set.")
+        _log("[Main] NIRI_SOCKET environment variable is not set.")
         exit(1)
 
-    connect_niri(niri_socket, handle_event)
+    if not connect_niri(niri_socket, handleEvent):
+        exit(1)
