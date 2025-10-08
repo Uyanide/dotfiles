@@ -302,7 +302,7 @@ binds {
     Mod+Shift+C { spawn-sh "hyprpicker -a"; }
 
     // Session
-    Mod+L { spawn "hyprlock"; }
+    Mod+L { spawn "loginctl lock-session"; }
 
     // Media
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+ && wp-vol"; }

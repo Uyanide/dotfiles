@@ -1,69 +1,225 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-normal=""
-blurred=""
-last=""
-target=""
+import socket
+import json
+import subprocess
+import threading
+from sys import exit
+from time import sleep
+from os import environ
+from pathlib import Path
 
-function update() {
-    normal=$(find ~/.local/share/wallpaper/current -type f | head -n 1)
-    blurred=$(find ~/.local/share/wallpaper/blurred -type f | head -n 1)
+NORMAL_WALLPAPER_DIR = Path("/home/kolkas/.local/share/wallpaper/current")
+BLURRED_WALLPAPER_DIR = Path("/home/kolkas/.local/share/wallpaper/blurred")
 
-    [ -n "$normal" ] && [ -n "$blurred" ]
-}
 
-function apply() {
-    swww img -n background "$1" --transition-type fade --transition-duration 0.5 > /dev/null 2> /dev/null
-}
+def _get_first_file(dir: Path) -> Path | None:
+    return next(dir.glob("*"), None)
 
-function isdesktop() {
-    mapfile -t focused_lines < <(niri msg focused-window 2>/dev/null)
 
-    [ "${#focused_lines[@]}" -le 1 ]
-}
+def get_niri_socket():
+    return environ['NIRI_SOCKET']
 
-# single shot
-[ -n "$1" ] && {
-    update || exit 1
 
-    if [ "$1" = "normal" ]; then
-        target=$normal
-    elif [ "$1" = "blurred" ]; then
-        target=$blurred
-    elif [ "$1" = "auto" ]; then
-        if isdesktop; then
-            target=$normal
-        else
-            target=$blurred
-        fi
-    else
-        echo "Usage: $0 [normal|blurred|auto]"
-        exit 1
-    fi
+def _log(msg: str):
+    print(msg)
 
-    apply "$target"
 
-    exit 0
-}
+def swww_command(namespace: str, wallpaper: Path):
+    cmd = [
+        "swww",
+        "img",
+        "-n",
+        namespace,
+        str(wallpaper),
+        "--transition-type",
+        "fade",
+        "--transition-duration",
+        "0.5",
+    ]
+    _log(" ".join(cmd))
+    ret = 0
+    try:
+        ret = subprocess.run(cmd, check=True).returncode
+    except Exception as e:
+        _log(f"failed to set wallpaper: {e}")
+        return False
 
-while true; do
-    # wait until wallpapers are ready
-    update || {
-        last="" # force apply when ready
-        sleep 0.5
-        continue
-    }
+    if ret != 0:
+        _log(f"failed to set wallpaper, exit code: {ret}")
+        return False
 
-    if isdesktop; then
-        target="$normal"
-    else
-        target="$blurred"
-    fi
+    return True
 
-    [ "$target" = "$last" ] || {
-        apply "$target"
-        last=$target
-    }
 
-    sleep 0.5
-done
+class AutoBlur:
+    _interval: float
+    _normalDir: Path
+    _blurredDir: Path
+    _isBlurred = threading.Event()
+    _thread: threading.Thread | None = None
+    _lastWallpaer: Path | None = None
+
+    def __init__(self, normalDir, blurredDir, interval=0.2):
+        self._interval = interval
+        self._normalDir = normalDir
+        self._blurredDir = blurredDir
+
+        # Niri will send "WindowsChanged" event on connect, so no need to init here
+        # init state
+        # self.setBlurred(AutoBlur.initIsBlurred())
+
+    @staticmethod
+    def initIsBlurred() -> bool:
+        '''[ $(niri msg focused-window | wc -l) -gt 1 ]'''
+        cmd = ["niri", "msg", "focused-window"]
+        try:
+            output = subprocess.check_output(cmd, text=True)
+            lines = output.strip().splitlines()
+            return len(lines) > 1
+        except Exception as e:
+            _log(f"failed to check focused window, assuming none: {e}")
+            return False
+
+    def setBlurred(self, isBlurred: bool) -> None:
+        if isBlurred:
+            self._isBlurred.set()
+            _log("set to blurred")
+        else:
+            self._isBlurred.clear()
+            _log("set to normal")
+
+        if self._thread is None or not self._thread.is_alive():
+            self._thread = threading.Thread(target=self._run, daemon=True)
+            self._thread.start()
+
+    def _apply(self, wallpaper: Path) -> bool:
+        if wallpaper == self._lastWallpaer:
+            return True
+
+        if not swww_command("background", wallpaper):
+            return False
+
+        self._lastWallpaer = wallpaper
+        return True
+
+    def _run(self) -> None:
+        '''Wait until wallpapers are ready & apply the correct one according to the current state'''
+        while True:
+            if self._isBlurred.is_set():
+                wallpaper = _get_first_file(self._blurredDir)
+            else:
+                wallpaper = _get_first_file(self._normalDir)
+
+            if wallpaper is not None and wallpaper.exists():
+                if self._apply(wallpaper):
+                    break
+
+            sleep(self._interval)
+
+
+autoBlurInst = AutoBlur(NORMAL_WALLPAPER_DIR, BLURRED_WALLPAPER_DIR)
+
+
+def handle_event(event_name, payload):
+    if event_name == "WindowFocusChanged":
+        id = payload.get("id", "")
+        if isinstance(id, int):
+            _log(f"focused window id: {id}")
+            autoBlurInst.setBlurred(True)
+        elif isinstance(id, str) and id == "None":
+            _log("no focused window")
+            autoBlurInst.setBlurred(False)
+        else:
+            _log(f"unknown id: {id}, assuming no focused window")
+            autoBlurInst.setBlurred(False)
+    elif event_name == "WindowsChanged":
+        windows = payload.get("windows", [])
+        for window in windows:
+            if window.get("is_focused", False):
+                _log(f"found focused window")
+                autoBlurInst.setBlurred(True)
+                return
+        _log("no focused window found")
+        autoBlurInst.setBlurred(False)
+    elif event_name == "WindowOpenedOrChanged":
+        window = payload.get("window", {})
+        if window.get("is_focused", False):
+            _log(f"opened/changed focused window")
+            autoBlurInst.setBlurred(True)
+    else:
+        _log(f"unhandled event: {event_name}")
+
+
+def print_event(eventName, payload):
+    _log(f"event: {eventName}, payload:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")
+
+
+def connect_niri(niriSocket: str, handler):
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        sock.connect(niriSocket)
+    except Exception as e:
+        sock.close()
+        exit(f"Failed to connect to {niriSocket}: {e}")
+
+    f = sock.makefile("rwb")
+
+    try:
+        f.write(b'"EventStream"\n')
+        f.flush()
+
+        first = f.readline()
+        if not first:
+            raise RuntimeError("connection closed by server before handshake")
+        try:
+            resp = json.loads(first.decode())
+        except Exception:
+            resp = first.decode().strip()
+        _log(f"handshake response: {resp}")
+
+        while True:
+            line = f.readline()
+            if not line:
+                _log("socket closed by server")
+                break
+            s = line.decode().strip()
+            if s == "":
+                continue
+            try:
+                obj = json.loads(s)
+            except Exception as e:
+                _log(f"failed to parse line as JSON: {s}, error: {e}")
+                continue
+
+            keys = list(obj.keys())
+            if keys:
+                event_name = keys[0]
+                payload = obj[event_name]
+            else:
+                event_name = "<unknown>"
+                payload = obj
+            handler(event_name, payload)
+    finally:
+        try:
+            f.close()
+        except Exception:
+            pass
+        try:
+            sock.close()
+        except Exception:
+            pass
+
+
+if __name__ == "__main__":
+    # Init wallpaper for backdrop
+    wallpaper = _get_first_file(BLURRED_WALLPAPER_DIR)
+    if wallpaper:
+        swww_command("backdrop", wallpaper)
+
+    niri_socket = get_niri_socket()
+    if not niri_socket:
+        _log("NIRI_SOCKET environment variable is not set.")
+        exit(1)
+
+    connect_niri(niri_socket, handle_event)
