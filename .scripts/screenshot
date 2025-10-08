@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from enum import Enum
 import time
+from pathlib import Path
 
 # autopep8: off
 import gi
@@ -19,23 +20,20 @@ class ScreenshotType(Enum):
     WINDOW = "window"
 
 
-SCREENSHOT_DIR = os.path.join(
-    os.environ.get("XDG_PICTURES_DIR", os.path.expanduser("~/Pictures")),
-    "Screenshots"
-)
+SCREENSHOT_DIR = Path.home() / "Pictures" / "Screenshots"
 
 
-def wait_until_file_exists(filepath: str, timeout: int = 5):
+def wait_until_file_exists(filepath: Path, timeout: int = 5):
     """Wait until a file exists or timeout."""
     start_time = time.time()
-    while not os.path.isfile(filepath):
+    while not filepath.exists():
         if time.time() - start_time > timeout:
             return False
         time.sleep(0.1)
     return True
 
 
-def take_screenshot(typeStr: str, filepath: str):
+def take_screenshot(filepath: Path, typeStr: str):
     type = ScreenshotType(typeStr)
     currentDesktop = os.environ.get("XDG_CURRENT_DESKTOP", "")
     if "Hyprland" in currentDesktop:
@@ -44,7 +42,7 @@ def take_screenshot(typeStr: str, filepath: str):
             ScreenshotType.AREA: f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
             ScreenshotType.WINDOW: f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
         }
-        os.system(f"{cmd[type]}{filepath}")
+        os.system(f"{cmd[type]}{filepath.name}")
         wait_until_file_exists(filepath)
     elif "niri" in currentDesktop:
         cmd = {
@@ -52,24 +50,24 @@ def take_screenshot(typeStr: str, filepath: str):
             ScreenshotType.AREA: f"niri msg action screenshot",
             ScreenshotType.WINDOW: f"niri msg action screenshot-window",
         }
-        niriScreenshotPath = SCREENSHOT_DIR + os.sep + ".niri_screenshot.png"
-        if os.path.isfile(niriScreenshotPath):
-            os.remove(niriScreenshotPath)
+        niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
+        if niriScreenshotPath.exists():
+            niriScreenshotPath.unlink()
         os.system(cmd[type])
         wait_until_file_exists(niriScreenshotPath)
-        if os.path.isfile(niriScreenshotPath):
-            os.rename(niriScreenshotPath, filepath)
+        if niriScreenshotPath.exists():
+            niriScreenshotPath.rename(filepath)
         wait_until_file_exists(filepath)
     else:
         print("Unsupported desktop environment.")
         exit(1)
 
 
-def edit_screenshot(filepath: str):
-    os.system(f"gradia {SCREENSHOT_DIR}{os.sep}{filepath}")
+def edit_screenshot(filepath: Path):
+    os.system(f"gradia {filepath}")
 
 
-def file_name(dir, prefix="screenshot", ext=".png"):
+def file_name(dir: Path, prefix="screenshot", ext=".png"):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     return f"{prefix}_{timestamp}{ext}"
 
@@ -84,15 +82,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # file path
-    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
+    SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
     filename = file_name(SCREENSHOT_DIR)
-    filepath = os.path.join(SCREENSHOT_DIR, filename)
+    filepath = SCREENSHOT_DIR / filename
 
     # take screenshot
-    take_screenshot(args.type, filepath)
+    take_screenshot(filepath, args.type)
 
     # check if successful
-    if not os.path.isfile(filepath):
+    if not filepath.exists():
         print("Failed to take screenshot.")
         exit(1)
 
@@ -104,7 +102,7 @@ if __name__ == "__main__":
     def edit_callback(n, action, user_data):
         global editing
         editing = True
-        edit_screenshot(filename)
+        edit_screenshot(filepath)
         n.close()
         loop.quit()
 

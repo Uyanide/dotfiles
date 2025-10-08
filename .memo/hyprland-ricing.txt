@@ -10,7 +10,6 @@ full KDE Plasma 6 setup     # non-essential for sure
 
 # hypr*
 hyprland
-hyprpaper
 hypridle
 hyprlock
 hyprshot
@@ -29,6 +28,7 @@ kitty       # normal terminal
 ghostty     # floating terminal, for btop for example
 
 # under surface
+swww            # wallpaper daemon
 mako            # notification daemon
 gnome-keyring   # --password-store=gnome-libsecret
 wl-clipboard

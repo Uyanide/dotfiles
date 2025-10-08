@@ -2,5 +2,4 @@ things I have installed:
 
 everything in `./hyprland-ricing.txt`, in addition to:
 
-swww
 xwayland-satellite
