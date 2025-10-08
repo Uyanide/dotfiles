@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Select image file if none is provided
 if [ -z "$1" ]; then
     image=$(zenity --file-selection --title="Open File" --file-filter="*.jpg *.jpeg *.png *.webp *.bmp *.jfif *.tiff *.avif *.heic *.heif")
 else
@@ -8,6 +9,9 @@ fi
 
 [ -z "$image" ] && exit 1
 [ ! -f "$image" ] && exit 1
+
+
+# Copy image to local wallpaper directory
 
 ext=${image##*.}
 random_name=$(tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 16)
@@ -28,60 +32,62 @@ cp -f "$temp_img" "$image_copied" || (
     exit 1
 )
 
-if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
-    hyprctl hyprpaper reload ,"$image_copied" || exit 1
-    echo "preload = $image_copied" >"$HOME/.config/hypr/hyprpaper.conf"
-    echo "wallpaper = , $image_copied" >>"$HOME/.config/hypr/hyprpaper.conf"
+# Generate blurred wallpaper
 
-    notify-send "Wallpaper Changed" "$image"
-elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
-    killall swaybg
-    killall swww
+blur_dir="$HOME/.local/share/wallpaper/blurred"
+mkdir -p "$blur_dir" || (
+    echo "Could not create cache directory"
+    exit 1
+)
+rm -f "${blur_dir:?}"/blurred-*
+blurred_image="$blur_dir/blurred-${random_name}.$ext"
 
-    blur_dir="$HOME/.local/share/wallpaper/blurred"
-    mkdir -p "$blur_dir" || (
-        echo "Could not create cache directory"
+## Time consuming task (magick -blur) in background
+(
+    # notify-send "Generating Blurred Wallpaper" "This may take a few seconds..."
+
+    sigma=$(magick identify -format "%w %h" "$image_copied" | awk -v f=0.01 '{
+        m=($1>$2)?$1:$2;
+        s=m*f;
+        if(s<2) s=2;
+        if(s>200) s=200;
+        printf "%.2f", s
+    }')
+
+    ### use a temporary file to avoid incomplete file being used
+    temp_blurred=$(mktemp --suffix=."$ext") || exit 1
+    trap 'rm -f "${temp_blurred}"' EXIT
+    magick "$image_copied" -blur 0x"$sigma" "$temp_blurred" || (
+        echo "Could not create blurred image"
         exit 1
     )
-    rm -f "${blur_dir:?}"/blurred-*
-    blurred_image="$blur_dir/blurred-${random_name}.$ext"
+    mv -f "$temp_blurred" "$blurred_image" || (
+        echo "Could not move blurred image to cache directory"
+        exit 1
+    )
 
-    # blur
-    (
-        # notify-send "Generating Blurred Wallpaper" "This may take a few seconds..."
-
-        sigma=$(magick identify -format "%w %h" "$image_copied" | awk -v f=0.01 '{
-            m=($1>$2)?$1:$2;
-            s=m*f;
-            if(s<2) s=2;
-            if(s>200) s=200;
-            printf "%.2f", s
-        }')
-
-        temp_blurred=$(mktemp --suffix=."$ext") || exit 1
-        trap 'rm -f "${temp_blurred}"' EXIT
-        magick "$image_copied" -blur 0x"$sigma" "$temp_blurred" || (
-            echo "Could not create blurred image"
-            exit 1
-        )
-        mv -f "$temp_blurred" "$blurred_image" || (
-            echo "Could not move blurred image to cache directory"
-            exit 1
-        )
-
-        # nohup swaybg -i "$blurred_image" -m fill > /dev/null 2> /dev/null &
+    if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
         swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
+    fi
 
-        notify-send "Blurred Wallpaper Generated" "$blurred_image"
-    ) &
+    notify-send "Blurred Wallpaper Generated" "$blurred_image"
+) &
 
+# Apply wallpaper
+
+if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
     swww img -n background "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
 
     notify-send "Wallpaper Changed" "$image"
+
+    change-colortheme -i "$image_copied" || exit 1
+elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
+    swww img -n background "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
+
+    notify-send "Wallpaper Changed" "$image"
+
+    change-colortheme -i "$image_copied" || exit 1
 else
     echo "Unsupported desktop environment: $XDG_CURRENT_DESKTOP"
     exit 1
 fi
-
-# notify-send "Extracting Colors from Wallpaper" "This may take a few seconds..."
-change-colortheme -i "$image_copied" || exit 1

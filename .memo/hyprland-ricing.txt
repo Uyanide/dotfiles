@@ -67,10 +67,9 @@ spicetify-maketplace        # spotify themes
 nwg-look                    # theme of GTK apps
 catppuccin-gtk-theme-mocha  # theme of GTK apps
 kvantum
-qt5ct
-qt6ct
 
 # utils
 bc
 jq
 python-colorthief
+python-watchdog

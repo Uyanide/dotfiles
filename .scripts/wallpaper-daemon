@@ -8,21 +8,24 @@ from sys import exit
 from time import sleep
 from os import environ
 from pathlib import Path
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
-NORMAL_WALLPAPER_DIR = Path("/home/kolkas/.local/share/wallpaper/current")
-BLURRED_WALLPAPER_DIR = Path("/home/kolkas/.local/share/wallpaper/blurred")
+NORMAL_WALLPAPER_DIR = Path("~/.local/share/wallpaper/current").expanduser()
+BLURRED_WALLPAPER_DIR = Path("~/.local/share/wallpaper/blurred").expanduser()
 
 
-def _get_first_file(dir: Path, pattern: str = "*") -> Path | None:
+def getFirstFile(dir: Path, pattern: str = "*") -> Path | None:
+    '''`find $dir -type f | head -n 1`'''
     return next(dir.glob(pattern), None)
 
 
-def get_niri_socket():
+def getNiriSocket():
     return environ['NIRI_SOCKET']
 
 
 def _log(msg: str):
-    # print(msg)
+    print(msg)
 
     # logFIle = Path("/tmp/niri-autoblur.log")
     # try:
@@ -46,7 +49,7 @@ def swwwLoadImg(namespace: str, wallpaper: Path):
         "--transition-duration",
         "0.5",
     ]
-    _log(" ".join(cmd))
+    _log(f"[SWWW] {" ".join(cmd)}")
     ret = 0
     try:
         ret = subprocess.run(cmd, check=True).returncode
@@ -104,6 +107,49 @@ class AutoBlur:
         # init state
         # self.setBlurred(AutoBlur.initIsBlurred())
 
+        # Start watching dirs
+        self.addWatchDir()
+
+    class WatchdogHandler(FileSystemEventHandler):
+        _callback = None
+
+        def __init__(self, callback):
+            if callback is None:
+                raise ValueError("callback cannot be None")
+            super().__init__()
+            self._callback = callback
+
+        def on_created(self, event):
+            if not event.is_directory:
+                src_path = str(event.src_path)
+                path = Path(src_path)
+                _log(f"[Watchdog] file created: {path}")
+                self._callback(path)  # type: ignore
+
+        def on_moved(self, event):
+            if not event.is_directory:
+                dest_path = str(event.dest_path)
+                path = Path(dest_path)
+                _log(f"[Watchdog] file moved to: {path}")
+                self._callback(path)  # type: ignore
+
+    def addWatchDir(self):
+        normalHandler = self.WatchdogHandler(self._onNormalDirEvent)
+        blurredHandler = self.WatchdogHandler(self._onBlurredDirEvent)
+        observer = Observer()
+        observer.schedule(normalHandler, str(self._normalDir), recursive=False)
+        observer.schedule(blurredHandler, str(self._blurredDir), recursive=False)
+        observer.start()
+        _log(f"[Watchdog] watching dirs: {self._normalDir}, {self._blurredDir}")
+
+    def _onNormalDirEvent(self, path: Path):
+        if not self._isBlurred.is_set():
+            self._apply(path)
+
+    def _onBlurredDirEvent(self, path: Path):
+        if self._isBlurred.is_set():
+            self._apply(path)
+
     @staticmethod
     def initIsBlurred() -> bool:
         '''[ $(niri msg focused-window | wc -l) -gt 1 ]'''
@@ -118,9 +164,9 @@ class AutoBlur:
 
     def setBlurred(self, isBlurred: bool) -> None:
         # Cache state, avoid starting thread unnecessarily
-        # if not self._isFirst and self._isBlurred.is_set() == isBlurred:
-        #     _log("[AutoBlur] state unchanged")
-        #     return
+        if not self._isFirst and self._isBlurred.is_set() == isBlurred:
+            _log("[AutoBlur] state unchanged")
+            return
         self._isFirst = False
 
         if isBlurred:
@@ -138,9 +184,9 @@ class AutoBlur:
         '''Wait until wallpapers are ready & apply the correct one according to the current state'''
         while True:
             if self._isBlurred.is_set():
-                wallpaper = _get_first_file(self._blurredDir)
+                wallpaper = getFirstFile(self._blurredDir)
             else:
-                wallpaper = _get_first_file(self._normalDir)
+                wallpaper = getFirstFile(self._normalDir)
 
             if wallpaper is not None and wallpaper.exists():
                 if self._apply(wallpaper):
@@ -195,11 +241,11 @@ def handleEvent(event_name, payload):
         _log(f"[EventHandler] unhandled event: {event_name}")
 
 
-def print_event(eventName, payload):
+def printEvent(eventName, payload):
     _log(f"[EventHandler] event: {eventName}, payload:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")
 
 
-def connect_niri(niriSocket: str, handler) -> bool:
+def connectNiri(niriSocket: str, handler) -> bool:
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     try:
         sock.connect(niriSocket)
@@ -260,6 +306,9 @@ def connect_niri(niriSocket: str, handler) -> bool:
 
 
 if __name__ == "__main__":
+    # connectNiri(getNiriSocket(), printEvent)
+    # exit(0)
+
     desktop = environ.get("XDG_CURRENT_DESKTOP", "")
     if desktop == "niri":
         _log("[Main] running in Niri")
@@ -272,22 +321,22 @@ if __name__ == "__main__":
 
         _log("[Main] loading initial wallpapers")
         # Init wallpaper for backdrop
-        blurred = _get_first_file(BLURRED_WALLPAPER_DIR)
+        blurred = getFirstFile(BLURRED_WALLPAPER_DIR)
         if blurred:
             swwwLoadImg("backdrop", blurred)
         # Init wallpaper for background
-        normal = _get_first_file(NORMAL_WALLPAPER_DIR)
+        normal = getFirstFile(NORMAL_WALLPAPER_DIR)
         if normal:
             swwwLoadImg("background", normal)
 
         # Connect to Niri socket
         _log(f"[Main] connecting to Niri socket")
-        niri_socket = get_niri_socket()
+        niri_socket = getNiriSocket()
         if not niri_socket:
             _log("[Main] NIRI_SOCKET environment variable is not set.")
             exit(1)
 
-        if not connect_niri(niri_socket, handleEvent):
+        if not connectNiri(niri_socket, handleEvent):
             exit(1)
     elif desktop == "Hyprland":
         _log("[Main] running in Hyprland")
@@ -297,10 +346,13 @@ if __name__ == "__main__":
         sleep(1)  # similarly
 
         _log("[Main] loading initial wallpaper")
-        normal = _get_first_file(NORMAL_WALLPAPER_DIR)
+        normal = getFirstFile(NORMAL_WALLPAPER_DIR)
         if normal:
             swwwLoadImg("background", normal)
 
         # Wait indefinitely
         while True:
             sleep(3600)
+    else:
+        _log(f"[Main] unsupported desktop environment: {desktop}")
+        exit(1)
