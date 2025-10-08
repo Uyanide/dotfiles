@@ -122,9 +122,7 @@ spawn-sh-at-startup "config-switch niri"
 spawn-at-startup "waybar"
 
 // Wallpaper
-spawn-sh-at-startup "swww-daemon -n background"
-spawn-sh-at-startup "swww-daemon -n backdrop"
-spawn-at-startup "niri-autoblur"
+spawn-at-startup "wallpaper-daemon"
 
 // Not necessary maybe ...
 spawn-at-startup "fcitx5"

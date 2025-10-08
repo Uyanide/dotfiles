@@ -10,8 +10,9 @@ fi
 [ ! -f "$image" ] && exit 1
 
 ext=${image##*.}
+random_name=$(tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 16)
 current_dir="$HOME/.local/share/wallpaper/current"
-image_copied="$current_dir/wallpaper.$ext"
+image_copied="$current_dir/wallpaper-${random_name}.${ext}"
 
 mkdir -p "$current_dir" || (
     echo "Could not create directory $current_dir"
@@ -21,7 +22,7 @@ mkdir -p "$current_dir" || (
 temp_img=$(mktemp --suffix=."$ext") || exit 1
 trap 'rm -f "$temp_img"' EXIT
 cp "$image" "$temp_img" || exit 1
-rm -f "$current_dir"/wallpaper.*
+rm -f "${current_dir:?}"/wallpaper-*
 cp -f "$temp_img" "$image_copied" || (
     echo "Could not copy image to $current_dir"
     exit 1
@@ -42,8 +43,8 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
         echo "Could not create cache directory"
         exit 1
     )
-    rm -rf "${blur_dir:?}"/*
-    blurred_image="$blur_dir/blurred.$ext"
+    rm -f "${blur_dir:?}"/blurred-*
+    blurred_image="$blur_dir/blurred-${random_name}.$ext"
 
     # blur
     (
@@ -57,15 +58,21 @@ elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
             printf "%.2f", s
         }')
 
-        magick "$image_copied" -blur 0x"$sigma" "$blurred_image" || (
+        temp_blurred=$(mktemp --suffix=."$ext") || exit 1
+        trap 'rm -f "${temp_blurred}"' EXIT
+        magick "$image_copied" -blur 0x"$sigma" "$temp_blurred" || (
             echo "Could not create blurred image"
+            exit 1
+        )
+        mv -f "$temp_blurred" "$blurred_image" || (
+            echo "Could not move blurred image to cache directory"
             exit 1
         )
 
         # nohup swaybg -i "$blurred_image" -m fill > /dev/null 2> /dev/null &
         swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
 
-        notify-send "Blurred Wallpaper set" "Selected wallpaper has been successfully applied for overview"
+        notify-send "Blurred Wallpaper Generated" "$blurred_image"
     ) &
 
     swww img -n background "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null

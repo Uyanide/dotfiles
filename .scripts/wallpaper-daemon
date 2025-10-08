@@ -13,8 +13,8 @@ NORMAL_WALLPAPER_DIR = Path("/home/kolkas/.local/share/wallpaper/current")
 BLURRED_WALLPAPER_DIR = Path("/home/kolkas/.local/share/wallpaper/blurred")
 
 
-def _get_first_file(dir: Path) -> Path | None:
-    return next(dir.glob("*"), None)
+def _get_first_file(dir: Path, pattern: str = "*") -> Path | None:
+    return next(dir.glob(pattern), None)
 
 
 def get_niri_socket():
@@ -22,7 +22,8 @@ def get_niri_socket():
 
 
 def _log(msg: str):
-    print(msg)
+    # print(msg)
+
     # logFIle = Path("/tmp/niri-autoblur.log")
     # try:
     #     with logFIle.open("a") as f:
@@ -30,8 +31,10 @@ def _log(msg: str):
     # except Exception:
     #     pass
 
+    pass
 
-def swwwCommand(namespace: str, wallpaper: Path):
+
+def swwwLoadImg(namespace: str, wallpaper: Path):
     cmd = [
         "swww",
         "img",
@@ -56,6 +59,31 @@ def swwwCommand(namespace: str, wallpaper: Path):
         return False
 
     return True
+
+
+def swwwStartDaemon(namespace: str):
+    # Check if daemon is already running
+    cmd = ["pgrep", "-f", f"swww daemon -n {namespace}"]
+    try:
+        output = subprocess.check_output(cmd, text=True)
+        pids = output.strip().splitlines()
+        if pids:
+            _log(f"[SWWW] daemon already running with PIDs: {', '.join(pids)}")
+            return True
+    except subprocess.CalledProcessError:
+        # pgrep returns non-zero exit code if no process is found
+        pass
+    except Exception as e:
+        _log(f"[SWWW] failed to check if daemon is running: {e}")
+        pass
+
+    try:
+        subprocess.Popen(["swww-daemon", "-n", namespace], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        _log(f"[SWWW] daemon started for namespace: {namespace}")
+        return True
+    except Exception as e:
+        _log(f"[SWWW] failed to start daemon non-blockingly: {e}")
+        return False
 
 
 class AutoBlur:
@@ -90,9 +118,9 @@ class AutoBlur:
 
     def setBlurred(self, isBlurred: bool) -> None:
         # Cache state, avoid starting thread unnecessarily
-        if not self._isFirst and self._isBlurred.is_set() == isBlurred:
-            _log("[AutoBlur] state unchanged")
-            return
+        # if not self._isFirst and self._isBlurred.is_set() == isBlurred:
+        #     _log("[AutoBlur] state unchanged")
+        #     return
         self._isFirst = False
 
         if isBlurred:
@@ -105,16 +133,6 @@ class AutoBlur:
         if self._thread is None or not self._thread.is_alive():
             self._thread = threading.Thread(target=self._run, daemon=True)
             self._thread.start()
-
-    def _apply(self, wallpaper: Path) -> bool:
-        if wallpaper == self._lastWallpaer:
-            return True
-
-        if not swwwCommand("background", wallpaper):
-            return False
-
-        self._lastWallpaer = wallpaper
-        return True
 
     def _run(self) -> None:
         '''Wait until wallpapers are ready & apply the correct one according to the current state'''
@@ -130,12 +148,23 @@ class AutoBlur:
 
             sleep(self._interval)
 
+    def _apply(self, wallpaper: Path) -> bool:
+        if wallpaper == self._lastWallpaer:
+            return True
+
+        if not swwwLoadImg("background", wallpaper):
+            return False
+
+        self._lastWallpaer = wallpaper
+        return True
+
 
 autoBlurInst = AutoBlur(NORMAL_WALLPAPER_DIR, BLURRED_WALLPAPER_DIR)
 
 
 def handleEvent(event_name, payload):
     if event_name == "WindowFocusChanged":
+        _log(f"[EventHandler] WindowFocusChanged event received")
         id = payload.get("id", "")
         if isinstance(id, int):
             _log(f"[EventHandler] focused window id: {id}")
@@ -147,6 +176,7 @@ def handleEvent(event_name, payload):
             _log(f"[EventHandler] unknown id: {id}, assuming no focused window")
             autoBlurInst.setBlurred(False)
     elif event_name == "WindowsChanged":
+        _log(f"[EventHandler] WindowsChanged event received")
         windows = payload.get("windows", [])
         for window in windows:
             if window.get("is_focused", False):
@@ -156,6 +186,7 @@ def handleEvent(event_name, payload):
         _log("[EventHandler] no focused window found")
         autoBlurInst.setBlurred(False)
     elif event_name == "WindowOpenedOrChanged":
+        _log(f"[EventHandler] WindowOpenedOrChanged event received")
         window = payload.get("window", {})
         if window.get("is_focused", False):
             _log(f"[EventHandler] opened/changed focused window")
@@ -174,7 +205,7 @@ def connect_niri(niriSocket: str, handler) -> bool:
         sock.connect(niriSocket)
     except Exception as e:
         sock.close()
-        _log(f"[Socket] Failed to connect to {niriSocket}: {e}")
+        _log(f"[Socket] failed to connect to {niriSocket}: {e}")
         return False
 
     f = sock.makefile("rwb")
@@ -229,15 +260,47 @@ def connect_niri(niriSocket: str, handler) -> bool:
 
 
 if __name__ == "__main__":
-    # Init wallpaper for backdrop
-    wallpaper = _get_first_file(BLURRED_WALLPAPER_DIR)
-    if wallpaper:
-        swwwCommand("backdrop", wallpaper)
+    desktop = environ.get("XDG_CURRENT_DESKTOP", "")
+    if desktop == "niri":
+        _log("[Main] running in Niri")
+        _log("[Main] starting swww daemons")
+        if not swwwStartDaemon("background"):
+            exit(1)
+        if not swwwStartDaemon("backdrop"):
+            exit(1)
+        sleep(1)  # give some time to start
 
-    niri_socket = get_niri_socket()
-    if not niri_socket:
-        _log("[Main] NIRI_SOCKET environment variable is not set.")
-        exit(1)
+        _log("[Main] loading initial wallpapers")
+        # Init wallpaper for backdrop
+        blurred = _get_first_file(BLURRED_WALLPAPER_DIR)
+        if blurred:
+            swwwLoadImg("backdrop", blurred)
+        # Init wallpaper for background
+        normal = _get_first_file(NORMAL_WALLPAPER_DIR)
+        if normal:
+            swwwLoadImg("background", normal)
 
-    if not connect_niri(niri_socket, handleEvent):
-        exit(1)
+        # Connect to Niri socket
+        _log(f"[Main] connecting to Niri socket")
+        niri_socket = get_niri_socket()
+        if not niri_socket:
+            _log("[Main] NIRI_SOCKET environment variable is not set.")
+            exit(1)
+
+        if not connect_niri(niri_socket, handleEvent):
+            exit(1)
+    elif desktop == "Hyprland":
+        _log("[Main] running in Hyprland")
+        _log("[Main] starting swww daemon")
+        if not swwwStartDaemon("background"):
+            exit(1)
+        sleep(1)  # similarly
+
+        _log("[Main] loading initial wallpaper")
+        normal = _get_first_file(NORMAL_WALLPAPER_DIR)
+        if normal:
+            swwwLoadImg("background", normal)
+
+        # Wait indefinitely
+        while True:
+            sleep(3600)
