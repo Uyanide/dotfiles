@@ -34,7 +34,7 @@ Ported from Hyprland, and shares most of the desktop components such as hyprlock
 ## Eww
 
 - `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
-- `lyrics`, scrolling lyrics player, dependents on [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
+- `lyrics`, scrolling lyrics player, depends on [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
 - `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
 
 ## Rofi
