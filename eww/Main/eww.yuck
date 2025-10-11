@@ -73,7 +73,7 @@
             (scale :min 0 :max 101 :class "brightness-scale" :width 150
                    :value {brightness == "" ? 0 : brightness}
                    :round-digits 0
-                   :onchange { brightness-hover ? "brightnessctl set {}\% -d $DISPLAY_DEVICE" : "" })))
+                   :onchange { brightness-hover ? "brightnessctl set {}\% --class=backlight" : "" })))
         (box :class "cpu-stats" :hexpand "false" :vexpand "false" :space-evenly "false"
           (label :tooltip "${cpu}%" :class "cpu-icon" :text "󰘚")
           (scale :min 0 :max 101 :active false :value {cpu == "" ? 0 : cpu} :class "cpu-scale" :width 150))

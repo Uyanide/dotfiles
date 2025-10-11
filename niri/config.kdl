@@ -111,7 +111,14 @@ animations {
 layer-rule {
     match namespace="^swww-daemonbackdrop$"
     place-within-backdrop true
+
 }
+
+layer-rule {
+    match namespace="^quickshell-bar$"
+    place-within-backdrop false
+}
+
 
 /************************Autostart************************/
 
@@ -247,7 +254,6 @@ window-rule {
     open-on-workspace "special"
 }
 
-
 /************************Others************************/
 
 cursor {
@@ -300,7 +306,7 @@ binds {
     Mod+Shift+C { spawn-sh "hyprpicker -a"; }
 
     // Session
-    Mod+L { spawn "loginctl lock-session"; }
+    Mod+L { spawn-sh "loginctl lock-session"; }
 
     // Media
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+ && wp-vol"; }
