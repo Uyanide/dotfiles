@@ -24,7 +24,7 @@
 - **App Launcher**: Rofi
 - **Logout Screen**: Wlogout
 - **Desktop Widgets**: Eww | Quickshell
-- **Wallpaper Darmon**: swww
+- **Wallpaper Daemon**: SWWW
 - **Notification Daemon**: Mako
 
 ## Hyprland & friends

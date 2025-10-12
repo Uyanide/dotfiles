@@ -13,7 +13,6 @@ if type -q fzf
     end
 end
 
-
 # cd
 if type -q zoxide
     zoxide init fish | source
@@ -51,5 +50,5 @@ end
 
 # others
 if type -q tty-clock
-    alias clock="tty-clock -c -C 3"
+    alias clock="tty-clock -c -C 4"
 end
