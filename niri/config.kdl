@@ -284,8 +284,9 @@ binds {
     Mod+Space { spawn-sh "qs ipc call panels toggleControlCenter"; }
     Mod+Shift+L { spawn-sh "qs ipc call lyrics toggleBarLyrics"; }
 
-    // Waybar
-    Mod+Shift+K { spawn-sh "waybar-toggle"; }
+    // Quickshell
+    Mod+Shift+K { spawn-sh "pkill quickshell || quickshell"; }
+    Mod+I { spawn-sh "qs ipc call idleInhibitor toggleInhibitor"; }
 
     // Rofi
     Mod+D { spawn-sh "pkill rofi || rofi -show run"; }

@@ -32,4 +32,12 @@ Item {
         target: "lyrics"
     }
 
+    IpcHandler {
+        function toggleInhibitor() {
+            Caffeine.manualToggle();
+        }
+
+        target: "idleInhibitor"
+    }
+
 }

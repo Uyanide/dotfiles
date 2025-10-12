@@ -23,8 +23,8 @@
 - **Colorscheme**: Catppuccin Mocha
 - **App Launcher**: Rofi
 - **Logout Screen**: Wlogout
-- **Desktop Widgets**: Eww | Quickshell
-- **Wallpaper Daemon**: SWWW
+- **Desktop Widgets**: Eww | **Quickshell**
+- **Wallpaper Daemon**: Swww
 - **Notification Daemon**: Mako
 
 ## Hyprland & friends
@@ -45,7 +45,7 @@ Not based on, but heavily depends on modules from [noctalia-shell](https://githu
 - `lyrics`, scrolling lyrics player, depends on [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
 - `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
 
-## SWWW
+## Swww
 
 In Niri, the wallpaper will be automatically blurred when there are windows in focus. And the backdrop also has a blurred wallpaper applied to it. These are implemented in [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/.scripts/wallpaper-daemon).
 
