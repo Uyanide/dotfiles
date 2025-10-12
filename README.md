@@ -37,7 +37,7 @@ Ported from Hyprland, and shares some of the desktop components such as hyprlock
 
 ## Quickshell
 
-Not based on, but heaviely depends on modules from [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). This setup is currently only adapted for Niri.
+Not based on, but heavily depends on modules from [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). This setup is currently only adapted for Niri.
 
 ## Eww
 
