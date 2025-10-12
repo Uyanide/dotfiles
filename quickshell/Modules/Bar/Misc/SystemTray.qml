@@ -8,6 +8,7 @@ import Quickshell.Widgets
 import qs.Modules.Bar.Misc
 import qs.Constants
 import qs.Services
+import qs.Utils
 
 Rectangle {
   id: root
@@ -107,8 +108,7 @@ Rectangle {
                            trayMenu.item.menu = modelData.menu
                            trayMenu.item.showAt(parent, menuX, menuY)
                          } else {
-                        //    Logger.log("Tray", "No menu available for", modelData.id, "or trayMenu not set")
-                        console.log("No menu available for", modelData.id, "or trayMenu not set")
+                           Logger.log("Tray", "No menu available for", modelData.id, "or trayMenu not set")
                          }
                        }
                      }

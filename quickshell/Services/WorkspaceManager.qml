@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Services
+import qs.Utils
 
 Singleton {
     id: root
@@ -40,7 +41,7 @@ Singleton {
             try {
                 Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", workspaceId.toString()]);
             } catch (e) {
-                console.error("Error switching Niri workspace:", e);
+                Logger.error("WorkspaceManager", "Error switching Niri workspace:", e);
             }
     }
 

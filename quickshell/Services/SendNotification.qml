@@ -6,7 +6,7 @@ pragma Singleton
 Singleton {
     id: root
 
-    function show(title, message, icon = "", urgency = "normal", timeout = 5000) {
+    function show(title, message, timeout = 5000, icon = "", urgency = "normal") {
         if (icon)
             action.command = ["notify-send", "-u", urgency, "-i", icon, "-t", timeout.toString(), title, message];
         else

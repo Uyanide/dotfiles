@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Services
+import qs.Utils
 pragma Singleton
 
 Singleton {
@@ -136,10 +137,10 @@ Singleton {
             if (isInhibited)
                 isInhibited = false;
 
-            console.log("Inhibitor process exited with code:", exitCode, "status:", exitStatus);
+            Logger.log("Caffeine", "Inhibitor process exited with code:", exitCode, "status:", exitStatus);
         }
         onStarted: function() {
-            console.log("Inhibitor process started with strategy:", root.strategy);
+            Logger.log("Caffeine", "Inhibitor process started with PID:", inhibitorProcess.processId);
         }
     }
 

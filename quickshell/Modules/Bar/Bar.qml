@@ -33,7 +33,7 @@ Scope {
                     screen: modelData
                     WlrLayershell.namespace: "quickshell-bar"
                     color: Colors.transparent
-                    implicitHeight: 45
+                    implicitHeight: Style.barHeight
 
                     anchors {
                         left: true
@@ -94,6 +94,9 @@ Scope {
                         SymbolButton {
                             symbol: Icons.distro
                             buttonColor: Colors.distroColor
+                            onClicked: {
+                                PanelService.getPanel("controlCenterPanel")?.toggle(this)
+                            }
                             onRightClicked: {
                                 if (action.running) {
                                     action.signal(15);
@@ -164,37 +167,49 @@ Scope {
                             rightMargin: 5
                         }
 
-                        NetworkSpeed {
+                        RowLayout {
+                            id: monitorsLayout
+                            visible: !SettingsService.showLyricsBar
+
+                            height: parent.height
+                            NetworkSpeed {
+                            }
+
+                            Separator {
+                            }
+
+                            Item {
+                                width: 10
+                            }
+
+                            Ip {
+                                showCountryCode: true
+                            }
+
+                            CpuTemp {
+                            }
+
+                            MemUsage {
+                            }
+
+                            CpuUsage {
+                            }
+
+                            Battery {
+                            }
+
+                            Brightness {
+                                screen: modelData
+                            }
+
+                            Volume {
+                            }
                         }
 
-                        Separator {
-                        }
-
-                        Item {
-                            width: 10
-                        }
-
-                        Ip {
-                            showCountryCode: true
-                        }
-
-                        CpuTemp {
-                        }
-
-                        MemUsage {
-                        }
-
-                        CpuUsage {
-                        }
-
-                        Battery {
-                        }
-
-                        Brightness {
-                            screen: modelData
-                        }
-
-                        Volume {
+                        LyricsBar {
+                            id: lyricsBar
+                            visible: SettingsService.showLyricsBar
+                            width: 600
                         }
 
                         Item {

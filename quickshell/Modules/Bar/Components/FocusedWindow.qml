@@ -78,7 +78,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pointSize: Fonts.medium
                 font.family: Fonts.primary
-                color: Colors.accent
+                color: Colors.primary
 
                 Process {
                     id: action

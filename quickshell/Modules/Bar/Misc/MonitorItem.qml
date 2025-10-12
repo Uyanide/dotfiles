@@ -11,7 +11,7 @@ Item {
     property real maxValue: 100
     property real value: 100
     property string textValue: "" // override value in textDisplay if set
-    property color fillColor: Colors.accent
+    property color fillColor: Colors.primary
     property string textSuffix: ""
     property bool pointerCursor: true
     property alias hovered: mouseArea.containsMouse
@@ -127,7 +127,7 @@ Item {
 
             Behavior on implicitWidth {
                 NumberAnimation {
-                    duration: 200
+                    duration: Style.animationNormal
                     easing.type: Easing.InOutCubic
                 }
 

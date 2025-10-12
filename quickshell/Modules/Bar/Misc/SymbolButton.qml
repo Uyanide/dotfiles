@@ -9,6 +9,8 @@ Item {
     required property string symbol
     property color buttonColor: Colors.distroColor
     readonly property alias hovered: mouseArea.containsMouse
+    property real iconSize: Fonts.icon
+    property real radius: Style.radiusS
 
     signal clicked()
     signal rightClicked()
@@ -35,7 +37,7 @@ Item {
         anchors.fill: parent
         text: symbol
         font.family: Fonts.nerd
-        font.pointSize: Fonts.icon
+        font.pointSize: iconSize
         font.bold: false
         color: buttonColor
         horizontalAlignment: Text.AlignHCenter
@@ -46,11 +48,12 @@ Item {
         anchors.fill: parent
         color: parent.hovered ? buttonColor : Colors.transparent
         opacity: 0.3
-        radius: 14
+        radius: root.radius
 
         Behavior on color {
             ColorAnimation {
-                duration: 120
+                duration: Style.animationNormal
+                easing.type: Easing.InOutCubic
             }
 
         }

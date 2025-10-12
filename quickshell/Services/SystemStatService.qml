@@ -2,6 +2,7 @@ import Qt.labs.folderlistmodel
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Utils
 pragma Singleton
 
 Singleton {
@@ -222,7 +223,7 @@ Singleton {
                 }
                 root.cpuTemp = Math.round(sum / root.intelTempValues.length);
             } else {
-                console.warn("No temperature sensors found for coretemp");
+                Logger.warn("SystemStatService", "No temperature sensors found for coretemp");
                 root.cpuTemp = 0;
             }
             return ;
@@ -328,7 +329,7 @@ Singleton {
         function checkNext() {
             if (currentIndex >= 16) {
                 // Check up to hwmon10
-                console.warn("No supported temperature sensor found");
+                Logger.warn("SystemStatService", "No supported temperature sensor found");
                 return ;
             }
             cpuTempNameReader.path = `/sys/class/hwmon/hwmon${currentIndex}/name`;
@@ -341,7 +342,7 @@ Singleton {
             if (root.supportedTempCpuSensorNames.includes(name)) {
                 root.cpuTempSensorName = name;
                 root.cpuTempHwmonPath = `/sys/class/hwmon/hwmon${currentIndex}`;
-                console.log(`Found ${root.cpuTempSensorName} CPU thermal sensor at ${root.cpuTempHwmonPath}`);
+                Logger.log("SystemStatService", `Found ${root.cpuTempSensorName} CPU thermal sensor at ${root.cpuTempHwmonPath}`);
             } else {
                 currentIndex++;
                 Qt.callLater(() => {
@@ -370,7 +371,6 @@ Singleton {
             if (root.cpuTempSensorName === "coretemp") {
                 // For Intel, collect all temperature values
                 const temp = parseInt(data) / 1000;
-                //console.log(temp, cpuTempReader.path)
                 root.intelTempValues.push(temp);
                 Qt.callLater(() => {
                     // Qt.callLater is mandatory

@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Utils
 
 Singleton {
   id: root
@@ -44,6 +45,10 @@ Singleton {
 
   reloadableId: "brightness"
 
+  Component.onCompleted: {
+    Logger.log("Brightness", "Service started")
+  }
+
   onMonitorsChanged: {
     ddcMonitors = []
     ddcProc.running = true
@@ -80,7 +85,7 @@ Singleton {
                                              var ddcModel = ddcModelMatch ? ddcModelMatch.length > 0 : false
                                              var model = modelMatch ? modelMatch[1] : "Unknown"
                                              var bus = busMatch ? busMatch[1] : "Unknown"
-                                             console.log("Detected DDC Monitor:", model, "on bus", bus, "is DDC:", !ddcModel)
+                                             Logger.log("Brigthness", "Detected DDC Monitor:", model, "on bus", bus, "is DDC:", !ddcModel)
                                              return {
                                                "model": model,
                                                "busNum": bus,
@@ -188,7 +193,7 @@ Singleton {
             var val = parseInt(dataText)
             if (!isNaN(val)) {
               monitor.brightness = val / 101
-              console.log("Apple display brightness:", monitor.brightness)
+              Logger.log("Brightness", "Apple display brightness:", monitor.brightness)
             }
           } else if (monitor.isDdc) {
             var parts = dataText.split(" ")
@@ -197,7 +202,7 @@ Singleton {
               var max = parseInt(parts[4])
               if (!isNaN(current) && !isNaN(max) && max > 0) {
                 monitor.brightness = current / max
-                console.log("DDC brightness:", monitor.brightness)
+                Logger.log("Brightness", "DDC brightness:", current + "/" + max + " =", monitor.brightness)
               }
             }
           } else {
@@ -213,8 +218,8 @@ Singleton {
               if (!isNaN(current) && !isNaN(max) && max > 0) {
                 monitor.maxBrightness = max
                 monitor.brightness = current / max
-                console.log("Internal brightness:", monitor.brightness)
-                console.log("Using backlight device:", monitor.backlightDevice)
+                Logger.log("Brightness", "Internal brightness:", current + "/" + max + " =", monitor.brightness)
+                Logger.log("Brightness", "Using backlight device:", monitor.backlightDevice)
               }
             }
           }

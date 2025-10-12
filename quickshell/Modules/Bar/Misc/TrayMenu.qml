@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import qs.Constants
+import qs.Utils
+import qs.Noctalia
 
 PopupWindow {
   id: root
@@ -19,7 +21,7 @@ PopupWindow {
   implicitWidth: menuWidth
 
   // Use the content height of the Flickable for implicit height
-  implicitHeight: Math.min(screen ? screen.height * 0.9 : Screen.height * 0.9, flickable.contentHeight + 20)
+  implicitHeight: Math.min(screen ? screen.height * 0.9 : Screen.height * 0.9, flickable.contentHeight + (Style.marginS * 2))
   visible: false
   color: Colors.transparent
   anchor.item: anchorItem
@@ -28,7 +30,7 @@ PopupWindow {
 
   function showAt(item, x, y) {
     if (!item) {
-      console.warn("AnchorItem is undefined, won't show menu.")
+      Logger.warn("TrayMenu", "AnchorItem is undefined, won't show menu.");
       return
     }
 
@@ -84,15 +86,15 @@ PopupWindow {
   Rectangle {
     anchors.fill: parent
     color: Colors.base
-    border.color: Colors.accent
+    border.color: Colors.primary
     border.width: 2
-    radius: 14
+    radius: Style.radiusM
   }
 
   Flickable {
     id: flickable
     anchors.fill: parent
-    anchors.margins: 10
+    anchors.margins: Style.marginS
     contentHeight: columnLayout.implicitHeight
     interactive: true
 
@@ -115,88 +117,56 @@ PopupWindow {
               return 8
             } else {
               // Calculate based on text content
-              const textHeight = text.contentHeight || (Fonts.small)
-              return textHeight + 16
+              const textHeight = text.contentHeight || (Style.fontSizeS * 1.2)
+              return Math.max(28, textHeight + (Style.marginS * 2))
             }
           }
 
           color: Colors.transparent
           property var subMenu: null
 
-          Rectangle {
-            width: parent.width - 16
-            height: 1
+          NDivider {
             anchors.centerIn: parent
+            width: parent.width - (Style.marginM * 2)
             visible: modelData?.isSeparator ?? false
-            gradient: Gradient {
-              orientation: Gradient.Horizontal
-              GradientStop {
-                position: 0.0
-                color: Colors.transparent
-              }
-              GradientStop {
-                position: 0.1
-                color: Colors.accent
-              }
-              GradientStop {
-                position: 0.9
-                color: Colors.accent
-              }
-              GradientStop {
-                position: 1.0
-                color: Colors.transparent
-              }
-            }
           }
 
           Rectangle {
             anchors.fill: parent
-            color: mouseArea.containsMouse ? Colors.accent : Colors.transparent
-            radius: 10
+            color: mouseArea.containsMouse ? Colors.primary : Colors.transparent
+            radius: Style.radiusS
             visible: !(modelData?.isSeparator ?? false)
 
             RowLayout {
               anchors.fill: parent
-              anchors.leftMargin: 8
-              anchors.rightMargin: 8
-              spacing: 8
+              anchors.leftMargin: Style.marginM
+              anchors.rightMargin: Style.marginM
+              spacing: Style.marginS
 
-              Text {
+              NText {
                 id: text
                 Layout.fillWidth: true
-                color: (modelData?.enabled ?? true) ? (mouseArea.containsMouse ? Colors.base : Colors.text) : Colors.text
+                color: (modelData?.enabled ?? true) ? (mouseArea.containsMouse ? Color.mOnTertiary : Color.mOnSurface) : Color.mOnSurfaceVariant
                 text: modelData?.text !== "" ? modelData?.text.replace(/[\n\r]+/g, ' ') : "..."
-                font.pointSize: Fonts.small
+                pointSize: Style.fontSizeS
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WordWrap
               }
 
               Image {
-                Layout.preferredWidth: 14
-                Layout.preferredHeight: 14
+                Layout.preferredWidth: Style.marginL
+                Layout.preferredHeight: Style.marginL
                 source: modelData?.icon ?? ""
                 visible: (modelData?.icon ?? "") !== ""
                 fillMode: Image.PreserveAspectFit
               }
 
-              Text {
+              NIcon {
+                icon: modelData?.hasChildren ? "menu" : ""
+                pointSize: Style.fontSizeS
                 verticalAlignment: Text.AlignVCenter
                 visible: modelData?.hasChildren ?? false
-                color: (mouseArea.containsMouse ? Colors.base : Colors.text)
-
-                text: {
-                  const icon = modelData?.hasChildren ? "menu" : ""
-                  if ((icon === undefined) || (icon === "")) {
-                    return ""
-                  }
-                  if (Icons.get(icon) === undefined) {
-                    console.warn("Icon", `"${icon}"`, "doesn't exist in the icons font")
-                    return Icons.get(Icons.defaultIcon)
-                  }
-                  return Icons.get(icon)
-                }
-                font.family: Icons.fontFamily
-                font.pointSize: Fonts.small
+                color: (mouseArea.containsMouse ? Color.mOnTertiary : Color.mOnSurface)
               }
             }
 

@@ -20,7 +20,7 @@
     peach: #fab387;
     search: rgba(49, 50, 68, 0.5); // alpha(@surface, 0.5)
 
-    accent: #89b4fa;
+    primary: #89b4fa;
 }
 
 
@@ -53,7 +53,7 @@ window {
     padding:                     0px;
     border:                      2px solid;
     border-radius:               24px;
-    border-color:                @accent;
+    border-color:                @primary;
     cursor:                      "default";
     background-color:            @base;
 }
@@ -126,7 +126,7 @@ listview {
 }
 scrollbar {
     handle-width:                5px ;
-    handle-color:                @accent;
+    handle-color:                @primary;
     border-radius:               10px;
     background-color:            @mantle;
 }
@@ -150,7 +150,7 @@ element alternate.normal {
 element normal.urgent,
 element alternate.urgent,
 element selected.active {
-    background-color:            @accent;
+    background-color:            @primary;
     text-color:                  @base;
     border-radius:               10px;
 }
@@ -198,9 +198,9 @@ button {
 }
 button selected {
     background-color:            @surface;
-    text-color:                  @accent;
+    text-color:                  @primary;
     border-radius:               0 0 14px 14px;
-    border-color:		         @accent;
+    border-color:		         @primary;
 }
 
 /*****----- Message -----*****/

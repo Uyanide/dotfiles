@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import qs.Services
 pragma Singleton
 
 Singleton {
@@ -29,10 +30,11 @@ Singleton {
     readonly property color surface2: "#585b70"
     readonly property color surface1: "#45475a"
     readonly property color surface0: "#313244"
+    readonly property color surface: "#292a3c"
     readonly property color base: "#1e1e2e"
     readonly property color mantle: "#181825"
     readonly property color crust: "#11111b"
-    readonly property color accent: "#89b4fa"
+    property color primary: SettingsService.primaryColor
     readonly property color distroColor: "#74c7ec"
     readonly property var cavaList: ["#b4befe", "#89b4fa", "#74c7ec", "#89dceb", "#94e2d5", "#a6e3a1", "#f9e2af", "#fab387"]
 }

@@ -19,15 +19,15 @@ Item {
         Text {
             text: Icons.download
             font.pointSize: Fonts.icon - 3
-            color: Colors.accent
+            color: Colors.primary
             Layout.leftMargin: 10
         }
 
         Text {
-            text: SystemStatService.formatSpeed(SystemStatService.txSpeed)
+            text: SystemStatService.formatSpeed(SystemStatService.rxSpeed)
             font.pointSize: Fonts.medium
             font.family: Fonts.primary
-            color: Colors.accent
+            color: Colors.primary
         }
 
         Item {
@@ -37,14 +37,14 @@ Item {
         Text {
             text: Icons.upload
             font.pointSize: Fonts.icon - 3
-            color: Colors.accent
+            color: Colors.primary
         }
 
         Text {
-            text: SystemStatService.formatSpeed(SystemStatService.rxSpeed)
+            text: SystemStatService.formatSpeed(SystemStatService.txSpeed)
             font.pointSize: Fonts.medium
             font.family: Fonts.primary
-            color: Colors.accent
+            color: Colors.primary
         }
 
     }

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
 import qs.Modules.Misc
+import qs.Utils
 pragma Singleton
 
 Singleton {
@@ -11,6 +12,7 @@ Singleton {
     property var currentPlayer: null
     property real currentPosition: 0
     property bool isPlaying: currentPlayer ? currentPlayer.isPlaying : false
+    property int selectedPlayerIndex: -1
     property string trackTitle: currentPlayer ? (currentPlayer.trackTitle || "Unknown Track") : ""
     property string trackArtist: currentPlayer ? (currentPlayer.trackArtist || "Unknown Artist") : ""
     property string trackAlbum: currentPlayer ? (currentPlayer.trackAlbum || "Unknown Album") : ""
@@ -59,11 +61,25 @@ Singleton {
 
     // Updates currentPlayer and currentPosition
     function updateCurrentPlayer() {
+        // Use selected player if index is valid
+        if (selectedPlayerIndex >= 0) {
+            let availablePlayers = getAvailablePlayers();
+            if (selectedPlayerIndex < availablePlayers.length) {
+                currentPlayer = availablePlayers[selectedPlayerIndex];
+                currentPosition = currentPlayer.position;
+                Logger.log("MusicManager", "Current player set by index:", currentPlayer ? currentPlayer.identity : "None");
+                return ;
+            } else {
+                selectedPlayerIndex = -1; // Reset if index is out of range
+            }
+        }
+        // Otherwise, find active player
         let newPlayer = findActivePlayer();
         if (newPlayer !== currentPlayer) {
             currentPlayer = newPlayer;
             currentPosition = currentPlayer ? currentPlayer.position : 0;
         }
+        Logger.log("MusicManager", "Current player updated:", currentPlayer ? currentPlayer.identity : "None");
     }
 
     // Player control functions

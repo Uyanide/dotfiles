@@ -16,15 +16,15 @@ Item {
     property ListModel localWorkspaces
     property real masterProgress: 0
     property bool effectsActive: false
-    property color effectColor: Colors.accent
+    property color effectColor: Colors.primary
     property int horizontalPadding: 16
     property int spacingBetweenPills: 8
     property bool isDestroying: false
 
-    signal workspaceChanged(int workspaceId, color accentColor)
+    signal workspaceChanged(int workspaceId, color primaryColor)
 
     function triggerUnifiedWave() {
-        effectColor = Colors.accent;
+        effectColor = Colors.primary;
         masterAnimation.restart();
     }
 
@@ -33,7 +33,7 @@ Item {
             const ws = localWorkspaces.get(i);
             if (ws.isFocused === true) {
                 root.triggerUnifiedWave();
-                root.workspaceChanged(ws.id, Colors.accent);
+                root.workspaceChanged(ws.id, Colors.primary);
                 break;
             }
         }
@@ -180,10 +180,10 @@ Item {
                     }
                     color: {
                         if (model.isFocused)
-                            return Colors.accent;
+                            return Colors.primary;
 
                         if (model.isActive)
-                            return Colors.accent.lighter(130);
+                            return Colors.primary.lighter(130);
 
                         if (model.isUrgent)
                             return Theme.error;

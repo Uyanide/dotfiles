@@ -23,7 +23,9 @@ Scope {
         },
         "output": {
             "method": "raw",
-            "bit_format": 8,
+            "data_format": "ascii",
+            "ascii_max_range": 100,
+            "bit_format": "8bit",
             "channels": channels,
             "mono_option": monoOption
         }
@@ -33,14 +35,11 @@ Scope {
     Process {
         id: process
 
-        property int index: 0
-
         stdinEnabled: true
         running: !MusicManager.isAllPaused()
         command: ["cava", "-p", "/dev/stdin"]
         onExited: {
             stdinEnabled = true;
-            index = 0;
             values = Array(count).fill(0);
         }
         onStarted: {
@@ -56,23 +55,14 @@ Scope {
                 }
             }
             stdinEnabled = false;
+            values = Array(count).fill(0);
         }
 
         stdout: SplitParser {
-            splitMarker: ""
             onRead: (data) => {
-                const newValues = Array(count).fill(0);
-                for (let i = 0; i < values.length; i++) {
-                    newValues[i] = values[i];
-                }
-                if (process.index + data.length > count)
-                    process.index = 0;
-
-                for (let i = 0; i < data.length; i += 1) {
-                    newValues[i + process.index] = Math.min(data.charCodeAt(i), 128) / 128;
-                }
-                process.index += data.length;
-                values = newValues;
+                root.values = data.slice(0, -1).split(";").map((v) => {
+                    return parseInt(v, 10) / 100;
+                });
             }
         }
 

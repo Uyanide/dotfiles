@@ -80,13 +80,13 @@ if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
 
     notify-send "Wallpaper Changed" "$image"
 
-    change-colortheme -i "$image_copied" || exit 1
+    change-colortheme -i "$image_copied" !quickshell || exit 1
 elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
     swww img -n background "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
 
     notify-send "Wallpaper Changed" "$image"
 
-    change-colortheme -i "$image_copied" || exit 1
+    change-colortheme -i "$image_copied" !waybar !eww || exit 1
 else
     echo "Unsupported desktop environment: $XDG_CURRENT_DESKTOP"
     exit 1

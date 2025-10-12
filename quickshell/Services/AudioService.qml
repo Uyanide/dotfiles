@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
+import qs.Utils
 
 Singleton {
   id: root
@@ -60,6 +61,7 @@ Singleton {
 
     function onMutedChanged() {
       root._muted = (sink?.audio.muted ?? true)
+      Logger.log("AudioService", "OnMuteChanged:", root._muted)
     }
   }
 
@@ -76,6 +78,7 @@ Singleton {
 
     function onMutedChanged() {
       root._inputMuted = (source?.audio.muted ?? true)
+      Logger.log("AudioService", "OnInputMuteChanged:", root._inputMuted)
     }
   }
 
@@ -93,7 +96,7 @@ Singleton {
       sink.audio.muted = false
       sink.audio.volume = Math.max(0, Math.min(1.0, newVolume))
     } else {
-      console.warn("No sink available")
+      Logger.warn("AudioService", "No sink available")
     }
   }
 
@@ -101,7 +104,7 @@ Singleton {
     if (sink?.ready && sink?.audio) {
       sink.audio.muted = muted
     } else {
-      console.warn("No sink available")
+      Logger.warn("AudioService", "No sink available")
     }
   }
 
@@ -111,7 +114,7 @@ Singleton {
       source.audio.muted = false
       source.audio.volume = Math.max(0, Math.min(1.0, newVolume))
     } else {
-      console.warn("No source available")
+      Logger.warn("AudioService", "No source available")
     }
   }
 
@@ -119,7 +122,7 @@ Singleton {
     if (source?.ready && source?.audio) {
       source.audio.muted = muted
     } else {
-      console.warn("No source available")
+      Logger.warn("AudioService", "No source available")
     }
   }
 

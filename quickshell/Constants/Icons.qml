@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import qs.Utils
 pragma Singleton
 
 Singleton {
@@ -30,6 +31,11 @@ Singleton {
     readonly property string global: ""
     readonly property string upload: ""
     readonly property string download: ""
+    readonly property string speedSlower: "󰾆"
+    readonly property string speedFaster: "󰓅"
+    readonly property string speedReset: "󰾅"
+    readonly property string reset: "󰑙"
+    readonly property string lines: ""
     // Expose the font family name for easy access
     readonly property string fontFamily: currentFontLoader ? currentFontLoader.name : ""
     readonly property string defaultIcon: TablerIcons.defaultIcon
@@ -73,7 +79,7 @@ Singleton {
             if (currentFontLoader.status === FontLoader.Ready)
                 fontReloaded();
             else if (currentFontLoader.status === FontLoader.Error)
-                Logger.error("Font failed to load (version " + fontVersion + ")");
+                Logger.error("Icons", "Font failed to load (version " + fontVersion + ")");
         });
     }
 

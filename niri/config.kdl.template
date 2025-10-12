@@ -27,7 +27,7 @@ input {
     warp-mouse-to-focus
 
     // Focus windows and outputs automatically when moving the mouse into them.
-    focus-follows-mouse max-scroll-amount="75%"
+    focus-follows-mouse max-scroll-amount="100%"
 }
 
 /************************Output************************/
@@ -121,7 +121,7 @@ layer-rule {
 spawn-sh-at-startup "config-switch niri"
 
 // Bar
-spawn-at-startup "waybar"
+spawn-at-startup "quickshell"
 
 // Wallpaper
 spawn-at-startup "wallpaper-daemon"
@@ -136,7 +136,7 @@ spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "mako"
 
-// idle
+// Idle
 spawn-sh-at-startup "hypridle"
 
 // Clipboard history
@@ -281,8 +281,8 @@ binds {
     Mod+Shift+W { spawn "wallpaper-chooser"; }
 
     // EWW
-    Mod+Space { spawn-sh "eww open main --toggle"; }
-    Mod+Shift+L { spawn-sh "lyrics-widgets"; }
+    Mod+Space { spawn-sh "qs ipc call panels toggleControlCenter"; }
+    Mod+Shift+L { spawn-sh "qs ipc call lyrics toggleBarLyrics"; }
 
     // Waybar
     Mod+Shift+K { spawn-sh "waybar-toggle"; }

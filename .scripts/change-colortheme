@@ -34,6 +34,8 @@
 - fuzzel:       edit $HOME/.config/fuzzel/fuzzel.ini
 
 - niri:         edit $HOME/.config/niri/config.kdl
+
+- quickshell    qs ipc call colors setPrimary $hex
 '''
 
 import os
@@ -216,6 +218,11 @@ def _change_niri(palette: dict[str, str], flavor: str):
     replace_placeholders(niri_dist, palette, flavor)
 
 
+def _change_quickshell(palette: dict[str, str], flavor: str):
+    hex_color = palette[flavor]
+    os.system(f'qs ipc call colors setPrimary {hex_color}')
+
+
 apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
     'kvantum': _change_kvantum,
     # 'nwg-look': _change_nwglook,
@@ -230,6 +237,7 @@ apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
     'wlogout': _change_wlogout,
     'fuzzel': _change_fuzzel,
     'niri': _change_niri,
+    'quickshell': _change_quickshell,
 }
 
 
@@ -333,7 +341,8 @@ def main():
     parser.add_argument('-i', '--image', type=str, help="Path to the image")
     parser.add_argument('-f', '--flavor', type=str, help="Flavor to apply")
     parser.add_argument('-c', '--color', type=str, help="Color to match from the palette")
-    parser.add_argument('arguments', nargs='*', help="List of applications to change the color theme of")
+    parser.add_argument('arguments', nargs='*',
+                        help="List of applications to change the color theme of, or !app to exclude an application. Available apps: " + ', '.join(apply_theme_funcs.keys()))
 
     arguments = parser.parse_args()
 
@@ -363,15 +372,34 @@ def main():
         return flavor
 
     def parse_apps() -> list[str]:
+        apps = set()
         if not arguments.arguments:
-            return list(apply_theme_funcs.keys())
-        apps = []
+            apps = set(apply_theme_funcs.keys())
+        else:
+            allExclude = True
+            for arg in arguments.arguments:
+                if arg[0] == '!':
+                    continue
+                allExclude = False
+                if arg not in apply_theme_funcs:
+                    print(f"Unknown app: {arg}. Available apps: {', '.join(apply_theme_funcs.keys())}")
+                    sys.exit(1)
+                apps.add(arg)
+
+            # If all arguments are exclusions, start with all apps
+            if allExclude:
+                apps = set(apply_theme_funcs.keys())
+
         for arg in arguments.arguments:
-            if arg not in apply_theme_funcs:
-                print(f"Unknown app: {arg}. Available apps: {', '.join(apply_theme_funcs.keys())}")
-                sys.exit(1)
-            apps.append(arg)
-        return apps
+            if arg[0] == '!':
+                print(f"Excluding app: {arg[1:]}")
+                app = arg[1:]
+                if app not in apply_theme_funcs:
+                    print(f"Unknown app to exclude: {app}. Available apps: {', '.join(apply_theme_funcs.keys())}")
+                    sys.exit(1)
+                apps.discard(app)
+
+        return list(apps)
 
     palette_name = parse_palette_name()
     palette = PALETTES[palette_name]

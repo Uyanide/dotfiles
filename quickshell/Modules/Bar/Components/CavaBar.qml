@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import qs.Constants
-import qs.Modules.Misc
 import qs.Services
+import qs.Utils
 
 Item {
     id: root

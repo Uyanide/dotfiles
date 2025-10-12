@@ -29,7 +29,7 @@ Item {
 
         Text {
             text: Icons.global
-            font.pointSize: Fonts.icon + 5
+            font.pointSize: Fonts.icon + 6
             color: Colors.peach
         }
 
@@ -54,7 +54,7 @@ Item {
 
             Behavior on implicitWidth {
                 NumberAnimation {
-                    duration: 200
+                    duration: Style.animationFast
                     easing.type: Easing.InOutCubic
                 }
 

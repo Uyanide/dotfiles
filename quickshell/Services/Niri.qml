@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Utils
 pragma Singleton
 pragma ComponentBehavior: Bound
 
@@ -66,7 +67,7 @@ Singleton {
                     });
                     root.workspaces = workspacesList;
                 } catch (e) {
-                    console.error("Failed to parse workspaces:", e, line);
+                    Logger.error("Niri", "Failed to parse workspaces:", e, line);
                 }
             }
         }
@@ -102,7 +103,7 @@ Singleton {
                             }
                             root.windows = windowsMap;
                         } catch (e) {
-                            console.error("Error parsing windows event:", e);
+                            Logger.error("Niri", "Error parsing windows event:", e);
                         }
                     } else if (event.WorkspaceActivated) {
                         workspaceProcess.running = true;
@@ -120,13 +121,13 @@ Singleton {
                                 root.focusedWindowId = -1;
                             }
                         } catch (e) {
-                            console.error("Error parsing window focus event:", e);
+                            Logger.error("Niri", "Error parsing window focus event:", e);
                         }
                     } else if (event.OverviewOpenedOrClosed) {
                         try {
                             root.inOverview = event.OverviewOpenedOrClosed.is_open === true;
                         } catch (e) {
-                            console.error("Error parsing overview state:", e);
+                            Logger.error("Niri", "Error parsing overview state:", e);
                         }
                     } else if (event.WindowOpenedOrChanged) {
                         try {
@@ -161,7 +162,7 @@ Singleton {
 
                             }
                         } catch (e) {
-                            console.error("Error parsing window opened/changed event:", e);
+                            Logger.error("Niri", "Error parsing window opened/changed event:", e);
                         }
                     } else if (event.windowClosed) {
                         try {
@@ -170,11 +171,11 @@ Singleton {
                                 delete root.windows[closedId];
                             }
                         } catch (e) {
-                            console.error("Error parsing window closed event:", e);
+                            Logger.error("Niri", "Error parsing window closed event:", e);
                         }
                     }
                 } catch (e) {
-                    console.error("Error parsing event stream:", e, data);
+                    Logger.error("Niri", "Error parsing event stream:", e, data);
                 }
             }
         }
