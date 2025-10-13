@@ -10,22 +10,25 @@
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.jpg?raw=true"/>
 
 - Grub menu:
-  <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
+
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
 
 ## Setup Overview
 
 - **OS**: Archlinux
-- **WM**: Hyprland | Niri
-- **Bar**: Waybar | Quickshell
+- **WM**: Hyprland | **Niri**
+- **Bar**: Waybar | **Quickshell**
 - **Shell**: Fish
 - **Prompt**: Oh My Posh
-- **Terminal**: Kitty & Ghostty
+- **Terminal**: **Kitty** & Ghostty
 - **Colorscheme**: Catppuccin Mocha
 - **App Launcher**: Rofi
 - **Logout Screen**: Wlogout
 - **Desktop Widgets**: Eww | **Quickshell**
 - **Wallpaper Daemon**: Swww
 - **Notification Daemon**: Mako
+
+(**bold**: I currently prefer)
 
 ## Hyprland & friends
 

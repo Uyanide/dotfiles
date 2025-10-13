@@ -7,6 +7,7 @@ pragma Singleton
 Singleton {
     id: root
 
+    // Compatibility colors for noctalia modules
     property color mPrimary: Colors.primary
     property color mOnPrimary: Colors.base
     property color mSecondary: Colors.primary

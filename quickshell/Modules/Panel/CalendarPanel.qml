@@ -49,12 +49,9 @@ NPanel {
         }
 
         // Combined blue banner with date/time and weather summary
-        Rectangle {
+        NBox {
             Layout.fillWidth: true
             Layout.preferredHeight: blueColumn.implicitHeight + Style.marginM * 2
-            radius: Style.radiusL
-            color: Color.mSurfaceVariant
-            layer.enabled: true
 
             ColumnLayout {
                 id: blueColumn
@@ -253,14 +250,6 @@ NPanel {
 
                 }
 
-            }
-
-            layer.effect: DropShadow {
-                horizontalOffset: 6
-                verticalOffset: 6
-                radius: 8
-                samples: 12
-                color: Qt.rgba(0, 0, 0, 0.3)
             }
 
         }

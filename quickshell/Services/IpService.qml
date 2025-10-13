@@ -116,7 +116,7 @@ Singleton {
         repeat: false
         running: false
         onTriggered: {
-            refresh();
+            fetchIP();
         }
     }
 
@@ -127,7 +127,9 @@ Singleton {
         repeat: true
         running: true
         onTriggered: {
+            fetchTimer.stop();
             fetchIP();
+            fetchTimer.start();
         }
     }
 

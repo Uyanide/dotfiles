@@ -36,6 +36,7 @@ Singleton {
     readonly property string speedReset: "󰾅"
     readonly property string reset: "󰑙"
     readonly property string lines: ""
+    // Tabler icons
     // Expose the font family name for easy access
     readonly property string fontFamily: currentFontLoader ? currentFontLoader.name : ""
     readonly property string defaultIcon: TablerIcons.defaultIcon
