@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Constants
+import qs.Services
 import qs.Utils
 pragma Singleton
 
@@ -96,57 +97,47 @@ Singleton {
     function _geocodeLocation(locationName, callback, errorCallback) {
         Logger.log("Location", "Geocoding location name");
         var geoUrl = "https://assets.noctalia.dev/geocode.php?city=" + encodeURIComponent(locationName) + "&language=en&format=json";
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    try {
-                        var geoData = JSON.parse(xhr.responseText);
-                        if (geoData.lat != null)
-                            callback(geoData.lat, geoData.lng, geoData.name, geoData.country);
-                        else
-                            errorCallback("Location", "could not resolve location name");
-                    } catch (e) {
-                        errorCallback("Location", "Failed to parse geocoding data: " + e);
-                    }
-                } else {
-                    errorCallback("Location", "Geocoding error: " + xhr.status);
+        curl.fetch(geoUrl, function(success, data) {
+            if (success) {
+                try {
+                    var geoData = JSON.parse(data);
+                    if (geoData.lat != null)
+                        callback(geoData.lat, geoData.lng, geoData.name, geoData.country);
+                    else
+                        errorCallback("Location", "could not resolve location name");
+                } catch (e) {
+                    errorCallback("Location", "Failed to parse geocoding data: " + e);
                 }
+            } else {
+                errorCallback("Location", "Geocoding error");
             }
-        };
-        xhr.open("GET", geoUrl);
-        xhr.send();
+        });
     }
 
     // --------------------------------
     function _fetchWeather(latitude, longitude, errorCallback) {
         Logger.log("Location", "Fetching weather from api.open-meteo.com");
         var url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current_weather=true&current=relativehumidity_2m,surface_pressure&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto";
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    try {
-                        var weatherData = JSON.parse(xhr.responseText);
-                        // Save core data
-                        data.weather = weatherData;
-                        data.weatherLastFetch = Time.timestamp;
-                        // Update stable display values only when complete and successful
-                        root.stableLatitude = data.latitude = weatherData.latitude.toString();
-                        root.stableLongitude = data.longitude = weatherData.longitude.toString();
-                        root.coordinatesReady = true;
-                        isFetchingWeather = false;
-                        Logger.log("Location", "Cached weather to disk - stable coordinates updated");
-                    } catch (e) {
-                        errorCallback("Location", "Failed to parse weather data");
-                    }
-                } else {
-                    errorCallback("Location", "Weather fetch error: " + xhr.status);
+        curl.fetch(url, function(success, data) {
+            if (success) {
+                try {
+                    var weatherData = JSON.parse(data);
+                    // Save core data
+                    data.weather = weatherData;
+                    data.weatherLastFetch = Time.timestamp;
+                    // Update stable display values only when complete and successful
+                    root.stableLatitude = data.latitude = weatherData.latitude.toString();
+                    root.stableLongitude = data.longitude = weatherData.longitude.toString();
+                    root.coordinatesReady = true;
+                    isFetchingWeather = false;
+                    Logger.log("Location", "Cached weather to disk - stable coordinates updated");
+                } catch (e) {
+                    errorCallback("Location", "Failed to parse weather data: " + e);
                 }
+            } else {
+                errorCallback("Location", "Weather fetch error");
             }
-        };
-        xhr.open("GET", url);
-        xhr.send();
+        });
     }
 
     // --------------------------------
@@ -318,6 +309,10 @@ Singleton {
         running: false
         interval: 1000
         onTriggered: locationFileView.writeAdapter()
+    }
+
+    NetworkFetch {
+        id: curl
     }
 
 }
