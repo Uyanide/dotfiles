@@ -14,15 +14,15 @@ Singleton {
     property bool noFocus: focusedWindowId === -1
     property bool inOverview: false
     property string focusedWindowTitle: ""
-    // property string focusedWindowAppId: ""
+    property string focusedWindowAppId: ""
 
     function updateFocusedWindowTitle() {
         if (windows && windows[focusedWindowId]) {
             focusedWindowTitle = windows[focusedWindowId].title || "";
-            // focusedWindowAppId = windows[focusedWindowId].appId || "";
+            focusedWindowAppId = windows[focusedWindowId].appId || "";
         } else {
             focusedWindowTitle = "";
-            // focusedWindowAppId = "";
+            focusedWindowAppId = "";
         }
     }
 
@@ -30,8 +30,6 @@ Singleton {
         return (windows && windows[focusedWindowId]) || null;
     }
 
-    onWindowsChanged: updateFocusedWindowTitle()
-    onFocusedWindowIdChanged: updateFocusedWindowTitle()
     Component.onCompleted: {
         eventStream.running = true;
     }
@@ -102,6 +100,7 @@ Singleton {
                                 };
                             }
                             root.windows = windowsMap;
+                            root.updateFocusedWindowTitle();
                         } catch (e) {
                             Logger.error("Niri", "Error parsing windows event:", e);
                         }
@@ -120,6 +119,7 @@ Singleton {
                             } else {
                                 root.focusedWindowId = -1;
                             }
+                            root.updateFocusedWindowTitle();
                         } catch (e) {
                             Logger.error("Niri", "Error parsing window focus event:", e);
                         }
@@ -155,9 +155,10 @@ Singleton {
                                     root.windows[id] = targetWin;
                                 }
                                 if (isFocused) {
-                                    root.focusedWindowId = id;
-                                    if (needUpdateTitle)
+                                    if (root.focusedWindowId !== id || needUpdateTitle){
+                                        root.focusedWindowId = id;
                                         root.updateFocusedWindowTitle();
+                                    }
                                 }
 
                             }
@@ -169,6 +170,10 @@ Singleton {
                             const closedId = event.windowClosed.id;
                             if (closedId && (root.windows && root.windows[closedId])) {
                                 delete root.windows[closedId];
+                                if (root.focusedWindowId === closedId) {
+                                    root.focusedWindowId = -1;
+                                    root.updateFocusedWindowTitle();
+                                }
                             }
                         } catch (e) {
                             Logger.error("Niri", "Error parsing window closed event:", e);

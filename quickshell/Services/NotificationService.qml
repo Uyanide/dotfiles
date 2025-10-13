@@ -16,7 +16,7 @@ Singleton {
   // Configuration
   property int maxVisible: 5
   property int maxHistory: 100
-  property string historyFile: Qt.resolvedUrl("../Assets/Config/Notifications.json")
+  property string historyFile: CacheService.notificationsCacheFile
   property string cacheDirImagesNotifications: Quickshell.env("HOME") + "/.cache/quickshell/notifications/"
   property real lowUrgencyDuration: 3
   property real normalUrgencyDuration: 8

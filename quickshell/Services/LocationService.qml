@@ -12,8 +12,8 @@ Singleton {
 
     id: root
 
-    property string locationName: "Munich"
-    property string locationFile: Qt.resolvedUrl("../Assets/Config/Location.json")
+    property string locationName: SettingsService.location
+    property string locationFile: CacheService.locationCacheFile
     property int weatherUpdateFrequency: 30 * 60 // 30 minutes expressed in seconds
     property bool isFetchingWeather: false
     readonly property alias data: adapter // Used to access via LocationService.data.xxx from outside, best to use "adapter" inside the service.

@@ -10,38 +10,48 @@ import qs.Services
 ShellRoot {
     id: root
 
-    Notification {
-        id: notification
-    }
+    Loader {
+        id: loader
 
-    IPCService {
-        id: ipcService
-    }
+        active: CacheService.loaded
 
-    Bar {
-        id: bar
-    }
+        sourceComponent: Item {
+            Notification {
+                id: notification
+            }
 
-    Corners {
-        id: corners
-    }
+            IPCService {
+                id: ipcService
+            }
 
-    CalendarPanel {
-        id: calendarPanel
+            Bar {
+                id: bar
+            }
 
-        objectName: "calendarPanel"
-    }
+            Corners {
+                id: corners
+            }
 
-    ControlCenterPanel {
-        id: controlCenterPanel
+            CalendarPanel {
+                id: calendarPanel
 
-        objectName: "controlCenterPanel"
-    }
+                objectName: "calendarPanel"
+            }
 
-    NotificationHistoryPanel {
-        id: notificationHistoryPanel
+            ControlCenterPanel {
+                id: controlCenterPanel
 
-        objectName: "notificationHistoryPanel"
+                objectName: "controlCenterPanel"
+            }
+
+            NotificationHistoryPanel {
+                id: notificationHistoryPanel
+
+                objectName: "notificationHistoryPanel"
+            }
+
+        }
+
     }
 
 }

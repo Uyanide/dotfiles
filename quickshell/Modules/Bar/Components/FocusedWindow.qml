@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Widgets
 import qs.Constants
 import qs.Services
+import qs.Utils
 
 Item {
     id: root
@@ -12,24 +13,22 @@ Item {
     property real maxWidth: 250
     property string fallbackIcon: "application-x-executable"
 
-    function getAppIcon() {
+    function getAppIcon(appId) {
         try {
-            const focusedWindow = Niri.getFocusedWindow();
-            if (focusedWindow && focusedWindow.appId) {
+            if (appId) {
                 try {
-                    const idValue = focusedWindow.appId;
-                    const normalizedId = (typeof idValue === 'string') ? idValue : String(idValue);
+                    const normalizedId = (typeof appId === 'string') ? appId : String(appId);
                     const iconResult = ThemeIcons.iconForAppId(normalizedId.toLowerCase());
                     if (iconResult && iconResult !== "")
                         return iconResult;
 
                 } catch (iconError) {
-                    console.warn("Error getting icon from CompositorService:", iconError);
+                    Logger.warn("FocusedWindow", "Error getting icon from CompositorService: " + iconError);
                 }
             }
             return ThemeIcons.iconFromName(root.fallbackIcon);
         } catch (e) {
-            console.warn("Error in getAppIcon:", e);
+            Logger.warn("FocusedWindow", "Error in getAppIcon:", e);
             return ThemeIcons.iconFromName(root.fallbackIcon);
         }
     }
@@ -55,7 +54,7 @@ Item {
                 id: windowIcon
 
                 anchors.fill: parent
-                source: getAppIcon()
+                source: getAppIcon(Niri.focusedWindowAppId)
                 asynchronous: true
                 smooth: true
                 visible: source !== ""

@@ -9,7 +9,7 @@ Singleton {
     property int linesCount: 3
     property int linesAhead: linesCount / 2
     property int currentIndex: linesCount - linesAhead - 1
-    property string offsetFile: Qt.resolvedUrl("../Assets/Config/LyricsOffset.txt")
+    property string offsetFile: CacheService.lyricsOffsetCacheFile
     property int offset: 0 // in ms
     property int offsetStep: 500 // in ms
     property int referenceCount: 0
@@ -26,7 +26,7 @@ Singleton {
             Logger.log("LyricsService", "Starting lyrics syncing");
             // fill lyrics with empty lines
             lyrics = Array(linesCount).fill(" ");
-            listenProcess.exec(["sh", "-c", `sl-wrap listen -l ${linesCount} -a ${linesAhead} -f ${offsetFile.slice(7)}`]);
+            listenProcess.exec(["sh", "-c", `sl-wrap listen -l ${linesCount} -a ${linesAhead} -f ${offsetFile}`]);
         }
     }
 
@@ -127,17 +127,14 @@ Singleton {
                     writeOffset();
                 }
             } catch (e) {
-                Logger.log("LyricsService", "Error reading offset file:", e);
+                Logger.error("LyricsService", "Error reading offset file:", e);
             }
         }
         onLoadFailed: {
-            Logger.log("LyricsService", "Error loading offset file:", errorString);
+            Logger.error("LyricsService", "Error loading offset file:", errorString);
         }
         onSaveFailed: {
-            Logger.log("LyricsService", "Error saving offset file:", errorString);
-        }
-        onSaved: {
-            Logger.log("LyricsService", "Offset file saved.");
+            Logger.error("LyricsService", "Error saving offset file:", errorString);
         }
     }
 

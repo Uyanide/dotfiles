@@ -1,7 +1,8 @@
 {
+    "location": "Munich",
     "notifications": {
         "doNotDisturb": false,
-        "lastSeenTs": 1760375164000
+        "lastSeenTs": 1760383655000
     },
     "primaryColor": "#89b4fa",
     "showLyricsBar": false

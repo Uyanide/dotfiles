@@ -7,6 +7,7 @@ pragma Singleton
 
 Singleton {
     property alias ip: cacheFileAdapter.ip
+    property string cacheFilePath: CacheService.ipCacheFile
     property string countryCode: "N/A"
     property real fetchInterval: 120 // in s
     property real fetchTimeout: 10 // in s
@@ -150,7 +151,7 @@ Singleton {
     FileView {
         id: cacheFile
 
-        path: Qt.resolvedUrl("../Assets/Config/IpCache.json")
+        path: cacheFilePath
         watchChanges: false
         onLoaded: {
             Logger.log("IpService", "Loaded IP from cache file: " + cacheFileAdapter.ip);
