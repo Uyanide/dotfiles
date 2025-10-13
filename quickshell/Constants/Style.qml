@@ -54,7 +54,7 @@ Singleton {
     property int animationFast: 150
     property int animationNormal: 300
     property int animationSlow: 450
-    property int animationSlowest: 750
+    property int animationSlowest: 1000
     // Delays
     property int tooltipDelay: 300
     property int tooltipDelayLong: 1200

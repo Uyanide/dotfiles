@@ -54,7 +54,7 @@ Scope {
 
                                 Behavior on color {
                                     ColorAnimation {
-                                        duration: 1000
+                                        duration: Style.animationSlowest
                                         easing.type: Easing.InOutCubic
                                     }
 
@@ -68,7 +68,7 @@ Scope {
 
                                 Behavior on color {
                                     ColorAnimation {
-                                        duration: 1000
+                                        duration: Style.animationSlowest
                                         easing.type: Easing.InOutCubic
                                     }
 
@@ -232,14 +232,6 @@ Scope {
                             buttonColor: Caffeine.isInhibited ? Colors.peach : Colors.yellow
                             onClicked: {
                                 Caffeine.manualToggle();
-                            }
-
-                            Behavior on buttonColor {
-                                ColorAnimation {
-                                    duration: 500
-                                    easing.type: Easing.InOutCubic
-                                }
-
                             }
 
                         }

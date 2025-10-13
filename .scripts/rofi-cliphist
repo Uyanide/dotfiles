@@ -1,0 +1,5 @@
+#!/bin/sh
+
+
+cliphist list | rofi -dmenu -config ~/.config/rofi/dmenu.rasi -display-columns 2 -i | \
+    cliphist decode | wl-copy

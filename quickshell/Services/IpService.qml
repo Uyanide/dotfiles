@@ -5,7 +5,7 @@ import qs.Utils
 pragma Singleton
 
 Singleton {
-    property string ip: "N/A"
+    property alias ip: cacheFileAdapter.ip
     property string countryCode: "N/A"
     property real fetchInterval: 30 // in s
     property real fetchTimeout: 10 // in s
@@ -66,7 +66,7 @@ Singleton {
                 if (xhr.status === 200) {
                     try {
                         const response = JSON.parse(xhr.responseText);
-                        if (response && response.country) {
+                        if (response && response.country_code) {
                             let newCountryCode = response.country_code;
                             Logger.log("IpService", "Fetched country code: " + newCountryCode);
                             if (newCountryCode !== countryCode) {
@@ -77,6 +77,9 @@ Singleton {
                             countryCode = "N/A";
                             Logger.error("IpService", "Geo response does not contain 'country' field");
                         }
+                        cacheFileAdapter.ip = ip;
+                        cacheFileAdapter.geoInfo = response;
+                        cacheFile.writeAdapter();
                     } catch (e) {
                         countryCode = "N/A";
                         Logger.error("IpService", "Failed to parse geo response: " + e);
@@ -121,6 +124,28 @@ Singleton {
             fetchIP();
             fetchTimer.start();
         }
+    }
+
+    FileView {
+        id: cacheFile
+
+        path: Qt.resolvedUrl("../Assets/Config/IpCache.json")
+        watchChanges: false
+        onLoaded: {
+            Logger.log("IpService", "Loaded IP from cache file: " + cacheFileAdapter.ip);
+            if (cacheFileAdapter.geoInfo) {
+                countryCode = cacheFileAdapter.geoInfo.country_code || cacheFileAdapter.country || "N/A";
+                Logger.log("IpService", "Loaded country code from cache file: " + countryCode);
+            }
+        }
+
+        JsonAdapter {
+            id: cacheFileAdapter
+
+            property string ip: "N/A"
+            property var geoInfo: null
+        }
+
     }
 
     Timer {
