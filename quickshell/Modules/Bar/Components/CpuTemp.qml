@@ -5,8 +5,9 @@ import qs.Modules.Bar.Misc
 import qs.Services
 
 MonitorItem {
-    symbol: Icons.cpuTemp > 80 ? Icons.tempHigh : Icons.cpuTemp > 50 ? Icons.tempMedium : Icons.tempLow
-    fillColor: Icons.cpuTemp > 80 ? Colors.red : Colors.yellow
+    symbol: SystemStatService.cpuTemp > 80 ? Icons.tempHigh : SystemStatService.cpuTemp > 50 ? Icons.tempMedium : Icons.tempLow
+    fillColor: Colors.yellow
+    critical: SystemStatService.cpuTemp > 80
     value: Math.round(SystemStatService.cpuTemp)
     maxValue: 120
     textSuffix: "°C"

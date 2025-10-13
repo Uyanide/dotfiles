@@ -13,7 +13,7 @@ ShellRoot {
     Loader {
         id: loader
 
-        active: CacheService.loaded
+        active: CacheService.loaded && NukeKded6.done
 
         sourceComponent: Item {
             Notification {

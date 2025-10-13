@@ -13,14 +13,15 @@ Rectangle {
     border.width: Style.borderS
 
     Connections {
-        target: SettingsService
-        onShowLyricsBarChanged: {
+        function onShowLyricsBarChanged() {
             visible = SettingsService.showLyricsBar;
             if (visible)
                 LyricsService.startSyncing();
             else
                 LyricsService.stopSyncing();
         }
+
+        target: SettingsService
     }
 
     RowLayout {

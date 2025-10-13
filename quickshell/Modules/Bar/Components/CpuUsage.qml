@@ -7,6 +7,7 @@ import qs.Services
 MonitorItem {
     symbol: Icons.cpu
     fillColor: Colors.teal
+    critical: SystemStatService.cpuUsage > 90
     value: Math.round(SystemStatService.cpuUsage)
     maxValue: 100
     textSuffix: "%"

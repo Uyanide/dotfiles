@@ -467,7 +467,7 @@ Singleton {
 
   Connections {
     target: SettingsService.notifications
-    onDoNotDisturbChanged: {
+    function onDoNotDisturbChanged() {
       const enabled = SettingsService.notifications.doNotDisturb
     }
   }

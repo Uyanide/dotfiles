@@ -58,8 +58,8 @@ Singleton {
             if (success) {
                 try {
                     const response = JSON.parse(data);
-                    if (response && response.country_code) {
-                        let newCountryCode = response.country_code;
+                    if (response && (response.country_code || response.country)) {
+                        let newCountryCode = response.country_code || response.country;
                         Logger.log("IpService", "Fetched country code: " + newCountryCode);
                         countryCode = newCountryCode;
                     } else {

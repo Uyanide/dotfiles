@@ -16,7 +16,10 @@ Item {
     property bool pointerCursor: true
     property alias hovered: mouseArea.containsMouse
     property bool disableHover: false
+    property bool critical: false
+    property color criticalColor: Colors.red
     readonly property real ratio: value / maxValue
+    property color realColor: critical ? criticalColor : fillColor
 
     signal wheelUp()
     signal wheelDown()
@@ -74,7 +77,7 @@ Item {
                     ctx.beginPath();
                     ctx.arc(centerX, centerY, radius, endAngle, startAngle, false);
                     ctx.lineWidth = 3;
-                    ctx.strokeStyle = root.fillColor;
+                    ctx.strokeStyle = root.realColor;
                     ctx.lineCap = "round";
                     ctx.stroke();
                 }
@@ -84,7 +87,7 @@ Item {
                         progressCircle.requestPaint();
                     }
 
-                    function onFillColorChanged() {
+                    function onRealColorChanged() {
                         progressCircle.requestPaint();
                     }
 
@@ -100,7 +103,7 @@ Item {
                 text: symbol
                 font.family: Fonts.nerd
                 font.pointSize: Fonts.icon
-                color: fillColor
+                color: root.realColor
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -123,7 +126,7 @@ Item {
                 text: (textValue || Math.round(root.value)) + root.textSuffix
                 font.pointSize: Fonts.small
                 font.family: Fonts.primary
-                color: root.fillColor
+                color: root.realColor
                 opacity: root.hovered ? 1 : 0
             }
 
@@ -135,6 +138,14 @@ Item {
 
             }
 
+        }
+
+    }
+
+    Behavior on realColor {
+        ColorAnimation {
+            duration: Style.animationNormal
+            easing.type: Easing.InOutCubic
         }
 
     }

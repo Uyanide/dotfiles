@@ -9,6 +9,7 @@ MonitorItem {
 
     symbol: Icons.memory
     fillColor: Colors.green
+    critical: SystemStatService.memPercent > 90
     value: Math.round(SystemStatService.memPercent)
     maxValue: 100
     textValue: showPercent ? SystemStatService.memPercent : SystemStatService.memGb

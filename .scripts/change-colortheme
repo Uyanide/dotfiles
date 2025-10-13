@@ -224,7 +224,7 @@ def _change_quickshell(palette: dict[str, str], flavor: str):
 
 
 apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
-    'kvantum': _change_kvantum,
+    # 'kvantum': _change_kvantum,
     # 'nwg-look': _change_nwglook,
     'eww': _change_eww,
     'hypr': _change_hypr,
