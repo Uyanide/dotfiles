@@ -8,6 +8,7 @@ pragma Singleton
 Singleton {
     property alias primaryColor: adapter.primaryColor
     property alias showLyricsBar: adapter.showLyricsBar
+    property alias notifications: adapter.notifications
     property string settingsFilePath: Qt.resolvedUrl("../Assets/Config/Settings.json")
 
     FileView {
@@ -16,20 +17,22 @@ Singleton {
         path: settingsFilePath
         watchChanges: true
         onFileChanged: reload()
+        onAdapterUpdated: writeAdapter()
 
         JsonAdapter {
             id: adapter
 
             property string primaryColor: "#89b4fa"
             property bool showLyricsBar: false
+            property JsonObject notifications
+
+            notifications: JsonObject {
+                property bool doNotDisturb: false
+                property real lastSeenTs: 0
+            }
+
         }
 
-    }
-
-    Connections {
-        target: adapter
-        onPrimaryColorChanged: settingsFile.writeAdapter()
-        onShowLyricsBarChanged: settingsFile.writeAdapter()
     }
 
 }

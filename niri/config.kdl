@@ -134,7 +134,6 @@ spawn-at-startup "blueman-applet"
 spawn-at-startup "nm-applet"
 spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-spawn-at-startup "mako"
 
 // Idle
 spawn-sh-at-startup "hypridle"

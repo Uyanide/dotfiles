@@ -1,4 +1,8 @@
 {
+    "notifications": {
+        "doNotDisturb": false,
+        "lastSeenTs": 1760375164000
+    },
     "primaryColor": "#89b4fa",
     "showLyricsBar": false
 }

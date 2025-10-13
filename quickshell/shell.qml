@@ -7,8 +7,12 @@ import qs.Modules.Misc
 import qs.Modules.Panel
 import qs.Services
 
-Scope {
+ShellRoot {
     id: root
+
+    Notification {
+        id: notification
+    }
 
     IPCService {
         id: ipcService
@@ -16,14 +20,10 @@ Scope {
 
     Bar {
         id: bar
-
-        shell: root
     }
 
     Corners {
         id: corners
-
-        shell: root
     }
 
     CalendarPanel {
@@ -36,6 +36,12 @@ Scope {
         id: controlCenterPanel
 
         objectName: "controlCenterPanel"
+    }
+
+    NotificationHistoryPanel {
+        id: notificationHistoryPanel
+
+        objectName: "notificationHistoryPanel"
     }
 
 }

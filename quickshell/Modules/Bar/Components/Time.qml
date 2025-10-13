@@ -11,8 +11,12 @@ Text {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            PanelService.getPanel("calendarPanel")?.toggle(this)
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: (mouse) => {
+            if (mouse.button === Qt.LeftButton)
+                PanelService.getPanel("calendarPanel")?.toggle(this)
+            else if (mouse.button === Qt.RightButton)
+                PanelService.getPanel("notificationHistoryPanel")?.toggle(this)
         }
     }
 }

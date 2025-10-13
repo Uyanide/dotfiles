@@ -75,7 +75,7 @@ NPanel {
                             Layout.alignment: Qt.AlignHCenter
                             icon: weatherReady ? LocationService.weatherSymbolFromCode(LocationService.data.weather.current_weather.weathercode) : "cloud"
                             pointSize: Style.fontSizeXXL
-                            color: Color.mOnSurfaceVariant
+                            color: Colors.text
                         }
 
                         NText {
@@ -91,7 +91,7 @@ NPanel {
                             }
                             pointSize: Style.fontSizeM
                             font.weight: Style.fontWeightBold
-                            color: Color.mOnSurfaceVariant
+                            color: Colors.text
                         }
 
                     }
@@ -103,7 +103,7 @@ NPanel {
                         text: Time.date.getDate()
                         pointSize: Style.fontSizeXXXL * 1.5
                         font.weight: Style.fontWeightBold
-                        color: Color.mOnSurfaceVariant
+                        color: Colors.text
                     }
 
                     Item {
@@ -123,7 +123,7 @@ NPanel {
                                 text: Qt.locale().monthName(grid.month, Locale.LongFormat).toUpperCase()
                                 pointSize: Style.fontSizeXL * 1.2
                                 font.weight: Style.fontWeightBold
-                                color: Color.mOnSurfaceVariant
+                                color: Colors.text
                                 Layout.alignment: Qt.AlignBaseline
                                 Layout.maximumWidth: 150
                                 elide: Text.ElideRight
@@ -133,7 +133,7 @@ NPanel {
                                 text: ` ${grid.year}`
                                 pointSize: Style.fontSizeL
                                 font.weight: Style.fontWeightBold
-                                color: Qt.alpha(Color.mOnSurfaceVariant, 0.7)
+                                color: Qt.alpha(Colors.text, 0.7)
                                 Layout.alignment: Qt.AlignBaseline
                             }
 
@@ -152,7 +152,7 @@ NPanel {
                                 }
                                 pointSize: Style.fontSizeM
                                 font.weight: Style.fontWeightMedium
-                                color: Color.mOnSurfaceVariant
+                                color: Colors.text
                                 Layout.maximumWidth: 150
                                 elide: Text.ElideRight
                             }
@@ -161,7 +161,7 @@ NPanel {
                                 text: weatherReady ? ` (${LocationService.data.weather.timezone_abbreviation})` : ""
                                 pointSize: Style.fontSizeXS
                                 font.weight: Style.fontWeightMedium
-                                color: Qt.alpha(Color.mOnSurfaceVariant, 0.7)
+                                color: Qt.alpha(Colors.text, 0.7)
                             }
 
                         }
@@ -197,13 +197,13 @@ NPanel {
                                 ctx.beginPath();
                                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                                 ctx.lineWidth = 2.5;
-                                ctx.strokeStyle = Qt.alpha(Color.mOnSurfaceVariant, 0.15);
+                                ctx.strokeStyle = Qt.alpha(Colors.text, 0.15);
                                 ctx.stroke();
                                 // Progress arc
                                 ctx.beginPath();
                                 ctx.arc(centerX, centerY, radius, -Math.PI / 2, -Math.PI / 2 + progress * 2 * Math.PI);
                                 ctx.lineWidth = 2.5;
-                                ctx.strokeStyle = Color.mOnSurfaceVariant;
+                                ctx.strokeStyle = Colors.text;
                                 ctx.lineCap = "round";
                                 ctx.stroke();
                             }
@@ -230,7 +230,7 @@ NPanel {
                                 }
                                 pointSize: Style.fontSizeXS
                                 font.weight: Style.fontWeightBold
-                                color: Color.mOnSurfaceVariant
+                                color: Colors.text
                                 family: Fonts.sans
                                 Layout.alignment: Qt.AlignHCenter
                             }
@@ -239,7 +239,7 @@ NPanel {
                                 text: Qt.formatTime(Time.date, "mm")
                                 pointSize: Style.fontSizeXXS
                                 font.weight: Style.fontWeightBold
-                                color: Color.mOnSurfaceVariant
+                                color: Colors.text
                                 family: Fonts.sans
                                 Layout.alignment: Qt.AlignHCenter
                             }
@@ -298,7 +298,7 @@ NPanel {
                             return `${max}°/${min}°`;
                         }
                         pointSize: Style.fontSizeXS
-                        color: Color.mOnSurfaceVariant
+                        color: Colors.text
                         font.weight: Style.fontWeightMedium
                     }
 

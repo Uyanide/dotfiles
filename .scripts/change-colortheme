@@ -415,7 +415,7 @@ def main():
         except Exception as e:
             print(f"Error while tweaking {app}: {e}")
 
-    os.system(f'notify-send "Color theme changed" "Palette: {palette_name}\nFlavor: {flavor}"')
+    os.system(f'notify-send -a "change-colortheme" "Color theme changed" "Palette: {palette_name}\nFlavor: {flavor}"')
 
 
 if __name__ == "__main__":

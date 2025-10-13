@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell.Io
+import Quickshell
 import Quickshell.Widgets
 import qs.Constants
 import qs.Services
@@ -80,12 +80,6 @@ Item {
                 font.family: Fonts.primary
                 color: Colors.primary
 
-                Process {
-                    id: action
-
-                    running: false
-                }
-
                 MouseArea {
                     id: mouseArea
 
@@ -102,28 +96,20 @@ Item {
                         windowTitle.x = 0;
                     }
                     onClicked: function(mouse) {
-                        if (mouse.button === Qt.MiddleButton) {
-                            action.command = ["niri", "msg", "action", "close-window"];
-                            action.startDetached();
-                        } else if (mouse.button === Qt.LeftButton) {
-                            action.command = ["niri", "msg", "action", "center-window"];
-                            action.startDetached();
-                        }
+                        if (mouse.button === Qt.MiddleButton)
+                            Quickshell.execDetached(["niri", "msg", "action", "close-window"]);
+                        else if (mouse.button === Qt.LeftButton)
+                            Quickshell.execDetached(["niri", "msg", "action", "center-window"]);
                     }
                     onWheel: function(wheel) {
-                        if (wheel.angleDelta.y > 0) {
-                            action.command = ["niri", "msg", "action", "set-column-width", "+10%"];
-                            action.startDetached();
-                        } else if (wheel.angleDelta.y < 0) {
-                            action.command = ["niri", "msg", "action", "set-column-width", "-10%"];
-                            action.startDetached();
-                        } else if (wheel.angleDelta.x > 0) {
-                            action.command = ["niri", "msg", "action", "focus-column-left"];
-                            action.startDetached();
-                        } else if (wheel.angleDelta.x < 0) {
-                            action.command = ["niri", "msg", "action", "focus-column-right"];
-                            action.startDetached();
-                        }
+                        if (wheel.angleDelta.y > 0)
+                            Quickshell.execDetached(["niri", "msg", "action", "set-column-width", "+10%"]);
+                        else if (wheel.angleDelta.y < 0)
+                            Quickshell.execDetached(["niri", "msg", "action", "set-column-width", "-10%"]);
+                        else if (wheel.angleDelta.x > 0)
+                            Quickshell.execDetached(["niri", "msg", "action", "focus-column-left"]);
+                        else if (wheel.angleDelta.x < 0)
+                            Quickshell.execDetached(["niri", "msg", "action", "focus-column-right"]);
                     }
                 }
 

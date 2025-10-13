@@ -19,7 +19,7 @@ Singleton {
     property color mSurface: Colors.base
     property color mOnSurface: Colors.text
     property color mSurfaceVariant: Colors.surface
-    property color mOnSurfaceVariant: Colors.text
+    property color mOnSurfaceVariant: Colors.overlay1
     property color mOutline: Colors.primary
     property color mShadow: Colors.crust
     property color transparent: "transparent"

@@ -118,10 +118,10 @@ Singleton {
     function _fetchWeather(latitude, longitude, errorCallback) {
         Logger.log("Location", "Fetching weather from api.open-meteo.com");
         var url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current_weather=true&current=relativehumidity_2m,surface_pressure&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto";
-        curl.fetch(url, function(success, data) {
+        curl.fetch(url, function(success, fetchedData) {
             if (success) {
                 try {
-                    var weatherData = JSON.parse(data);
+                    var weatherData = JSON.parse(fetchedData);
                     // Save core data
                     data.weather = weatherData;
                     data.weatherLastFetch = Time.timestamp;

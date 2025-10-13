@@ -15,24 +15,24 @@
 
 ## Setup Overview
 
-- **OS**: Archlinux
-- **WM**: Hyprland | **Niri**
-- **Bar**: Waybar | **Quickshell**
-- **Shell**: Fish
-- **Prompt**: Oh My Posh
-- **Terminal**: **Kitty** & Ghostty
-- **Colorscheme**: Catppuccin Mocha
-- **App Launcher**: Rofi
-- **Logout Screen**: Wlogout
-- **Desktop Widgets**: Eww | **Quickshell**
-- **Wallpaper Daemon**: Swww
-- **Notification Daemon**: Mako
+- OS: Archlinux
+- WM: Hyprland | **Niri**
+- Bar: Waybar | **Quickshell**
+- Shell: Fish
+- Prompt: Oh My Posh
+- Terminal: **Kitty** & Ghostty
+- Colorscheme: Catppuccin Mocha
+- App Launcher: Rofi
+- Logout Screen: Wlogout
+- Desktop Widgets: Eww | **Quickshell**
+- Wallpaper Daemon: Swww
+- Notification Daemon: Mako | **Quickshell**
 
 (**bold**: I currently prefer)
 
 ## Hyprland & friends
 
-Based on an old version of [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags amd tons of other stuff.
+Based on an old version of [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags, quickshell, eww and tons of other stuff.
 
 ## Niri
 
