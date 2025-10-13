@@ -151,6 +151,7 @@ PopupWindow {
                 pointSize: Style.fontSizeS
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WordWrap
+                family: Fonts.sans
               }
 
               Image {

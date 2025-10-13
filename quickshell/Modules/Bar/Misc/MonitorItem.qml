@@ -15,11 +15,13 @@ Item {
     property string textSuffix: ""
     property bool pointerCursor: true
     property alias hovered: mouseArea.containsMouse
+    property bool disableHover: false
     readonly property real ratio: value / maxValue
 
     signal wheelUp()
     signal wheelDown()
     signal clicked()
+    signal rightClicked()
 
     implicitHeight: parent.height - 5
     implicitWidth: parent.height + (hovered ? textDisplay.width : 0)
@@ -28,7 +30,7 @@ Item {
         id: mouseArea
 
         anchors.fill: parent
-        hoverEnabled: true
+        hoverEnabled: !disableHover
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: pointerCursor ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {

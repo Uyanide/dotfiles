@@ -22,6 +22,7 @@ Item {
         SymbolButton {
             symbol: Icons.tray
             buttonColor: Colors.green
+            disabledHover: true
         }
 
         Item {

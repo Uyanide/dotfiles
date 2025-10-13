@@ -11,6 +11,7 @@ Item {
     readonly property alias hovered: mouseArea.containsMouse
     property real iconSize: Fonts.icon
     property real radius: Style.radiusS
+    property bool disabledHover: false
 
     signal clicked()
     signal rightClicked()
@@ -23,7 +24,7 @@ Item {
 
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        hoverEnabled: true
+        hoverEnabled: !disabledHover
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.RightButton)
