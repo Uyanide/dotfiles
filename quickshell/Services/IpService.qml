@@ -8,7 +8,7 @@ pragma Singleton
 Singleton {
     property alias ip: cacheFileAdapter.ip
     property string countryCode: "N/A"
-    property real fetchInterval: 30 // in s
+    property real fetchInterval: 120 // in s
     property real fetchTimeout: 10 // in s
     property string ipURL: "https://api.uyanide.com/ip"
     property string geoURL: "https://api.ipinfo.io/lite/"
@@ -24,9 +24,7 @@ Singleton {
                         Logger.log("IpService", "Fetched IP: " + newIP);
                         if (newIP !== ip) {
                             ip = newIP;
-                            fetchGeoInfo(); // Fetch geo info only if IP has changed
-                            SendNotification.show("New IP", `IP: ${ip}\nCountry: ${countryCode}`);
-                            cacheFile.writeAdapter();
+                            fetchGeoInfo(true); // Fetch geo info only if IP has changed
                         }
                     } else {
                         ip = "N/A";
@@ -46,7 +44,7 @@ Singleton {
         });
     }
 
-    function fetchGeoInfo() {
+    function fetchGeoInfo(notify) {
         if (!ip || ip === "N/A") {
             countryCode = "N/A";
             return ;
@@ -62,9 +60,7 @@ Singleton {
                     if (response && response.country_code) {
                         let newCountryCode = response.country_code;
                         Logger.log("IpService", "Fetched country code: " + newCountryCode);
-                        if (newCountryCode !== countryCode)
-                            countryCode = newCountryCode;
-
+                        countryCode = newCountryCode;
                     } else {
                         countryCode = "N/A";
                         Logger.error("IpService", "Geo response does not contain 'country_code' field");
@@ -79,6 +75,8 @@ Singleton {
                 countryCode = "N/A";
                 Logger.error("IpService", "Failed to fetch geo info");
             }
+            SendNotification.show("New IP", `IP: ${ip}\nCountry: ${countryCode}`);
+            cacheFile.writeAdapter();
         });
     }
 
@@ -94,6 +92,43 @@ Singleton {
 
     NetworkFetch {
         id: curl
+    }
+
+    Process {
+        id: ipMonitor
+
+        command: ["ip", "monitor", "address", "route"]
+        running: true
+
+        stdout: SplitParser {
+            splitMarker: "\n"
+            onRead: {
+                ipMonitorDebounce.restart();
+            }
+        }
+
+    }
+
+    Timer {
+        id: ipMonitorDebounce
+
+        interval: 1000
+        repeat: false
+        running: false
+        onTriggered: {
+            refresh();
+        }
+    }
+
+    Timer {
+        id: fetchTimer
+
+        interval: fetchInterval * 1000
+        repeat: true
+        running: true
+        onTriggered: {
+            fetchIP();
+        }
     }
 
     FileView {
@@ -130,17 +165,6 @@ Singleton {
             property var geoInfo: null
         }
 
-    }
-
-    Timer {
-        id: fetchTimer
-
-        interval: fetchInterval * 1000
-        repeat: true
-        running: false
-        onTriggered: {
-            fetchIP();
-        }
     }
 
 }

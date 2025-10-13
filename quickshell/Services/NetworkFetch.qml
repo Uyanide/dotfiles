@@ -12,7 +12,7 @@ Item {
 
     function fetch(url, callback) {
         if (curlProcess.running) {
-            Logger.log("NetworkFetch", "A fetch operation is already in progress.");
+            Logger.warn("NetworkFetch", "A fetch operation is already in progress.");
             return ;
         }
         fetchedData = "";
@@ -23,7 +23,7 @@ Item {
 
     function fakeFetch(resp, callback) {
         if (curlProcess.running) {
-            Logger.log("NetworkFetch", "A fetch operation is already in progress.");
+            Logger.warn("NetworkFetch", "A fetch operation is already in progress.");
             return ;
         }
         fetchedData = "";
@@ -45,7 +45,6 @@ Item {
                 return ;
             }
             if (exitCode === 0) {
-                Logger.log("NetworkFetch", "Fetch completed successfully.");
                 Logger.log("NetworkFetch", "Fetched data: " + fetchedData);
                 fetchingCallback(true, fetchedData);
             } else {
