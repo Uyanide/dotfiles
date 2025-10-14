@@ -69,9 +69,9 @@ This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprla
 
 ## Wallpaper & Colortheme
 
-[A small utility](https://github.com/Uynide/Wallpaper_Chooser) from myself, which implements a Image Carousel with Qt Widgets, is used to select a wallpaper from the collection. Once selected, [a script](https://github.com/Uyanide/dotfiles/blob/main/.scripts/change-colortheme) will pick the most suitable primary color (so-called flavor) for the wallpaper from the Catppuccin Mocha palette. Many applications that can be configured with a colortheme will adhere the result (including most Qt6 apps via Kvantum and GTK3&4 apps via nwg-look).
+[A small utility](https://github.com/Uyanide/Wallpaper_Chooser) from myself, which implements an Image Carousel with Qt Widgets, is used to select a wallpaper from the collection. Once selected, [a script](https://github.com/Uyanide/dotfiles/blob/main/.scripts/change-colortheme) will pick the most suitable primary color (so-called flavor) for the wallpaper from the Catppuccin Mocha palette. Many applications that can be configured with a colortheme will adhere the result (including most Qt6 apps via Kvantum and GTK3&4 apps via nwg-look).
 
-As for the wallpaper collection, see [backgrounds repo for personal use](https://github.com/Uyanide/backgrounds).
+As for my wallpaper collection, see [backgrounds repo for personal use](https://github.com/Uyanide/backgrounds).
 
 ## Rofi
 

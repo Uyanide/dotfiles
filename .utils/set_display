@@ -27,3 +27,14 @@ else
     export HYPR_AQ_DRM_DEVICES=/dev/dri/card0
 fi
 
+
+for file in $HOME/.config/niri/config.kdl $HOME/.config/niri/config.kdl.template; do
+    [ -f "$file" ] || continue
+    if [ -n "$NVIDIA_DRI_PATH" ]; then
+        sed -i "s|render-drm-device \"/dev/dri/card[0-9]*\"|render-drm-device \"$NVIDIA_DRI_PATH\"|" "$file"
+    elif [ -n "$Intel_DRI_PATH" ]; then
+        sed -i "s|render-drm-device \"/dev/dri/card[0-9]*\"|render-drm-device \"$Intel_DRI_PATH\"|" "$file"
+    else
+        sed -i "s|render-drm-device \"/dev/dri/card[0-9]*\"|render-drm-device \"/dev/dri/card0\"|" "$file"
+    fi
+done

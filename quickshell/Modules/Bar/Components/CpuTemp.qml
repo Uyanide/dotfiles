@@ -9,7 +9,7 @@ MonitorItem {
     fillColor: Colors.yellow
     critical: SystemStatService.cpuTemp > 80
     value: Math.round(SystemStatService.cpuTemp)
-    maxValue: 120
+    maxValue: 100
     textSuffix: "°C"
     onClicked: {
         if (action.running) {
