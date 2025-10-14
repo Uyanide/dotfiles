@@ -10,6 +10,7 @@ MonitorItem {
     value: Math.round(AudioService.volume * 100)
     maxValue: 100
     textSuffix: "%"
+    expandOnValueChange: true
     onWheelUp: {
         AudioService.increaseVolume();
     }

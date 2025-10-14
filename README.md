@@ -36,29 +36,33 @@ Based on an old version of [end-4/dots-hyprland](https://github.com/end-4/dots-h
 
 ## Niri
 
-Ported from Hyprland, and shares some of the desktop components such as hyprlock & hypridle & mako, but uses quickshell as bar and desktop-widgets instead of the combination of waybar and eww.
+Ported from Hyprland, and shares some of the desktop components such as hyprlock & hypridle, but uses quickshell as bar / desktop widgets / notification daemon / ...
 
 ## Quickshell
 
-Not based on, but heavily depends on modules from [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). This setup is currently only adapted for Niri.
+Not based on, but heavily depends on many modules from [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). A thousand thanks to their great work.
+
+This setup is currently only adapted for Niri.
 
 ## Eww
 
-- `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) without notification center.
-- `lyrics`, scrolling lyrics player, depends on [a small program](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
+- `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) but without notification center.
+- `lyrics`, scrolling lyrics player, depends on [a small utility](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
 - `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
 
 ## Swww
 
-In Niri, the wallpaper will be automatically blurred when there are windows in focus. And the backdrop also has a blurred wallpaper applied to it. These are implemented in [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/.scripts/wallpaper-daemon).
+The wallpaper will be automatically blurred when there are windows in focus. And the backdrop (overview) also has a blurred version of the wallpaper applied to its background. These are implemented in [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/.scripts/wallpaper-daemon).
+
+This feature is only enabled in Niri. Swww also manages the wallpaper of the Hyprland setup, yet only in the regular way.
 
 ## Rofi
 
-Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serves as cliphist browser and emojis picker.
+Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serves as clipboard history browser and emoji picker.
 
 ## Grub theme
 
-Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with the [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453).
+Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453).
 
 ## MPV
 

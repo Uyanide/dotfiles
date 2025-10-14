@@ -19,6 +19,7 @@ MonitorItem {
     }
     maxValue: 100
     textSuffix: "%"
+    expandOnValueChange: true
     onWheelUp: {
         const monitor = getMonitor();
         if (monitor)

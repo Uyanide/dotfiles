@@ -14,7 +14,10 @@ Item {
     property color fillColor: Colors.primary
     property string textSuffix: ""
     property bool pointerCursor: true
-    property alias hovered: mouseArea.containsMouse
+    property bool expandOnValueChange: false
+    property real hideTimeOut: 2000 // ms
+    property bool forceExpand: false
+    property bool _expand: forceExpand || mouseArea.containsMouse
     property bool disableHover: false
     property bool critical: false
     property color criticalColor: Colors.red
@@ -27,7 +30,34 @@ Item {
     signal rightClicked()
 
     implicitHeight: parent.height - 5
-    implicitWidth: parent.height + (hovered ? textDisplay.width : 0)
+    implicitWidth: parent.height + (_expand ? textDisplay.width : 0)
+
+    Loader {
+        id: connectionLoader
+
+        active: expandOnValueChange
+
+        sourceComponent: Connections {
+            function onValueChanged() {
+                root.forceExpand = true;
+                hideTimer.restart();
+            }
+
+            target: root
+        }
+
+    }
+
+    Timer {
+        id: hideTimer
+
+        interval: parent.hideTimeOut
+        running: false
+        repeat: false
+        onTriggered: {
+            root.forceExpand = false;
+        }
+    }
 
     MouseArea {
         id: mouseArea
@@ -114,7 +144,7 @@ Item {
             id: textDisplay
 
             implicitHeight: parent.height
-            implicitWidth: root.hovered ? textLabel.implicitWidth + 10 : 0
+            implicitWidth: root._expand ? textLabel.implicitWidth + 10 : 0
             clip: true
 
             Text {
@@ -127,7 +157,7 @@ Item {
                 font.pointSize: Fonts.small
                 font.family: Fonts.primary
                 color: root.realColor
-                opacity: root.hovered ? 1 : 0
+                opacity: root._expand ? 1 : 0
             }
 
             Behavior on implicitWidth {
