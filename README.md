@@ -2,16 +2,27 @@
 
 - Hyprland & Waybar & Eww:
 
+<figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
+</figure>
 
 - Niri & Quickshell
 
+<figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
+    <figcaption><a href="#swww">auto blurred wallpaper</a></figcaption>
+</figure>
+
+<figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.jpg?raw=true"/>
+    <figcaption><a href="#wallpaper--colortheme">dynamic colortheme</a></figcaption>
+</figure>
 
 - Grub menu:
 
+<figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
+</figure>
 
 ## Setup Overview
 
@@ -28,7 +39,7 @@
 - Wallpaper Daemon: Swww
 - Notification Daemon: Mako | **Quickshell**
 
-(**bold**: I currently prefer)
+(**bold**: currently preferred)
 
 ## Hyprland & friends
 
@@ -47,18 +58,24 @@ This setup is currently only adapted for Niri.
 ## Eww
 
 - `main`, main dashboard, modified from [syndrizzle/hotfiles](https://github.com/syndrizzle/hotfiles/tree/bspwm) but without notification center.
-- `lyrics`, scrolling lyrics player, depends on [a small utility](https://github.com/Uyanide/spotify-lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
+- `lyrics`, scrolling lyrics player, depends on [a small utility](https://github.com/Uyanide/Spotify_Lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
 - `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
 
 ## Swww
 
 The wallpaper will be automatically blurred when there are windows in focus. And the backdrop (overview) also has a blurred version of the wallpaper applied to its background. These are implemented in [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/.scripts/wallpaper-daemon).
 
-This feature is only enabled in Niri. Swww also manages the wallpaper of the Hyprland setup, yet only in the regular way.
+This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprland setup, yet only in the regular way.
+
+## Wallpaper & Colortheme
+
+[A small utility](https://github.com/Uynide/Wallpaper_Chooser) from myself, which implements a Image Carousel with Qt Widgets, is used to select a wallpaper from the collection. Once selected, [a script](https://github.com/Uyanide/dotfiles/blob/main/.scripts/change-colortheme) will pick the most suitable primary color (so-called flavor) for the wallpaper from the Catppuccin Mocha palette. Many applications that can be configured with a colortheme will adhere the result (including most Qt6 apps via Kvantum and GTK3&4 apps via nwg-look).
+
+As for the wallpaper collection, see [backgrounds repo for personal use](https://github.com/Uyanide/backgrounds).
 
 ## Rofi
 
-Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serves as clipboard history browser and emoji picker.
+Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serves as the clipboard history browser and emoji picker.
 
 ## Grub theme
 
@@ -67,10 +84,6 @@ Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elega
 ## MPV
 
 Based on [noelsimbolon/mpv-config](https://github.com/noelsimbolon/mpv-config.git).
-
-## Wallpaper(s)
-
-See [backgrounds repo for personal usage](https://github.com/Uyanide/backgrounds).
 
 ## Fonts
 

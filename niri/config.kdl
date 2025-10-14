@@ -164,7 +164,7 @@ environment {
     // Themes
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "kde"
-    QT_STYLE_OVERRIDE "Breeze"
+    QT_STYLE_OVERRIDE "Kvantum"
 
     // Nvidia
     LIBVA_DRIVER_NAME "nvidia"
