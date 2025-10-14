@@ -9,13 +9,13 @@
 - Niri & Quickshell
 
 <figure>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
     <figcaption><a href="#swww">auto blurred wallpaper</a></figcaption>
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
 </figure>
 
 <figure>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.jpg?raw=true"/>
     <figcaption><a href="#wallpaper--colortheme">dynamic colortheme</a></figcaption>
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.jpg?raw=true"/>
 </figure>
 
 - Grub menu:
