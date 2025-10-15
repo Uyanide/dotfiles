@@ -32,9 +32,9 @@
 - Shell: Fish
 - Prompt: Oh My Posh
 - Terminal: **Kitty** & Ghostty
+- Power Menu: Wlogout
 - Colorscheme: Catppuccin Mocha
 - App Launcher: Rofi
-- Logout Screen: Wlogout
 - Desktop Widgets: Eww | **Quickshell**
 - Wallpaper Daemon: Swww
 - Notification Daemon: Mako | **Quickshell**
