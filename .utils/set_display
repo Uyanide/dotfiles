@@ -1,40 +1,60 @@
-Intel_ID="$(lspci -d ::03xx | grep Intel | cut -f 1 -d ' ')"
-[ -z "$Intel_ID" ] && Intel_ID="somerandomstring"
-NVIDIA_ID="$(lspci -d ::03xx | grep NVIDIA | cut -f 1 -d ' ')"
-[ -z "$NVIDIA_ID" ] && NVIDIA_ID="somerandomstring"
+#!/usr/bin/env bash
 
-for file in /dev/dri/by-path/*card; do
-    real_target=$(readlink -f "$file")
-    if [[ "$file" == *"$Intel_ID"* ]]; then
-        Intel_DRI_PATH="$real_target"
-    elif [[ "$file" == *"$NVIDIA_ID"* ]]; then
-        NVIDIA_DRI_PATH="$real_target"
-    fi
+# AMD -> Nvidia -> Intel
+prefer_order=(amd nvidia intel)
+
+# Get vendor and path of each GPU
+default_dri_path="$(find /dev/dri/card* 2>/dev/null | head -n 1)"
+[[ -z "$default_dri_path" ]] && default_dri_path="/dev/dri/card0"
+intel_path=""
+nvidia_path=""
+amd_path=""
+
+for link in /dev/dri/by-path/*-card; do
+  [[ -e "$link" ]] || continue
+  card="$(readlink -f "$link")"
+  vfile="/sys/class/drm/$(basename "$card")/device/vendor"
+  [[ -r "$vfile" ]] || continue
+  vendor="$(cat "$vfile")"
+  case "$vendor" in
+    0x10de) nvidia_path="$card" ;;
+    0x8086) intel_path="$card" ;;
+    0x1002) amd_path="$card" ;;
+  esac
 done
 
-if [ -n "$Intel_DRI_PATH" ]; then
-    export HYPR_DISPLAY_DEVICE=intel_backlight
-    if [ -n "$NVIDIA_DRI_PATH" ]; then
-        export HYPR_AQ_DRM_DEVICES="$NVIDIA_DRI_PATH:$Intel_DRI_PATH"
-    else
-        export HYPR_AQ_DRM_DEVICES="$Intel_DRI_PATH"
-    fi
-elif [ -n "$NVIDIA_DRI_PATH" ]; then
-    export HYPR_DISPLAY_DEVICE=nvidia_0
-    export HYPR_AQ_DRM_DEVICES="$NVIDIA_DRI_PATH"
-else
-    export HYPR_DISPLAY_DEVICE
-    export HYPR_AQ_DRM_DEVICES=/dev/dri/card0
-fi
+# AQ_DRM_DEVICES allow multiple entries separated by colon
+# Set it according to preference order
+devices=""
+for who in "${prefer_order[@]}"; do
+  case "$who" in
+    nvidia) [[ -n "$nvidia_path" ]] && devices="${devices:+$devices:}$nvidia_path" ;;
+    intel)  [[ -n "$intel_path"  ]] && devices="${devices:+$devices:}$intel_path" ;;
+    amd)    [[ -n "$amd_path"    ]] && devices="${devices:+$devices:}$amd_path" ;;
+  esac
+done
+HYPR_AQ_DRM_DEVICES="${devices:-$default_dri_path}"
+export HYPR_AQ_DRM_DEVICES
 
+# But niri only supports choosing one preferred render device
+primary_device="$default_dri_path"
+for who in "${prefer_order[@]}"; do
+  case "$who" in
+    nvidia) [[ -n "$nvidia_path" ]] && { primary_device="$nvidia_path"; break; } ;;
+    intel)  [[ -n "$intel_path"  ]] && { primary_device="$intel_path"; break; } ;;
+    amd)    [[ -n "$amd_path"    ]] && { primary_device="$amd_path"; break; } ;;
+  esac
+done
 
-for file in $HOME/.config/niri/config.kdl $HOME/.config/niri/config.kdl.template; do
-    [ -f "$file" ] || continue
-    if [ -n "$NVIDIA_DRI_PATH" ]; then
-        sed -i "s|render-drm-device \"/dev/dri/card[0-9]*\"|render-drm-device \"$NVIDIA_DRI_PATH\"|" "$file"
-    elif [ -n "$Intel_DRI_PATH" ]; then
-        sed -i "s|render-drm-device \"/dev/dri/card[0-9]*\"|render-drm-device \"$Intel_DRI_PATH\"|" "$file"
-    else
-        sed -i "s|render-drm-device \"/dev/dri/card[0-9]*\"|render-drm-device \"/dev/dri/card0\"|" "$file"
-    fi
+# Update niri config
+for file in "$HOME/.config/niri/config.kdl" "$HOME/.config/niri/config.kdl.template"; do
+  [[ -f "$file" ]] || return 0
+
+  if grep -qE '^\s*render-drm-device\s+"[^"]+"' "$file"; then
+    current="$(grep -E '^\s*render-drm-device\s+"[^"]+"' "$file" | sed -E 's/^\s*render-drm-device\s+"([^"]+)".*/\1/')"
+    [[ "$current" == "$primary_device" ]] && return 0
+    sed -i -E "s|^(\s*render-drm-device\s+)\"[^\"]+\"|\1\"$primary_device\"|" "$file"
+  else
+    printf '\ndebug {\nrender-drm-device "%s"\n}\n' "$primary_device" >> "$file"
+  fi
 done
