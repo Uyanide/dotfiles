@@ -238,15 +238,19 @@ window-rule {
     open-floating true
 }
 
+// Block from recording
+window-rule {
+    match app-id="thunderbird"
+
+    block-out-from "screen-capture"
+}
+
+// I love round corners
 window-rule {
     geometry-corner-radius 14
     clip-to-geometry true
 }
 
-window-rule {
-    match at-startup=true app-id="Spotify"
-    open-on-workspace "special"
-}
 
 /************************Others************************/
 
@@ -289,6 +293,7 @@ binds {
     Mod+Shift+L { spawn-sh "qs ipc call lyrics toggleBarLyrics"; }
     Mod+Shift+K { spawn-sh "pkill -x quickshell || quickshell"; }
     Mod+I { spawn-sh "qs ipc call idleInhibitor toggleInhibitor"; }
+    Mod+Alt+R { spawn-sh "qs ipc call recording startOrStopRecording"; }
 
     // Rofi
     Mod+D { spawn-sh "pkill -x rofi || rofi -show run"; }

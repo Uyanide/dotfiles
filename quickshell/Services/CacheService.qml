@@ -8,6 +8,7 @@ Singleton {
     id: root
 
     property string cacheDir: Quickshell.env("HOME") + "/.cache/quickshell/"
+    property string recordingDir: Quickshell.env("HOME") + "/Videos/recordings/"
     property var cacheFiles: ["Location.json", "Ip.json", "Notifications.json", "LyricsOffset.txt"]
     property bool loaded: false
     property string locationCacheFile: cacheDir + "Location.json"
@@ -19,7 +20,7 @@ Singleton {
         id: process
 
         running: true
-        command: ["sh", "-c", `mkdir -p ${cacheDir} && touch ${cacheDir + cacheFiles.join(` && touch ${cacheDir}`)}`]
+        command: ["sh", "-c", `mkdir -p ${cacheDir} && mkdir -p ${recordingDir} && touch ${cacheDir + cacheFiles.join(` && touch ${cacheDir}`)}`]
         onExited: (code, status) => {
             if (code === 0)
                 root.loaded = true;

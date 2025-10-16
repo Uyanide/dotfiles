@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 # https://github.com/end-4/dots-hyprland/blob/main/.config/ags/scripts/record-script.sh
 
+[ -z "$codec" ] && codec="av1_nvenc"
+[ -z "$pixel_format" ] && pixel_format="p010le"
+[ -z "$frame_rate" ] && frame_rate="60"
+[ -z "$codec_params" ] && codec_params=\
+"preset=p5 rc=vbr cq=18 \
+b:v=80M maxrate=120M bufsize=160M \
+color_range=tv"
+[ -z "$filter_args" ] && filter_args=""
+
 getdate() {
     date '+%Y-%m-%d_%H.%M.%S'
 }
@@ -8,23 +17,42 @@ getaudiooutput() {
     pactl list sources | grep 'Name' | grep 'monitor' | cut -d ' ' -f2
 }
 getactivemonitor() {
-    hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name'
+    if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
+        hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name'
+    elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
+        niri msg focused-output | head -n 1 | sed -n 's/.*(\(.*\)).*/\1/p'
+    fi
 }
+
+recorder_args=(
+    --codec "$codec"
+    --pixel-format "$pixel_format"
+    --framerate "$frame_rate"
+    -f './recording_'"$(getdate)"'.mkv'
+)
+
+for param in $codec_params; do
+    recorder_args+=(-p "$param")
+done
+
+for filter in $filter_args; do
+    recorder_args+=(-F "$filter")
+done
 
 mkdir -p "$(xdg-user-dir VIDEOS)"
 cd "$(xdg-user-dir VIDEOS)" || exit
 if pgrep wf-recorder > /dev/null; then
-    notify-send "Recording Stopped" "Stopped" -a 'record-script.sh' &
+    notify-send "Recording Stopped" "Stopped" -a 'record-script' &
     pkill wf-recorder &
 else
-    notify-send "Starting recording" 'recording_'"$(getdate)"'.mp4' -a 'record-script.sh'
+    notify-send "Starting recording" 'recording_'"$(getdate)"'.mkv' -a 'record-script'
     if [[ "$1" == "--sound" ]]; then
-        wf-recorder --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t --geometry "$(slurp)" --audio="$(getaudiooutput)" & disown
+        wf-recorder  --geometry "$(slurp)" --audio="$(getaudiooutput)" "${recorder_args[@]}" & disown
     elif [[ "$1" == "--fullscreen-sound" ]]; then
-        wf-recorder -o $(getactivemonitor) --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t --audio="$(getaudiooutput)" & disown
+        wf-recorder -o "$(getactivemonitor)" --audio="$(getaudiooutput)" "${recorder_args[@]}" & disown
     elif [[ "$1" == "--fullscreen" ]]; then
-        wf-recorder -o $(getactivemonitor) --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t & disown
+        wf-recorder -o "$(getactivemonitor)" "${recorder_args[@]}" & disown
     else
-        wf-recorder --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t --geometry "$(slurp)" & disown
+        wf-recorder --geometry "$(slurp)" "${recorder_args[@]}" & disown
     fi
 fi

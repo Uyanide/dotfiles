@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Services.Pipewire
 import qs.Constants
 import qs.Modules.Panel.Cards
 import qs.Noctalia

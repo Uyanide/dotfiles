@@ -74,7 +74,7 @@ Singleton {
 
     onOffsetChanged: {
         if (SettingsService.showLyricsBar)
-            SendNotification.show("Lyrics Offset Changed", `Current offset: ${offset} ms`, 1000);
+            SendNotification.show("Lyrics Offset Changed", `Current offset: ${offset} ms`);
 
         writeOffset();
     }

@@ -40,4 +40,12 @@ Item {
         target: "idleInhibitor"
     }
 
+    IpcHandler {
+        function startOrStopRecording() {
+            RecordService.startOrStop();
+        }
+
+        target: "recording"
+    }
+
 }

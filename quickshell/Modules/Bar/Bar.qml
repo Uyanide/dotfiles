@@ -172,6 +172,9 @@ Variants {
                         width: 10
                     }
 
+                    RecordIndicator {
+                    }
+
                     Ip {
                         showCountryCode: true
                     }
