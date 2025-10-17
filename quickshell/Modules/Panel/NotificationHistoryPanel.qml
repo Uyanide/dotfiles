@@ -15,9 +15,6 @@ NPanel {
 
     preferredWidth: 380
     preferredHeight: 480
-    onOpened: function() {
-        SettingsService.notifications.lastSeenTs = Time.timestamp * 1000;
-    }
 
     panelContent: Rectangle {
         id: notificationRect

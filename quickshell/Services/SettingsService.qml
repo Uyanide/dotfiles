@@ -30,7 +30,6 @@ Singleton {
 
             notifications: JsonObject {
                 property bool doNotDisturb: false
-                property real lastSeenTs: 0
             }
 
         }
