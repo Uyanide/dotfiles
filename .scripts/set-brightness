@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ -z "$1" ] && exit 1
+[ -z "$BRIGHTNESSCTL_DEVICE" ] && BRIGHTNESSCTL_DEVICE="auto"
+
+brightnessctl -d "$BRIGHTNESSCTL_DEVICE" set "$1"

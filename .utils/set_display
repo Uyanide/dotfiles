@@ -23,8 +23,17 @@ for link in /dev/dri/by-path/*-card; do
   esac
 done
 
-# AQ_DRM_DEVICES allow multiple entries separated by colon
-# Set it according to preference order
+# Specify device for brightnessctl
+# Only tested on my laptop with Intel iGPU & Nvidia dGPU
+BRIGHTNESSCTL_DEVICE="auto"
+if [[ -n "$intel_path" ]]; then
+  BRIGHTNESSCTL_DEVICE="intel_backlight"
+elif [[ -n "$nvidia_path" ]]; then
+  BRIGHTNESSCTL_DEVICE="nvidia_0"
+fi
+export BRIGHTNESSCTL_DEVICE
+
+# AQ_DRM_DEVICES allows multiple entries separated by colon
 devices=""
 for who in "${prefer_order[@]}"; do
   case "$who" in
@@ -48,11 +57,11 @@ done
 
 # Update niri config
 for file in "$HOME/.config/niri/config.kdl" "$HOME/.config/niri/config.kdl.template"; do
-  [[ -f "$file" ]] || return 0
+  [[ -f "$file" ]] || continue
 
   if grep -qE '^\s*render-drm-device\s+"[^"]+"' "$file"; then
     current="$(grep -E '^\s*render-drm-device\s+"[^"]+"' "$file" | sed -E 's/^\s*render-drm-device\s+"([^"]+)".*/\1/')"
-    [[ "$current" == "$primary_device" ]] && return 0
+    [[ "$current" == "$primary_device" ]] && continue
     sed -i -E "s|^(\s*render-drm-device\s+)\"[^\"]+\"|\1\"$primary_device\"|" "$file"
   else
     printf '\ndebug {\nrender-drm-device "%s"\n}\n' "$primary_device" >> "$file"

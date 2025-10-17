@@ -18,6 +18,7 @@ Item {
     property real hideTimeOut: 2000 // ms
     property bool forceExpand: false
     property bool _expand: forceExpand || mouseArea.containsMouse
+    property bool _isFirst: true
     property bool disableHover: false
     property bool critical: false
     property color criticalColor: Colors.red
@@ -39,6 +40,15 @@ Item {
 
         sourceComponent: Connections {
             function onValueChanged() {
+                // No need to expand (again) if already hovering
+                if (mouseArea.containsMouse)
+                    return ;
+
+                // Skip first change (which is most likely initialization)
+                if (root._isFirst) {
+                    root._isFirst = false;
+                    return ;
+                }
                 root.forceExpand = true;
                 hideTimer.restart();
             }

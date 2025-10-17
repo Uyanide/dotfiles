@@ -322,8 +322,8 @@ binds {
     XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
 
     // Brightness
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "set-brightness" "+10%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "set-brightness" "10%-"; }
 
     // Window management
     Mod+Tab repeat=false { toggle-overview; }
