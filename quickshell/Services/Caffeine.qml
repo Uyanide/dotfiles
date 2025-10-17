@@ -6,10 +6,6 @@ import qs.Utils
 pragma Singleton
 
 Singleton {
-    // "systemd", "wayland", or "auto"
-    // systemd-inhibit not found, try Wayland tools
-    // wayhibitor not found
-
     id: root
 
     property string reason: "Application request"
@@ -90,10 +86,10 @@ Singleton {
         if (!isInhibited)
             return ;
 
+        // SIGTERM
         if (inhibitorProcess.running)
             inhibitorProcess.signal(15);
 
-        // SIGTERM
         isInhibited = false;
     }
 
