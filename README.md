@@ -1,5 +1,7 @@
-## Screenshots
+## How it looks like...
 
+<details>
+    
 - Hyprland & Waybar & Eww:
 
 <figure>
@@ -8,13 +10,13 @@
 
 - Niri & Quickshell
 
+https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
+
 <figure>
-    <figcaption><a href="#swww">auto blurred wallpaper</a></figcaption>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
 </figure>
 
 <figure>
-    <figcaption><a href="#wallpaper--colortheme">dynamic colortheme</a></figcaption>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.jpg?raw=true"/>
 </figure>
 
@@ -23,6 +25,8 @@
 <figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
 </figure>
+
+</details>
 
 ## Setup Overview
 
@@ -63,15 +67,16 @@ This setup is currently only adapted for Niri.
 
 ## Swww
 
-The wallpaper will be automatically blurred when there are windows in focus. And the backdrop (overview) also has a blurred version of the wallpaper applied to its background. These are implemented in [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/.scripts/wallpaper-daemon).
+The wallpaper will be automatically blurred when there is a window in focus, which is implemented in the [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/.scripts/wallpaper-daemon) script.
 
 This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprland setup, yet only in the regular way.
 
 ## Wallpaper & Colortheme
 
-[A small utility](https://github.com/Uyanide/Wallpaper_Chooser) from myself, which implements an Image Carousel with Qt Widgets, is used to select a wallpaper from the collection. Once selected, [a script](https://github.com/Uyanide/dotfiles/blob/main/.scripts/change-colortheme) will pick the most suitable primary color (so-called flavor) for the wallpaper from the Catppuccin Mocha palette. Many applications that can be configured with a colortheme will adhere the result (including most Qt6 apps via Kvantum and GTK3&4 apps via nwg-look).
-
-As for my wallpaper collection, see [backgrounds repo for personal use](https://github.com/Uyanide/backgrounds).
+The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. And also:
+    
+- [wallpaper-chooser](https://github.com/Uyanide/Wallpaper_Chooser) to select wallpaper, which implements an Image Carousel with Qt Widgets.
+- [backgrounds collection](https://github.com/Uyanide/backgrounds) for personal use.
 
 ## Rofi
 
@@ -79,7 +84,7 @@ Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serve
 
 ## Grub theme
 
-Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453).
+Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with an [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453).
 
 ## MPV
 
