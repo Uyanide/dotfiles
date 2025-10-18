@@ -41,9 +41,9 @@ done
 
 mkdir -p "$(xdg-user-dir VIDEOS)"
 cd "$(xdg-user-dir VIDEOS)" || exit
-if pgrep wf-recorder > /dev/null; then
+if pgrep -x wf-recorder -u "$USER" > /dev/null; then
     notify-send "Recording Stopped" "Stopped" -a 'record-script' &
-    pkill wf-recorder &
+    pkill -x wf-recorder -u "$USER"
 else
     notify-send "Starting recording" 'recording_'"$(getdate)"'.mkv' -a 'record-script'
     if [[ "$1" == "--sound" ]]; then

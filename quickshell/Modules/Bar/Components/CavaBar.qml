@@ -55,8 +55,12 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            MusicManager.playPause();
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: (mouse) => {
+            if (mouse.button === Qt.LeftButton)
+                MusicManager.playPause();
+            else if (mouse.button === Qt.RightButton)
+                SettingsService.showLyricsBar = !SettingsService.showLyricsBar;
         }
         onWheel: function(wheel) {
             if (wheel.angleDelta.y > 0)

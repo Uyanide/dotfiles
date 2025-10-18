@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 '''
+refer to `find $dotfiles_path -type f -iname "apply-color"` for implementations.
+
 - kvantum:      kvantummanager --set catppuccin-mocha-"$flavor"
                 (a kvantum window will pop out if such theme is not installed)
 
 - nwg-look:     edit $HOME/.local/share/nwg-look/gsettings
                 nwg-look -a
-                nwg-look & manually confirm
+                nwg-look -> confirm (not implemented yet)
 
 - eww:          edit $HOME/.config/eww/eww.scss
                 eww reload
@@ -46,8 +48,7 @@ import argparse
 from typing import Callable
 
 
-FLAVOR_NAME_PLACEHOLDER = "<FLAVOR_NAME>"
-FLAVOR_HEX_PLACEHOLDER = "<FLAVOR_HEX>"
+SCRIPT_NAME = "apply-color"
 
 
 PALETTES = {
@@ -69,176 +70,21 @@ PALETTES = {
     },
 }
 
-CURRENT_DIR = Path(__file__).resolve().parent.resolve()
+CONFIG_DIR = Path(__file__).resolve().parent.resolve().parent.resolve()
 
 
-def replace_placeholders(file_path: Path, palette: dict[str, str], flavor: str):
-    print(f"Applying flavor {flavor} to {file_path}")
-
-    if not file_path.exists():
-        print(f"File {file_path} does not exist.")
-        raise FileNotFoundError(f"File {file_path} does not exist.")
-
-    with file_path.open('r') as file:
-        content = file.read()
-
-    content = content.replace(FLAVOR_NAME_PLACEHOLDER, flavor)
-    content = content.replace(FLAVOR_HEX_PLACEHOLDER, palette[flavor])
-
-    with file_path.open('w') as file:
-        file.write(content)
-
-
-def copy_template(src: Path, dist_dir: Path | None) -> Path:
-    if dist_dir is None:
-        dist_dir = src.parent
-
-    dist = dist_dir / src.name.removesuffix('.template')
-
-    print(f"Copying {src} to {dist}")
-
-    if not dist_dir.exists():
-        print(f"Destination directory {dist_dir} does not exist.")
-        raise FileNotFoundError(f"Destination directory {dist_dir} does not exist.")
-    if not dist_dir.is_dir():
-        print(f"Destination {dist_dir} is not a directory.")
-        raise NotADirectoryError(f"Destination {dist_dir} is not a directory.")
-    if not src.exists():
-        print(f"Source file {src} does not exist.")
-        raise FileNotFoundError(f"Source file {src} does not exist.")
-
-    shutil.copyfile(src, dist, follow_symlinks=True)
-    return dist
+def get_script_list() -> list[Path]:
+    scripts = []
+    # find -type f -iname "apply-color" $configDir
+    for item in CONFIG_DIR.rglob(SCRIPT_NAME):
+        if item.is_file() and os.access(item, os.X_OK):
+            scripts.append(item.resolve())
+    print(f"Found {len(scripts)} scripts to apply themes")
+    return scripts
 
 
 def hex2rgb(hex_color: str) -> tuple[int, int, int]:
     return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))  # type: ignore
-
-
-def _change_kvantum(_, flavor):
-    os.system(f'kvantummanager --set catppuccin-mocha-{flavor}')
-    # execute twice to ensure the theme is installed AND applied
-    os.system(f'kvantummanager --set catppuccin-mocha-{flavor}')
-
-
-def _change_nwglook(_, flavor):
-    lines: list[str] = []
-    with Path.home().joinpath('.local', 'share', 'nwg-look', 'gsettings').open('r') as file:
-        content = file.read()
-        lines = content.splitlines()
-        for i, line in enumerate(lines):
-            if line.startswith('gtk-theme'):
-                lines[i] = f'gtk-theme=catppuccin-mocha-{flavor}-standard+default'
-                break
-        else:
-            lines.append(f'gtk-theme=catppuccin-mocha-{flavor}-standard+default')
-
-    with Path.home().joinpath('.local', 'share', 'nwg-look', 'gsettings').open('w') as file:
-        file.write('\n'.join(lines))
-
-    os.system('nwg-look -a')
-    os.system('nwg-look')
-
-
-def _change_eww(palette: dict[str, str], flavor: str):
-    eww_template = Path.home().joinpath('.config', 'eww', 'eww.scss.template')
-    eww_dist = copy_template(eww_template, Path.home().joinpath('.config', 'eww'))
-    replace_placeholders(eww_dist, palette, flavor)
-
-    os.system('eww reload')
-
-
-def _change_hypr(palette: dict[str, str], flavor: str):
-    hypr_template = Path.home().joinpath('.config', 'hypr', 'hyprland', 'colors.conf.template')
-    hypr_dist = copy_template(hypr_template, Path.home().joinpath('.config', 'hypr', 'hyprland'))
-    replace_placeholders(hypr_dist, palette, flavor)
-
-    os.system('hyprctl reload')
-
-
-def _change_rofi(palette: dict[str, str], flavor: str):
-    rofi_template = Path.home().joinpath('.config', 'rofi', 'config.rasi.template')
-    rofi_dist = copy_template(rofi_template, Path.home().joinpath('.config', 'rofi'))
-    replace_placeholders(rofi_dist, palette, flavor)
-
-
-def _change_waybar(palette: dict[str, str], flavor: str):
-    waybar_template = Path.home().joinpath('.config', 'waybar', 'style.css.template')
-    waybar_dist = copy_template(waybar_template, Path.home().joinpath('.config', 'waybar'))
-    replace_placeholders(waybar_dist, palette, flavor)
-    os.system('waybar-toggle restart')
-
-
-def _change_ohmyposh(palette: dict[str, str], flavor: str):
-    posh_template = Path.home().joinpath('.config', 'posh_theme.omp.json.template')
-    posh_dist = copy_template(posh_template, Path.home().joinpath('.config'))
-    replace_placeholders(posh_dist, palette, flavor)
-
-
-def _change_fastfetch(palette: dict[str, str], flavor: str):
-    fetch_template = Path.home().joinpath('.config', 'fish', 'post.d', 'fetch.fish.template')
-    fetch_dist = copy_template(fetch_template, Path.home().joinpath('.config', 'fish', 'post.d'))
-    replace_placeholders(fetch_dist, palette, flavor)
-
-
-def _change_mako(palette: dict[str, str], flavor: str):
-    mako_template = Path.home().joinpath('.config', 'mako', 'config.template')
-    mako_dist = copy_template(mako_template, Path.home().joinpath('.config', 'mako'))
-    replace_placeholders(mako_dist, palette, flavor)
-
-    os.system('makoctl reload')
-
-
-def _change_yazi(_, flavor):
-    yazi_template = CURRENT_DIR / '..' / '.yazi-themes' / f'catppuccin-mocha-{flavor}.toml'
-    yazi_dist = Path.home().joinpath('.config', 'yazi', 'theme.toml')
-    shutil.copyfile(yazi_template, yazi_dist, follow_symlinks=True)
-    print(f"Copied {yazi_template} to {yazi_dist}")
-
-
-def _change_wlogout(palette: dict[str, str], flavor: str):
-    wlogout_template = Path.home().joinpath('.config', 'wlogout', 'style.css.template')
-    wlogout_dist = copy_template(wlogout_template, Path.home().joinpath('.config', 'wlogout'))
-    replace_placeholders(wlogout_dist, palette, flavor)
-
-    for icon_template in Path.home().joinpath('.config', 'wlogout', 'icons').glob('*.svg.template'):
-        icon_dist = copy_template(icon_template, Path.home().joinpath('.config', 'wlogout', 'icons'))
-        replace_placeholders(icon_dist, palette, flavor)
-
-
-def _change_fuzzel(palette: dict[str, str], flavor: str):
-    fuzzel_template = Path.home().joinpath('.config', 'fuzzel', 'fuzzel.ini.template')
-    fuzzel_dist = copy_template(fuzzel_template, Path.home().joinpath('.config', 'fuzzel'))
-    replace_placeholders(fuzzel_dist, palette, flavor)
-
-
-def _change_niri(palette: dict[str, str], flavor: str):
-    niri_template = Path.home().joinpath('.config', 'niri', 'config.kdl.template')
-    niri_dist = copy_template(niri_template, Path.home().joinpath('.config', 'niri'))
-    replace_placeholders(niri_dist, palette, flavor)
-
-
-def _change_quickshell(palette: dict[str, str], flavor: str):
-    hex_color = palette[flavor]
-    os.system(f'qs ipc call colors setPrimary {hex_color}')
-
-
-apply_theme_funcs: dict[str, Callable[[dict[str, str], str], None]] = {
-    'kvantum': _change_kvantum,
-    'nwg-look': _change_nwglook,
-    'eww': _change_eww,
-    'hypr': _change_hypr,
-    'rofi': _change_rofi,
-    'waybar': _change_waybar,
-    'oh-my-posh': _change_ohmyposh,
-    'fastfetch': _change_fastfetch,
-    'mako': _change_mako,
-    'yazi': _change_yazi,
-    'wlogout': _change_wlogout,
-    'fuzzel': _change_fuzzel,
-    'niri': _change_niri,
-    'quickshell': _change_quickshell,
-}
 
 
 def extract_color(image_path: str) -> str:
@@ -342,7 +188,10 @@ def main():
     parser.add_argument('-f', '--flavor', type=str, help="Flavor to apply")
     parser.add_argument('-c', '--color', type=str, help="Color to match from the palette")
     parser.add_argument('arguments', nargs='*',
-                        help="List of applications to change the color theme of, or !app to exclude an application. Available apps: " + ', '.join(apply_theme_funcs.keys()))
+                        help="Any number of 'pattern' and '!pattern'. "
+                        f"Initially all scripts with name {SCRIPT_NAME} under {CONFIG_DIR} (recursively) will be considered. "
+                        f"If at least one pattern is given, only scripts that has any of the patterns in their path will be executed. "
+                        "If a pattern is prefixed with '!', scripts that have that pattern in their path will be excluded.")
 
     arguments = parser.parse_args()
 
@@ -371,51 +220,54 @@ def main():
             flavor = pick_flavor(palette)
         return flavor
 
-    def parse_apps() -> list[str]:
-        apps = set()
-        if not arguments.arguments:
-            apps = set(apply_theme_funcs.keys())
-        else:
-            allExclude = True
-            for arg in arguments.arguments:
-                if arg[0] == '!':
-                    continue
-                allExclude = False
-                if arg not in apply_theme_funcs:
-                    print(f"Unknown app: {arg}. Available apps: {', '.join(apply_theme_funcs.keys())}")
-                    sys.exit(1)
-                apps.add(arg)
-
-            # If all arguments are exclusions, start with all apps
-            if allExclude:
-                apps = set(apply_theme_funcs.keys())
-
+    def parse_apps() -> tuple[set[str], set[str]]:
+        includes = set()
+        excludes = set()
         for arg in arguments.arguments:
-            if arg[0] == '!':
-                print(f"Excluding app: {arg[1:]}")
-                app = arg[1:]
-                if app not in apply_theme_funcs:
-                    print(f"Unknown app to exclude: {app}. Available apps: {', '.join(apply_theme_funcs.keys())}")
-                    sys.exit(1)
-                apps.discard(app)
-
-        return list(apps)
+            if arg.startswith('!'):
+                excludes.add(arg[1:])
+            else:
+                includes.add(arg)
+        return includes, excludes
 
     palette_name = parse_palette_name()
     palette = PALETTES[palette_name]
     flavor = parse_flavor(palette)
-    apps = parse_apps()
+    includes, excludes = parse_apps()
+    scripts = get_script_list()
 
-    for app in apps:
-        func = apply_theme_funcs[app]
-        try:
-            print(f"Changing color theme of {app} to flavor {flavor}...")
-            func(palette, flavor)
-            print("Success!\n")
-        except Exception as e:
-            print(f"Error while tweaking {app}: {e}")
+    filteredScripts = []
+    if includes:
+        print(f"Including only: {', '.join(includes)}")
 
-    os.system(f'notify-send -a "change-colortheme" "Color theme changed" "Palette: {palette_name}\nFlavor: {flavor}"')
+        # for script in scripts:
+        #     for include in includes:
+        #         if include in str(script):
+        #             filteredScripts.append(script)
+        #             break
+        filteredScripts = [
+            script for script in scripts
+            if any(include in str(script) for include in includes)
+        ]
+    else:
+        filteredScripts = scripts
+
+    if excludes:
+        print(f"Excluding: {', '.join(excludes)}")
+        filteredScripts = [
+            script for script in filteredScripts
+            if not any(exclude in str(script) for exclude in excludes)
+        ]
+
+    print(f"Applying flavor '{flavor}' using {len(filteredScripts)} scripts")
+
+    for script in filteredScripts:
+        print(f"Running script: {script}")
+        os.system(f'"{script}" {palette_name} {flavor} {palette[flavor]}')
+        print("")
+
+    os.system(
+        f'notify-send -a "change-colortheme" "Colortheme Changed" "Palette: {palette_name};\nFlavor: {flavor};\nApplied to {len(filteredScripts)} applications."')
 
 
 if __name__ == "__main__":

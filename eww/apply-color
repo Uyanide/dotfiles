@@ -1,0 +1,18 @@
+#!/bin/sh
+
+path=$(dirname "$(readlink -f "$0")")
+. "$path"/../.utils/apply-color-parse-arg
+
+file="$path"/eww.scss
+
+sed -i "s|^\$border: #[0-9a-fA-F]\{6\};\$|\$border: #${colorHex};|" "$file" || {
+    log_error "Failed to edit ${file}"
+    exit 1
+}
+
+pgrep -x eww >/dev/null -u "$USER" && eww reload || {
+    log_error "Failed to reload eww, is it running?"
+    exit 1
+}
+
+log_success "eww"

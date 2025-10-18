@@ -11,7 +11,7 @@ if [ -z "$LYRICS" ] && [ -z "$LYRICS_SINGLE" ]; then
 elif [ -n "$LYRICS" ] && [ -z "$LYRICS_SINGLE" ]; then
     eww close lyrics
     # if waybar is running, open lyrics-single
-    if pgrep -x "waybar" > /dev/null; then
+    if pgrep -x "waybar" -u "$USER" > /dev/null; then
         sleep 0.5
         eww open lyrics-single
     fi

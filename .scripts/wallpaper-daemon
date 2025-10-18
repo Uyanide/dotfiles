@@ -6,7 +6,7 @@ import subprocess
 import threading
 from sys import exit
 from time import sleep
-from os import environ
+from os import environ, getuid
 from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -66,7 +66,7 @@ def swwwLoadImg(namespace: str, wallpaper: Path):
 
 def swwwStartDaemon(namespace: str):
     # Check if daemon is already running
-    cmd = ["pgrep", "-f", f"swww daemon -n {namespace}"]
+    cmd = ["pgrep", "-f", f"swww daemon -n {namespace}"], "-u", str(getuid())
     try:
         output = subprocess.check_output(cmd, text=True)
         pids = output.strip().splitlines()

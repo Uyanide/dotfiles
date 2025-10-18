@@ -1,4 +1,4 @@
 #!/bin/sh
 
-pgrep -f spotify-lyrics && (killall spotify-lyrics || exit 1)
+pgrep -f spotify-lyrics -u "$USER" && (killall spotify-lyrics -u "$USER" || exit 1)
 spotify-lyrics "$@"

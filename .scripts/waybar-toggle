@@ -15,7 +15,7 @@ function close() {
 function open() {
     # the system tray will not work with kded6 started
     if killall -q -9 "kded6"; then
-        while pgrep -x "kded6" >/dev/null; do
+        while pgrep -u "$USER" -x "kded6" >/dev/null; do
             sleep 0.2
         done
     fi
@@ -29,13 +29,13 @@ function open() {
 
 if [ "$1" = "restart" ]; then
     close
-    while pgrep -x "waybar" >/dev/null; do
+    while pgrep -u "$USER" -x "waybar" >/dev/null; do
         sleep 0.2
     done
     open
-elif pgrep -x "waybar" >/dev/null; then
+elif pgrep -u "$USER" -x "waybar" >/dev/null; then
     close
-elif ! pgrep -x "waybar" >/dev/null; then
+elif ! pgrep -u "$USER" -x "waybar" >/dev/null; then
     open
 else
     echo "Usage: $0 [restart]"

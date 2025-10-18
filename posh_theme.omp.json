@@ -5,7 +5,7 @@
             "alignment": "left",
             "segments": [
                 {
-                    "foreground": "#74c7ec",
+                    "foreground": "#89b4fa",
                     "properties": {
                         "windows": "\ue62a"
                     },
@@ -14,19 +14,19 @@
                     "type": "os"
                 },
                 {
-                    "foreground": "#74c7ec",
+                    "foreground": "#89b4fa",
                     "style": "plain",
                     "template": " {{.UserName}}",
                     "type": "session"
                 },
                 {
-                    "foreground": "#74c7ec",
+                    "foreground": "#89b4fa",
                     "style": "plain",
                     "template": "@{{.HostName}}",
                     "type": "session"
                 },
                 {
-                    "foreground": "#94e2d5",
+                    "foreground": "#89b4fa",
                     "properties": {
                         "folder_separator_icon": "/",
                         "style": "letter"
@@ -36,7 +36,7 @@
                     "type": "path"
                 },
                 {
-                    "foreground": "#a6e3a1",
+                    "foreground": "#89b4fa",
                     "powerline_symbol": "\ue0b1",
                     "properties": {
                         "branch_icon": " ",
@@ -50,7 +50,7 @@
                     "type": "git"
                 },
                 {
-                    "foreground": "#f9e2af",
+                    "foreground": "#89b4fa",
                     "powerline_symbol": "\ue0b1",
                     "template": " \ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} ",
                     "style": "powerline",
@@ -64,13 +64,13 @@
             "newline": true,
             "segments": [
                 {
-                    "foreground": "#fab387",
+                    "foreground": "#89b4fa",
                     "style": "plain",
                     "template": "\ue3bf ",
                     "type": "root"
                 },
                 {
-                    "foreground": "#74c7ec",
+                    "foreground": "#89b4fa",
                     "foreground_templates": [
                         "{{ if gt .Code 0 }}#f38ba8{{ end }}"
                     ],
@@ -90,7 +90,7 @@
         "foreground_templates": [
             "{{ if gt .Code 0 }}#f38ba8{{ end }}"
         ],
-        "foreground": "#74c7ec",
+        "foreground": "#89b4fa",
         "template": "# "
     },
     "version": 3

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+path=$(dirname "$(readlink -f "$0")")
+. "$path"/../.utils/apply-color-parse-arg
+
+cp -f "$path"/../.yazi-themes/catppuccin-mocha-"$colorName".toml "$path"/../yazi/theme.toml || {
+    log_error "Failed to copy theme file"
+    exit 1
+}
+
+log_success "yazi"
