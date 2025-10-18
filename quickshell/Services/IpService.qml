@@ -25,21 +25,16 @@ Singleton {
                         Logger.log("IpService", "Fetched IP: " + newIP);
                         if (newIP !== ip) {
                             ip = newIP;
+                            countryCode = "N/A";
                             fetchGeoInfo(true); // Fetch geo info only if IP has changed
                         }
                     } else {
-                        ip = "N/A";
-                        countryCode = "N/A";
                         Logger.error("IpService", "IP response does not contain 'ip' field");
                     }
                 } catch (e) {
-                    ip = "N/A";
-                    countryCode = "N/A";
                     Logger.error("IpService", "Failed to parse IP response: " + e);
                 }
             } else {
-                ip = "N/A";
-                countryCode = "N/A";
                 Logger.error("IpService", "Failed to fetch IP");
             }
         });
@@ -53,7 +48,8 @@ Singleton {
         let url = geoURL + ip;
         if (geoURLToken)
             url += "?token=" + geoURLToken;
-
+        
+        cacheFileAdapter.geoInfo = null
         curl.fetch(url, function(success, data) {
             if (success) {
                 try {
@@ -63,17 +59,13 @@ Singleton {
                         Logger.log("IpService", "Fetched country code: " + newCountryCode);
                         countryCode = newCountryCode;
                     } else {
-                        countryCode = "N/A";
                         Logger.error("IpService", "Geo response does not contain 'country_code' field");
                     }
-                    cacheFileAdapter.ip = ip;
                     cacheFileAdapter.geoInfo = response;
                 } catch (e) {
-                    countryCode = "N/A";
                     Logger.error("IpService", "Failed to parse geo response: " + e);
                 }
             } else {
-                countryCode = "N/A";
                 Logger.error("IpService", "Failed to fetch geo info");
             }
             SendNotification.show("New IP", `IP: ${ip}\nCountry: ${countryCode}`);

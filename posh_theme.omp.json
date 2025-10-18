@@ -26,7 +26,7 @@
                     "type": "session"
                 },
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#94e2d5",
                     "properties": {
                         "folder_separator_icon": "/",
                         "style": "letter"
@@ -36,7 +36,7 @@
                     "type": "path"
                 },
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#a6e3a1",
                     "powerline_symbol": "\ue0b1",
                     "properties": {
                         "branch_icon": " ",
@@ -50,7 +50,7 @@
                     "type": "git"
                 },
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#f9e2af",
                     "powerline_symbol": "\ue0b1",
                     "template": " \ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} ",
                     "style": "powerline",
@@ -64,7 +64,7 @@
             "newline": true,
             "segments": [
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#fab387",
                     "style": "plain",
                     "template": "\ue3bf ",
                     "type": "root"

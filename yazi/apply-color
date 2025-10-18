@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 path=$(dirname "$(readlink -f "$0")")
 . "$path"/../.utils/apply-color-parse-arg

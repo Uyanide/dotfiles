@@ -15,6 +15,16 @@ function log_info {
     printf "\033[0;32mInfo:\033[0m $1\n" >&2
 }
 
+function color_ansi {
+    colorHex="$1"
+
+    local r=$((16#${colorHex:0:2}))
+    local g=$((16#${colorHex:2:2}))
+    local b=$((16#${colorHex:4:2}))
+
+    echo "\033[38;2;${r};${g};${b}m"
+}
+
 
 # remove leading '#' if present
 if [[ $colorHex == \#* ]]; then
@@ -28,5 +38,5 @@ if ! [[ $colorHex =~ ^[0-9A-Fa-f]{6}$ ]]; then
 fi
 
 function log_success {
-    log_info "Applied primary color ${colorName} (${colorHex}) to \033[1;34m$1\033[0m"
+    log_info "Applied palette \033[1;34m${palette}\033[0m with primary color $(color_ansi $colorHex)${colorName} (#${colorHex})\033[0m to \033[1;34m$1\033[0m"
 }

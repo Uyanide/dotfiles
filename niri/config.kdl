@@ -123,7 +123,6 @@ spawn-sh-at-startup "config-switch niri"
 // Idle
 spawn-sh-at-startup "hypridle"
 
-
 // Wallpaper
 spawn-at-startup "wallpaper-daemon"
 
@@ -148,6 +147,9 @@ spawn-at-startup "kbuildsycoca6"
 
 // Some other heavy apps
 spawn-at-startup "sunshine"
+// spawn-at-startup "spotify"
+// spawn-at-startup "thunderbird"
+
 
 // Quickshell must start after hypridle,
 // otherwise Firefox cannot block idle when playing media
@@ -245,6 +247,19 @@ window-rule {
     match app-id="thunderbird"
 
     block-out-from "screen-capture"
+}
+
+
+// workspace "first"
+// workspace "second"
+
+// Startup in "second" workspace
+window-rule {
+    // match at-startup=true app-id="Spotify"
+    // match at-startup=true app-id="thunderbird"
+
+
+    open-on-workspace "second"
 }
 
 // I love round corners

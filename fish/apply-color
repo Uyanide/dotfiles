@@ -1,24 +1,56 @@
-#!/bin/sh
+#!/bin/bash
 
 path=$(dirname "$(readlink -f "$0")")
 . "$path"/../.utils/apply-color-parse-arg
-
-file="$path"/post.d/fetch.fish
-
-sed -i 's/^\(    set -g fetch_color "\)#\([0-9a-fA-F]\{6\}\)"/\1#'"${colorHex}"'"/' "$file" || {
-    log_error "Failed to edit ${file}"
-    exit 1
-}
-
-log_success "fastfetch"
 
 # Also apply to omp here
 
 file="$path"/../posh_theme.omp.json
 
-sed -i 's/\("foreground":[[:space:]]*"\)#\([0-9a-fA-F]\{6\}\)"/\1#'"${colorHex}"'"/g' "$file" || {
+targetTypes='["os", "session", "status"]'
+
+python3 <<EOF
+import json
+import sys
+
+data = None
+
+with open("$file", "r") as f:
+    data = json.load(f)
+
+    def processSegments(segments):
+        for segment in segments:
+            if "type" in segment and segment["type"] in $targetTypes:
+                if "foreground" in segment:
+                    segment["foreground"] = "#$colorHex"
+
+    def processTransientPrompt(transientPrompt):
+        if "foreground" in transientPrompt:
+            transientPrompt["foreground"] = "#$colorHex"
+
+    def process(obj):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == "segments" and isinstance(v, list):
+                    processSegments(v)
+                elif k == "transient_prompt" and isinstance(v, dict):
+                    processTransientPrompt(v)
+                else:
+                    process(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                process(item)
+
+    process(data)
+
+if data is not None:
+    with open("$file", "w") as f:
+        json.dump(data, f, indent=4)
+EOF
+
+if [ $? -ne 0 ]; then
     log_error "Failed to edit ${file}"
     exit 1
-}
+fi
 
 log_success "oh-my-posh"
