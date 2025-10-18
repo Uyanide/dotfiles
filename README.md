@@ -1,14 +1,17 @@
 ## How it looks like...
 
 <details>
-    
-- Hyprland & Waybar & Eww:
+<summary>Hyprland & Waybar & Eww</summary>
 
 <figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>
 </figure>
 
-- Niri & Quickshell
+</details>
+
+<details>
+
+<summary>Niri & Quickshell</summary>
 
 https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
 
@@ -74,7 +77,7 @@ This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprla
 ## Wallpaper & Colortheme
 
 The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. And also:
-    
+
 - [wallpaper-chooser](https://github.com/Uyanide/Wallpaper_Chooser) to select wallpaper, which implements an Image Carousel with Qt Widgets.
 - [backgrounds collection](https://github.com/Uyanide/backgrounds) for personal use.
 
