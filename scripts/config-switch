@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+path="$(dirname "$(readlink -f "$0")")"
+
+if [ -z "$1" ]; then
+    desktop="$XDG_CURRENT_DESKTOP"
+else
+    desktop="$1"
+fi
+
+for item in "kitty" "ghostty" "wlogout"; do
+    [ -L "$HOME/.config/$item" ] || exit 1
+
+    rm "$HOME/.config/$item"
+
+    if [ "$desktop" = "niri" ]; then
+        ln -s "$path/../config/$item-niri" "$HOME/.config/$item"
+    else
+        ln -s "$path/../config/$item" "$HOME/.config/$item"
+    fi
+done

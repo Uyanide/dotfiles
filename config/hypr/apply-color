@@ -1,0 +1,25 @@
+#!/bin/bash
+
+path=$(dirname "$(readlink -f "$0")")
+. "$path"/../../utils/apply-color-helper
+
+file="$path"/hyprland/colors.conf
+
+sed -i -E "s/^(\s*col\.active_border\s*=\s*rgba\()([0-9A-Fa-f]{6})([0-9A-Fa-f]{2}\))$/\1${colorHex}\3/" "$file" || {
+    log_error "Failed to edit ${file} for entry col.active_border"
+    exit 1
+}
+
+sed -i -E "s/^(\s*col\.inactive_border\s*=\s*rgba\()([0-9A-Fa-f]{6})([0-9A-Fa-f]{2}\))$/\1${colorHex}\3/" "$file" || {
+    log_error "Failed to edit ${file} for entry col.active_border"
+    exit 1
+}
+
+if pgrep -x "hyprland" -u "$USER" > /dev/null; then
+    hyprctl reload || {
+        log_error "Failed to reload Hyprland"
+        exit 1
+    }
+fi
+
+log_success "hyprland"

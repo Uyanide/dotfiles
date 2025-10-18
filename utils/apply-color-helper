@@ -1,0 +1,41 @@
+[ -z "$1" ] && exit 1
+palette="$1"
+[ -z "$2" ] && exit 1
+colorName="$2"
+[ -z "$3" ] && exit 1
+colorHex="$3"
+
+function log_error {
+    printf "\033[0;31mError:\033[0m $1\n" >&2
+}
+
+function log_info {
+    printf "\033[0;32mInfo:\033[0m $1\n" >&2
+}
+
+function color_ansi {
+    colorHex="$1"
+
+    local r=$((16#${colorHex:0:2}))
+    local g=$((16#${colorHex:2:2}))
+    local b=$((16#${colorHex:4:2}))
+
+    # 24-bit true color ANSI escape code
+    printf "\033[38;2;%d;%d;%dm" $r $g $b
+}
+
+
+# remove leading '#' if present
+if [[ $colorHex == \#* ]]; then
+    colorHex="${colorHex#\#}"
+fi
+
+# check if hex
+if ! [[ $colorHex =~ ^[0-9A-Fa-f]{6}$ ]]; then
+    log_error "Invalid color hex: $colorHex"
+    exit 1
+fi
+
+function log_success {
+    log_info "Applied palette \033[1;34m${palette}\033[0m with primary color $(color_ansi $colorHex)${colorName} (#${colorHex})\033[0m to \033[1;34m$1\033[0m"
+}

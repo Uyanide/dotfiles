@@ -1,0 +1,229 @@
+/*****----- ALL -----*****/
+* {
+    font: "Maple Mono NF CN Semibold 10";
+    base: #1e1e2e;
+    mantle: #181825;
+    text: #cdd6f4;
+    subtext0: #a6adc8;
+    surface2: #585b70;
+    surface: #292a3c;
+    red: #f38ba8;
+    green: #a6e3a1;
+    yellow: #f9e2af;
+    orange: #fab387;
+    blue: #89b4fa;
+    purple: #cba6f7;
+    cyan: #89dceb;
+    lavender: #b4befe;
+    sapphire: #74c7ec;
+    teal: #94e2d5;
+    peach: #fab387;
+    search: rgba(49, 50, 68, 0.5); // alpha(@surface, 0.5)
+
+    primary: #89b4fa;
+}
+
+
+/*****----- Configuration -----*****/
+configuration {
+    terminal:                   "/usr/bin/kitty";
+	modi:                       "drun,run,ssh";
+    show-icons:                 true;
+    display-drun:               "";
+    display-run:                "";
+    display-ssh:                "";
+	drun-display-format:        "{name}";
+
+}
+
+/*****----- Main Window -----*****/
+window {
+    /* properties for window widget */
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       600px;
+    x-offset:                    0px;
+    y-offset:                    0px;
+
+    /* properties for all widgets */
+    enabled:                     true;
+    margin:                      0px;
+    padding:                     0px;
+    border:                      2px solid;
+    border-radius:               24px;
+    border-color:                @primary;
+    cursor:                      "default";
+    background-color:            @base;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    enabled:                     true;
+    spacing:                     0px;
+    margin:                      0px;
+    padding:                     30px;
+    background-color:            transparent;
+    children:                    [ "inputbar", "message", "listview", "mode-switcher" ];
+}
+
+/*****----- Inputbar -----*****/
+inputbar {
+    enabled:                     true;
+    spacing:                     0px;
+    padding:                     75px 30px;
+    border-radius:               14px 14px 0 0;
+    background-color:            transparent;
+    background-image:            url("~/Pictures/backgrounds/nao-stars-crop-adjust-flop.jpg", width);
+    text-color:                  @text;
+    children:                    [ "textbox-prompt-colon", "entry" ];
+}
+
+prompt {
+    enabled:                     true;
+    background-color:            inherit;
+    text-color:                  inherit;
+}
+textbox-prompt-colon {
+    enabled:                     true;
+    padding:                     12px 15px;
+    expand:                      false;
+    str:                         " ";
+    background-color:            @search;
+    border-radius:               14px;
+    text-color:                  inherit;
+}
+entry {
+    enabled:                     true;
+    padding:                     12px 16px;
+    text-color:                  inherit;
+    cursor:                      text;
+    background-color:            @search;
+    border-radius:               14px;
+    placeholder:                 "Search...";
+    placeholder-color:           inherit;
+}
+
+/*****----- Listview -----*****/
+listview {
+    enabled:                     true;
+    columns:                     2;
+    lines:                       6;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   true;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+
+    padding:                     14px;
+    spacing:                     5px;
+    background-color:            @surface;
+    text-color:                  @text;
+    cursor:                      "default";
+}
+scrollbar {
+    handle-width:                5px ;
+    handle-color:                @primary;
+    border-radius:               10px;
+    background-color:            @mantle;
+}
+
+/*****----- Elements -----*****/
+element {
+    enabled:                     true;
+    spacing:                     10px;
+    margin:                      0px;
+    padding:                     6px;
+    border-radius:               0px;
+    background-color:            transparent;
+    text-color:                  @text;
+    cursor:                      pointer;
+}
+element normal.normal,
+element alternate.normal {
+    background-color:            transparent;
+    text-color:                  @text;
+}
+element normal.urgent,
+element alternate.urgent,
+element selected.active {
+    background-color:            @primary;
+    text-color:                  @base;
+    border-radius:               10px;
+}
+element normal.active,
+element alternate.active,
+element selected.urgent {
+    background-color:            @red;
+    text-color:                  @base;
+}
+element selected.normal {
+    background-color:            @surface2;
+    text-color:                  @text;
+    border-radius:               10px;
+}
+element-icon {
+    background-color:            transparent;
+    text-color:                  inherit;
+    size:                        24px;
+    cursor:                      inherit;
+}
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    highlight:                   inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+}
+
+/*****----- Mode Switcher -----*****/
+mode-switcher{
+    enabled:                     true;
+    spacing:                     10px;
+    margin:                      0px;
+    padding:                     0px;
+    background-color:            transparent;
+    text-color:                  @text;
+}
+button {
+    padding:                     10px;
+    border-radius:               10px;
+    background-color:            @base;
+    text-color:                  inherit;
+    cursor:                      pointer;
+}
+button selected {
+    background-color:            @surface;
+    text-color:                  @primary;
+    border-radius:               0 0 14px 14px;
+    border-color:		         @primary;
+}
+
+/*****----- Message -----*****/
+message {
+    enabled:                     true;
+    margin:                      0px;
+    padding:                     10px;
+    border-radius:               0px;
+    background-color:            @mantle;
+    text-color:                  @text;
+}
+textbox {
+    background-color:            transparent;
+    text-color:                  @text;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+    highlight:                   none;
+    placeholder-color:           @text;
+    blink:                       true;
+    markup:                      true;
+}
+error-message {
+    padding:                     30px;
+    background-color:            @base;
+    text-color:                  @text;
+}

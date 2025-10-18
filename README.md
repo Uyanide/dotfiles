@@ -70,7 +70,7 @@ This setup is currently only adapted for Niri.
 
 ## Swww
 
-The wallpaper will be automatically blurred when there is a window in focus, which is implemented in the [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/.scripts/wallpaper-daemon) script.
+The wallpaper will be automatically blurred when there is a window in focus, which is implemented in the [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/scripts/wallpaper-daemon) script.
 
 This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprland setup, yet only in the regular way.
 
