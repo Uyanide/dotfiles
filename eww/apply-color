@@ -10,9 +10,11 @@ sed -i "s|^\$border: #[0-9a-fA-F]\{6\};\$|\$border: #${colorHex};|" "$file" || {
     exit 1
 }
 
-pgrep -x eww >/dev/null -u "$USER" && eww reload || {
-    log_error "Failed to reload eww, is it running?"
-    exit 1
-}
+if pgrep -x eww >/dev/null -u "$USER"; then
+    eww reload || {
+        log_error "Failed to reload eww, is it running?"
+        exit 1
+    }
+fi
 
 log_success "eww"

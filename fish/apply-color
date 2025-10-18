@@ -12,7 +12,7 @@ sed -i 's/^\(    set -g fetch_color "\)#\([0-9a-fA-F]\{6\}\)"/\1#'"${colorHex}"'
 
 log_success "fastfetch"
 
-# Also apply to omp in here
+# Also apply to omp here
 
 file="$path"/../posh_theme.omp.json
 
