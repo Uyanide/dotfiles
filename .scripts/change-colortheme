@@ -43,9 +43,7 @@ refer to `find $dotfiles_path -type f -iname "apply-color"` for implementations.
 import os
 import sys
 from pathlib import Path
-import shutil
 import argparse
-from typing import Callable
 
 
 SCRIPT_NAME = "apply-color"
@@ -188,10 +186,11 @@ def main():
     parser.add_argument('-f', '--flavor', type=str, help="Flavor to apply")
     parser.add_argument('-c', '--color', type=str, help="Color to match from the palette")
     parser.add_argument('arguments', nargs='*',
-                        help="Any number of 'pattern' and '!pattern'. "
+                        help="Any number of 'pattern's and '!pattern's. "
                         f"Initially all scripts with name {SCRIPT_NAME} under {CONFIG_DIR} (recursively) will be considered. "
                         f"If at least one pattern is given, only scripts that has any of the patterns in their path will be executed. "
-                        "If a pattern is prefixed with '!', scripts that have that pattern in their path will be excluded.")
+                        "If a pattern is prefixed with '!', scripts that have that pattern in their path will be excluded. "
+                        "'!pattern's have higher priority than 'pattern's.")
 
     arguments = parser.parse_args()
 
@@ -215,7 +214,7 @@ def main():
             color = extract_color(arguments.image)
             print(f"Extracted color {color} from image {arguments.image}")
             flavor = match_color(color, palette)
-            print(f"Extracted color: {flavor}")
+            print(f"Matched color: {flavor}")
         else:
             flavor = pick_flavor(palette)
         return flavor
@@ -239,12 +238,6 @@ def main():
     filteredScripts = []
     if includes:
         print(f"Including only: {', '.join(includes)}")
-
-        # for script in scripts:
-        #     for include in includes:
-        #         if include in str(script):
-        #             filteredScripts.append(script)
-        #             break
         filteredScripts = [
             script for script in scripts
             if any(include in str(script) for include in includes)
