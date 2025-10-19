@@ -7,7 +7,9 @@ import qs.Services
 Item {
     id: root
 
-    property bool _showCountryCode: true
+    property int displayIndex: 0
+    readonly property list<string> displayTexts: [IpService.countryCode, IpService.ip, IpService.alias]
+    readonly property string displayText: displayTexts[displayIndex]
 
     implicitHeight: parent.height
     implicitWidth: layout.width + 10
@@ -35,8 +37,8 @@ Item {
             Text {
                 id: ipText
 
-                text: _showCountryCode ? IpService.countryCode : IpService.ip
-                font.pointSize: _showCountryCode ? Fonts.medium : Fonts.small
+                text: displayText
+                font.pointSize: displayIndex === 0 ? Fonts.medium : Fonts.small
                 font.family: Fonts.primary
                 color: Colors.peach
                 anchors.verticalCenter: parent.verticalCenter
@@ -65,11 +67,14 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
-                WriteClipboard.write(_showCountryCode ? IpService.countryCode : IpService.ip);
-                SendNotification.show("Copied to clipboard", _showCountryCode ? IpService.countryCode : IpService.ip);
-            } else if (mouse.button === Qt.RightButton)
-                _showCountryCode = !_showCountryCode;
-            else if (mouse.button === Qt.MiddleButton)
+                WriteClipboard.write(displayText);
+                SendNotification.show("Copied to clipboard", displayText);
+            } else if (mouse.button === Qt.RightButton){
+                let iter = 0;
+                do {
+                    displayIndex = (displayIndex + 1) % displayTexts.length;
+                } while (!displayTexts[displayIndex] && iter++ < displayTexts.length);
+            } else if (mouse.button === Qt.MiddleButton)
                 IpService.refresh();
         }
     }

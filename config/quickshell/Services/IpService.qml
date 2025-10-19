@@ -8,7 +8,9 @@ pragma Singleton
 Singleton {
     property alias ip: cacheFileAdapter.ip
     readonly property string cacheFilePath: CacheService.ipCacheFile
+    readonly property string aliasFilePath: Qt.resolvedUrl("../Assets/Config/IpAliases.json")
     property string countryCode: "N/A"
+    property string alias: ""
     property real fetchInterval: 120 // in s
     property real fetchTimeout: 10 // in s
     readonly property string ipURL: "https://api.uyanide.com/ip"
@@ -68,7 +70,7 @@ Singleton {
             } else {
                 Logger.error("IpService", "Failed to fetch geo info");
             }
-            SendNotification.show("New IP", `IP: ${ip}\nCountry: ${countryCode}`);
+            SendNotification.show("New IP", `IP: ${ip}\nCountry: ${countryCode}${alias ? `\nAlias: ${alias}` : ""}`);
             cacheFile.writeAdapter();
         });
     }
@@ -81,6 +83,17 @@ Singleton {
     }
 
     Component.onCompleted: {
+    }
+    onIpChanged: {
+        alias = "";
+        for (let i = 0; i < aliasFileAdapter.aliases.length; i++) {
+            let entry = aliasFileAdapter.aliases[i];
+            if (entry.ip === ip) {
+                alias = entry.alias;
+                Logger.log("IpService", "Found alias for IP " + ip + ": " + alias);
+                break;
+            }
+        }
     }
 
     NetworkFetch {
@@ -158,6 +171,23 @@ Singleton {
 
             property string ip: "N/A"
             property var geoInfo: null
+        }
+
+    }
+
+    FileView {
+        id: aliasFile
+
+        path: aliasFilePath
+        watchChanges: true
+        onLoaded: {
+            Logger.log("IpService", "Loaded IP aliases from file, total aliases: " + aliasFileAdapter.aliases.length);
+        }
+
+        JsonAdapter {
+            id: aliasFileAdapter
+
+            property var aliases: []
         }
 
     }
