@@ -42,7 +42,9 @@ def take_screenshot(filepath: Path, typeStr: str):
             ScreenshotType.AREA: f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
             ScreenshotType.WINDOW: f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
         }
-        os.system(f"{cmd[type]}{filepath.name}")
+        if os.system(f"{cmd[type]}{filepath.name}"):
+            print("Failed to take screenshot.")
+            exit(1)
         wait_until_file_exists(filepath)
     elif "niri" in currentDesktop:
         cmd = {
@@ -53,10 +55,15 @@ def take_screenshot(filepath: Path, typeStr: str):
         niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
         if niriScreenshotPath.exists():
             niriScreenshotPath.unlink()
-        os.system(cmd[type])
+        if os.system(cmd[type]):
+            print("Failed to take screenshot.")
+            exit(1)
         wait_until_file_exists(niriScreenshotPath)
         if niriScreenshotPath.exists():
             niriScreenshotPath.rename(filepath)
+        else:
+            print("Failed to take screenshot.")
+            exit(1)
         wait_until_file_exists(filepath)
     else:
         print("Unsupported desktop environment.")
@@ -120,7 +127,7 @@ if __name__ == "__main__":
     )
     n.add_action(
         "default",
-        "Default",
+        "Open in Editor",
         edit_callback,
         None
     )

@@ -26,7 +26,7 @@ Singleton {
             Logger.log("LyricsService", "Starting lyrics syncing");
             // fill lyrics with empty lines
             lyrics = Array(linesCount).fill(" ");
-            listenProcess.exec(["sh", "-c", `sl-wrap listen -l ${linesCount} -a ${linesAhead} -f ${offsetFile}`]);
+            listenProcess.exec(["sh", "-c", `pkill -x spotify-lyrics -u $USER; spotify-lyrics listen -l ${linesCount} -a ${linesAhead} -f ${offsetFile}`]);
         }
     }
 
@@ -35,14 +35,13 @@ Singleton {
         Logger.log("LyricsService", "Reference count:", referenceCount);
         if (referenceCount <= 0) {
             Logger.log("LyricsService", "Stopping lyrics syncing");
-            // Execute again to stop
-            // kinda ugly but works, but meanwhile:
+            // kinda ugly but works, meanwhile:
             //   listenProcess.signal(9)
             //   listenProcess.signal(15)
             //   listenProcess.running = false
-            //   counts on exec() to terminate previous exec()
+            //   counting on exec() to terminate previous exec()
             // all don't work
-            listenProcess.exec(["sh", "-c", `sl-wrap trackid`]);
+            listenProcess.exec(["sh", "-c", `pkill -x spotify-lyrics -u $USER`]);
         }
     }
 

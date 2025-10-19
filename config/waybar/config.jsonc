@@ -136,8 +136,8 @@
     "format-alt-click": "click-right",
     //"format-icons": ["", ""],
     "format-icons": [""],
-    "on-scroll-down": "brightnessctl --class=backlight set -5%",
-    "on-scroll-up": "brightnessctl --class=backlight set +5%",
+    "on-scroll-down": "brightnessctl -d $BRIGHTNESSCTL_DEVICE set -5%",
+    "on-scroll-up": "brightnessctl -d $BRIGHTNESSCTL_DEVICE set +5%",
     "max-length": 6,
     "min-length": 6
   },

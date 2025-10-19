@@ -9,13 +9,18 @@ else
 fi
 
 for item in "kitty" "ghostty" "wlogout"; do
-    [ -L "$HOME/.config/$item" ] || exit 1
-
-    rm "$HOME/.config/$item"
+    for target in "$item" "$item-niri"; do
+        if [ -L "$HOME/.config/$target" ]; then
+            rm -v "$HOME/.config/$target"
+        elif [ -e "$HOME/.config/$target" ]; then
+            echo "Error: $HOME/.config/$target is not a symlink." >&2
+            exit 1
+        fi
+    done
 
     if [ "$desktop" = "niri" ]; then
-        ln -s "$path/../config/$item-niri" "$HOME/.config/$item"
+        ln -sv "$path/../config/$item-niri" "$HOME/.config/$item"
     else
-        ln -s "$path/../config/$item" "$HOME/.config/$item"
+        ln -sv "$path/../config/$item" "$HOME/.config/$item"
     fi
 done

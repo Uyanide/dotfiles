@@ -9,8 +9,8 @@ Singleton {
     // Nerd fonts icons
     readonly property string distro: "󰣇"
     readonly property string tray: ""
-    readonly property string idleInhibitorActivated: ""
-    readonly property string idleInhibitorDeactivated: ""
+    readonly property string idleInhibitorActivated: "󰅶"
+    readonly property string idleInhibitorDeactivated: "󰾪"
     readonly property string powerMenu: "󰐥"
     readonly property string volumeHigh: ""
     readonly property string volumeMedium: ""

@@ -281,7 +281,7 @@ Singleton {
         Quickshell.execDetached(["ddcutil", "-b", busNum, "setvcp", "10", rounded])
       } else {
         monitor.ignoreNextChange = true
-        Quickshell.execDetached(["set-brightness", rounded + "%"])
+        Quickshell.execDetached(["sh", "-c", "brightnessctl -d $BRIGHTNESSCTL_DEVICE set "+ rounded + "%"])
       }
 
       if (isDdc) {

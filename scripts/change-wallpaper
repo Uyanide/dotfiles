@@ -1,6 +1,28 @@
 #!/usr/bin/env bash
 
-# Select image file if none is provided
+# Required tools:
+# - zenity (for file selection dialog)
+# - imagemagick (for image processing)
+# - swww (wallpaper daemon)
+# - notify-send (for notifications)
+# - change-colortheme (from scripts/change-colortheme)
+# - flock (usually part of util-linux)
+
+# Lock
+
+exec {LOCK_FD}>/tmp/"$(basename "$0")".lock || {
+    echo "Failed to open lock file"
+    exit 1
+}
+
+flock -n "$LOCK_FD" || {
+    echo "Another instance is running. Exiting."
+    notify-send -a "change-wallpaper" "Error" "Another instance is running. Exiting."
+    exit 1
+}
+
+# Open a file selection dialog if no argument is provided
+
 if [ -z "$1" ]; then
     image=$(zenity --file-selection --title="Open File" --file-filter="*.jpg *.jpeg *.png *.webp *.bmp *.jfif *.tiff *.avif *.heic *.heif")
 else

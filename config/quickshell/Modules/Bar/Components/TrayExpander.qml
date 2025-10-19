@@ -18,6 +18,7 @@ Item {
 
         anchors.top: parent.top
         anchors.bottom: parent.bottom
+        spacing: 0
 
         SymbolButton {
             symbol: Icons.tray

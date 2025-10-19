@@ -120,9 +120,6 @@ layer-rule {
 // Switch configs
 spawn-sh-at-startup "config-switch niri"
 
-// Idle
-spawn-sh-at-startup "hypridle"
-
 // Wallpaper
 spawn-at-startup "wallpaper-daemon"
 
@@ -149,9 +146,10 @@ spawn-at-startup "sunshine"
 // spawn-at-startup "spotify"
 // spawn-at-startup "thunderbird"
 
+// Idle
+spawn-at-startup "hypridle"
 
-// Quickshell must start after hypridle,
-// otherwise Firefox cannot block idle when playing media
+// QuickShell
 spawn-at-startup "quickshell"
 
 /************************Envs************************/
@@ -439,5 +437,5 @@ binds {
 
     Mod+M allow-inhibiting=false { quit; }
 
-    Mod+Shift+P { power-off-monitors; }
+    Mod+Shift+P { spawn-sh "(hyprlock &) && niri msg action power-off-monitors"; }
 }
