@@ -82,9 +82,11 @@ Singleton {
         fetchTimer.start();
     }
 
-    Component.onCompleted: {
-    }
-    onIpChanged: {
+    function updateAlias() {
+        if (!ip || ip === "N/A") {
+            alias = "";
+            return ;
+        }
         alias = "";
         for (let i = 0; i < aliasFileAdapter.aliases.length; i++) {
             let entry = aliasFileAdapter.aliases[i];
@@ -94,6 +96,13 @@ Singleton {
                 break;
             }
         }
+    }
+
+    Component.onCompleted: () => {
+        return updateAlias();
+    }
+    onIpChanged: () => {
+        return updateAlias();
     }
 
     NetworkFetch {
