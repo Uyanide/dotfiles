@@ -86,14 +86,10 @@ Variants {
                     buttonColor: Colors.distroColor
                     onClicked: {
                         // PanelService.getPanel("controlCenterPanel")?.toggle(this)
-                        PanelService.getPanel("wifiPanel")?.toggle(this)
+                        PanelService.getPanel("controlCenterPanel")?.toggle(this)
                     }
                     onRightClicked: {
-                        if (action.running) {
-                            action.signal(15);
-                            return ;
-                        }
-                        action.exec(["rofi", "-show", "drun"]);
+                        Quickshell.execDetached(["rofi", "-show", "drun"]);
                     }
                 }
 
@@ -103,6 +99,9 @@ Variants {
                     onClicked: {
                         PanelService.getPanel("wifiPanel")?.toggle(this)
                     }
+                    onRightClicked: {
+                        Quickshell.execDetached(["nm-connection-editor"]);
+                    }
                 }
 
                 SymbolButton {
@@ -110,6 +109,9 @@ Variants {
                     buttonColor: Colors.peach
                     onClicked: {
                         PanelService.getPanel("bluetoothPanel")?.toggle(this)
+                    }
+                    onRightClicked: {
+                        Quickshell.execDetached(["blueberry"]);
                     }
                 }
 
@@ -254,20 +256,10 @@ Variants {
                     symbol: Icons.powerMenu
                     buttonColor: Colors.red
                     onClicked: {
-                        if (action.running) {
-                            action.signal(15);
-                            return ;
-                        }
                         Quickshell.execDetached(["wlogout"]);
                     }
                 }
 
-            }
-
-            Process {
-                id: action
-
-                running: false
             }
 
         }

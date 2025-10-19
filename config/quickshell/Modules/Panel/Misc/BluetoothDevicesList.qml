@@ -152,7 +152,6 @@ ColumnLayout {
 
                         return Color.mPrimary;
                     }
-                    tooltipText: root.tooltipText
                     text: {
                         if (modelData.pairing)
                             return "Pairing...";
