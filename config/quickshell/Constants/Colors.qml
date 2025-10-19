@@ -6,6 +6,7 @@ pragma Singleton
 Singleton {
     id: root
 
+    readonly property color primary: SettingsService.primaryColor
     readonly property color transparent: "transparent"
     readonly property color rosewater: "#f5e0dc"
     readonly property color flamingo: "#f2cdcd"
@@ -34,7 +35,6 @@ Singleton {
     readonly property color base: "#1e1e2e"
     readonly property color mantle: "#181825"
     readonly property color crust: "#11111b"
-    property color primary: SettingsService.primaryColor
     readonly property color distroColor: "#74c7ec"
     readonly property var cavaList: ["#b4befe", "#89b4fa", "#74c7ec", "#89dceb", "#94e2d5", "#a6e3a1", "#f9e2af", "#fab387"]
 }

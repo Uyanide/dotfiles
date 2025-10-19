@@ -56,7 +56,6 @@ Rectangle {
 
             // Process icon path
             if (icon.includes("?path=")) {
-              // Seems qmlfmt does not support the following ES6 syntax: const[name, path] = icon.split
               const chunks = icon.split("?path=")
               const name = chunks[0]
               const path = chunks[1]

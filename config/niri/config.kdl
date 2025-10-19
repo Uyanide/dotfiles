@@ -130,7 +130,6 @@ spawn-at-startup "wallpaper-daemon"
 spawn-at-startup "fcitx5"
 
 // Core
-spawn-at-startup "blueman-applet"
 spawn-at-startup "nm-applet"
 spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"

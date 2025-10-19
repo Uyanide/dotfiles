@@ -8,10 +8,10 @@ pragma Singleton
 Singleton {
     property int linesCount: 3
     property int linesAhead: linesCount / 2
-    property int currentIndex: linesCount - linesAhead - 1
-    property string offsetFile: CacheService.lyricsOffsetCacheFile
+    readonly property int currentIndex: linesCount - linesAhead - 1
+    readonly property string offsetFile: CacheService.lyricsOffsetCacheFile
     property int offset: 0 // in ms
-    property int offsetStep: 500 // in ms
+    readonly property int offsetStep: 500 // in ms
     property int referenceCount: 0
     // with linesCount=3 and linesAhead=1, lyrics will be like:
     //   line 1

@@ -85,7 +85,8 @@ Variants {
                     symbol: Icons.distro
                     buttonColor: Colors.distroColor
                     onClicked: {
-                        PanelService.getPanel("controlCenterPanel")?.toggle(this)
+                        // PanelService.getPanel("controlCenterPanel")?.toggle(this)
+                        PanelService.getPanel("wifiPanel")?.toggle(this)
                     }
                     onRightClicked: {
                         if (action.running) {
@@ -94,6 +95,27 @@ Variants {
                         }
                         action.exec(["rofi", "-show", "drun"]);
                     }
+                }
+
+                SymbolButton {
+                    symbol: SettingsService.wifiEnabled ? Icons.wifiOn : Icons.wifiOff
+                    buttonColor: Colors.green
+                    onClicked: {
+                        PanelService.getPanel("wifiPanel")?.toggle(this)
+                    }
+                }
+
+                SymbolButton {
+                    symbol: BluetoothService.enabled ? Icons.bluetoothOn : Icons.bluetoothOff
+                    buttonColor: Colors.peach
+                    onClicked: {
+                        PanelService.getPanel("bluetoothPanel")?.toggle(this)
+                    }
+                }
+
+
+                Item {
+                    width: 5
                 }
 
                 Separator {
@@ -176,7 +198,6 @@ Variants {
                     }
 
                     Ip {
-                        showCountryCode: true
                     }
 
                     CpuTemp {

@@ -37,6 +37,10 @@ Singleton {
     readonly property string reset: "󰑙"
     readonly property string lines: ""
     readonly property string record: ""
+    readonly property string wifiOn: "󰖩"
+    readonly property string wifiOff: "󰖪"
+    readonly property string bluetoothOn: ""
+    readonly property string bluetoothOff: "󰂲"
     // Tabler icons
     // Expose the font family name for easy access
     readonly property string fontFamily: currentFontLoader ? currentFontLoader.name : ""

@@ -50,6 +50,18 @@ ShellRoot {
                 objectName: "notificationHistoryPanel"
             }
 
+            WiFiPanel {
+                id: wifiPanel
+
+                objectName: "wifiPanel"
+            }
+
+            BluetoothPanel {
+                id: bluetoothPanel
+
+                objectName: "bluetoothPanel"
+            }
+
         }
 
     }

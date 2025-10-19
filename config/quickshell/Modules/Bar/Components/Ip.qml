@@ -5,17 +5,9 @@ import qs.Constants
 import qs.Services
 
 Item {
-    // Text {
-    //     id: ipText
-    //     anchors.verticalCenter: parent.verticalCenter
-    //     text: Icons.global + " " + (showCountryCode ? IpService.countryCode : IpService.ip)
-    //     font.pixelSize: Fonts.medium
-    //     color: Colors.peach
-    // }
-
     id: root
 
-    property bool showCountryCode: true
+    property bool _showCountryCode: true
 
     implicitHeight: parent.height
     implicitWidth: layout.width + 10
@@ -43,8 +35,8 @@ Item {
             Text {
                 id: ipText
 
-                text: showCountryCode ? IpService.countryCode : IpService.ip
-                font.pointSize: showCountryCode ? Fonts.medium : Fonts.small
+                text: _showCountryCode ? IpService.countryCode : IpService.ip
+                font.pointSize: _showCountryCode ? Fonts.medium : Fonts.small
                 font.family: Fonts.primary
                 color: Colors.peach
                 anchors.verticalCenter: parent.verticalCenter
@@ -73,10 +65,10 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
-                WriteClipboard.write(showCountryCode ? IpService.countryCode : IpService.ip);
-                SendNotification.show("Copied to clipboard", showCountryCode ? IpService.countryCode : IpService.ip);
+                WriteClipboard.write(_showCountryCode ? IpService.countryCode : IpService.ip);
+                SendNotification.show("Copied to clipboard", _showCountryCode ? IpService.countryCode : IpService.ip);
             } else if (mouse.button === Qt.RightButton)
-                showCountryCode = !showCountryCode;
+                _showCountryCode = !_showCountryCode;
             else if (mouse.button === Qt.MiddleButton)
                 IpService.refresh();
         }

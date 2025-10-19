@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Widgets
 import qs.Constants
 import qs.Utils
 import qs.Noctalia
@@ -154,12 +155,11 @@ PopupWindow {
                 family: Fonts.sans
               }
 
-              Image {
+              IconImage {
                 Layout.preferredWidth: Style.marginL
                 Layout.preferredHeight: Style.marginL
                 source: modelData?.icon ?? ""
                 visible: (modelData?.icon ?? "") !== ""
-                fillMode: Image.PreserveAspectFit
               }
 
               NIcon {

@@ -6,16 +6,16 @@ import qs.Utils
 pragma Singleton
 
 Singleton {
-    property string recordingDir: CacheService.recordingDir
+    readonly property string recordingDir: CacheService.recordingDir
     property bool isRecording: false
     property bool isStopping: false
-    property string codec: "av1_nvenc"
-    property string container: "mkv"
-    property string pixelFormat: "p010le"
+    readonly property string codec: "av1_nvenc"
+    readonly property string container: "mkv"
+    readonly property string pixelFormat: "p010le"
     property string recordingDisplay: ""
-    property int framerate: 60
-    property var codecParams: ["preset=p5", "rc=vbr", "cq=18", "b:v=80M", "maxrate=120M", "bufsize=160M", "color_range=tv"]
-    property var filterArgs: []
+    readonly property int framerate: 60
+    readonly property var codecParams: Object.freeze(["preset=p5", "rc=vbr", "cq=18", "b:v=80M", "maxrate=120M", "bufsize=160M", "color_range=tv"])
+    readonly property var filterArgs: Object.freeze([])
 
     function getFilename() {
         var d = new Date();

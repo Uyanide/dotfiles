@@ -10,6 +10,7 @@ Singleton {
     property alias showLyricsBar: adapter.showLyricsBar
     property alias notifications: adapter.notifications
     property alias location: adapter.location
+    property alias wifiEnabled: adapter.wifiEnabled
     property string settingsFilePath: Qt.resolvedUrl("../Assets/Config/Settings.json")
 
     FileView {
@@ -27,6 +28,7 @@ Singleton {
             property bool showLyricsBar: false
             property JsonObject notifications
             property string location: "New York"
+            property bool wifiEnabled: true
 
             notifications: JsonObject {
                 property bool doNotDisturb: false

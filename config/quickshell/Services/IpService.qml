@@ -7,12 +7,12 @@ pragma Singleton
 
 Singleton {
     property alias ip: cacheFileAdapter.ip
-    property string cacheFilePath: CacheService.ipCacheFile
+    readonly property string cacheFilePath: CacheService.ipCacheFile
     property string countryCode: "N/A"
     property real fetchInterval: 120 // in s
     property real fetchTimeout: 10 // in s
-    property string ipURL: "https://api.uyanide.com/ip"
-    property string geoURL: "https://api.ipinfo.io/lite/"
+    readonly property string ipURL: "https://api.uyanide.com/ip"
+    readonly property string geoURL: "https://api.ipinfo.io/lite/"
     property string geoURLToken: ""
 
     function fetchIP() {
@@ -48,8 +48,8 @@ Singleton {
         let url = geoURL + ip;
         if (geoURLToken)
             url += "?token=" + geoURLToken;
-        
-        cacheFileAdapter.geoInfo = null
+
+        cacheFileAdapter.geoInfo = null;
         curl.fetch(url, function(success, data) {
             if (success) {
                 try {
