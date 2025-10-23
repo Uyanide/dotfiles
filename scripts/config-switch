@@ -13,14 +13,14 @@ for item in "kitty" "ghostty" "wlogout"; do
         if [ -L "$HOME/.config/$target" ]; then
             rm -v "$HOME/.config/$target"
         elif [ -e "$HOME/.config/$target" ]; then
-            echo "Error: $HOME/.config/$target is not a symlink." >&2
+            echo "Error: $HOME/.config/$target exists and is not a symlink." >&2
             exit 1
         fi
     done
 
     if [ "$desktop" = "niri" ]; then
-        ln -sv "$path/../config/$item-niri" "$HOME/.config/$item"
+        ln -sv "$(realpath --relative-to="$HOME/.config" "$path/../config/$item-niri")" "$HOME/.config/$item"
     else
-        ln -sv "$path/../config/$item" "$HOME/.config/$item"
+        ln -sv "$(realpath --relative-to="$HOME/.config" "$path/../config/$item")" "$HOME/.config/$item"
     fi
 done

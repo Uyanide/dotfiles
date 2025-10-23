@@ -1,3 +1,8 @@
+[ "$(basename "$0")" = "apply-color-helper" ] && {
+     echo "This script is meant to be sourced, not executed directly."
+     exit 1
+}
+
 [ -z "$1" ] && exit 1
 palette="$1"
 [ -z "$2" ] && exit 1

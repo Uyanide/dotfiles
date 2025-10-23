@@ -226,8 +226,8 @@ window-rule {
 window-rule {
     match app-id="blueberry"
     match app-id="blueman-manager"
-    match app-id="pavucontrol"
     match app-id="org.pulseaudio.pavucontrol"
+    match app-id="com.saivert.pwvucontrol"
     match app-id="Waydroid"
     match app-id="org.kde.kcalc"
     match app-id="org.kde.kalk"
@@ -300,6 +300,7 @@ binds {
     Mod+Shift+T { spawn "ghostty"; }
     Mod+Shift+Return { spawn "ghostty"; }
     Mod+Shift+W { spawn "wallpaper-chooser"; }
+    Mod+P { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
 
     // Quickshell
     Mod+Space { spawn-sh "qs ipc call panels toggleControlCenter"; }

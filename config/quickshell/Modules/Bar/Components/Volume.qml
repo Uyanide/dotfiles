@@ -21,6 +21,6 @@ MonitorItem {
         AudioService.toggleMute();
     }
     onRightClicked: {
-        Quickshell.execDetached(["sh", "-c", "pkill -x -n pavucontrol || pavucontrol"]);
+        Quickshell.execDetached(["sh", "-c", "pkill -x -n pwvucontrol || pwvucontrol"]);
     }
 }

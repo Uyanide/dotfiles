@@ -23,7 +23,10 @@ https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.jpg?raw=true"/>
 </figure>
 
-- Grub menu:
+</details>
+
+<details>
+<summary>Grub menu</summary>
 
 <figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
@@ -41,7 +44,7 @@ https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
 - Terminal: **Kitty** & Ghostty
 - Power Menu: Wlogout
 - Colorscheme: Catppuccin Mocha
-- App Launcher: Rofi
+- App Launcher: **Rofi** | fuzzel
 - Desktop Widgets: Eww | **Quickshell**
 - Wallpaper Daemon: Swww
 - Notification Daemon: Mako | **Quickshell**
@@ -103,3 +106,37 @@ including:
 - Sour Gummy
 - Noto Sans
 - ...
+
+## Some of the Scripts
+
+> [!TIP]
+>
+> Most scripts are placed in the `scripts` folder.
+
+- `config-sync`
+
+  creates symlinks in `~/.config/` referring to files and directories in `config` folder. If there is already a file or directorie or whatever with the same name in `~/config/`, it will be moved to `~/.config/config-backup/$(date +%Y%m%d-%H%M%S)/` before a new symlink is created.
+
+- `config-switch`
+
+  updats configurations of several apps according to the current (or given as parameter) desktop environment. e.g. Niri currently doesn't support blurred windows, so terminal emulators such as Kitty and Ghostty could reduce transparency for better appearences.
+
+- `change-colortheme`
+
+  changes the colortheme of a number of pre-configured apps. This is done by calling certain scripts that are usually called `apply-color`.
+
+- `wallpaper-daemon` & `change-wallpaper`
+
+  provides wallpaper for both Hyprland and Niri (background and backdrop). It can also automatically set the wallpaper to a blurred version when there is a window in focus, however, this is currently only implemented in Niri.
+
+- `ssh-init`
+
+  ensures that there is only one valid ssh-agent running at the same time. Useful when creating ssh-agent somewhere else than the login shell scripts or across sessions.
+
+- `screenshot`
+
+  takes a screenshot, and sends a notification asking whether to edit it by clicking on it. Works on both Hyprland and Niri.
+
+- `record-script`
+
+  records the screen based on wf-recorder and using av1_nvenc as the video encoder. The default codec parameters will generate a fairly large video file (80 Mbps), a later transcoding is definitly required in this case.

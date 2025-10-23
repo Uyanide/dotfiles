@@ -1,9 +1,9 @@
 # ssh with encrypted private keys
-# $ssh_keys should be set in advance or left empty to use default keys
+# $ssh_keys should be set in advance or left empty to use the default keys
 if type -q ssh
     bass $(ssh-init) > /dev/null 2>&1
 
-    # only need to input passphrase once per session
+    # avoiding entering passphrase every time
     function sshs
         # test if keys are added to ssh-agent
         if not ssh-add -l > /dev/null 2>&1

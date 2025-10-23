@@ -50,7 +50,7 @@ rofi(-wayland)
 mpv
 network-manager-applet  # nm-applet
 blueman                 # bluetooth GUI & applet
-pavucontrol
+pwvucontrol
 gnome-text-editor       # or kwrite, notepad replacement
 btop                    # system monitor
 activate-linux          # :/
