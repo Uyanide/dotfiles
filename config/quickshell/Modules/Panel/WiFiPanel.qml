@@ -17,7 +17,6 @@ NPanel {
 
     preferredWidth: 400
     preferredHeight: 500
-    panelKeyboardFocus: true
     onOpened: NetworkService.scan()
 
     panelContent: Rectangle {
