@@ -165,7 +165,7 @@ environment {
     // Themes
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "kde"
-    QT_STYLE_OVERRIDE "Kvantum"
+    QT_STYLE_OVERRIDE "Breeze"
 
     // Nvidia
     LIBVA_DRIVER_NAME "nvidia"
@@ -233,7 +233,7 @@ window-rule {
     match app-id="org.kde.kalk"
     match app-id="org.gnome.NautilusPreviewer"
     match app-id="coin"
-    match app-id="wallpaper-chooser"
+    match app-id="wallpaper-carousel"
     match app-id="be.alexandervanhee.gradia"
     match title="^(图片查看器)(.*)$" // QQ
     open-floating true
@@ -292,14 +292,14 @@ binds {
     // Apps
     Mod+C { spawn-sh "code --password-store=gnome-libsecret"; }
     Mod+E { spawn-sh "nautilus --new-window"; }
-    Mod+W { spawn "zen"; }
+    Mod+W { spawn-sh "zen || zen-browser"; }
     Mod+X { spawn "gnome-text-editor" "--new-window"; }
     Mod+B { spawn-sh "pkill -x -n btop || ghostty -e btop"; }
     Mod+T { spawn "kitty"; }
     Mod+Return { spawn "kitty"; }
     Mod+Shift+T { spawn "ghostty"; }
     Mod+Shift+Return { spawn "ghostty"; }
-    Mod+Shift+W { spawn "wallpaper-chooser"; }
+    Mod+Shift+W { spawn "wallpaper-carousel"; }
     Mod+P { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
 
     // Quickshell

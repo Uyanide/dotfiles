@@ -11,7 +11,7 @@ Singleton {
         id: process
 
         running: true
-        command: ["kquitapp6", "kded6"]
+        command: ["sh", "-c", "which kquitapp6 && kquitapp6 kded6"]
         onExited: (code, status) => {
             if (code !== 0)
                 Logger.warn("NukeKded6", `Failed to kill kded6: ${code}`);

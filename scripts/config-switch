@@ -18,7 +18,7 @@ for item in "kitty" "ghostty" "wlogout"; do
         fi
     done
 
-    if [ "$desktop" = "niri" ]; then
+    if [ "$desktop" = "niri" ] || [ "$desktop" = "GNOME" ]; then
         ln -sv "$(realpath --relative-to="$HOME/.config" "$path/../config/$item-niri")" "$HOME/.config/$item"
     else
         ln -sv "$(realpath --relative-to="$HOME/.config" "$path/../config/$item")" "$HOME/.config/$item"

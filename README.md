@@ -81,7 +81,7 @@ This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprla
 
 The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. And also:
 
-- [wallpaper-chooser](https://github.com/Uyanide/Wallpaper_Chooser) to select wallpaper, which implements an Image Carousel with Qt Widgets.
+- [wallpaper-carousel](https://github.com/Uyanide/Wallpaper_Carousel) to select wallpaper, which implements an Image Carousel with Qt Widgets.
 - [backgrounds collection](https://github.com/Uyanide/backgrounds) for personal use.
 
 ## Rofi

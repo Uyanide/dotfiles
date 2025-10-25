@@ -157,6 +157,9 @@ Singleton {
             if (!geoURLToken)
                 Logger.warn("IpService", "No token found for geoIP service, assuming none is required");
 
+            if (geoURLToken[geoURLToken.length - 1] === "\n")
+                geoURLToken = geoURLToken.slice(0, -1);
+
             fetchIP();
             fetchTimer.start();
         }
