@@ -111,11 +111,7 @@ including:
 
 > [!TIP]
 >
-> Most scripts are placed in the `scripts` folder.
-
-- `config-sync`
-
-  creates symlinks in `~/.config/` referring to files and directories in `config` folder. If there is already a file or directorie or whatever with the same name in `~/config/`, it will be moved to `~/.config/config-backup/$(date +%Y%m%d-%H%M%S)/` before a new symlink is created.
+> Most scripts are placed in the [config/scripts](https://github.com/Uyanide/dotfiles/tree/main/config/scripts) folder.
 
 - `config-switch`
 
@@ -131,7 +127,7 @@ including:
 
 - `ssh-init`
 
-  ensures that there is only one valid ssh-agent running at the same time. Useful when creating ssh-agent somewhere else than the login shell scripts or across sessions.
+  ensures there is only one valid ssh-agent running at the same time. Useful when creating ssh-agent somewhere else than the login shell scripts or across sessions.
 
 - `screenshot`
 
@@ -139,4 +135,4 @@ including:
 
 - `record-script`
 
-  records the screen based on wf-recorder and using av1_nvenc as the video encoder. The default codec parameters will generate a fairly large video file (80 Mbps), a later transcoding is definitly required in this case.
+  records the screen based on wf-recorder and using av1_nvenc as the video encoder. The default codec parameters will generate a fairly large video file (80 Mbps), a later transcoding is definitly required in such case.

@@ -1,0 +1,64 @@
+#!/bin/bash
+
+path=$(dirname "$(readlink -f "$0")")
+[ -f "$HOME/.local/snippets/apply-color-helper" ] || {
+    echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
+    exit 1
+}
+. "$HOME/.local/snippets/apply-color-helper"
+
+file="$path"/../posh_theme.omp.json
+
+targetTypes=("os" "session" "status")
+
+if ! python3 - "$file" "$colorHex" "${targetTypes[@]}"; then {
+    log_error "Failed to edit ${file}"
+    exit 1
+} fi <<EOF
+import json
+import sys
+
+data = None
+file = sys.argv[1]
+colorHex = sys.argv[2]
+targetTypes = sys.argv[3:]
+
+with open(file, "r") as f:
+    data = json.load(f)
+
+    def processSegments(segments):
+        for segment in segments:
+            if "type" in segment and segment["type"] in targetTypes:
+                if "foreground" in segment:
+                    segment["foreground"] = f"#{colorHex}"
+
+    def processTransientPrompt(transientPrompt):
+        if "foreground" in transientPrompt:
+            transientPrompt["foreground"] = f"#{colorHex}"
+
+    def process(obj):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == "segments" and isinstance(v, list):
+                    processSegments(v)
+                elif k == "transient_prompt" and isinstance(v, dict):
+                    processTransientPrompt(v)
+                else:
+                    process(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                process(item)
+
+    process(data)
+
+if data is not None:
+    with open(file, "w") as f:
+        json.dump(data, f, indent=4)
+EOF
+
+if [ $? -ne 0 ]; then
+    log_error "Failed to edit ${file}"
+    exit 1
+fi
+
+log_success "oh-my-posh"

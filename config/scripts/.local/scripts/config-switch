@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+path="$(dirname "$(readlink -f "$0")")"
+
+if [ -z "$1" ]; then
+    desktop="$XDG_CURRENT_DESKTOP"
+else
+    desktop="$1"
+fi
+
+config_path="$path/../../.."
+
+for item in "kitty" "ghostty" "wlogout"; do
+    for target in "$item" "$item-niri"; do
+        if [ ! -L "$HOME/.config/$target" ] && [ -e "$HOME/.config/$target" ]; then
+            echo "Error: $HOME/.config/$target exists and is not a symlink." >&2
+            exit 1
+        fi
+        stow -t "$HOME" -d "$config_path" -D "$target"
+    done
+
+    if [ "$desktop" = "niri" ] || [ "$desktop" = "GNOME" ]; then
+        stow -t "$HOME" -d "$config_path" "$item-niri"
+    else
+        stow -t "$HOME" -d "$config_path" "$item"
+    fi
+done
