@@ -9,3 +9,5 @@ if type -q bat
     set -x -g MANPAGER "sh -c 'col -bx | bat -l man -p'"
     set -x -g MANROFFOPT -c
 end
+
+set -x -g GPG_TTY $(tty)
