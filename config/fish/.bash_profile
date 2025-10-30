@@ -10,5 +10,7 @@ command -v nvim >/dev/null 2>&1 && {
     export VISUAL=nvim
 }
 
+export GPG_TTY=$(tty)
+
 [ -f "$HOME/.profile" ] && . "$HOME/.profile"
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
