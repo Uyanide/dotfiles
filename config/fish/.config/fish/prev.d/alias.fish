@@ -21,7 +21,7 @@ end
 
 # rm
 if type -q trash
-    alias rm="echo \"use 'trash' instead :)\"  && sh -c \"exit 42\" && echo why do you see this line :O"
+    alias rm="echo \"use 'trash' instead :)\"  && sh -c \"exit 42\""
 end
 
 # ls
