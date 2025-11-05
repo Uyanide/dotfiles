@@ -46,6 +46,10 @@ output "eDP-2" {
     backdrop-color "#1e1e2e"
 }
 
+// output "HDMI-A-1" {
+// }
+
+
 /************************Layout************************/
 
 layout {
