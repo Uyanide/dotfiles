@@ -303,7 +303,7 @@ binds {
     Mod+Return { spawn "kitty"; }
     Mod+Shift+T { spawn "ghostty"; }
     Mod+Shift+Return { spawn "ghostty"; }
-    Mod+Shift+W { spawn "wallpaper-carousel"; }
+    Mod+Shift+W { spawn-sh "QT_STYLE_OVERRIDE=Kvantum wallpaper-carousel"; }
     Mod+P { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
 
     // Quickshell

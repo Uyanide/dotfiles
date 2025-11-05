@@ -1,0 +1,17 @@
+{
+  "wallpaper": {
+    "dirs": ["~/Pictures/backgrounds", "/media/Beta/壁纸/库"],
+    "excludes": [
+      "~/.config/backgrounds/nao-stars-crop-adjust-flop.jpg",
+      "~/.config/backgrounds/miku-gate.jpg",
+      "~/.config/backgrounds/README.md"
+    ]
+  },
+  "action": {
+    "confirm": "change-wallpaper \"%1\""
+  },
+  "sort": {
+    "type": "date",
+    "reverse": true
+  }
+}
