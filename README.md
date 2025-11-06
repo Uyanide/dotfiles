@@ -129,7 +129,7 @@ including:
 
   ensures there is only one valid ssh-agent running at the same time. Useful when creating ssh-agent somewhere else than the login shell scripts or across sessions.
 
-- `screenshot`
+- `screenshot-script`
 
   takes a screenshot, and sends a notification asking whether to edit it by clicking on it. Works on both Hyprland and Niri.
 

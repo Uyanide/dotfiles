@@ -322,9 +322,9 @@ binds {
     Mod+V { spawn-sh "pkill -x rofi || rofi-cliphist"; }
     Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
     Ctrl+Alt+Delete { spawn-sh "pkill -x wlogout || wlogout -p layer-shell"; }
-    Print { spawn-sh "screenshot full"; }
-    Mod+Shift+S { spawn-sh "screenshot area"; }
-    Mod+Ctrl+Shift+S { spawn-sh "screenshot window"; }
+    Print { spawn-sh "screenshot-script full"; }
+    Mod+Shift+S { spawn-sh "screenshot-script area > /home/kolkas/temp.log 2>&1"; }
+    Mod+Ctrl+Shift+S { spawn-sh "screenshot-script window"; }
     Mod+Shift+C { spawn-sh "hyprpicker -a"; }
 
     // Session

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
+import subprocess
+import time
+from os import environ
 from datetime import datetime
 from enum import Enum
-import time
 from pathlib import Path
+from shutil import copy2
 
 # autopep8: off
 import gi
@@ -29,22 +31,22 @@ def wait_until_file_exists(filepath: Path, timeout: int = 5):
     while not filepath.exists():
         if time.time() - start_time > timeout:
             return False
-        time.sleep(0.1)
+        time.sleep(0.05)
     return True
 
 
 def take_screenshot(filepath: Path, typeStr: str):
     type = ScreenshotType(typeStr)
-    currentDesktop = os.environ.get("XDG_CURRENT_DESKTOP", "")
+    currentDesktop = environ.get("XDG_CURRENT_DESKTOP", "")
     if "Hyprland" in currentDesktop:
         cmd = {
             ScreenshotType.FULL: f"hyprshot -z -m output -m active -o {SCREENSHOT_DIR} -f ",  # since I only have one monitor
             ScreenshotType.AREA: f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
             ScreenshotType.WINDOW: f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
         }
-        if os.system(f"{cmd[type]}{filepath.name}"):
-            print("Failed to take screenshot.")
-            exit(1)
+        process = subprocess.run(f"{cmd[type]}{filepath.name}", shell=True)
+        if process.returncode != 0:
+            raise RuntimeError("Failed to take screenshot.")
         wait_until_file_exists(filepath)
     elif "niri" in currentDesktop:
         cmd = {
@@ -55,12 +57,15 @@ def take_screenshot(filepath: Path, typeStr: str):
         niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
         if niriScreenshotPath.exists():
             niriScreenshotPath.unlink()
-        if os.system(cmd[type]):
+        # if os.system(cmd[type]):
+        process = subprocess.run(cmd[type], shell=True)
+        if process.returncode != 0:
             print("Failed to take screenshot.")
             exit(1)
         wait_until_file_exists(niriScreenshotPath)
         if niriScreenshotPath.exists():
-            niriScreenshotPath.rename(filepath)
+            # niriScreenshotPath.rename(filepath)
+            copy2(niriScreenshotPath, filepath)
         else:
             print("Failed to take screenshot.")
             exit(1)
@@ -71,7 +76,7 @@ def take_screenshot(filepath: Path, typeStr: str):
 
 
 def edit_screenshot(filepath: Path):
-    os.system(f"gradia {filepath}")
+    subprocess.run(f"gradia {filepath}", shell=True)
 
 
 def file_name(dir: Path, prefix="screenshot", ext=".png"):
