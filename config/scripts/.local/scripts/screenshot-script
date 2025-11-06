@@ -112,11 +112,13 @@ if __name__ == "__main__":
 
     # callback on default action (edit)
     def edit_callback(n, action, user_data):
-        global editing
-        editing = True
-        edit_screenshot(filepath)
-        n.close()
-        loop.quit()
+        try:
+            global editing
+            editing = True
+            edit_screenshot(filepath)
+        finally:
+            n.close()
+            loop.quit()
 
     # callback on close
     def close_callback(n):
@@ -128,14 +130,20 @@ if __name__ == "__main__":
     Notify.init("Screenshot Utility")
     n = Notify.Notification.new(
         "Screenshot taken",
+        # Mako doesn't have action buttons displayed with notification cards,
         "Click to edit"
     )
     n.add_action(
+        # so default action is used here, which will be triggered on clicking the notification card
         "default",
+        # But for my (or to be precise, Noctalia's) quickshell config, buttons will be displayed with label
         "Open in Editor",
         edit_callback,
         None
     )
-    n.connect("closed", close_callback)
+
+    # set timeout for close_callback
+    GLib.timeout_add_seconds(10, close_callback, n)
+
     n.show()
     loop.run()
