@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# Description:
+#   Quick snippet for smb mounting via cifs
+#
+# Requirements:
+# - cifs-utils
+# - ./issu
+
 issu && {
     echo "Do not run this script in sudo mode."
     exit 1

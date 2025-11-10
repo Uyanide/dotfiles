@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Description:
+#   Quick snippet for smb unmounting
+
 [ -z "$SMB_MOUNT_POINT" ] && SMB_MOUNT_POINT="/mnt/smb"
 
 if sudo umount "$SMB_MOUNT_POINT" && sudo rmdir "$SMB_MOUNT_POINT"; then

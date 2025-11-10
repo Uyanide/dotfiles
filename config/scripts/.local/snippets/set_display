@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Select which GPU to use for rendering for Hyprland and Niri.
+
 # AMD -> Nvidia -> Intel
 prefer_order=(amd nvidia intel)
 

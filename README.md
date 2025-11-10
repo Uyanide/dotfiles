@@ -79,7 +79,7 @@ This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprla
 
 ## Wallpaper & Colortheme
 
-The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. And also:
+The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. See also:
 
 - [wallpaper-carousel](https://github.com/Uyanide/Wallpaper_Carousel) to select wallpaper, which implements an Image Carousel with Qt Widgets.
 - [backgrounds collection](https://github.com/Uyanide/backgrounds) for personal use.
@@ -106,33 +106,3 @@ including:
 - Sour Gummy
 - Noto Sans
 - ...
-
-## Some of the Scripts
-
-> [!TIP]
->
-> Most scripts are placed in the [config/scripts](https://github.com/Uyanide/dotfiles/tree/main/config/scripts) folder.
-
-- `config-switch`
-
-  updats configurations of several apps according to the current (or given as parameter) desktop environment. e.g. Niri currently doesn't support blurred windows, so terminal emulators such as Kitty and Ghostty could reduce transparency for better appearences.
-
-- `change-colortheme`
-
-  changes the colortheme of a number of pre-configured apps. This is done by calling certain scripts that are usually called `apply-color`.
-
-- `wallpaper-daemon` & `change-wallpaper`
-
-  provides wallpaper for both Hyprland and Niri (background and backdrop). It can also automatically set the wallpaper to a blurred version when there is a window in focus, however, this is currently only implemented in Niri.
-
-- `ssh-init`
-
-  ensures there is only one valid ssh-agent running at the same time. Useful when creating ssh-agent somewhere else than the login shell scripts or across sessions.
-
-- `screenshot-script`
-
-  takes a screenshot, and sends a notification asking whether to edit it by clicking on it. Works on both Hyprland and Niri.
-
-- `record-script`
-
-  records the screen based on wf-recorder and using av1_nvenc as the video encoder. The default codec parameters will generate a fairly large video file (80 Mbps), a later transcoding is definitly required in such case.

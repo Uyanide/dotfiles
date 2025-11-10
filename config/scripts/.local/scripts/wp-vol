@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# Description:
+#   Show current volume level with notification.
+#   Made for mako, and is one of mako's official examples.
+#
+# Requirements:
+# - wpctl
+# - notify-send
+
 # Get the volume level and convert it to a percentage
 volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 volume=$(echo "$volume" | awk '{print $2}')

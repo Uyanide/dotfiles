@@ -1,5 +1,8 @@
 #!/bin/bash
-# https://github.com/end-4/dots-hyprland/blob/main/.local/bin/fuzzel-emoji
+
+# Description:
+#   Quick snippet for rofi + emoji + wl-copy
+#   Source: https://github.com/end-4/dots-hyprland
 
 sed '1,/^### DATA ###$/d' $0 | rofi -dmenu -config ~/.config/rofi/dmenu.rasi -i | cut -d ' ' -f 1 | tr -d '\n' | wl-copy
 exit

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Quick snippet of reflector.
+
 [ -z "$COUNTRY" ] && COUNTRY="Germany"
 
 sudo cp -f /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak || exit 1

@@ -1,5 +1,14 @@
 #!/bin/sh
 
+# Description:
+#   Toggle the visibility of lyrics widgets in eww.
+#   - Ensure only one of the two widgets (lyrics or lyrics-single) is open at a time.
+#   - Cycle through the following states:
+#     1. Both widgets closed -> Open 'lyrics'
+#     2. 'lyrics' open -> Close 'lyrics' and open 'lyrics-single' (if waybar is running)
+#     3. 'lyrics-single' open -> Close 'lyrics-single'
+#     4. Both widgets open -> Close both
+
 LYRICS=$(eww active-windows | grep "lyrics:")
 LYRICS_SINGLE=$(eww active-windows | grep "lyrics-single:")
 

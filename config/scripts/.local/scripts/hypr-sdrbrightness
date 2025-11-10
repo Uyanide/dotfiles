@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# new_brightness="$1"
-# [ -z "$1" ] && new_brightness=1
-# sed -i "/sdrbrightness/c\    sdrbrightness = $new_brightness" <filename>
+# Description:
+#   Adjust the SDR brightness setting in Hyprland's monitor configuration file.
+#   Useful for adjusting brightness when HDR is enabled.
 
 import sys
 import os

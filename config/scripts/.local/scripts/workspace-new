@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Create and switch to a new workspace in Hyprland.
+#   e.g. if current workspaces are 1,2,4, this will create and switch to workspace 5.
+#
+# Requirements:
+# - hyprctl
+
 # get highest workspace ID
 max_id=$(hyprctl workspaces | grep '^workspace ID ' | awk '{print $3}' | sort -n | tail -1)
 

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Description:
+#   Quick snippet for unmounting WSL filesystems and removing the mount point.
+
 [ -z "$1" ] && mount_point="/mnt/wsl" || mount_point="$1"
 
 sudo umount "$mount_point" || {

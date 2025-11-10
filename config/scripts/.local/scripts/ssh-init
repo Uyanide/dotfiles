@@ -1,9 +1,13 @@
 #!/bin/sh
 # shellcheck disable=SC1091,SC1090
 
-# `eval "$(ssh-init)"` to set up environment
-# variables for ssh agent in the current shell.
-# TIPS: `bass "$(ssh-init)"` case in fish
+# Description:
+#   Initialize ssh-agent and set up environment variables for use in the current shell.
+#
+# Usage:
+#   `eval "$(ssh-init)"` to set up environment
+#   variables for ssh agent in the current shell.
+#   TIPS: `bass "$(ssh-init)"` case in fish
 
 mkdir -p "$HOME/.local/state"
 agent_file="$HOME/.local/state/ssh-agent"

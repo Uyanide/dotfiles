@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# Description:
+#   A wallpaper daemon script that integrates with swww and Niri/Hyprland to
+#   automatically switch between normal and blurred wallpapers based on window focus.
+#
+# Requirements:
+# - swww (or awww case you are from the future)
+# - niri/hyprland (obviously)
+# - watchdog (python3 package)
+
 import socket
 import json
 import subprocess

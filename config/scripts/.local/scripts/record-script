@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
-# https://github.com/end-4/dots-hyprland/blob/main/.config/ags/scripts/record-script.sh
+
+# Description:
+#   Script to record screen.
+#   Inspired by https://github.com/end-4/dots-hyprland
+#
+# Requirements:
+# - wf-recorder
+# - slurp
+
 
 [ -z "$codec" ] && codec="av1_nvenc"
 [ -z "$pixel_format" ] && pixel_format="p010le"

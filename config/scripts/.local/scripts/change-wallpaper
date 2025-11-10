@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-# Required tools:
+# Description:
+#   Change the desktop wallpaper and generate a blurred version.
+#
+# Requirs:
 # - zenity (for file selection dialog)
 # - imagemagick (for image processing)
 # - swww (wallpaper daemon)

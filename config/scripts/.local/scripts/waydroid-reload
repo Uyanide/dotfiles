@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
-function checkReturn {
-    echo "Executing: $*"
-    if ! "$@"; then
-        echo "Error runnning command"
-        exit 1
-    fi
-}
+# Description:
+#   Quick snippet to reload and restart Waydroid.
+#
+# Requirements:
+# - waydroid
+# - sudo privileges
 
-checkReturn waydroid session stop
-# checkReturn sudo waydroid upgrade # since I'm not using the default image
-checkReturn sudo waydroid init -f
-checkReturn sudo systemctl restart waydroid-container
-checkReturn waydroid show-full-ui
+set -e
+
+waydroid session stop
+# sudo waydroid upgrade # since I'm not using the default image
+sudo waydroid init -f
+sudo systemctl restart waydroid-container
+waydroid show-full-ui

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Updates configurations of several apps according to the current (or given as parameter) desktop environment.
+
 if [ -z "$1" ]; then
     desktop="$XDG_CURRENT_DESKTOP"
 else

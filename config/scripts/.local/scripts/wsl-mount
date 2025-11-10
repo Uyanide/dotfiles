@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# Description:
+#   Mount a WSL VHDX file to a specified mount point using guestmount.
+#
+# Requirements:
+# - libguestfs-tools
+# - sudo privileges
+#
+# Memo:
+# - set `LIBGUESTFS_DEBUG=1 LIBGUESTFS_TRACE=1` to show details when guestmount fails.
+# - A common issue is that the VHDX file has logs that needs to be "replayed".
+#   This can be done using `qemu-img check -r all <VHDX_PATH>`
+
 issu && {
     echo "Do not run this script in sudo mode."
     exit 1

@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Script to toggle Waybar (start/stop/restart).
+#   Also manages the lyrics widget state.
+#
+# Requirements:
+# - waybar
+# - eww (for lyrics widget)
+
 lyrics_widget_closed=0
 
 function close() {

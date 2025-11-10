@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Fetch and cache current weather data using OpenWeather API for use in eww widgets.
+#
+# Requirements:
+# - Environment variables:
+#   - OPENWEATHER_API_KEY
+#   - OPENWEATHER_LAT
+#   - OPENWEATHER_LON
+
 ## Collect data
 cache_dir="$HOME/.cache/eww/weather"
 cache_weather_stat=${cache_dir}/weather-stat

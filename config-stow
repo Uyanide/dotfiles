@@ -92,14 +92,14 @@ def main():
 
     if args.package == "hyprland":
         try:
-            switch("Hypr")
+            switch("Hyprland")  # "Hyprland" as defined by hyprland
             _log("INFO", "Switched session to hyprland.")
         except subprocess.CalledProcessError as e:
             _log("ERROR", f"Failed to switch session: {e}")
 
     elif args.package == "niri":
         try:
-            switch("niri")
+            switch("niri")  # "niri" as defined by niri
             _log("INFO", "Switched session to niri.")
         except subprocess.CalledProcessError as e:
             _log("ERROR", f"Failed to switch session: {e}")

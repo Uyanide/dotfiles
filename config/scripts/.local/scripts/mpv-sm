@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Description:
+#   Launch mpv with smooth motion interpolation enabled
+
 export NVPRESENT_ENABLE_SMOOTH_MOTION=1
 
 mpv --vo=gpu-next --gpu-api=vulkan --gpu-context=waylandvk --video-sync=audio "$@"

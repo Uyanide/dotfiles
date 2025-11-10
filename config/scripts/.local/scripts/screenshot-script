@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+# Description:
+#   A screenshot utility script for Hyprland and Niri desktop environments.
+#   Takes screenshots (full, area, window) and provides an option to edit them immediately
+#
+# Requirements:
+# - hyprshot (for Hyprland)
+# - - (niri has screenshot functionality built-in)
+# - gradia (for editing)
+# - glib bindings for python
+
 import argparse
 import subprocess
 import time

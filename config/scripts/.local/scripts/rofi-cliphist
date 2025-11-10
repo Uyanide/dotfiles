@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Description:
+#   Quick snippet for cliphist + rofi + wl-copy
 
 cliphist list | rofi -dmenu -config ~/.config/rofi/dmenu.rasi -display-columns 2 -i | \
     cliphist decode | wl-copy
