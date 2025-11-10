@@ -295,7 +295,7 @@ screenshot-path "~/Pictures/Screenshots/.niri_screenshot.png"
 binds {
     // Apps
     Mod+C { spawn-sh "code --password-store=gnome-libsecret"; }
-    Mod+E { spawn-sh "nautilus --new-window"; }
+    Mod+E { spawn-sh "dolphin --new-window"; }
     Mod+W { spawn-sh "zen || zen-browser"; }
     Mod+X { spawn "gnome-text-editor" "--new-window"; }
     Mod+B { spawn-sh "pkill -x -n btop || ghostty -e btop"; }

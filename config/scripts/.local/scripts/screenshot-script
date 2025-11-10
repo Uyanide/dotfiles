@@ -11,6 +11,7 @@ from shutil import copy2
 
 # autopep8: off
 import gi
+
 gi.require_version("Notify", "0.7")
 from gi.repository import Notify, GLib
 # autopep8: on
@@ -50,9 +51,9 @@ def take_screenshot(filepath: Path, typeStr: str):
         wait_until_file_exists(filepath)
     elif "niri" in currentDesktop:
         cmd = {
-            ScreenshotType.FULL: f"niri msg action screenshot-screen",
-            ScreenshotType.AREA: f"niri msg action screenshot",
-            ScreenshotType.WINDOW: f"niri msg action screenshot-window",
+            ScreenshotType.FULL: "niri msg action screenshot-screen",
+            ScreenshotType.AREA: "niri msg action screenshot",
+            ScreenshotType.WINDOW: "niri msg action screenshot-window",
         }
         niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
         if niriScreenshotPath.exists():
@@ -77,6 +78,7 @@ def take_screenshot(filepath: Path, typeStr: str):
 
 def edit_screenshot(filepath: Path):
     subprocess.run(f"gradia {filepath}", shell=True)
+    # subprocess.run(f"spectacle -l --edit-existing {filepath}", shell=True)
 
 
 def file_name(dir: Path, prefix="screenshot", ext=".png"):
@@ -131,7 +133,7 @@ if __name__ == "__main__":
     n = Notify.Notification.new(
         "Screenshot taken",
         # Mako doesn't have action buttons displayed with notification cards,
-        "Click to edit"
+        "Click to edit",
     )
     n.add_action(
         # so default action is used here, which will be triggered on clicking the notification card
@@ -139,7 +141,7 @@ if __name__ == "__main__":
         # But for my (or to be precise, Noctalia's) quickshell config, buttons will be displayed with label
         "Open in Editor",
         edit_callback,
-        None
+        None,
     )
 
     # set timeout for close_callback

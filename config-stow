@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+
+import subprocess
+from argparse import ArgumentParser
+from pathlib import Path
+
+BASE_PKGS = [
+    "clang",
+    "scripts",
+    "stow"
+]
+
+TUI_PKGS = [
+    *BASE_PKGS,
+    "fastfetch",
+    "nvim",
+    "shell",
+    "yazi"
+]
+
+GUI_BASE_PKGS = [
+    *TUI_PKGS,
+    "kitty",
+    "ghostty",
+    "misc",
+    "mpv",
+    "wallpaper",
+]
+
+HYPRLAND_PKGS = [
+    *GUI_BASE_PKGS,
+    "eww",
+    "hypr",
+    "mako",
+    "rofi",
+    "waybar",
+    "wlogout"
+]
+
+NIRI_PKGS = [
+    *GUI_BASE_PKGS,
+    "niri",
+    "quickshell",
+    "rofi",
+    "wlogout"
+]
+
+PKGS = {
+    "base": BASE_PKGS,
+    "tui": TUI_PKGS,
+    "gui": GUI_BASE_PKGS,
+    "hyprland": HYPRLAND_PKGS,
+    "niri": NIRI_PKGS
+}
+
+
+PKGS_PATH = Path(__file__).resolve().parent.resolve() / "config"
+DEST_PATH = Path.home().expanduser()
+
+
+def _log(level: str, message: str):
+    color = "\033[92m" if level == "INFO" else "\033[91m" if level == "ERROR" else "\033[0m"
+    reset = "\033[0m"
+    print(f"{color}[{level}] {message}{reset}")
+
+
+def stow(pkg: str):
+    subprocess.run(["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), pkg], check=True)
+
+
+def switch(session: str):
+    subprocess.run(["config-switch", session], check=True)
+
+
+def main():
+    parser = ArgumentParser(description="Stow configuration packages.")
+    parser.add_argument(
+        "package",
+        choices=PKGS.keys(),
+        help="The configuration package to stow."
+    )
+    args = parser.parse_args()
+
+    selected_pkgs = PKGS[args.package]
+
+    for pkg in selected_pkgs:
+        try:
+            stow(pkg)
+            _log("INFO", f"Successfully stowed package '{pkg}'.")
+        except subprocess.CalledProcessError as e:
+            _log("ERROR", f"Failed to stow package '{pkg}': {e}")
+
+    if args.package == "hyprland":
+        try:
+            switch("Hypr")
+            _log("INFO", "Switched session to hyprland.")
+        except subprocess.CalledProcessError as e:
+            _log("ERROR", f"Failed to switch session: {e}")
+
+    elif args.package == "niri":
+        try:
+            switch("niri")
+            _log("INFO", "Switched session to niri.")
+        except subprocess.CalledProcessError as e:
+            _log("ERROR", f"Failed to switch session: {e}")
+
+
+if __name__ == "__main__":
+    main()
