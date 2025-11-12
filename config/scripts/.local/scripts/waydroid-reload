@@ -11,6 +11,6 @@ set -e
 
 waydroid session stop
 # sudo waydroid upgrade # since I'm not using the default image
-sudo waydroid init -f
+# sudo waydroid init -f -s GAPPS
 sudo systemctl restart waydroid-container
 waydroid show-full-ui

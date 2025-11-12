@@ -69,7 +69,7 @@ def stow(pkg: str):
 
 
 def switch(session: str):
-    subprocess.run(["config-switch", session], check=True)
+    subprocess.run(["~/.local/scripts/config-switch", session], check=True)
 
 
 def main():
