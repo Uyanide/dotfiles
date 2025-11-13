@@ -2,5 +2,4 @@
 !.gitignore
 !prompt.fish
 !theme.fish
-!alias.fish
 !env.fish

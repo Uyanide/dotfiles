@@ -10,4 +10,11 @@ if type -q bat
     set -x -g MANROFFOPT -c
 end
 
-set -x -g GPG_TTY $(tty)
+# nvim
+if type -q nvim
+    set -x -g EDITOR nvim
+    set -x -g VISUAL nvim
+end
+
+# gpg
+set -x -g GPG_TTY (tty)
