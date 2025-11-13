@@ -3,3 +3,4 @@ things I have installed:
 everything in `./hyprland-ricing.txt`, in addition to:
 
 xwayland-satellite
+wlsunset

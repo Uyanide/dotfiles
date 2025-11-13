@@ -6,8 +6,12 @@
 # Requirements:
 # - cifs-utils
 # - ./issu
+# - sudo privileges
 
-issu && {
+
+path=$(dirname "$(realpath "$0")")
+
+"$path"/issu && {
     echo "Do not run this script in sudo mode."
     exit 1
 }

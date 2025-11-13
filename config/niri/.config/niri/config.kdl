@@ -46,8 +46,8 @@ output "eDP-2" {
     backdrop-color "#1e1e2e"
 }
 
-// output "HDMI-A-1" {
-// }
+output "HDMI-A-1" {
+}
 
 
 /************************Layout************************/
@@ -139,11 +139,11 @@ spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
 spawn-sh-at-startup "wl-paste --type image --watch cliphist store"
 
+// wlsunset
+spawn-at-startup "sunset"
+
 // Logitech
 spawn-sh-at-startup "solaar -w hide"
-
-// Application associations
-spawn-at-startup "kbuildsycoca6"
 
 // Some other heavy apps
 spawn-at-startup "sunshine"
@@ -211,7 +211,7 @@ window-rule {
 // Normal terminal
 window-rule {
     match app-id="kitty"
-    default-column-width { proportion 0.5; }
+    default-column-width { proportion 0.3; }
 }
 
 // Scrcpy
@@ -305,6 +305,7 @@ binds {
     Mod+Shift+Return { spawn "ghostty"; }
     Mod+Shift+W { spawn-sh "QT_STYLE_OVERRIDE=Kvantum wallpaper-carousel"; }
     Mod+P { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
+    Mod+Shift+E { spawn "sunset"; }
 
     // Quickshell
     Mod+Space { spawn-sh "qs ipc call panels toggleControlCenter"; }
@@ -323,7 +324,7 @@ binds {
     Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
     Ctrl+Alt+Delete { spawn-sh "pkill -x wlogout || wlogout -p layer-shell"; }
     Print { spawn-sh "screenshot-script full"; }
-    Mod+Shift+S { spawn-sh "screenshot-script area > /home/kolkas/temp.log 2>&1"; }
+    Mod+Shift+S { spawn-sh "screenshot-script area"; }
     Mod+Ctrl+Shift+S { spawn-sh "screenshot-script window"; }
     Mod+Shift+C { spawn-sh "hyprpicker -a"; }
 
