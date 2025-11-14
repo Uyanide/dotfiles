@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/Uyanide/dotfiles/assets/works-on-my-machine.png" alt="Works on my machine" />
+<img src="https://raw.githubusercontent.com/Uyanide/dotfiles/refs/heads/main/assets/works-on-my-machine.png" alt="Works on my machine" width="200" />
 
 ## How it looks like...
 
