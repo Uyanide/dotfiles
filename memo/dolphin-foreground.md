@@ -1,4 +1,4 @@
-WM 下 Dolphin 的前景色可能会很奇怪，在 .config/dolphinrc 中添加以下内容可以解决：
+不在 KDE 中运行 Dolphin 时前景色可能会很奇怪，在 .config/dolphinrc 中指定颜色主题可以解决：
 
 ```conf
 [UiSettigs]

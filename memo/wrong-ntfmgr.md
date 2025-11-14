@@ -1,4 +1,4 @@
-当安装了其他 notification manager 时，plasma 在启动时可能会选择错误的 notification manager 导致通知中心无法正常工作 <s>(虽然平时也并不怎么在意这玩意，用什么 daemon 都无所谓，只要有通知看就行)</s>
+当安装了其他通知服务时，plasma 在启动时可能会选择错误的通知服务导致通知中心无法正常工作 <s>(虽然平时也并不怎么在意这玩意，用什么 daemon 都无所谓，只要有通知看就行)</s>
 
 如何知道是否是这种情况呢？以 mako 为例：
 
@@ -21,15 +21,11 @@
    ```
    那就是这种情况了。
 
-解决方法也很简单，启动时屏蔽掉错误的服务，例如：
-
-```sh
-systemctl --user mask mako.service
-```
-
-或者将 plasmashell 的 notificationmanager 优先级提高：
+解决方法之一，将 plasma 的通知服务的优先级提高：
 
 ```sh
 mkdir -p ~/.local/share/dbus-1/services/
 ln -s /usr/share/dbus-1/services/org.kde.plasma.Notifications.service ~/.local/share/dbus-1/services/org.kde.plasma.Notifications.service
 ```
+
+或者放到 `/usr/local/share/dbus-1/services/` 也可以提高优先级。

@@ -41,7 +41,7 @@ if type -q fzf
 
     # fyi: fuzzy yay install
     function fyi
-        set -l pkg (yay -Sl | awk '{print $2}' | fzf -m --preview 'yay -Si {}' $argv)
+        set -l pkg (yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' $argv)
         if test -n "$pkg"
             yay -S $pkg
         end
