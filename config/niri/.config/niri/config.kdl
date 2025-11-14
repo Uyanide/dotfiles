@@ -209,10 +209,10 @@ window-rule {
 }
 
 // Normal terminal
-window-rule {
-    match app-id="kitty"
-    default-column-width { proportion 0.3; }
-}
+// window-rule {
+//     match app-id="kitty"
+//     default-column-width { proportion 0.3; }
+// }
 
 // Scrcpy
 window-rule {
