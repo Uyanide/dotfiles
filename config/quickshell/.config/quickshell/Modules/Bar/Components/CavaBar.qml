@@ -11,6 +11,7 @@ Item {
     property int count: 6
     property int barWidth: 5
     property int barSpacing: 3
+    property bool forceEnable: false
 
     implicitWidth: root.barWidth * root.count + root.barSpacing * (root.count - 1)
     implicitHeight: parent.height - 10
@@ -19,6 +20,7 @@ Item {
         id: cavaProcess
 
         count: root.count
+        forceEnable: root.forceEnable
     }
 
     RowLayout {
@@ -55,12 +57,14 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton)
                 MusicManager.playPause();
             else if (mouse.button === Qt.RightButton)
                 SettingsService.showLyricsBar = !SettingsService.showLyricsBar;
+            else if (mouse.button === Qt.MiddleButton)
+                root.forceEnable = !root.forceEnable;
         }
         onWheel: function(wheel) {
             if (wheel.angleDelta.y > 0)

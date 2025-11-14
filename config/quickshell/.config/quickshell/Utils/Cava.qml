@@ -31,12 +31,13 @@ Scope {
         }
     })
     property var values: Array(count).fill(0)
+    property bool forceEnable: false
 
     Process {
         id: process
 
         stdinEnabled: true
-        running: !MusicManager.isAllPaused()
+        running: root.forceEnable || !MusicManager.isAllPaused()
         command: ["cava", "-p", "/dev/stdin"]
         onExited: {
             stdinEnabled = true;

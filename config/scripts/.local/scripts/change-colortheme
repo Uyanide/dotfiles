@@ -47,7 +47,7 @@ SCRIPTS = {
     "quickshell": [CONFIG_DIR / "quickshell" / "apply-color"],
     "rofi": [CONFIG_DIR / "rofi" / "apply-color"],
     "waybar": [CONFIG_DIR / "waybar" / "apply-color"],
-    "wlogout": [CONFIG_DIR / "wlogout" / "apply-color", CONFIG_DIR / "wlogout-niri" / "apply-color"],
+    "wlogout": [CONFIG_DIR / ".alt" / "wlogout-default" / "apply-color", CONFIG_DIR / ".alt" / "wlogout-niri" / "apply-color"],
     "yazi": [CONFIG_DIR / "yazi" / "apply-color"],
 }
 # or simply `find ${CONFIG_DIR} -type f -iname 'apply-color*'` to get all available scripts,

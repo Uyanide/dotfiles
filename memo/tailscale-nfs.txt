@@ -23,6 +23,7 @@ NFS 允许将文件系统挂载到远程主机上。
 安装后：
     1) 服务端：
         a）echo "/path/to/share *(rw,no_subtree_check,async)" | sudo tee -a /etc/exports
+            或更精确的权限控制
         b) systemctl 启动 nfs-server 服务
     2) 客户端
         a) sudo mount -t nfs -o vers=4,noatime,async 100.x.y.z:/path/to/share /path/to/mount
