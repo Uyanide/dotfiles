@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/Uyanide/dotfiles/assets/works-on-my-machine.png" alt="Works on my machine" />
+
 ## How it looks like...
 
 <details>
