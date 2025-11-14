@@ -1,14 +1,16 @@
 ## What
 
 > kernel: `Linux 6.17.7-5-cachyos`
+>
 > nvidia-driver: `cachyos-v3/nvidia-open-dkms 580.105.08-3`
+>
 > sddm: `cachyos-v3/sddm 0.21.0-8`
 
 SDDM shows a blank screen (only with mouse cursor and tty cursor) after booting into graphical target, but starts normally after restarting the SDDM service.
 
 ## Why
 
-SDDM starts before the NVIDIA driver is fully initialized, causing the greeter to fail to display properly.
+SDDM starts before the NVIDIA driver is fully initialized, causing the greeter session to fail to display properly.
 
 <details>
 <summary>evidence</summary>
@@ -16,7 +18,7 @@ SDDM starts before the NVIDIA driver is fully initialized, causing the greeter t
 - Logs after booting (many unrelated lines omitted):
 
 ```log
-...(maybe unrelated lines)...
+...
 systemd[1]: Started Simple Desktop Display Manager.
 kernel: NVRM: testIfDsmSubFunctionEnabled: GPS ACPI DSM called before _acpiDsmSupportedFuncCacheInit subfunction = 11.
 kernel: bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
@@ -68,7 +70,7 @@ systemd[1]: Started Session c1 of User sddm.
 sddm-helper[1006]: Writing cookie to "/tmp/xauth_FfqCDd"
 sddm-helper[1006]: Starting X11 session: "" "/usr/bin/sddm-greeter --socket /tmp/sddm-:0-HQDlHk --theme /usr/share/sddm/themes/sugar-candy"
 sddm[878]: Greeter session started successfully
-...(maybe unrelated lines)...
+...
 ```
 
 Although the greeter session started successfully, it is not able to display anything due to `nvidia 0000:01:00.0: [drm] Cannot find any crtc or sizes`, resulting in a blank screen.
@@ -76,7 +78,7 @@ Although the greeter session started successfully, it is not able to display any
 - Logs after restarting sddm.service:
 
 ```log
-...(maybe unrelated lines)...
+...
 systemd[1]: Started Simple Desktop Display Manager.
 sudo[1123]: pam_unix(sudo:session): session closed for user root
 sddm[1150]: Initializing...
@@ -105,18 +107,18 @@ systemd[1]: Started Session c2 of User sddm.
 sddm-helper[1217]: Writing cookie to "/tmp/xauth_Qghqzs"
 sddm-helper[1217]: Starting X11 session: "" "/usr/bin/sddm-greeter --socket /tmp/sddm-:0-YHEwdP --theme /usr/share/sddm/themes/sugar-candy"
 sddm[1150]: Greeter session started successfully
-...(maybe unrelated lines)...
+...
 ```
 
 </details>
 
 ## How
 
-The key is to avoid the timing race between nvidia init and sddm start. There are multiple ways to achieve this, two for example:
+The key is to avoid timing race between NVIDIA initialization and SDDM start. There are multiple ways to achieve this, two for example:
 
 ### Early KMS:
 
-As described in [Hyprland WIKI](https://wiki.hypr.land/Nvidia/#early-kms-modeset-and-fbdev), this ensures that the NVIDIA driver is loaded in the initramfs and is ready before SDDM starts.
+As described in [Hyprland WIKI](https://wiki.hypr.land/Nvidia/#early-kms-modeset-and-fbdev), this ensures that the NVIDIA driver is loaded in the initramfs and is ready before SDDM starts (just randomly forgot to do this after reinstalling the system :D).
 
 1.  enable `modset` in kernel parameters (e.g. in `/etc/default/grub`):
 
