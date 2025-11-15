@@ -54,27 +54,27 @@ random_name=$(tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 16)
 current_dir="$HOME/.local/share/wallpaper/current"
 image_copied="$current_dir/wallpaper-${random_name}.${ext}"
 
-mkdir -p "$current_dir" || (
+mkdir -p "$current_dir" || {
     echo "Could not create directory $current_dir"
     exit 1
-)
+}
 
 temp_img=$(mktemp --suffix=."$ext") || exit 1
 trap 'rm -f "$temp_img"' EXIT
 cp "$image" "$temp_img" || exit 1
 rm -f "${current_dir:?}"/wallpaper-*
-cp -f "$temp_img" "$image_copied" || (
+cp -f "$temp_img" "$image_copied" || {
     echo "Could not copy image to $current_dir"
     exit 1
-)
+}
 
 # Generate blurred wallpaper
 
 blur_dir="$HOME/.local/share/wallpaper/blurred"
-mkdir -p "$blur_dir" || (
+mkdir -p "$blur_dir" || {
     echo "Could not create cache directory"
     exit 1
-)
+}
 rm -f "${blur_dir:?}"/blurred-*
 blurred_image="$blur_dir/blurred-${random_name}.$ext"
 
@@ -93,14 +93,14 @@ blurred_image="$blur_dir/blurred-${random_name}.$ext"
     ### use a temporary file to avoid incomplete file being used
     temp_blurred=$(mktemp --suffix=."$ext") || exit 1
     trap 'rm -f "${temp_blurred}"' EXIT
-    magick "$image_copied" -blur 0x"$sigma" "$temp_blurred" || (
+    magick "$image_copied" -blur 0x"$sigma" "$temp_blurred" || {
         echo "Could not create blurred image"
         exit 1
-    )
-    mv -f "$temp_blurred" "$blurred_image" || (
+    }
+    mv -f "$temp_blurred" "$blurred_image" || {
         echo "Could not move blurred image to cache directory"
         exit 1
-    )
+    }
 
     if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
         swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null

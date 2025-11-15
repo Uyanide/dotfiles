@@ -57,7 +57,7 @@ def take_screenshot(filepath: Path, typeStr: str):
         }
         process = subprocess.run(f"{cmd[type]}{filepath.name}", shell=True)
         if process.returncode != 0:
-            raise RuntimeError("Failed to take screenshot.")
+            raise RuntimeError("Failed to take screenshot: hyprshot command failed.")
         wait_until_file_exists(filepath)
     elif "niri" in currentDesktop:
         cmd = {
@@ -71,19 +71,17 @@ def take_screenshot(filepath: Path, typeStr: str):
         # if os.system(cmd[type]):
         process = subprocess.run(cmd[type], shell=True)
         if process.returncode != 0:
-            print("Failed to take screenshot.")
-            exit(1)
+            raise RuntimeError("Failed to take screenshot: niri built-in screenshot command failed.")
         wait_until_file_exists(niriScreenshotPath)
         if niriScreenshotPath.exists():
             # niriScreenshotPath.rename(filepath)
             copy2(niriScreenshotPath, filepath)
         else:
-            print("Failed to take screenshot.")
-            exit(1)
+            raise RuntimeError("Failed to take screenshot: screenshot file nto found after niri command.")
         wait_until_file_exists(filepath)
     else:
-        print("Unsupported desktop environment.")
-        exit(1)
+        # print("Unsupported desktop environment.")
+        raise RuntimeError("Unsupported desktop environment.")
 
 
 def edit_screenshot(filepath: Path):
@@ -91,71 +89,78 @@ def edit_screenshot(filepath: Path):
     # subprocess.run(f"spectacle -l --edit-existing {filepath}", shell=True)
 
 
-def file_name(dir: Path, prefix="screenshot", ext=".png"):
+def gen_file_name(prefix="screenshot", ext=".png"):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     return f"{prefix}_{timestamp}{ext}"
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Take screenshots with hyprshot.")
-    parser.add_argument(
-        "type",
-        choices=[t.value for t in ScreenshotType],
-        help="Type of screenshot to take.",
-    )
-    args = parser.parse_args()
-
-    # file path
-    SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
-    filename = file_name(SCREENSHOT_DIR)
-    filepath = SCREENSHOT_DIR / filename
-
-    # take screenshot
-    take_screenshot(filepath, args.type)
-
-    # check if successful
-    if not filepath.exists():
-        print("Failed to take screenshot.")
-        exit(1)
-
-    # create loop instance
-    loop = GLib.MainLoop()
-    editing = False
-
-    # callback on default action (edit)
-    def edit_callback(n, action, user_data):
-        try:
-            global editing
-            editing = True
-            edit_screenshot(filepath)
-        finally:
-            n.close()
-            loop.quit()
-
-    # callback on close
-    def close_callback(n):
-        global editing
-        if not editing:
-            loop.quit()
-
-    # notification
     Notify.init("Screenshot Utility")
-    n = Notify.Notification.new(
-        "Screenshot taken",
-        # Mako doesn't have action buttons displayed with notification cards,
-        "Click to edit",
-    )
-    n.add_action(
-        # so default action is used here, which will be triggered on clicking the notification card
-        "default",
-        # But for my (or to be precise, Noctalia's) quickshell config, buttons will be displayed with label
-        "Open in Editor",
-        edit_callback,
-        None,
-    )
 
-    # set timeout for close_callback
-    GLib.timeout_add_seconds(10, close_callback, n)
+    try:
+        # raise RuntimeError("Never gonna give you up, never gonna let you down.")
+        parser = argparse.ArgumentParser(description="Take screenshots with hyprshot.")
+        parser.add_argument(
+            "type",
+            choices=[t.value for t in ScreenshotType],
+            help="Type of screenshot to take.",
+        )
+        args = parser.parse_args()
 
-    n.show()
-    loop.run()
+        # file path
+        SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
+        filename = gen_file_name()
+        filepath = SCREENSHOT_DIR / filename
+
+        # take screenshot
+        take_screenshot(filepath, args.type)
+
+        # check if successful
+        if not filepath.exists():
+            raise RuntimeError("Failed to take screenshot: screenshot file not found.")
+
+        # create loop instance
+        loop = GLib.MainLoop()
+        editing = False
+
+        # callback on default action (edit)
+        def edit_callback(n, action, user_data):
+            try:
+                global editing
+                editing = True
+                edit_screenshot(filepath)
+            finally:
+                n.close()
+                loop.quit()
+
+        # callback on close
+        def close_callback(n):
+            global editing
+            if not editing:
+                loop.quit()
+
+        n = Notify.Notification.new(
+            "Screenshot Taken",
+            # Mako doesn't have action buttons displayed with notification cards,
+            "Click to edit",
+        )
+        n.add_action(
+            # so default action is used, which will be triggered on simply clicking the notification card
+            "default",
+            # But for my (or more accurate, Noctalia's) quickshell config, buttons will be displayed with label, even for the default action
+            "Open in Editor",
+            edit_callback,
+            None,
+        )
+
+        # set timeout for close_callback
+        GLib.timeout_add_seconds(10, close_callback, n)
+
+        n.show()
+        loop.run()
+    except Exception as e:
+        n = Notify.Notification.new(
+            "Screenshot Error",
+            str(e),
+        )
+        n.show()
