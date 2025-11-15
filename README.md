@@ -38,17 +38,17 @@ https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
 
 ## Setup Overview
 
-- OS: Archlinux
+- OS: **Archlinux**
 - WM: Hyprland | **Niri**
 - Bar: Waybar | **Quickshell**
-- Shell: Fish
-- Prompt: Oh My Posh
+- Shell: **Fish**
+- Prompt: **Oh My Posh**
 - Terminal: **Kitty** & Ghostty
-- Power Menu: Wlogout
-- Colorscheme: Catppuccin Mocha
-- App Launcher: **Rofi** | fuzzel
+- Power Menu: **Wlogout**
+- Colorscheme: **Catppuccin Mocha**
+- App Launcher: **Rofi** | Fuzzel
 - Desktop Widgets: Eww | **Quickshell**
-- Wallpaper Daemon: Swww
+- Wallpaper Daemon: **Awww** (previously Swww)
 - Notification Daemon: Mako | **Quickshell**
 
 (**bold**: currently preferred)

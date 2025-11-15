@@ -34,24 +34,24 @@ if type -q fzf
         end
     end
 
-    # fyq: fuzzy yay query
     if type -q yay
+        # fyq: fuzzy yay query
         alias fyq="yay -Qq | fzf --preview 'yay -Qi {}'"
-    end
 
-    # fyi: fuzzy yay install
-    function fyi
-        set -l pkg (yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' $argv)
-        if test -n "$pkg"
-            yay -S $pkg
+        # fyi: fuzzy yay install
+        function fyi
+            set -l pkg (yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' $argv)
+            if test -n "$pkg"
+                yay -S $pkg
+            end
         end
-    end
 
-    # fyr: fuzzy yay remove
-    function fyr
-        set -l pkg (yay -Qq | fzf -m --preview 'yay -Qi {}' $argv)
-        if test -n "$pkg"
-            yay -Rn $pkg
+        # fyr: fuzzy yay remove
+        function fyr
+            set -l pkg (yay -Qq | fzf -m --preview 'yay -Qi {}' $argv)
+            if test -n "$pkg"
+                yay -Rn $pkg
+            end
         end
     end
 end
