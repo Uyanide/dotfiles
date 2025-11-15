@@ -1,6 +1,5 @@
 #!/bin/bash
 
-path=$(dirname "$(readlink -f "$0")")
 [ -f "$HOME/.local/snippets/apply-color-helper" ] || {
     echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
     exit 1
@@ -15,4 +14,3 @@ sed -i -E "s/^(\s*active-color\s+\"#)([0-9A-Fa-f]{6})(\")/\1${colorHex}\3/" "$fi
 }
 
 log_success "niri"
-

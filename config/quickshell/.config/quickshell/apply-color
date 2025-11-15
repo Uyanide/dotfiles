@@ -1,6 +1,5 @@
 #!/bin/bash
 
-path=$(dirname "$(readlink -f "$0")")
 [ -f "$HOME/.local/snippets/apply-color-helper" ] || {
     echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
     exit 1
@@ -18,4 +17,3 @@ else
     log_error "quickshell is not running. Cannot apply color."
     exit 1
 fi
-

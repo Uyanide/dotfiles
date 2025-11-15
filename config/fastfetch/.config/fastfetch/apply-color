@@ -14,4 +14,3 @@ sed -i -E "s/(set -g fetch_color\s+\"#)([0-9a-fA-F]{6})(\")/\1${colorHex}\3/" "$
 }
 
 log_success "fastfetch"
-

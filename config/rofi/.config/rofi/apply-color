@@ -1,6 +1,5 @@
 #!/bin/bash
 
-path=$(dirname "$(readlink -f "$0")")
 [ -f "$HOME/.local/snippets/apply-color-helper" ] || {
     echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
     exit 1
@@ -20,4 +19,3 @@ sed -i -E "s/^(\s*primary:\s*#)([0-9A-Fa-f]{6})(;)/\1${colorHex}\3/" "$file" || 
 }
 
 log_success "rofi"
-

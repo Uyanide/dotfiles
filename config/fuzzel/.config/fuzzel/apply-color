@@ -1,6 +1,5 @@
 #!/bin/bash
 
-path=$(dirname "$(readlink -f "$0")")
 [ -f "$HOME/.local/snippets/apply-color-helper" ] || {
     echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
     exit 1
@@ -24,4 +23,3 @@ for entry in $entries; do
 done
 
 log_success "fuzzel"
-

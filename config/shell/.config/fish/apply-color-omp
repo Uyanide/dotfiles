@@ -1,6 +1,5 @@
 #!/bin/bash
 
-path=$(dirname "$(readlink -f "$0")")
 [ -f "$HOME/.local/snippets/apply-color-helper" ] || {
     echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
     exit 1
@@ -14,7 +13,7 @@ targetTypes=("os" "session" "status")
 if ! python3 - "$file" "$colorHex" "${targetTypes[@]}"; then {
     log_error "Failed to edit ${file}"
     exit 1
-} fi <<EOF
+}; fi <<EOF
 import json
 import sys
 
@@ -62,3 +61,4 @@ if [ $? -ne 0 ]; then
 fi
 
 log_success "oh-my-posh"
+

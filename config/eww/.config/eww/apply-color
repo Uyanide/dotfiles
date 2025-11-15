@@ -1,6 +1,5 @@
 #!/bin/bash
 
-path=$(dirname "$(readlink -f "$0")")
 [ -f "$HOME/.local/snippets/apply-color-helper" ] || {
     echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
     exit 1
@@ -14,7 +13,7 @@ sed -i "s|^\$border: #[0-9a-fA-F]\{6\};\$|\$border: #${colorHex};|" "$file" || {
     exit 1
 }
 
-if pgrep -x eww >/dev/null -u "$USER"; then
+if pgrep -x eww -u "$USER" >/dev/null; then
     eww reload || {
         log_error "Failed to reload eww, is it running?"
         exit 1
@@ -22,3 +21,4 @@ if pgrep -x eww >/dev/null -u "$USER"; then
 fi
 
 log_success "eww"
+

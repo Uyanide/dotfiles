@@ -1,6 +1,5 @@
 #!/bin/bash
 
-path=$(dirname "$(readlink -f "$0")")
 [ -f "$HOME/.local/snippets/apply-color-helper" ] || {
     echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
     exit 1
@@ -23,4 +22,3 @@ if pgrep -x "mako" -u "$USER" >/dev/null; then
 fi
 
 log_success "mako"
-
