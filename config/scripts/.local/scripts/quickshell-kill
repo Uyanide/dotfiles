@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+pid=$(pgrep -x quickshell)
+[ -z "$pid" ] && exit 1
+
+for child in $(pgrep -P "$pid" 2>/dev/null); do
+    kill "$child"
+done
+
+kill "$pid"
+

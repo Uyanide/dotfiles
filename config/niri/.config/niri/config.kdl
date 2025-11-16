@@ -317,7 +317,7 @@ binds {
     Mod+Space { spawn-sh "qs ipc call panels toggleControlCenter"; }
     Mod+Shift+D { spawn-sh "qs ipc call panels toggleCalendar"; }
     Mod+Shift+L { spawn-sh "qs ipc call lyrics toggleBarLyrics"; }
-    Mod+Shift+K { spawn-sh "pkill -x quickshell || quickshell"; }
+    Mod+Shift+K { spawn-sh "quickshell-kill || quickshell"; }
     Mod+I { spawn-sh "qs ipc call idleInhibitor toggleInhibitor"; }
     Mod+Alt+R { spawn-sh "qs ipc call recording startOrStopRecording"; }
 
