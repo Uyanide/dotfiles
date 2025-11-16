@@ -16,6 +16,10 @@ ShellRoot {
         active: CacheService.loaded && NukeKded6.done
 
         sourceComponent: Item {
+            Component.onCompleted: {
+                SunsetService;
+            }
+
             Notification {
                 id: notification
             }

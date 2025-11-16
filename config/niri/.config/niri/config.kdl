@@ -137,7 +137,7 @@ spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
 spawn-sh-at-startup "wl-paste --type image --watch cliphist store"
 
 // wlsunset
-spawn-at-startup "sunset"
+// spawn-at-startup "sunset"
 
 // Logitech
 spawn-sh-at-startup "solaar -w hide"

@@ -48,4 +48,12 @@ Item {
         target: "recording"
     }
 
+    IpcHandler {
+        function toggleSunset() {
+            SunsetService.toggleSunset();
+        }
+
+        target: "sunset"
+    }
+
 }

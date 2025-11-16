@@ -11,6 +11,7 @@ Singleton {
     property alias notifications: adapter.notifications
     property alias location: adapter.location
     property alias wifiEnabled: adapter.wifiEnabled
+    property alias sunsetDefaultEnabled: adapter.sunsetDefaultEnabled
     property string settingsFilePath: Qt.resolvedUrl("../Assets/Config/Settings.json")
 
     FileView {
@@ -29,6 +30,7 @@ Singleton {
             property JsonObject notifications
             property string location: "New York"
             property bool wifiEnabled: true
+            property bool sunsetDefaultEnabled: true
 
             notifications: JsonObject {
                 property bool doNotDisturb: false
