@@ -39,8 +39,8 @@ SCRIPTS = {
     "fastfetch": [CONFIG_DIR / "fastfetch" / "apply-color"],
     "fuzzel": [CONFIG_DIR / "fuzzel" / "apply-color"],
     "hypr": [CONFIG_DIR / "hypr" / "apply-color"],
-    "kvantum": [CONFIG_DIR / "fish" / "apply-color-kvantum"],  # borrowing fish's directory
-    "nwg-look": [CONFIG_DIR / "fish" / "apply-color-nwg-look"],  # borrowing fish's directory
+    "kvantum": [CONFIG_DIR / "Kvantum" / "apply-color"],
+    "nwg-look": [CONFIG_DIR / "nwg-look" / "apply-color"],
     "mako": [CONFIG_DIR / "mako" / "apply-color"],
     "niri": [CONFIG_DIR / "niri" / "apply-color"],
     "oh-my-posh": [CONFIG_DIR / "fish" / "apply-color-omp"],  # borrowing fish's directory

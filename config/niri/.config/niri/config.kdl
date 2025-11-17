@@ -311,7 +311,6 @@ binds {
     Mod+Shift+Return { spawn "ghostty"; }
     Mod+Shift+W { spawn-sh "wallpaper-carousel"; }
     Mod+O { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
-    Mod+Shift+E { spawn "sunset"; }
 
     // Quickshell
     Mod+Space { spawn-sh "qs ipc call panels toggleControlCenter"; }
@@ -320,6 +319,7 @@ binds {
     Mod+Shift+K { spawn-sh "quickshell-kill || quickshell"; }
     Mod+I { spawn-sh "qs ipc call idleInhibitor toggleInhibitor"; }
     Mod+Alt+R { spawn-sh "qs ipc call recording startOrStopRecording"; }
+    Mod+Shift+E { spawn-sh "qs ipc call sunset toggleSunset"; }
 
     // Rofi
     Mod+D { spawn-sh "pkill -x rofi || rofi -show run"; }

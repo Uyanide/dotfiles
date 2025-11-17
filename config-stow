@@ -25,6 +25,8 @@ GUI_BASE_PKGS = [
     "misc",
     "mpv",
     "wallpaper",
+    "kvantum",
+    "nwg-look"
 ]
 
 HYPRLAND_PKGS = [
