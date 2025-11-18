@@ -87,7 +87,7 @@ Without referring to remotes explicitly, git will use `origin` by default. To fe
 2. Use `git remote set-url --add`
 
 ```sh
-git remote set-url --add origin ssh://git@example.tld/username/repo.git
+git remote add origin ssh://git@example.tld/username/repo.git
 git remote set-url --add origin ssh://git@backup.tld/username/repo.git
 ```
 
