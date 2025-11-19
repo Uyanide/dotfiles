@@ -46,6 +46,13 @@ output "eDP-2" {
     backdrop-color "#1e1e2e"
 }
 
+output "DP-1" {
+    mode "2560x1440@179.845"
+    scale 1.0
+    background-color "#1e1e2e"
+    backdrop-color "#1e1e2e"
+}
+
 
 /************************Layout************************/
 
@@ -230,6 +237,7 @@ window-rule {
     match app-id="org.pulseaudio.pavucontrol"
     match app-id="com.saivert.pwvucontrol"
     match app-id="Waydroid"
+    match app-id="^waydroid"
     match app-id="org.kde.kcalc"
     match app-id="org.kde.kalk"
     match app-id="org.gnome.NautilusPreviewer"
