@@ -13,6 +13,7 @@
 import argparse
 import subprocess
 import time
+import fcntl
 from os import environ
 from datetime import datetime
 from enum import Enum
@@ -36,7 +37,7 @@ class ScreenshotType(Enum):
 SCREENSHOT_DIR = Path.home() / "Pictures" / "Screenshots"
 
 
-def wait_until_file_exists(filepath: Path, timeout: int = 5):
+def wait_until_file_exists(filepath: Path, timeout: int = 1):
     """Wait until a file exists or timeout."""
     start_time = time.time()
     while not filepath.exists():
@@ -47,41 +48,55 @@ def wait_until_file_exists(filepath: Path, timeout: int = 5):
 
 
 def take_screenshot(filepath: Path, typeStr: str):
-    type = ScreenshotType(typeStr)
-    currentDesktop = environ.get("XDG_CURRENT_DESKTOP", "")
-    if "Hyprland" in currentDesktop:
-        cmd = {
-            ScreenshotType.FULL: f"hyprshot -z -m output -m active -o {SCREENSHOT_DIR} -f ",  # since I only have one monitor
-            ScreenshotType.AREA: f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
-            ScreenshotType.WINDOW: f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
-        }
-        process = subprocess.run(f"{cmd[type]}{filepath.name}", shell=True)
-        if process.returncode != 0:
-            raise RuntimeError("Failed to take screenshot: hyprshot command failed.")
-        wait_until_file_exists(filepath)
-    elif "niri" in currentDesktop:
-        cmd = {
-            ScreenshotType.FULL: "niri msg action screenshot-screen",
-            ScreenshotType.AREA: "niri msg action screenshot",
-            ScreenshotType.WINDOW: "niri msg action screenshot-window",
-        }
-        niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
-        if niriScreenshotPath.exists():
-            niriScreenshotPath.unlink()
-        # if os.system(cmd[type]):
-        process = subprocess.run(cmd[type], shell=True)
-        if process.returncode != 0:
-            raise RuntimeError("Failed to take screenshot: niri built-in screenshot command failed.")
-        wait_until_file_exists(niriScreenshotPath)
-        if niriScreenshotPath.exists():
-            # niriScreenshotPath.rename(filepath)
-            copy2(niriScreenshotPath, filepath)
+    lock_fd = open("/tmp/screenshot-script.lock", "w")
+    try:
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except IOError:
+        lock_fd.close()
+        raise RuntimeError("Another screenshot is currently being taken.")
+
+    try:
+        type = ScreenshotType(typeStr)
+        currentDesktop = environ.get("XDG_CURRENT_DESKTOP", "")
+        if "Hyprland" in currentDesktop:
+            cmd = {
+                # since I only have one monitor
+                ScreenshotType.FULL: f"hyprshot -z -m output -m active -o {SCREENSHOT_DIR} -f ",
+                ScreenshotType.AREA: f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
+                ScreenshotType.WINDOW: f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
+            }
+            process = subprocess.run(f"{cmd[type]}{filepath.name}", shell=True)
+            if process.returncode != 0:
+                raise RuntimeError("Failed to take screenshot: hyprshot command failed.")
+            if not wait_until_file_exists(filepath):
+                raise RuntimeError("Failed to take screenshot: output file not found after hyprshot command.")
+        elif "niri" in currentDesktop:
+            cmd = {
+                ScreenshotType.FULL: "niri msg action screenshot-screen",
+                ScreenshotType.AREA: "niri msg action screenshot",
+                ScreenshotType.WINDOW: "niri msg action screenshot-window",
+            }
+            niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
+            if niriScreenshotPath.exists():
+                niriScreenshotPath.unlink()
+            # if os.system(cmd[type]):
+            process = subprocess.run(cmd[type], shell=True)
+            if process.returncode != 0:
+                raise RuntimeError("Failed to take screenshot: niri built-in screenshot command failed.")
+
+            if wait_until_file_exists(niriScreenshotPath):
+                # niriScreenshotPath.rename(filepath)
+                copy2(niriScreenshotPath, filepath)
+            else:
+                raise RuntimeError("Failed to take screenshot: output file not found after niri command.")
+            if not wait_until_file_exists(filepath):
+                raise RuntimeError("Failed to take screenshot: output file not found after copying.")
         else:
-            raise RuntimeError("Failed to take screenshot: screenshot file nto found after niri command.")
-        wait_until_file_exists(filepath)
-    else:
-        # print("Unsupported desktop environment.")
-        raise RuntimeError("Unsupported desktop environment.")
+            # print("Unsupported desktop environment.")
+            raise RuntimeError("Unsupported desktop environment.")
+    finally:
+        fcntl.flock(lock_fd, fcntl.LOCK_UN)
+        lock_fd.close()
 
 
 def edit_screenshot(filepath: Path):

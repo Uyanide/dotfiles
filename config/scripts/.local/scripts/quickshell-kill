@@ -7,5 +7,7 @@ for child in $(pgrep -P "$pid" 2>/dev/null); do
     kill "$child"
 done
 
+sleep 0.3
+
 kill "$pid"
 
