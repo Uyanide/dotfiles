@@ -82,7 +82,7 @@ keymap = [
 	# { on = "<C-r>", run = "select_all --state=none", desc = "Inverse selection of all files" },
 
 	# Find
-	{ on = "<C-p>", run = "plugin fzf", desc = "Jump to a directory or reveal a file using fzf" },
+	{ on = "<C-f>", run = "plugin fzf", desc = "Jump to a directory or reveal a file using fzf" },
 	{ on = [
 		"z",
 		"o",
@@ -105,7 +105,7 @@ keymap = [
 	{ on = ".", run = "hidden toggle", desc = "Toggle the visibility of hidden files" },
 
 	# Open
-	{ on = "r", run = "open --interactive", desc = "Open selected files interactively" },
+	{ on = "L", run = "open --interactive", desc = "Open selected files interactively" },
 
 	# Create
 	{ on = "T", run = "create", desc = "Create a file (ends with / for directories)" },
@@ -361,7 +361,9 @@ keymap = [
 keymap = [
 	# Navigation
 	{ on = "u", run = "arrow -1", desc = "Move up" },
+	{ on = "<Up>", run = "arrow -1", desc = "Move up" },
 	{ on = "e", run = "arrow 1", desc = "Move down" },
+	{ on = "<Down>", run = "arrow 1", desc = "Move down" },
 
 	# Close
 	{ on = "<Esc>", run = "close", desc = "Close spotter" },
