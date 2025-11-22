@@ -126,7 +126,7 @@ layer-rule {
 /************************Autostart************************/
 
 // Switch configs
-spawn-sh-at-startup "config-switch niri"
+spawn-at-startup "config-switch" "niri"
 
 // Wallpaper
 spawn-at-startup "wallpaper-daemon"
@@ -136,18 +136,18 @@ spawn-at-startup "fcitx5"
 
 // Core
 spawn-at-startup "nm-applet"
-spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets"
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 
 // Clipboard history
-spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
-spawn-sh-at-startup "wl-paste --type image --watch cliphist store"
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 
 // wlsunset
 // spawn-at-startup "sunset"
 
 // Logitech
-spawn-sh-at-startup "solaar -w hide"
+spawn-at-startup "solaar" "-w" "hide"
 
 // Some other heavy apps
 spawn-at-startup "sunshine"
@@ -308,8 +308,8 @@ screenshot-path "~/Pictures/Screenshots/.niri_screenshot.png"
 
 binds {
     // Apps
-    Mod+C { spawn-sh "code --password-store=gnome-libsecret"; }
-    Mod+E { spawn-sh "dolphin --new-window"; }
+    Mod+C { spawn "code"; }
+    Mod+E { spawn "dolphin" "--new-window"; }
     Mod+W { spawn-sh "zen || zen-browser"; }
     Mod+X { spawn "gnome-text-editor" "--new-window"; }
     Mod+B { spawn-sh "pkill -x -n btop || ghostty -e btop"; }
@@ -317,17 +317,17 @@ binds {
     Mod+Return { spawn "kitty"; }
     Mod+Shift+T { spawn "ghostty"; }
     Mod+Shift+Return { spawn "ghostty"; }
-    Mod+Shift+W { spawn-sh "wallpaper-carousel"; }
+    Mod+Shift+W { spawn "wallpaper-carousel"; }
     Mod+O { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
 
     // Quickshell
-    Mod+Space { spawn-sh "qs ipc call panels toggleControlCenter"; }
-    Mod+Shift+D { spawn-sh "qs ipc call panels toggleCalendar"; }
-    Mod+Shift+L { spawn-sh "qs ipc call lyrics toggleBarLyrics"; }
+    Mod+Space { spawn "qs" "ipc" "call" "panels" "toggleControlCenter"; }
+    Mod+Shift+D { spawn "qs" "ipc" "call" "panels" "toggleCalendar"; }
+    Mod+Shift+L { spawn "qs" "ipc" "call" "lyrics" "toggleBarLyrics"; }
     Mod+Shift+K { spawn-sh "quickshell-kill || quickshell"; }
-    Mod+I { spawn-sh "qs ipc call idleInhibitor toggleInhibitor"; }
-    Mod+Alt+R { spawn-sh "qs ipc call recording startOrStopRecording"; }
-    Mod+Shift+E { spawn-sh "qs ipc call sunset toggleSunset"; }
+    Mod+I { spawn "qs" "ipc" "call" "idleInhibitor" "toggleInhibitor"; }
+    Mod+Alt+R { spawn "qs" "ipc" "call" "recording" "startOrStopRecording"; }
+    Mod+Shift+E { spawn "qs" "ipc" "call" "sunset" "toggleSunset"; }
 
     // Rofi
     Mod+D { spawn-sh "pkill -x rofi || rofi -show run"; }
@@ -335,15 +335,15 @@ binds {
 
     // Actions
     Mod+V { spawn-sh "pkill -x rofi || rofi-cliphist"; }
-    Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
-    Ctrl+Alt+Delete { spawn-sh "pkill -x wlogout || wlogout -p layer-shell"; }
-    Print { spawn-sh "screenshot-script full"; }
-    Mod+Shift+S { spawn-sh "screenshot-script area"; }
-    Mod+Ctrl+Shift+S { spawn-sh "screenshot-script window"; }
-    Mod+Shift+C { spawn-sh "hyprpicker -a"; }
+    Mod+Period { spawn "pkill -x rofi || rofi-emoji"; }
+    Ctrl+Alt+Delete { spawn "pkill -x wlogout || wlogout -p layer-shell"; }
+    Print { spawn "screenshot-script" "full"; }
+    Mod+Shift+S { spawn "screenshot-script" "area"; }
+    Mod+Ctrl+Shift+S { spawn "screenshot-script" "window"; }
+    Mod+Shift+C { spawn "hyprpicker" "-a"; }
 
     // Session
-    Mod+L { spawn-sh "loginctl lock-session"; }
+    Mod+L { spawn "loginctl" "lock-session"; }
 
     // Media
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"; }
