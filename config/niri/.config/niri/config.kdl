@@ -335,7 +335,7 @@ binds {
 
     // Actions
     Mod+V { spawn-sh "pkill -x rofi || rofi-cliphist"; }
-    Mod+Period { spawn "pkill -x rofi || rofi-emoji"; }
+    Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
     Ctrl+Alt+Delete { spawn "pkill -x wlogout || wlogout -p layer-shell"; }
     Print { spawn "screenshot-script" "full"; }
     Mod+Shift+S { spawn "screenshot-script" "area"; }
@@ -450,8 +450,6 @@ binds {
 
     Mod+Alt+Space { toggle-window-floating; }
     Alt+Tab { switch-focus-between-floating-and-tiling; }
-
-    Mod+Ctrl+W { toggle-column-tabbed-display; }
 
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 
