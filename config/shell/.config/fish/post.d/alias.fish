@@ -85,8 +85,19 @@ alias ....='cd ../../..'
 # grep
 alias grep="grep --color=auto"
 
-
 # others
 if type -q tty-clock
     alias clock="tty-clock -c -C 4"
+end
+
+if type -q git
+    function acp
+        git add . || return 1
+        if test (count $argv) -eq 0
+            git commit -m "." || return 1
+        else
+            git commit -m "$argv" || return 1
+        end
+        git push
+    end
 end

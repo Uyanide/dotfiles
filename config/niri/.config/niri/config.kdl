@@ -27,7 +27,7 @@ input {
     warp-mouse-to-focus
 
     // Focus windows and outputs automatically when moving the mouse into them.
-    focus-follows-mouse max-scroll-amount="99%"
+    focus-follows-mouse max-scroll-amount="100%"
 }
 
 /************************Output************************/
