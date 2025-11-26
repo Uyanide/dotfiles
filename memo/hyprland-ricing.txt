@@ -1,6 +1,6 @@
 things I have installed:
 
-full KDE Plasma 6 setup     # non-essential for sure
+full KDE Plasma 6 setup
     which can provide:
         SDDM theme          # Breeze is enough
         kcalc/kalc          # calculator(s), what's the difference?
