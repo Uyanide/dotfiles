@@ -6,7 +6,7 @@
 #
 # Requirements:
 # - hyprshot (for Hyprland)
-# - - (niri has screenshot functionality built-in)
+# - grim + slurp (for Niri)
 # - gradia (for editing)
 # - glib bindings for python
 
@@ -48,11 +48,11 @@ def wait_until_file_exists(filepath: Path, timeout: int = 1):
 
 
 def take_screenshot(filepath: Path, typeStr: str):
-    lock_fd = open("/tmp/screenshot-script.lock", "w")
+    lockFD = open("/tmp/screenshot-script.lock", "w")
     try:
-        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.flock(lockFD, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except IOError:
-        lock_fd.close()
+        lockFD.close()
         raise RuntimeError("Another screenshot is currently being taken.")
 
     try:
@@ -70,19 +70,23 @@ def take_screenshot(filepath: Path, typeStr: str):
                 raise RuntimeError("Failed to take screenshot: hyprshot command failed.")
             if not wait_until_file_exists(filepath):
                 raise RuntimeError("Failed to take screenshot: output file not found after hyprshot command.")
+
         elif "niri" in currentDesktop:
+            niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
             cmd = {
+                # niri's built-in screenshot commands are asynchronous, which does not wait for the user to select the area.
+                # and the selection ui is drawn inside of niri without its state exposed to external programs.
+                # so we use grim + slurp for area mode and niri's built-in commands for others.
                 ScreenshotType.FULL: "niri msg action screenshot-screen",
-                ScreenshotType.AREA: "niri msg action screenshot",
+                ScreenshotType.AREA: f" grim -g \"$(slurp)\" -t png {niriScreenshotPath}",
                 ScreenshotType.WINDOW: "niri msg action screenshot-window",
             }
-            niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
             if niriScreenshotPath.exists():
                 niriScreenshotPath.unlink()
-            # if os.system(cmd[type]):
             process = subprocess.run(cmd[type], shell=True)
             if process.returncode != 0:
-                raise RuntimeError("Failed to take screenshot: niri built-in screenshot command failed.")
+                print(process.returncode)
+                raise RuntimeError("Failed to take screenshot: niri screenshot command failed.")
 
             if wait_until_file_exists(niriScreenshotPath):
                 # niriScreenshotPath.rename(filepath)
@@ -91,12 +95,13 @@ def take_screenshot(filepath: Path, typeStr: str):
                 raise RuntimeError("Failed to take screenshot: output file not found after niri command.")
             if not wait_until_file_exists(filepath):
                 raise RuntimeError("Failed to take screenshot: output file not found after copying.")
+
         else:
             # print("Unsupported desktop environment.")
             raise RuntimeError("Unsupported desktop environment.")
     finally:
-        fcntl.flock(lock_fd, fcntl.LOCK_UN)
-        lock_fd.close()
+        fcntl.flock(lockFD, fcntl.LOCK_UN)
+        lockFD.close()
 
 
 def edit_screenshot(filepath: Path):
@@ -129,10 +134,6 @@ if __name__ == "__main__":
 
         # take screenshot
         take_screenshot(filepath, args.type)
-
-        # check if successful
-        if not filepath.exists():
-            raise RuntimeError("Failed to take screenshot: screenshot file not found.")
 
         # create loop instance
         loop = GLib.MainLoop()

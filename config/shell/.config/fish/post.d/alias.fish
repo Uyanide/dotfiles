@@ -100,4 +100,8 @@ if type -q git
         end
         git push
     end
+
+    if type -q wl-paste
+        alias gc="git clone \$(wl-paste)"
+    end
 end
