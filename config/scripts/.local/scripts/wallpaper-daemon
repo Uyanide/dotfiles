@@ -34,7 +34,7 @@ def getNiriSocket():
 
 
 def _log(msg: str):
-    print(msg)
+    # print(msg)
 
     # logFIle = Path("/tmp/niri-autoblur.log")
     # try:
@@ -104,7 +104,7 @@ class AutoBlur:
     _blurredDir: Path
     _isBlurred = threading.Event()
     _thread: threading.Thread | None = None
-    _lastWallpaer: Path | None = None
+    _lastWallpaper: Path | None = None
     _isFirst = True
 
     def __init__(self, normalDir, blurredDir, interval=0.2):
@@ -204,13 +204,13 @@ class AutoBlur:
             sleep(self._interval)
 
     def _apply(self, wallpaper: Path) -> bool:
-        if wallpaper == self._lastWallpaer:
+        if wallpaper == self._lastWallpaper:
             return True
 
         if not swwwLoadImg("background", wallpaper):
             return False
 
-        self._lastWallpaer = wallpaper
+        self._lastWallpaper = wallpaper
         return True
 
 

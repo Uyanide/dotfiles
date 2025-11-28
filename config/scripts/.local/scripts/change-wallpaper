@@ -35,6 +35,29 @@ fi
 [ -z "$image" ] && exit 1
 [ ! -f "$image" ] && exit 1
 
+# Obtain screen resolution
+
+screen_width=$2
+screen_height=$3
+
+[ -z "$screen_width" ] && {
+    if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
+        screen_width=$(hyprctl -j monitors | jq '.[0].resolution.x')
+    elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
+        screen_width=$(niri msg focused-output | grep 'Current mode' | awk '{print $3}' | cut -d'x' -f1)
+    fi
+}
+
+[ -z "$screen_height" ] && {
+    if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
+        screen_height=$(hyprctl -j monitors | jq '.[0].resolution.y')
+    elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
+        screen_height=$(niri msg focused-output | grep 'Current mode' | awk '{print $3}' | cut -d'x' -f2)
+    fi
+}
+
+[ -z "$screen_width" ] && screen_width=2560
+[ -z "$screen_height" ] && screen_height=1440
 
 # $HOME/.config/wallpaper-chooser/config.json:
 # ```json
@@ -61,26 +84,47 @@ mkdir -p "$current_dir" || {
 
 temp_img=$(mktemp --suffix=."$ext") || exit 1
 trap 'rm -f "$temp_img"' EXIT
-cp "$image" "$temp_img" || exit 1
-rm -f "${current_dir:?}"/wallpaper-*
-cp -f "$temp_img" "$image_copied" || {
-    echo "Could not copy image to $current_dir"
+magick convert "$image" -resize "${screen_width}x${screen_height}^" -gravity center -extent "${screen_width}x${screen_height}" "$temp_img" || {
+    echo "Could not resize and crop image"
     exit 1
 }
+cp "$temp_img" "$image_copied" || exit 1
+hash=$(md5sum "$image_copied" | awk '{print $1}')
+
+# Clean up old wallpapers
+
+find "$current_dir" -type f -name "wallpaper-*" ! -name "$(basename "$image_copied")" -delete
 
 # Generate blurred wallpaper
 
 blur_dir="$HOME/.local/share/wallpaper/blurred"
-mkdir -p "$blur_dir" || {
+blur_cache_dir="$HOME/.local/share/wallpaper/blurred-cache"
+mkdir -p "$blur_dir" "$blur_cache_dir" || {
     echo "Could not create cache directory"
     exit 1
 }
-rm -f "${blur_dir:?}"/blurred-*
 blurred_image="$blur_dir/blurred-${random_name}.$ext"
+blurred_cache_image="$blur_cache_dir/${hash}.$ext"
 
 ## Time consuming task (magick -blur) in background
 (
     # notify-send -a "change-wallpaper" "Generating Blurred Wallpaper" "This may take a few seconds..."
+
+    ### Check if cached blurred image exists
+    if [ -f "$blurred_cache_image" ]; then
+        # sleep 1 # Some ugly workaround
+        if ! cp -f "$blurred_cache_image" "$blurred_image"; then
+            echo "Could not copy cached blurred image"
+            # exit 1 # Non-critical error
+        else
+            find "$blur_dir" -type f -name "blurred-*" ! -name "$(basename "$blurred_image")" -delete
+            if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
+                swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
+            fi
+            notify-send -a "change-wallpaper" "Blurred Wallpaper From Cache" "$blurred_image" -i "$blurred_image"
+            exit 0
+        fi
+    fi
 
     sigma=$(magick identify -format "%w %h" "$image_copied" | awk -v f=0.01 '{
         m=($1>$2)?$1:$2;
@@ -97,9 +141,17 @@ blurred_image="$blur_dir/blurred-${random_name}.$ext"
         echo "Could not create blurred image"
         exit 1
     }
+
     mv -f "$temp_blurred" "$blurred_image" || {
         echo "Could not move blurred image to cache directory"
         exit 1
+    }
+
+    find "$blur_dir" -type f -name "blurred-*" ! -name "$(basename "$blurred_image")" -delete
+
+    cp -f "$blurred_image" "$blurred_cache_image" || {
+        echo "Could not cache blurred image"
+        # exit 1 # Non-critical error
     }
 
     if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
@@ -118,7 +170,8 @@ if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
 
     change-colortheme -i "$image_copied" || exit 1
 elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
-    swww img -n background "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
+    ### Handled in wallpaper-daemon
+    # swww img -n background "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
 
     notify-send -a "change-wallpaper" "Wallpaper Changed" "$image" -i "$image_copied"
 
