@@ -25,10 +25,18 @@ file=${1:-$(wl-paste --no-newline)}
     exit 1
 }
 
-[ -e "$file" ] || {
+[ -f "$file" ] || {
     echo "File does not exist: $file" >&2
     exit 1
 }
+
+case "$file" in
+    /tmp/*/*.txt) ;;
+    *)
+        echo "Possibily not a Ghostty generated temp file: $file" >&2
+        exit 1
+        ;;
+esac
 
 ${EDITOR:-vim} "$file"
 
