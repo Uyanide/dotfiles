@@ -78,7 +78,7 @@ def take_screenshot(filepath: Path, typeStr: str):
                 # and the selection ui is drawn inside of niri without its state exposed to external programs.
                 # so we use grim + slurp for area mode and niri's built-in commands for others.
                 ScreenshotType.FULL: "niri msg action screenshot-screen",
-                ScreenshotType.AREA: f" grim -g \"$(slurp)\" -t png {niriScreenshotPath}",
+                ScreenshotType.AREA: f" grim -g \"$(slurp)\" -t png {niriScreenshotPath} && cat {niriScreenshotPath} | wl-copy",
                 ScreenshotType.WINDOW: "niri msg action screenshot-window",
             }
             if niriScreenshotPath.exists():

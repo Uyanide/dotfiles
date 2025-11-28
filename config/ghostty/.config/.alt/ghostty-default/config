@@ -8,6 +8,9 @@ window-padding-y = 10
 
 keybind = ctrl+shift+r=reload_config
 
+keybind = ctrl+shift+h=write_screen_file:copy
+keybind = ctrl+shift+j=text:ghostty-capture\n
+
 command = exec fish
 
 confirm-close-surface = false
