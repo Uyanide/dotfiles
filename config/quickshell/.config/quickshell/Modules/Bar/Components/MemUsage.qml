@@ -19,7 +19,7 @@ MonitorItem {
             action.signal(15);
             return ;
         }
-        action.exec(["ghostty", "-e", "btop"]);
+        action.exec(["kitty", "-e", "btop"]);
     }
     onRightClicked: {
         _showPercent = !_showPercent;

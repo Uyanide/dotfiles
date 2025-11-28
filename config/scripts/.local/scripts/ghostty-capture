@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Description:
+#   Use a sequence of keybinds to open the scrollback(or screen) buffer in editor (default to vim)
+#   without switching contexts.
+#   (It will be much easier if write_<screen|scrollback>_file:open is correctly implemented)
+#
+# Requirements:
+# - ghostty (of course)
+# - wl-clipboard
+#
+# Example configuration in ~/.config/ghostty/config:
+#   # ctrl+shift+h>j to open the screen buffer in editor
+#   keybind = ctrl+shift+h=write_screen_file:copy
+#   keybind = ctrl+shift+j=text:ghostty-capture\n
+# Or without wl-paste:
+#   # ctrl+shift+h>j > Enter to open the screen buffer in editor
+#   keybind = ctrl+shift+j=text:ghostty-capture\x20
+#   keybind = ctrl+shift+h=write_screen_file:paste
+
+file=${1:-$(wl-paste --no-newline)}
+
+[ -z "$file" ] && {
+    echo "No file provided or found in clipboard." >&2
+    exit 1
+}
+
+[ -f "$file" ] || {
+    echo "File does not exist: $file" >&2
+    exit 1
+}
+
+${EDITOR:-vim} "$file"
+
+rm -f "$file"
+
+rmdir "$(dirname "$file")" 2>/dev/null

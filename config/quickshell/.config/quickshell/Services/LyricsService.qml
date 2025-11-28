@@ -67,7 +67,7 @@ Singleton {
     }
 
     function showLyricsText() {
-        action.command = ["sh", "-c", "ghostty -e sh -c 'spotify-lyrics fetch | less'"];
+        action.command = ["sh", "-c", "ghostty -e sh -c 'spotify-lyrics fetch 2>/dev/null | less'"];
         action.startDetached();
     }
 
