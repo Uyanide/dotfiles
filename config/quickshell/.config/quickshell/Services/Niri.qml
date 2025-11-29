@@ -15,6 +15,7 @@ Singleton {
     property bool inOverview: false
     property string focusedWindowTitle: ""
     property string focusedWindowAppId: ""
+    property var onScreenshotCaptured: null
 
     function updateFocusedWindowTitle() {
         if (windows && windows[focusedWindowId]) {
@@ -84,7 +85,8 @@ Singleton {
                     const event = JSON.parse(data.trim());
                     if (event.WorkspacesChanged) {
                         workspaceProcess.running = true;
-                    } else if (event.WindowsChanged) {
+                    }
+                    if (event.WindowsChanged) {
                         try {
                             const windowsData = event.WindowsChanged.windows;
                             const windowsMap = {};
@@ -104,9 +106,11 @@ Singleton {
                         } catch (e) {
                             Logger.error("Niri", "Error parsing windows event:", e);
                         }
-                    } else if (event.WorkspaceActivated) {
+                    }
+                    if (event.WorkspaceActivated) {
                         workspaceProcess.running = true;
-                    } else if (event.WindowFocusChanged) {
+                    }
+                    if (event.WindowFocusChanged) {
                         try {
                             const focusedId = event.WindowFocusChanged.id;
                             if (focusedId) {
@@ -123,13 +127,15 @@ Singleton {
                         } catch (e) {
                             Logger.error("Niri", "Error parsing window focus event:", e);
                         }
-                    } else if (event.OverviewOpenedOrClosed) {
+                    }
+                    if (event.OverviewOpenedOrClosed) {
                         try {
                             root.inOverview = event.OverviewOpenedOrClosed.is_open === true;
                         } catch (e) {
                             Logger.error("Niri", "Error parsing overview state:", e);
                         }
-                    } else if (event.WindowOpenedOrChanged) {
+                    }
+                    if (event.WindowOpenedOrChanged) {
                         try {
                             const targetWin = event.WindowOpenedOrChanged.window;
                             const id = targetWin.id;
@@ -165,7 +171,8 @@ Singleton {
                         } catch (e) {
                             Logger.error("Niri", "Error parsing window opened/changed event:", e);
                         }
-                    } else if (event.windowClosed) {
+                    }
+                    if (event.windowClosed) {
                         try {
                             const closedId = event.windowClosed.id;
                             if (closedId && (root.windows && root.windows[closedId])) {
@@ -177,6 +184,17 @@ Singleton {
                             }
                         } catch (e) {
                             Logger.error("Niri", "Error parsing window closed event:", e);
+                        }
+                    }
+                    if (event.ScreenshotCaptured) {
+                        try {
+                            const path = event.ScreenshotCaptured.path || "";
+                            if (!path) return;
+                            if (root.onScreenshotCaptured && typeof root.onScreenshotCaptured === "function") {
+                                root.onScreenshotCaptured(path);
+                            }
+                        } catch (e) {
+                            Logger.error("Niri", "Error parsing screenshot captured event:", e);
                         }
                     }
                 } catch (e) {

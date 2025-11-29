@@ -32,6 +32,7 @@ class ScreenshotType(Enum):
     FULL = "full"
     AREA = "area"
     WINDOW = "window"
+    EDIT = "edit"
 
 
 SCREENSHOT_DIR = Path.home() / "Pictures" / "Screenshots"
@@ -125,15 +126,29 @@ if __name__ == "__main__":
             choices=[t.value for t in ScreenshotType],
             help="Type of screenshot to take.",
         )
+        parser.add_argument(
+            "path",
+            nargs="?",
+            default="",
+            help="Path of the given screenshot file (for edit type only).",
+        )
         args = parser.parse_args()
 
-        # file path
-        SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
-        filename = gen_file_name()
-        filepath = SCREENSHOT_DIR / filename
+        filepath: Path = Path()
+        if not args.type == ScreenshotType.EDIT.value:
+            # file path
+            SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
+            filename = gen_file_name()
+            filepath = SCREENSHOT_DIR / filename
 
-        # take screenshot
-        take_screenshot(filepath, args.type)
+            # take screenshot
+            take_screenshot(filepath, args.type)
+        else:
+            if not args.path:
+                raise RuntimeError("Path argument is required for edit type.")
+            filepath = Path(args.path).expanduser()
+            if not filepath.exists():
+                raise RuntimeError(f"File does not exist: {filepath}")
 
         # create loop instance
         loop = GLib.MainLoop()
@@ -156,9 +171,9 @@ if __name__ == "__main__":
                 loop.quit()
 
         n = Notify.Notification.new(
-            "Screenshot Taken",
             # Mako doesn't have action buttons displayed with notification cards,
             "Click to edit",
+            str(filepath),
         )
         n.add_action(
             # so default action is used, which will be triggered on simply clicking the notification card

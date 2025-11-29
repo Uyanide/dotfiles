@@ -18,6 +18,7 @@ ShellRoot {
         sourceComponent: Item {
             Component.onCompleted: {
                 SunsetService;
+                Niri.onScreenshotCaptured = Screenshot.onScreenshotCaptured;
             }
 
             Notification {
