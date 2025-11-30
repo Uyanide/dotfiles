@@ -69,7 +69,6 @@ screen_height=$3
 # So in order to let the most recently used wallpapers appear first:
 touch "$image"
 
-
 # Copy image to local wallpaper directory
 
 ext=${image##*.}
@@ -84,7 +83,7 @@ mkdir -p "$current_dir" || {
 
 temp_img=$(mktemp --suffix=."$ext") || exit 1
 trap 'rm -f "$temp_img"' EXIT
-magick convert "$image" -resize "${screen_width}x${screen_height}^" -gravity center -extent "${screen_width}x${screen_height}" "$temp_img" || {
+magick "$image" -resize "${screen_width}x${screen_height}^" -gravity center -extent "${screen_width}x${screen_height}" "$temp_img" || {
     echo "Could not resize and crop image"
     exit 1
 }
@@ -119,7 +118,7 @@ blurred_cache_image="$blur_cache_dir/${hash}.$ext"
         else
             find "$blur_dir" -type f -name "blurred-*" ! -name "$(basename "$blurred_image")" -delete
             if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
-                swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
+                swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
             fi
             notify-send -a "change-wallpaper" "Blurred Wallpaper From Cache" "$blurred_image" -i "$blurred_image"
             exit 0
@@ -155,7 +154,7 @@ blurred_cache_image="$blur_cache_dir/${hash}.$ext"
     }
 
     if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
-        swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
+        swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
     fi
 
     notify-send -a "change-wallpaper" "Blurred Wallpaper Generated" "$blurred_image" -i "$blurred_image"
@@ -164,7 +163,7 @@ blurred_cache_image="$blur_cache_dir/${hash}.$ext"
 # Apply wallpaper
 
 if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
-    swww img -n background "$image_copied" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
+    swww img -n background "$image_copied" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
 
     notify-send -a "change-wallpaper" "Wallpaper Changed" "$image" -i "$image_copied"
 

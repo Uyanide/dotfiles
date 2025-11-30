@@ -6,5 +6,3 @@ include "config/envs.kdl"
 include "config/rules.kdl"
 include "config/binds.kdl"
 include "config/misc.kdl"
-
-/************************Misc************************/

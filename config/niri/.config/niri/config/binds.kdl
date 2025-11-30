@@ -2,6 +2,7 @@ recent-windows {
     binds {
         Alt+Tab                       { next-window; }
         Alt+Shift+Tab                 { previous-window; }
+        // dead_circumflex: ^
         Alt+dead_circumflex           { next-window     filter="app-id"; }
         Alt+Shift+dead_circumflex     { previous-window filter="app-id"; }
     }

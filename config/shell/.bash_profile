@@ -11,5 +11,9 @@ command -v nvim >/dev/null 2>&1 && {
     export VISUAL=nvim
 }
 
+command -v f >/dev/null 2>&1 || {
+    alias f="exec fish"
+}
+
 [ -f "$HOME/.profile" ] && . "$HOME/.profile"
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
