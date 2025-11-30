@@ -1,0 +1,89 @@
+// Picture-in-Picture
+window-rule {
+    match title="^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$"
+    open-floating true
+}
+
+// Dialog windows
+window-rule {
+    match title="^(Open File)(.*)$"
+    match title="^(Select a File)(.*)$"
+    match title="^(Choose wallpaper)(.*)$"
+    match title="^(Open Folder)(.*)$"
+    match title="^(Save As)(.*)$"
+    match title="^(Library)(.*)$"
+    match title="^(File Upload)(.*)$"
+    open-floating true
+}
+
+// FLoating terminal
+window-rule {
+    match app-id="kitty"
+    open-floating true
+    default-column-width { proportion 0.5; }
+}
+
+// Normal terminal
+window-rule {
+    match app-id="com.mitchellh.ghostty"
+    default-column-width { proportion 0.3; }
+}
+
+// Scrcpy
+window-rule {
+    match app-id="scrcpy"
+    default-column-width { proportion 0.3; }
+}
+
+// Editor
+window-rule {
+    match app-id="org.gnome.TextEditor"
+    default-column-width { proportion 0.3; }
+}
+
+// Other floating
+window-rule {
+    match app-id="blueberry"
+    match app-id="blueman-manager"
+    match app-id="org.pulseaudio.pavucontrol"
+    match app-id="com.saivert.pwvucontrol"
+    match app-id="Waydroid"
+    match app-id="^waydroid"
+    match app-id="org.kde.kcalc"
+    match app-id="org.kde.kalk"
+    match app-id="org.gnome.NautilusPreviewer"
+    match app-id="coin"
+    match app-id="wallpaper-carousel"
+    match app-id="be.alexandervanhee.gradia"
+    match title="^(图片查看器)(.*)$" // QQ
+    open-floating true
+}
+
+// Block from recording
+window-rule {
+    match app-id="thunderbird"
+
+    block-out-from "screen-capture"
+}
+
+
+// workspace "first"
+// workspace "second"
+
+// Startup in "second" workspace
+window-rule {
+    // match at-startup=true app-id="Spotify"
+    // match at-startup=true app-id="thunderbird"
+
+
+    open-on-workspace "second"
+}
+
+window-rule {
+    match app-id="at.yrlf.wl_mirror"
+
+    // default-column-width { proportion 1.0; }
+    open-floating true
+    // open-maximized-to-edges true
+    // open-on-output "HDMI-A-1"
+}

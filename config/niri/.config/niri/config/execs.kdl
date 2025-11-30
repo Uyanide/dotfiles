@@ -1,0 +1,37 @@
+// Switch configs
+spawn-at-startup "config-switch" "niri"
+
+// Wallpaper
+spawn-at-startup "wallpaper-daemon"
+
+// Not necessary maybe ...
+spawn-at-startup "fcitx5"
+
+// Core
+spawn-at-startup "nm-applet"
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+
+// Clipboard history
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
+
+// wlsunset
+// spawn-at-startup "sunset"
+
+// Logitech
+spawn-at-startup "solaar" "-w" "hide"
+
+// Some other heavy apps
+spawn-at-startup "sunshine"
+// spawn-at-startup "spotify"
+// spawn-at-startup "thunderbird"
+
+// Idle
+spawn-at-startup "hypridle"
+
+// QuickShell
+spawn-at-startup "quickshell"
+
+// According to (https://ghostty.org/docs/linux/systemd#starting-ghostty-at-login)
+spawn-sh-at-startup "systemctl start --user app-com.mitchellh.ghostty.service"

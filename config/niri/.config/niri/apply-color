@@ -6,9 +6,9 @@
 }
 . "$HOME/.local/snippets/apply-color-helper"
 
-file="$path"/config.kdl
+file="$path"/config/styles.kdl
 
-sed -i -E "s/^(\s*active-color\s+\"#)([0-9A-Fa-f]{6})(\")/\1${colorHex}\3/" "$file" || {
+sed -i -E "s/^(\s*active-color\s+\"#)([0-9A-Fa-f]{6})(\")/\1${colorHex}\3/g" "$file" || {
     log_error "Failed to edit ${file}"
     exit 1
 }

@@ -1,0 +1,29 @@
+input {
+    keyboard {
+        xkb {
+            layout "de"
+        }
+
+        numlock
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+        scroll-method "two-finger"
+    }
+
+    mouse {
+        accel-speed 0.25
+    }
+
+    trackpoint {
+        off
+    }
+
+    // Make the mouse warp to the center of newly focused windows.
+    warp-mouse-to-focus
+
+    // Focus windows and outputs automatically when moving the mouse into them.
+    focus-follows-mouse max-scroll-amount="100%"
+}

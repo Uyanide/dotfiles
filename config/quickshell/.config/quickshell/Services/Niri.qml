@@ -172,9 +172,9 @@ Singleton {
                             Logger.error("Niri", "Error parsing window opened/changed event:", e);
                         }
                     }
-                    if (event.windowClosed) {
+                    if (event.WindowClosed) {
                         try {
-                            const closedId = event.windowClosed.id;
+                            const closedId = event.WindowClosed.id;
                             if (closedId && (root.windows && root.windows[closedId])) {
                                 delete root.windows[closedId];
                                 if (root.focusedWindowId === closedId) {

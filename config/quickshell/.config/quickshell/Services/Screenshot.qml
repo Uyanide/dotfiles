@@ -10,7 +10,8 @@ Singleton {
         if (!path || typeof path !== "string")
             return ;
 
-        Quickshell.execDetached(["~/.local/scripts/screenshot-script", "edit", path]);
+        console.log("Screenshot captured at path:", path);
+        Quickshell.execDetached(["screenshot-script", "edit", path]);
     }
 
 }
