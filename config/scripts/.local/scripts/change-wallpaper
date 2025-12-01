@@ -88,7 +88,7 @@ magick "$image" -resize "${screen_width}x${screen_height}^" -gravity center -ext
     exit 1
 }
 cp "$temp_img" "$image_copied" || exit 1
-hash=$(md5sum "$image_copied" | awk '{print $1}')
+hash="$(md5sum "$image" | awk '{print $1}')-${screen_width}x${screen_height}"
 
 # Clean up old wallpapers
 
