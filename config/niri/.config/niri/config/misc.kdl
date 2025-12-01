@@ -1,9 +1,8 @@
+screenshot-path "~/Pictures/Screenshots/niri_screenshot_%Y-%m-%d_%H-%M-%S.png"
+
 debug {
     render-drm-device "/dev/dri/card0"
 }
-
-screenshot-path "~/Pictures/Screenshots/niri_screenshot_%Y-%m-%d_%H-%M-%S.png"
-// screenshot-path "~/Pictures/Screenshots/.niri_screenshot.png"
 
 // gestures {
 //     hot-corners {

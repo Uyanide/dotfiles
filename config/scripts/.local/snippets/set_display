@@ -2,6 +2,10 @@
 
 # Description:
 #   Select which GPU to use for rendering for Hyprland and Niri.
+#
+# envs exported:
+#   HYPR_AQ_DRM_DEVICES - Colon-separated list of DRM device paths for Hyprland's aq_drm
+#   BRIGHTNESSCTL_DEVICE - Device identifier for brightnessctl
 
 # AMD -> Nvidia -> Intel
 prefer_order=(amd nvidia intel)
@@ -59,7 +63,7 @@ for who in "${prefer_order[@]}"; do
 done
 
 # Update niri config
-for file in "$HOME/.config/niri/config.kdl" "$HOME/.config/niri/config.kdl.template"; do
+for file in "$HOME/.config/niri/config/misc.kdl" "$HOME/.config/niri/config.kdl.template"; do
   [[ -f "$file" ]] || continue
 
   if grep -qE '^\s*render-drm-device\s+"[^"]+"' "$file"; then

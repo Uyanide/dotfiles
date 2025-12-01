@@ -38,7 +38,7 @@ binds {
     // Actions
     Mod+V { spawn-sh "pkill -x rofi || rofi-cliphist"; }
     Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
-    Ctrl+Alt+Delete { spawn "pkill -x wlogout || wlogout -p layer-shell"; }
+    Ctrl+Alt+Delete { spawn-sh "pkill -x wlogout || wlogout -p layer-shell"; }
     Print { spawn "niri" "msg" "action" "screenshot-screen"; }
     Mod+Shift+S { spawn "niri" "msg" "action" "screenshot"; }
     Mod+Ctrl+Shift+S { spawn "niri" "msg" "action" "screenshot-window"; }
