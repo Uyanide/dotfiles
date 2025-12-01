@@ -131,7 +131,6 @@ Variants {
                 }
 
                 CavaBar {
-                    count: 6
                 }
 
                 Item {

@@ -6,6 +6,9 @@
   "action": {
     "confirm": "change-wallpaper \"%1\" 2560 1600"
   },
+  "style": {
+    "no_loading_screen": false
+  },
   "sort": {
     "type": "date",
     "reverse": true
