@@ -94,7 +94,7 @@ if type -q git
     function acp
         git add . || return 1
         if test (count $argv) -eq 0
-            git commit -m "too lazy to come up with a helpful commit message :)" || return 1
+            git commit -m "👐 foo: too lazy to come up with a helpful commit message :)" || return 1
         else
             git commit -m "$argv" || return 1
         end

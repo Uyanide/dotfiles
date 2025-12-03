@@ -1,18 +1,18 @@
 if not set -q fetch_logo_type
-    set -g fetch_logo_type "auto"
+    set -g fetch_logo_type auto
 end
 
 if not set -q fetch_color
     set -g fetch_color "#89b4fa"
 end
 
-if test "$fetch_logo_type" = "symbols"
+if test "$fetch_logo_type" = symbols
     set -g fetch_args "--logo-type raw --logo-width 42 --logo \"$HOME/.config/fastfetch/logo_ros/42x.symbols\" --color \"$fetch_color\""
     set -g fetch_args_brief "--logo-type raw --logo-width 28 --logo \"$HOME/.config/fastfetch/logo_ros/28x.symbols\" --color \"$fetch_color\""
-else if test "$fetch_logo_type" = "logo"
+else if test "$fetch_logo_type" = logo
     set -g fetch_args "--logo-type builtin"
     set -g fetch_args_brief "--logo-type small"
-else if test "$fetch_logo_type" = "sixel"
+else if test "$fetch_logo_type" = sixel
     set -g fetch_args "--logo-type raw --logo-width 42 --logo \"$HOME/.config/fastfetch/logo_ros/42x.sixel\" --color \"$fetch_color\""
     set -g fetch_args_brief "--logo-type raw --logo-width 28 --logo \"$HOME/.config/fastfetch/logo_ros/28x.sixel\" --color \"$fetch_color\""
 else # "kitty" or "auto" and others
@@ -24,15 +24,15 @@ if type -q fastfetch
     alias ff="fastfetch -c $HOME/.config/fastfetch/config.jsonc $fetch_args"
 
     if test -f "$HOME/.config/fastfetch/brief.jsonc"
-        alias ff-brief="fastfetch -c $HOME/.config/fastfetch/brief.jsonc $fetch_args_brief"
+        alias ffb="fastfetch -c $HOME/.config/fastfetch/brief.jsonc $fetch_args_brief"
     else
-        alias ff-brief=ff
+        alias ffb=ff
     end
 end
 
 # add 'set -g no_fetch' somewhere other than post.d to disable fetching
 if not set -q no_fetch
-    if type -q ff-brief
-	    ff-brief
+    if type -q ffb
+        ffb
     end
 end
