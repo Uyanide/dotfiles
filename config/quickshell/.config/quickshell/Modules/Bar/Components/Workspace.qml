@@ -183,7 +183,7 @@ Item {
                             return Colors.primary;
 
                         if (model.isActive)
-                            return Colors.primary.lighter(130);
+                            return Colors.overlay2;
 
                         if (model.isUrgent)
                             return Theme.error;

@@ -92,7 +92,7 @@ Based on [codeopshq/dotfiles](https://github.com/codeopshq/dotfiles), also serve
 
 ## Grub theme
 
-Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with an [illustration from 紺屋鴉江](https://www.pixiv.net/artworks/119683453).
+Based on [vinceliuice/Elegant-grub2-themes](https://github.com/vinceliuice/Elegant-grub2-themes) with an [illustration from 紺屋](https://www.pixiv.net/artworks/119683453).
 
 ## MPV
 

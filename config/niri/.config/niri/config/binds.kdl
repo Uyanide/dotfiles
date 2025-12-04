@@ -141,6 +141,7 @@ binds {
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+Ctrl+F { expand-column-to-available-width; }
+    Mod+M { maximize-window-to-edges; }
 
     Mod+Y { center-column; }
 
@@ -155,7 +156,7 @@ binds {
 
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 
-    Mod+M allow-inhibiting=false { quit; }
+    Mod+Shift+Q allow-inhibiting=false { quit; }
 
     Mod+Shift+P { spawn-sh "(hyprlock &) && niri msg action power-off-monitors"; }
 
