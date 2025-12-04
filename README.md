@@ -100,11 +100,4 @@ Based on [noelsimbolon/mpv-config](https://github.com/noelsimbolon/mpv-config.gi
 
 ## Fonts
 
-including:
-
-- Maple Mono NF CN
-- MesloLGM Nerd Font (& Mono)
-- WenQuanYi Micro Hei
-- Sour Gummy
-- Noto Sans
-- ...
+See [fontconfig.md](https://github.com/Uyanide/dotfiles/blob/main/memo/fontconfig.md).
