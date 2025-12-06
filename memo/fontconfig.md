@@ -34,7 +34,8 @@
   <!-- For danmuku -->
   <match target="pattern">
     <test name="family">
-      <string>Noto Sans CJK SC</string></test>
+      <string>Noto Sans CJK SC</string>
+    </test>
     <edit name="family" mode="append">
       <string>Symbola</string>
     </edit>
@@ -54,6 +55,7 @@
     <family>system-ui</family>
     <prefer>
       <family>Sarasa UI SC</family>
+      <family>Sarasa UI J</family>
       <family>Noto Color Emoji</family>
       <family>Symbols Nerd Font</family>
     </prefer>

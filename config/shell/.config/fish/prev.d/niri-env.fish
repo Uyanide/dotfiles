@@ -1,4 +1,4 @@
-if test $XDG_CURRENT_DESKTOP = "niri"
+if test -n "$XDG_CURRENT_DESKTOP"; and test "$XDG_CURRENT_DESKTOP" = "niri"
     set -l env_config "$HOME/.config/niri/config/envs.kdl"
 
     if test -f "$env_config"

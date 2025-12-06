@@ -103,5 +103,15 @@ if type -q git
 
     if type -q wl-paste
         alias gc="git clone \$(wl-paste)"
+
+        if type -q idea
+            function pingo
+                cd "$HOME/Repositories/PGdP" || return 1
+                set -l repo (wl-paste)
+                git clone $repo || return 1
+                set -l repo_name (basename $repo .git)
+                nohup idea $repo_name > /dev/null 2>&1 & disown
+            end
+        end
     end
 end
