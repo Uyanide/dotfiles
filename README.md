@@ -73,11 +73,11 @@ This setup is currently only adapted for Niri.
 - `lyrics`, scrolling lyrics player, depends on [a small utility](https://github.com/Uyanide/Spotify_Lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
 - `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
 
-## Swww
+## Awww (Swww)
 
-The wallpaper will be automatically blurred when there is a window in focus, which is implemented in the [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/scripts/wallpaper-daemon) script.
+The wallpaper will be automatically blurred when there is a window in focus, which is implemented in the [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/config/scripts/.local/scripts/wallpaper-daemon) script.
 
-This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprland setup, yet only in the regular way.
+This feature is only enabled in Niri. Awww also manages wallpapers of the Hyprland setup, yet only in the regular way.
 
 ## Wallpaper & Colortheme
 
