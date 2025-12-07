@@ -67,11 +67,10 @@ screen_height=$3
 # }
 # ```
 # So in order to let the most recently used wallpapers appear first:
-touch "$image"
+touch "$image" 2>/dev/null || true # ignore errors
 
 # Copy image to local wallpaper directory
 
-ext=${image##*.}
 wallpaper_ext="png"
 random_name=$(tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 16)
 current_dir="$HOME/.local/share/wallpaper/current"

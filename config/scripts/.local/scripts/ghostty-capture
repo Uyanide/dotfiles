@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Description:
 #   Use a sequence of keybinds to open the scrollback(or screen) buffer in editor (default to vim)
@@ -17,6 +17,11 @@
 #   # ctrl+shift+h>j > Enter to open the screen buffer in editor
 #   keybind = ctrl+shift+j=text:ghostty-capture\x20
 #   keybind = ctrl+shift+h=write_screen_file:paste
+
+if [ -z "$1" ] && ! command -v wl-paste &> /dev/null; then
+    echo "Error: wl-paste not found." >&2
+    exit 1
+fi
 
 file=${1:-$(wl-paste --no-newline)}
 
@@ -38,7 +43,11 @@ case "$file" in
         ;;
 esac
 
-${EDITOR:-vim} "$file"
+if [[ "$EDITOR" == *"code"* ]]; then
+    $EDITOR --wait "$file"
+else
+    ${EDITOR:-vim} "$file"
+fi
 
 rm -f "$file"
 

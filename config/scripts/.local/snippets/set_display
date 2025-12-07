@@ -7,8 +7,9 @@
 #   HYPR_AQ_DRM_DEVICES - Colon-separated list of DRM device paths for Hyprland's aq_drm
 #   BRIGHTNESSCTL_DEVICE - Device identifier for brightnessctl
 
-# AMD -> Nvidia -> Intel
-prefer_order=(amd nvidia intel)
+# Constants
+niri_config_file="$HOME/.config/niri/config/misc.kdl"
+prefer_order=(amd nvidia intel) # AMD -> Nvidia -> Intel
 
 # Get vendor and path of each GPU
 default_dri_path="$(find /dev/dri/card* 2>/dev/null | head -n 1)"
@@ -63,14 +64,20 @@ for who in "${prefer_order[@]}"; do
 done
 
 # Update niri config
-for file in "$HOME/.config/niri/config/misc.kdl" "$HOME/.config/niri/config.kdl.template"; do
-  [[ -f "$file" ]] || continue
+function update_niri_config() {
+  local config_file="$1"
+  local device_path="$2"
 
-  if grep -qE '^\s*render-drm-device\s+"[^"]+"' "$file"; then
-    current="$(grep -E '^\s*render-drm-device\s+"[^"]+"' "$file" | sed -E 's/^\s*render-drm-device\s+"([^"]+)".*/\1/')"
-    [[ "$current" == "$primary_device" ]] && continue
-    sed -i -E "s|^(\s*render-drm-device\s+)\"[^\"]+\"|\1\"$primary_device\"|" "$file"
+  [[ -f "$config_file" ]] || return
+
+  if grep -qE '^\s*render-drm-device\s+"[^"]+"' "$config_file"; then
+    local current
+    current="$(grep -E '^\s*render-drm-device\s+"[^"]+"' "$config_file" | sed -E 's/^\s*render-drm-device\s+"([^"]+)".*/\1/')"
+    [[ "$current" == "$device_path" ]] && return
+    sed -i -E "s|^(\s*render-drm-device\s+)\"[^\"]+\"|\1\"$device_path\"|" "$config_file"
   else
-    printf '\ndebug {\nrender-drm-device "%s"\n}\n' "$primary_device" >> "$file"
+    printf '\ndebug {\nrender-drm-device "%s"\n}\n' "$device_path" >> "$config_file"
   fi
-done
+}
+
+update_niri_config "$niri_config_file" "$primary_device"

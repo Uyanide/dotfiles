@@ -9,8 +9,10 @@
 
 import os
 import sys
-from pathlib import Path
 import argparse
+import subprocess
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 
 PALETTES = {
     "catppuccin-mocha": {
@@ -50,77 +52,121 @@ SCRIPTS = {
     "wlogout": [CONFIG_DIR / ".alt" / "wlogout-default" / "apply-color", CONFIG_DIR / ".alt" / "wlogout-niri" / "apply-color"],
     "yazi": [CONFIG_DIR / "yazi" / "apply-color"],
 }
-# or simply `find ${CONFIG_DIR} -type f -iname 'apply-color*'` to get all available scripts,
-# but I need the exact application names anyway, so hardcoding does make some sense
+# or simply `find -L ${CONFIG_DIR} -type f -iname 'apply-color*'` to get all available scripts,
+# but I do need the exact application names anyway, so hardcoding does make some sense
 
 
 def hex2rgb(hex_color: str) -> tuple[int, int, int]:
+    """#rrggbb to (r, g, b)"""
     return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))  # type: ignore
 
 
+def clamp(x, minimum, maximum) -> float:
+    """Clamp x to the range [minimum, maximum]"""
+    return max(minimum, min(x, maximum))
+
+
+def rgb2hsv(rr: int, gg: int, bb: int) -> tuple[float, float, float]:
+    """(r, g, b) 0-255 to (h, s, v)"""
+    r, g, b = rr/255.0, gg/255.0, bb/255.0
+    r = clamp(r, 0.0, 1.0)
+    g = clamp(g, 0.0, 1.0)
+    b = clamp(b, 0.0, 1.0)
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    df = mx-mn
+    h = 0.0
+    if mx == mn:
+        h = 0.0
+    elif mx == r:
+        h = (60 * ((g-b)/df) + 360) % 360
+    elif mx == g:
+        h = (60 * ((b-r)/df) + 120) % 360
+    elif mx == b:
+        h = (60 * ((r-g)/df) + 240) % 360
+    if mx == 0:
+        s = 0.0
+    else:
+        s = (df/mx)*100
+    v = mx*100
+    return h, s, v
+
+
 def extract_color(image_path: str) -> str:
+    """Extract a dominant color from the image and return it as a #rrggbb string."""
+    # Only import when needed
     from colorthief import ColorThief
-    return "#{:02x}{:02x}{:02x}".format(*ColorThief(image_path).get_color(quality=10))
+    ct = ColorThief(image_path)
+
+    # Get first 5 dominant colors
+    palette = ct.get_palette(color_count=5, quality=10)
+
+    best_color = None
+    max_score = -1.0
+
+    for color in palette:
+        h, s, v = rgb2hsv(*color)
+
+        # Filter out undesirable colors
+        # Too dark
+        if v < 20:
+            continue
+        # Too light
+        if v > 95 and s < 5:
+            continue
+
+        # Saturation first, then value
+        score = s * 2.0 + v
+
+        if score > max_score:
+            max_score = score
+            best_color = color
+
+    # Fallback to the most dominant color
+    if best_color is None:
+        best_color = ct.get_color(quality=10)
+
+    return "#{:02x}{:02x}{:02x}".format(*best_color)
 
 
 def match_color(color: str, palette: dict[str, str]) -> str:
-    """ Matches a given color (rrggbb hex) to the closest color in the palette."""
-    # HUE distance of the given and returned color must no<t exceed this value
-    HUE_THRESHOLD = 60.0  # degrees
-
+    """Match the given #rrggbb color to the closest flavor in the palette."""
     color = color.lower().strip().removeprefix('#')
+    target_rgb = hex2rgb(color)
+    target_h, target_s, target_v = rgb2hsv(*target_rgb)
 
-    # weigh by CCIR 601 luminosity
-    fr, fg, fb = 0.299 / 255 / 255, 0.587 / 255 / 255, 0.114 / 255 / 255
-    lfr, lfg, lfb = 0.299 / 255, 0.587 / 255, 0.114 / 255
+    # Warn if not representative (nearly grayscale)
+    if target_s < 5:
+        print(f"Warning: Extracted color {color} is nearly grayscale. Matching might be inaccurate.")
 
-    def color_distance(c1: str, c2: str) -> float:
-        r1, g1, b1 = hex2rgb(c1)
-        r2, g2, b2 = hex2rgb(c2)
-        diff_l = (lfr * (r1 - r2) + lfg * (g1 - g2) + lfb * (b1 - b2))
-        diff_r = fr * (r1 - r2) ** 2
-        diff_g = fg * (g1 - g2) ** 2
-        diff_b = fb * (b1 - b2) ** 2
-        return (diff_r + diff_g + diff_b) * 0.75 + diff_l ** 2
+    def get_weighted_distance(hex_val: str) -> float:
+        p_rgb = hex2rgb(hex_val)
+        p_h, p_s, p_v = rgb2hsv(*p_rgb)
 
-    def color_distance_hue(c1: str, c2: str) -> float:
-        def rgb2hue(r, g, b) -> float:
-            r, g, b = r / 255.0, g / 255.0, b / 255.0
-            mx = max(r, g, b)
-            mn = min(r, g, b)
-            diff = mx - mn
+        # RGB distance with weighting
+        rmean = (target_rgb[0] + p_rgb[0]) / 2
+        dr = target_rgb[0] - p_rgb[0]
+        dg = target_rgb[1] - p_rgb[1]
+        db = target_rgb[2] - p_rgb[2]
+        rgb_distance = ((2 + rmean / 256) * dr**2 + 4 * dg**2 + (2 + (255 - rmean) / 256) * db**2) ** 0.5
 
-            if diff == 0:
-                return 0.0
+        # Hue difference (with wrapping)
+        hue_diff = abs(target_h - p_h)
+        if hue_diff > 180:
+            hue_diff = 360 - hue_diff
 
-            if mx == r:
-                hue = (g - b) / diff + (6 if g < b else 0)
-            elif mx == g:
-                hue = (b - r) / diff + 2
-            else:
-                hue = (r - g) / diff + 4
+        # Increase hue weight when saturation is high
+        hue_weight = 2.0 if target_s > 20 else 0.5
 
-            return hue * 60
-        r1, g1, b1 = hex2rgb(c1)
-        r2, g2, b2 = hex2rgb(c2)
-        return abs(rgb2hue(r1, g1, b1) - rgb2hue(r2, g2, b2))
+        return rgb_distance + (hue_diff * hue_weight * 3)
 
-    closest_color = min(palette.keys(), key=lambda k: color_distance(color, palette[k]))
-    print(f"Matched color {color} to {closest_color}")
-
-    # if the hue distance is too large, rematch
-    if color_distance_hue(color, palette[closest_color]) > HUE_THRESHOLD:
-        print(f"Color {color} is too far from {closest_color}, rematching'")
-    else:
-        return closest_color
-
-    closest_color = min(palette.keys(), key=lambda k: color_distance_hue(color, palette[k]))
-    print(f"Rematched color {color} to {closest_color}")
-
-    return closest_color
+    closest_flavor = min(palette.keys(), key=lambda k: get_weighted_distance(palette[k]))
+    print(f"Matched color #{color} to {closest_flavor} (#{palette[closest_flavor]})")
+    return closest_flavor
 
 
-def pick_flavor(palette: dict[str, str]) -> str:
+def pick_flavor_interactive(palette: dict[str, str]) -> str:
+    """Prompt the user to pick a flavor interactively."""
     def is_interactive() -> bool:
         return sys.stdin.isatty() and sys.stdout.isatty()
 
@@ -151,6 +197,27 @@ def pick_flavor(palette: dict[str, str]) -> str:
     else:
         print("No flavor specified.")
         sys.exit(1)
+
+
+def run_script(script_path: Path, args: list[str]):
+    """Helper to run a single script safely."""
+    script_str = str(script_path)
+    if not script_path.exists():
+        print(f"Warning: Script not found: {script_str}")
+        return
+    if not os.access(script_path, os.X_OK):
+        print(f"Warning: Script not executable: {script_str}")
+        return
+
+    try:
+        cmd = [script_str] + args
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Error running {script_path}:\n{result.stderr.strip()}")
+        else:
+            print(f"✓ {script_path}")
+    except Exception as e:
+        print(f"Exception running {script_path}: {e}")
 
 
 def main():
@@ -186,7 +253,7 @@ def main():
             flavor = match_color(color, palette)
             print(f"Matched color: {flavor}")
         else:
-            flavor = pick_flavor(palette)
+            flavor = pick_flavor_interactive(palette)
         return flavor
 
     def parse_apps() -> tuple[set[str], set[str]]:
@@ -222,15 +289,18 @@ def main():
 
     print(f"Applying flavor '{flavor}' for {len(apps)} applications.")
 
-    for app in apps:
-        for script in SCRIPTS[app]:
-            print(f"Running {script}:")
-            ret = os.system(f'"{script}" {palette_name} {flavor} {palette[flavor]}')
-            print(f"{script} exited with code {ret}")
-            print("")
+    script_args = [palette_name, flavor, palette[flavor]]
+    tasks = []
 
-    os.system(
-        f'notify-send -a "change-colortheme" "Colortheme Changed" "Palette: {palette_name};\nFlavor: {flavor};\nApplied to {len(apps)} applications."')
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        for app in apps:
+            for script in SCRIPTS[app]:
+                tasks.append(executor.submit(run_script, script, script_args))
+
+    subprocess.run([
+        "notify-send", "-a", "change-colortheme", "Colortheme Changed",
+        f"Palette: {palette_name}\nFlavor: {flavor}"
+    ])
 
 
 if __name__ == "__main__":

@@ -75,7 +75,7 @@ def swwwLoadImg(namespace: str, wallpaper: Path):
 
 def swwwStartDaemon(namespace: str):
     # Check if daemon is already running
-    cmd = ["pgrep", "-f", f"swww daemon -n {namespace}"], "-u", str(getuid())
+    cmd = ["pgrep", "-f", f"swww-daemon -n {namespace}", "-u", str(getuid())]
     try:
         output = subprocess.check_output(cmd, text=True)
         pids = output.strip().splitlines()
@@ -106,11 +106,13 @@ class AutoBlur:
     _thread: threading.Thread | None = None
     _lastWallpaper: Path | None = None
     _isFirst = True
+    _applyLock: threading.Lock
 
     def __init__(self, normalDir, blurredDir, interval=0.2):
         self._interval = interval
         self._normalDir = normalDir
         self._blurredDir = blurredDir
+        self._applyLock = threading.Lock()
 
         # Niri will send "WindowsChanged" event on connect, so no need to init here
         # init state
@@ -204,14 +206,15 @@ class AutoBlur:
             sleep(self._interval)
 
     def _apply(self, wallpaper: Path) -> bool:
-        if wallpaper == self._lastWallpaper:
+        with self._applyLock:
+            if wallpaper == self._lastWallpaper:
+                return True
+
+            if not swwwLoadImg("background", wallpaper):
+                return False
+
+            self._lastWallpaper = wallpaper
             return True
-
-        if not swwwLoadImg("background", wallpaper):
-            return False
-
-        self._lastWallpaper = wallpaper
-        return True
 
 
 autoBlurInst = AutoBlur(NORMAL_WALLPAPER_DIR, BLURRED_WALLPAPER_DIR)
@@ -339,14 +342,22 @@ if __name__ == "__main__":
             swwwLoadImg("background", normal)
 
         # Connect to Niri socket
-        _log(f"[Main] connecting to Niri socket")
+        _log("[Main] connecting to Niri socket")
         niri_socket = getNiriSocket()
         if not niri_socket:
             _log("[Main] NIRI_SOCKET environment variable is not set.")
             exit(1)
+        while True:
+            try:
+                if not connectNiri(niri_socket, handleEvent):
+                    _log("[Main] Connection lost or failed.")
+            except Exception as e:
+                _log(f"[Main] Exception in connection loop: {e}")
 
-        if not connectNiri(niri_socket, handleEvent):
-            exit(1)
+            _log("[Main] Retrying in 3 seconds...")
+            sleep(3)
+
+            niri_socket = getNiriSocket() or niri_socket
     elif desktop == "Hyprland":
         _log("[Main] running in Hyprland")
         _log("[Main] starting swww daemon")
