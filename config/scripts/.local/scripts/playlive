@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ -z "${1:-}" ]; then
+    echo "Usage: $0 <file>" >&2
+    exit 1
+fi
+
+play_cmd=()
+if command -v mpv >/dev/null 2>&1; then
+    play_cmd=(mpv --title="Live Photo View" --keep-open=no --loop-file=no --loop-playlist=no --idle=no)
+elif command -v vlc >/dev/null 2>&1; then
+    play_cmd=(vlc --play-and-exit)
+else
+    echo "Error: No suitable media player found." >&2
+    exit 1
+fi
+
+file="$1"
+
+if [ ! -f "$file" ]; then
+    echo "Error: File '$file' not found." >&2
+    exit 1
+fi
+
+tmp_video=$(mktemp --suffix=.mp4)
+trap 'rm -f "$tmp_video"' EXIT
+
+offset=$(grep -aobP "ftyp(mp42|isom)" "$file" | tail -n 1 | cut -d: -f1 || true)
+
+if [ -z "$offset" ]; then
+    echo "Error: No valid video stream found in '$file'." >&2
+    exit 1
+fi
+
+mp4_offset=$((offset - 3))
+
+tail -c "+$mp4_offset" "$file" > "$tmp_video"
+
+"${play_cmd[@]}" "$tmp_video"
