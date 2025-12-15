@@ -27,8 +27,6 @@
     <edit mode="assign" name="hinting"><bool>true</bool></edit>
     <edit mode="assign" name="hintstyle"><const>hintslight</const></edit>
     <edit mode="assign" name="rgba"><const>none</const></edit>
-    <edit mode="assign" name="embeddedbitmap"><bool>false</bool></edit>
-    <edit mode="assign" name="lcdfilter"><const>lcddefault</const></edit>
   </match>
 
   <!-- For danmuku -->
@@ -46,7 +44,7 @@
     <prefer>
       <family>Sarasa UI SC</family>
       <family>Sarasa UI J</family>
-      <family>Noto color Emoji</family>
+      <family>Noto Color Emoji</family>
       <family>Symbols Nerd Font</family>
     </prefer>
   </alias>

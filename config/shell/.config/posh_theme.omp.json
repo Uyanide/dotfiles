@@ -5,7 +5,7 @@
             "alignment": "left",
             "segments": [
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#b4befe",
                     "properties": {
                         "windows": "\ue62a"
                     },
@@ -14,13 +14,13 @@
                     "type": "os"
                 },
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#b4befe",
                     "style": "plain",
                     "template": " {{.UserName}}",
                     "type": "session"
                 },
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#b4befe",
                     "style": "plain",
                     "template": "@{{.HostName}}",
                     "type": "session"
@@ -70,7 +70,7 @@
                     "type": "root"
                 },
                 {
-                    "foreground": "#89b4fa",
+                    "foreground": "#b4befe",
                     "foreground_templates": [
                         "{{ if gt .Code 0 }}#f38ba8{{ end }}"
                     ],
@@ -90,7 +90,7 @@
         "foreground_templates": [
             "{{ if gt .Code 0 }}#f38ba8{{ end }}"
         ],
-        "foreground": "#89b4fa",
+        "foreground": "#b4befe",
         "template": "# "
     },
     "version": 3

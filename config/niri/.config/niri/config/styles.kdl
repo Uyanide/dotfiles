@@ -19,7 +19,7 @@ layout {
 
     focus-ring {
         width 2
-        active-color "#89b4fa"
+        active-color "#b4befe"
         inactive-color "#1e1e2e"
     }
 
@@ -79,7 +79,7 @@ window-rule {
 
 recent-windows {
     highlight {
-        active-color "#89b4fa"
+        active-color "#b4befe"
         urgent-color "#f38ba8"
         corner-radius 14
     }

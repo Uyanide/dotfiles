@@ -20,7 +20,7 @@
     peach: #fab387;
     search: rgba(49, 50, 68, 0.5); // alpha(@surface, 0.5)
 
-    primary: #89b4fa;
+    primary: #b4befe;
 }
 
 
