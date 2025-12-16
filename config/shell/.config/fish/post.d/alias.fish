@@ -91,12 +91,11 @@ if type -q tty-clock
 end
 
 if type -q git
-    function acp
-        git add . || return 1
+    function gcp
         if test (count $argv) -eq 0
-            git commit -m "👐 foo: too lazy to come up with a helpful commit message :)" || return 1
+            git commit -a -m "👐 foo: too lazy to come up with a helpful commit message :)" || return 1
         else
-            git commit -m "$argv" || return 1
+            git commit -a -m "$argv" || return 1
         end
         git push
     end
@@ -110,7 +109,7 @@ if type -q git
                 set -l repo (wl-paste)
                 git clone $repo || return 1
                 set -l repo_name (basename $repo .git)
-                nohup idea $repo_name > /dev/null 2>&1 & disown
+                nohup idea $repo_name >/dev/null 2>&1 & disown
             end
         end
     end
