@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Play the video embedded in a live photo file (or so-called Motion Photo).
+#   The literal tags differ between manufacturers, so this script looks for
+#   the common 'ftyp' box that indicates the start of an MP4 video stream
+#   instead of "MotionPhotoVideo" or "EmbeddedVideo" or something.
+#
+# Requirements:
+# - mpv or vlc media player installed.
+#
+# Usage:
+# - playlive <file>
+# - case `config/scripts/.local/share/applications/playlive.desktop` is installed,
+#   right-click on a live photo file in file manager and choose "Open With..." ->
+#   "Play Live Photo".
+
 set -euo pipefail
 
 if [ -z "${1:-}" ]; then

@@ -3,7 +3,7 @@ if not set -q fetch_logo_type
 end
 
 if not set -q fetch_color
-    set -g fetch_color "#b4befe"
+    set -g fetch_color "#89b4fa"
 end
 
 if test "$fetch_logo_type" = symbols
