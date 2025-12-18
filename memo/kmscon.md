@@ -4,26 +4,27 @@
 
 AUR - `kmscon`
 
-## 在所有 VT (虚拟终端) 上启用
+## 启用
 
-```bash
+```sh
 sudo ln -s '/usr/lib/systemd/system/kmsconvt@.service' '/etc/systemd/system/autovt@.service'
 ```
 
-以及保留 tty1 给 getty 使用：
+以及保留 tty1 为 getty：
 
-```bash
+```sh
 sudo systemctl enable getty@tty1.service
 ```
 
 理由：
 
-1. kmscon 中通过命令行启动图形 session 会遇到问题。
-2. 通常 tty1 用于运行图形界面，不需要 kmscon 提供的各种特性。
+- kmscon 中通过命令行启动图形 session 会遇到问题。
+
+- 通常 tty1 用于运行图形界面，不需要 kmscon 提供的各种特性。
 
 ## 修改默认配置
 
-```bash
+```sh
 sudo systemctl edit autovt@.service
 ```
 
@@ -37,8 +38,9 @@ ExecStart=/usr/bin/kmscon --vt=%I --seats=seat0 --no-switchvt
 
 解释：
 
-1. 默认的 `ExecStart` 携带的单数会覆盖所有配置文件，需要先清空。
-2. 保留默认参数 `--login` 前的部分，因为我看不出不这么做的理由。
+- 默认的 `ExecStart` 携带的参数会覆盖所有配置文件中的对应项，需要先清空。
+
+- 保留默认参数 `--login` 前的部分，因为我看不出不这么做的理由。
 
 然后就可以在 `/etc/kmscon/kmscon.conf` 添加自定义的配置了。
 
@@ -57,9 +59,9 @@ font-size=14
 
 ## 关于字体的补充说明
 
-1. kmscon 上 2 字符宽的 nerd font 图标会被裁剪至 1 字符宽。因此我使用 MesloLGM Nerd Font Mono 作为首选字体，它的图标字符只有 1 字符宽。
+1. kmscon 上 2 字符宽的 nerd font 图标会被裁剪至 1 字符宽。因此我使用带有 Mono 后缀的 Meslo 系字体作为首选字体，它的图标字符只有 1 字符宽。
 
-2. [Archwiki - KMSCON](https://wiki.archlinux.org/title/KMSCON) 上提供了另一种更改字体的方法，即修改 fontconfig 配置，具体做法为在 monospace 字体族中前置添加字体。但这会影响所有使用 fontconfig 和 monospace 字体族的程序，包括图形界面中的终端模拟器。因此我选择直接在 kmscon 的配置文件中指定字体。
+2. [Archwiki - KMSCON](https://wiki.archlinux.org/title/KMSCON) 上提供了另一种更改字体的方法，即修改 fontconfig 配置，具体做法为在 monospace 字体族中前置添加字体。但这会影响所有使用 fontconfig 和 monospace 字体族的程序，包括图形界面中的终端模拟器。
 
 ## 检测当前终端是否为 kmscon
 
