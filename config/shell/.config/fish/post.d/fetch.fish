@@ -2,6 +2,10 @@ if not set -q fetch_logo_type
     set -g fetch_logo_type auto
 end
 
+if ps -e -o pid,comm | grep -q (pgrep kmscon)
+    set -g fetch_logo_type logo
+end
+
 if not set -q fetch_color
     set -g fetch_color "#89b4fa"
 end

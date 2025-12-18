@@ -1,13 +1,13 @@
 output "eDP-1" {
     // off
-    mode "2560x1600@240"
+    mode "2560x1600@60.002"
     scale 1.25
     background-color "#1e1e2e"
     backdrop-color "#1e1e2e"
 }
 
 output "eDP-2" {
-    mode "2560x1600@60"
+    mode "2560x1600@60.002"
     scale 1.25
     background-color "#1e1e2e"
     backdrop-color "#1e1e2e"
