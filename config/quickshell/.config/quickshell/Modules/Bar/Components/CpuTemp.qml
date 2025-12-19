@@ -16,7 +16,7 @@ MonitorItem {
             action.signal(15);
             return ;
         }
-        action.exec(["kitty", "-e", "btop"]);
+        action.exec(["ghostty", "-e", "btop"]);
     }
 
     Process {

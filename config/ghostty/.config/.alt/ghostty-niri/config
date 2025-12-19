@@ -17,11 +17,11 @@ command = exec fish
 confirm-close-surface = false
 
 font-family = monospace
-font-size = 12
+font-size = 10
 
 cursor-style = bar
 adjust-cursor-thickness = 3
 
 custom-shader = cursor-shaders/cursor-smear.glsl
 
-quit-after-last-window-closed = false
+# quit-after-last-window-closed = false

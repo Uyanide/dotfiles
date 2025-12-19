@@ -14,11 +14,11 @@ binds {
     Mod+E { spawn "dolphin" "--new-window"; }
     Mod+W { spawn-sh "zen || zen-browser"; }
     Mod+X { spawn "gnome-text-editor" "--new-window"; }
-    Mod+B { spawn-sh "pkill -x -n btop || kitty -e btop"; }
-    Mod+T { spawn "ghostty" "+new-window"; }
-    Mod+Return { spawn "ghostty" "+new-window"; }
-    Mod+Shift+T { spawn "kitty"; }
-    Mod+Shift+Return { spawn "kitty"; }
+    Mod+B { spawn-sh "pkill -x -n btop || ghostty -e btop"; }
+    Mod+Shift+T { spawn "ghostty" "+new-window"; }
+    Mod+Shift+Return { spawn "ghostty" "+new-window"; }
+    Mod+T { spawn "kitty"; }
+    Mod+Return { spawn "kitty"; }
     Mod+Shift+W { spawn "wallpaper-carousel"; }
     Mod+O { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
 
