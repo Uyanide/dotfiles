@@ -38,6 +38,10 @@ https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
 
 ## Setup Overview
 
+> [!NOTE]
+>
+> See also [config-stow](./config-stow) for the list of stow packages.
+
 - OS: **Archlinux**
 - WM: Hyprland | **Niri**
 - Bar: Waybar | **Quickshell**
