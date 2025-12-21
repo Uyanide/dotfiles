@@ -48,7 +48,7 @@ NIRI_PKGS = [
     *GUI_BASE_PKGS,
     "hypr",         # for hyprlock & hypridle
     "niri",         # wm config
-    "quickshell",   # widget & status bar & notifications & ...
+    "quickshell",   # widgets & status bar & notifications & ...
     "rofi",         # application launcher
     "wlogout"       # logout menu
 ]

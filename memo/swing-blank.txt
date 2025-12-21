@@ -1,0 +1,1 @@
+niri和其他wm中某些JVM上(如使用Swing)的GUI应用打开后可能只显示空白窗口，可尝试添加_JAVA_AWT_WM_NONREPARENTING="1"到环境变量以防止应用无限等待根本不会发生的Reparenting。

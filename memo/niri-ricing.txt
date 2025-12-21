@@ -1,7 +1,6 @@
 things I have installed:
 
- in addition to everything in `./hyprland-ricing.txt`:
+in addition to everything in `./hyprland-ricing.txt`:
 
 xwayland-satellite
 wlsunset
-grim                # see /config/scripts/.local/scripts/screenshot-script

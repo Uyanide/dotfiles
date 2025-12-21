@@ -16,6 +16,9 @@ environment {
     __GLX_VENDOR_LIBRARY_NAME "nvidia"
     NVD_BACKEND "nvidia"
 
+    // Fix Swing
+    _JAVA_AWT_WM_NONREPARENTING "1"
+
     // Others
     XCURSOR_SIZE "24"
     ELECTRON_OZONE_PLATFORM_HINT "wayland"

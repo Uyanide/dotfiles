@@ -104,7 +104,7 @@ if type -q git
         # alias gc="git clone \$(wl-paste)"
         function gc
             set -l repo (wl-paste)
-            if not string match -r '^(http|https|git|ssh)://|^git@' "$repo"
+            if not string match -r '^(http|https|git|ssh)://|^git@' "$repo" >/dev/null 2>&1
                 echo "Error: Clipboard does not contain a valid git repository URL." >&2
                 echo "Error: Clipboard content: $repo" >&2
                 read -P "Enter a valid git repository URL: " repo
@@ -119,9 +119,21 @@ if type -q git
         if type -q idea
             function pingo
                 cd "$HOME/Repositories/PGdP" || return 1
-                gc || return 1
-                set -l repo_name (basename $repo .git)
-                nohup idea $repo_name >/dev/null 2>&1 & disown
+                set -l repo (wl-paste)
+                if not string match -r '^(http|https|git|ssh)://|^git@' "$repo" >/dev/null 2>&1
+                    echo "Error: Clipboard does not contain a valid git repository URL." >&2
+                    echo "Error: Clipboard content: $repo" >&2
+                    read -P "Enter a valid git repository URL: " repo
+                    if not string match -r '^(http|https|git|ssh)://|^git@' "$repo"
+                        echo "Error: Invalid git repository URL." >&2
+                        return 1
+                    end
+                end
+                set -l dir_name (basename $repo .git)
+                if ! test -d $dir_name
+                    git clone $repo || return 1
+                end
+                nohup idea $dir_name >/dev/null 2>&1 & disown
             end
         end
     end

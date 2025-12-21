@@ -99,6 +99,10 @@ login=/usr/bin/su - kolkas -s /usr/bin/fish --login
 
 ## 检测当前终端是否为 kmscon
 
+kmscon 中 `$TERM` 将会是 `xterm-256color`，不具区分度，需要另寻他路。
+
+> [!IMPORTANT]
+>
 > 以下代码片段适用于 fish shell
 
 检测所有祖先进程中是否有 kmscon：
