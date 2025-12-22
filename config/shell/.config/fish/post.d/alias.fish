@@ -116,24 +116,29 @@ if type -q git
             git clone $repo
         end
 
-        if type -q idea
-            function pingo
-                cd "$HOME/Repositories/PGdP" || return 1
-                set -l repo (wl-paste)
-                if not string match -r '^(http|https|git|ssh)://|^git@' "$repo" >/dev/null 2>&1
-                    echo "Error: Clipboard does not contain a valid git repository URL." >&2
-                    echo "Error: Clipboard content: $repo" >&2
-                    read -P "Enter a valid git repository URL: " repo
-                    if not string match -r '^(http|https|git|ssh)://|^git@' "$repo"
-                        echo "Error: Invalid git repository URL." >&2
-                        return 1
-                    end
+        function pingo
+            cd "$HOME/Repositories/PGdP" || return 1
+            set -l repo (wl-paste)
+            if not string match -r '^(http|https|git|ssh)://|^git@' "$repo" >/dev/null 2>&1
+                echo "Error: Clipboard does not contain a valid git repository URL." >&2
+                echo "Error: Clipboard content: $repo" >&2
+                read -P "Enter a valid git repository URL: " repo
+                if not string match -r '^(http|https|git|ssh)://|^git@' "$repo"
+                    echo "Error: Invalid git repository URL." >&2
+                    return 1
                 end
-                set -l dir_name (basename $repo .git)
-                if ! test -d $dir_name
-                    git clone $repo || return 1
-                end
-                nohup idea $dir_name >/dev/null 2>&1 & disown
+            end
+            set -l dir_name (basename "$repo" .git)
+            if ! test -d "$dir_name"
+                git clone $repo || return 1
+            end
+            set -l app $argv[1]
+            if test -n "$app"; and type -q "$app"
+                echo Opening project with "$app"
+                nohup $app $dir_name >/dev/null 2>&1 & disown
+            else
+                echo Opening method missing or invalid
+                cd $dir_name
             end
         end
     end
