@@ -65,63 +65,83 @@ Item {
         Item {
             id: titleContainer
 
+            property bool shouldScroll: windowTitle.implicitWidth > width
+            property int scrollSpacing: 30
+
             implicitWidth: root.maxWidth
             implicitHeight: parent.height
             // Layout.alignment: Qt.AlignVCenter
             clip: true
 
-            Text {
-                id: windowTitle
+            Item {
+                id: scrollContent
 
-                text: Niri.focusedWindowTitle
+                height: parent.height
                 anchors.verticalCenter: parent.verticalCenter
-                font.pointSize: Fonts.medium
-                font.family: Fonts.primary
-                color: Colors.primary
 
-                MouseArea {
-                    id: mouseArea
+                Text {
+                    id: windowTitle
 
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-                    acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
-                    onEntered: {
-                        if (windowTitle.implicitWidth > titleContainer.width)
-                            windowTitle.x = titleContainer.width - windowTitle.implicitWidth;
+                    text: Niri.focusedWindowTitle
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pointSize: Fonts.medium
+                    font.family: Fonts.primary
+                    color: Colors.primary
+                }
 
-                    }
-                    onExited: {
-                        windowTitle.x = 0;
-                    }
-                    onClicked: function(mouse) {
-                        if (mouse.button === Qt.MiddleButton)
-                            Quickshell.execDetached(["niri", "msg", "action", "close-window"]);
-                        else if (mouse.button === Qt.LeftButton)
-                            Quickshell.execDetached(["niri", "msg", "action", "center-window"]);
-                        else if (mouse.button === Qt.RightButton)
-                            Quickshell.execDetached(["niri", "msg", "action", "maximize-window-to-edges"]);
-                    }
-                    onWheel: function(wheel) {
-                        if (wheel.angleDelta.y > 0)
-                            Quickshell.execDetached(["niri", "msg", "action", "set-column-width", "+10%"]);
-                        else if (wheel.angleDelta.y < 0)
-                            Quickshell.execDetached(["niri", "msg", "action", "set-column-width", "-10%"]);
-                        else if (wheel.angleDelta.x > 0)
-                            Quickshell.execDetached(["niri", "msg", "action", "focus-column-left"]);
-                        else if (wheel.angleDelta.x < 0)
-                            Quickshell.execDetached(["niri", "msg", "action", "focus-column-right"]);
+                Text {
+                    text: Niri.focusedWindowTitle
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: windowTitle.right
+                    anchors.leftMargin: titleContainer.scrollSpacing
+                    font.pointSize: Fonts.medium
+                    font.family: Fonts.primary
+                    color: Colors.primary
+                    visible: titleContainer.shouldScroll
+                }
+
+                NumberAnimation {
+                    target: scrollContent
+                    property: "x"
+                    from: 0
+                    to: -(windowTitle.width + titleContainer.scrollSpacing)
+                    duration: (windowTitle.width + titleContainer.scrollSpacing) * 10
+                    loops: Animation.Infinite
+                    running: titleContainer.shouldScroll && mouseArea.containsMouse
+                    onRunningChanged: {
+                        if (!running)
+                            scrollContent.x = 0;
+
                     }
                 }
 
-                Behavior on x {
-                    NumberAnimation {
-                        duration: 1000
-                        easing.type: Easing.OutCubic
-                    }
+            }
 
+            MouseArea {
+                id: mouseArea
+
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
+                onClicked: function(mouse) {
+                    if (mouse.button === Qt.MiddleButton)
+                        Quickshell.execDetached(["niri", "msg", "action", "close-window"]);
+                    else if (mouse.button === Qt.LeftButton)
+                        Quickshell.execDetached(["niri", "msg", "action", "center-window"]);
+                    else if (mouse.button === Qt.RightButton)
+                        Quickshell.execDetached(["niri", "msg", "action", "maximize-window-to-edges"]);
                 }
-
+                onWheel: function(wheel) {
+                    if (wheel.angleDelta.y > 0)
+                        Quickshell.execDetached(["niri", "msg", "action", "set-column-width", "+10%"]);
+                    else if (wheel.angleDelta.y < 0)
+                        Quickshell.execDetached(["niri", "msg", "action", "set-column-width", "-10%"]);
+                    else if (wheel.angleDelta.x > 0)
+                        Quickshell.execDetached(["niri", "msg", "action", "focus-column-left"]);
+                    else if (wheel.angleDelta.x < 0)
+                        Quickshell.execDetached(["niri", "msg", "action", "focus-column-right"]);
+                }
             }
 
         }
