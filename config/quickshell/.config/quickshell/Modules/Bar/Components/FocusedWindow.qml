@@ -85,7 +85,7 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     hoverEnabled: true
-                    acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                    acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
                     onEntered: {
                         if (windowTitle.implicitWidth > titleContainer.width)
                             windowTitle.x = titleContainer.width - windowTitle.implicitWidth;
@@ -99,6 +99,8 @@ Item {
                             Quickshell.execDetached(["niri", "msg", "action", "close-window"]);
                         else if (mouse.button === Qt.LeftButton)
                             Quickshell.execDetached(["niri", "msg", "action", "center-window"]);
+                        else if (mouse.button === Qt.RightButton)
+                            Quickshell.execDetached(["niri", "msg", "action", "maximize-window-to-edges"]);
                     }
                     onWheel: function(wheel) {
                         if (wheel.angleDelta.y > 0)
