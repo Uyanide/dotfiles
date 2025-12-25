@@ -14,7 +14,8 @@ BASE_PKGS = [
 # e.g. servers that are accessed via SSH only
 TUI_PKGS = [
     *BASE_PKGS,
-    "fastfetch",    # sys info
+    "fastfetch",    # sys info,
+    "helix",        # editor
     "nvim",         # editor
     "shell",        # fish & .bash_profile & shell prompt
     "yazi"          # terminal file manager
