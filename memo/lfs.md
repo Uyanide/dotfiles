@@ -10,7 +10,7 @@
 
 - [2.4. Creating a New Partition](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/creatingpartition.html)
 
-  虽然此处列举了很多分区，例如 `/opt`，`/usr/sources` 等，但我并不喜欢，也并不觉得有必要将根目录分得如此细碎。对于 UEFI 引导的系统来说（btw 我不认为 BIOS 引导和 UEFI 引导的配置难度的差距有很多观点说得那样巨大）除去可选的 Swap 分区外通常 `/boot/efi`，`/boot`，`/`，`/home` 几个分区就足够了。
+  虽然此处列举了很多分区，例如 `/opt`，`/usr/sources` 等，但我并不喜欢，也并不觉得有必要将根目录分得如此细碎。对于 UEFI 引导的系统来说（btw 我不认为 BIOS 引导和 UEFI 引导的配置难度之间的差距有很多观点说得那样巨大）除去可选的 Swap 分区外通常 `/`，`/boot`，`/boot/efi`，`/home` 几个分区就足够了。
 
 - [2.6. Setting the $LFS Variable and the Umask](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/aboutlfs.html)
 
@@ -104,7 +104,7 @@
       echo "Cleaning up..."
       cd ..
       if [[ -z "$dir" || "$dir" == "/" || "$dir" == "." ]]; then
-          echo "Error: Unsafe directory detection."
+          echo "Error: Unsafe directory for cleanup: $dir"
           exit 1
       fi
       rm -rf "$dir"
@@ -200,9 +200,9 @@
 
   它的作用是自动挂载一系列虚拟文件系统，同时在退出 chroot 时自动清理。
 
-  > [!NOTE]
-  >
-  > 此处并不建议使用 `arch-install-scripts` 提供的 `arch-chroot` 偷懒，除非明确知道自己在做什么。
+> [!IMPORTANT]
+>
+> 此处并不建议使用 `arch-install-scripts` 提供的 `arch-chroot` 偷懒，除非明确知道自己在做什么。
 
 - [8.64. GRUB-2.12](https://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html)
 
@@ -217,7 +217,11 @@
 
 - [10.2. Creating the /etc/fstab File](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/fstab.html)
 
-  可以使用 `arch-install-scripts` 提供的 `genfstab` 偷懒。但必须注意的是，不同于常见的发行版，LFS 需要在 `/etc/fstab` 中指定一系列虚拟文件系统，如果不这样做的话会导致无法启动。
+  可以使用 `arch-install-scripts` 提供的 `genfstab` 偷懒。
+
+> [!IMPORTANT]
+>
+> 不同于常见的发行版，LFS 需要在 `/etc/fstab` 中指定一系列虚拟文件系统，如果不这样做的话会导致无法启动。
 
 - [10.3. Linux-6.16.1](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/kernel.html)
 
@@ -249,11 +253,11 @@
 
     如果内核版本不一致，会在 `make localmodconfig` 时出现很多交互选项，建议全部保持默认，或使用 `make olddefconfig` 来自动处理。
 
-    在此之后，仍建议按照 LFS 书中的建议检查和调整配置选项。
+    在此之后，仍建议按照 LFS 书中的指示检查和调整配置选项。
 
-    > [!NOTE]
-    >
-    > 即使不打算直接使用 Host 的内核配置，Host 加载的内核模块也能为 LFS 内核的配置提供很好的参考，例如当一个门类下有很多并列且可选的选项时，可以优先启用 Host 当前加载的模块对应的选项。
+  - 参考 Host 的内核配置
+
+    即使不打算直接使用 Host 的内核配置，Host 加载的内核模块也能为 LFS 内核的配置提供很好的参考，例如当一个门类下有很多并列且可选的选项时，可以优先启用 Host 当前加载的模块对应的选项。
 
   - BLFS 要求的内核配置
 
@@ -263,9 +267,9 @@
 
     如果之后会安装闭源的 NVIDIA 驱动程序，则不建议在内核中启用 nouveau 驱动，因为这会导致闭源驱动无法正常工作，后续禁用 nouveau 将会是额外的工作量。
 
-  - \* or M
+  - `<*>` or `<M>`
 
-    对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但有几种情况例外：
+    对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但有几种情况例外，例如：
 
     - 引导相关的选项（例如 EFI 支持）必须内置，否则无法引导。
     - 一些必要的文件系统（例如 ext4）建议内置，否则可能无法挂载根文件系统。
@@ -276,13 +280,21 @@
 
 - [10.4. Using GRUB to Set Up the Boot Process](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/grub.html)
 
-  烈建议使用 PARTUUID 和 UUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定根文件系统和其他分区。
+  强烈建议使用 PARTUUID 和 UUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区。
 
   另外，如果将外置存储设备（如 USB 硬盘）作为根文件系统，建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 参数以防止启动时找不到根文件系统。
 
+> [!NOTE]
+>
+> UUID 和 PARTUUID 可以通过 `lsblk -o NAME,FSTYPE,UUID,PARTUUID` 查看。
+
+> [!NOTE]
+>
+> UUID 指的是文件系统 UUID，GRUB 需要具备读取对应文件系统的能力才能识别 UUID。而 PARTUUID 指的是分区 UUID，不依赖文件系统。
+
 ## BLFS
 
-绝大多数的建议都已在 LFS 部分体积，这里只做少数补充：
+绝大多数的建议都已在 LFS 部分提及，这里只做少数补充：
 
 - 阅读顺序
 
