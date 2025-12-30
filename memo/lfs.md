@@ -330,8 +330,8 @@
 
   此版本的 Qt 在构建时可能会出现错误，日志的一部分如下：
 
-      <details>
-      <summary>错误日志</summary>
+  <details>
+  <summary>错误日志</summary>
 
   ```log
   [10697/11095] Linking CXX shared mo...s/position/libqtposition_geoclue2.so
@@ -405,7 +405,7 @@
   ninja: build stopped: subcommand failed.
   ```
 
-      </details>
+  </details>
 
   原因是源文件显式包含了多余的 moc 文件，和自动生成的元对象代码冲突，导致重复定义。出问题的源文件有两个，可以通过以下命令修复：
 
