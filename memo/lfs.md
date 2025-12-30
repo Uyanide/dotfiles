@@ -8,15 +8,15 @@
 
 以下内容按照对应章节划分：
 
-- [2.4.1.4](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/creatingpartition.html)
+- [2.4. Creating a New Partition](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/creatingpartition.html)
 
   虽然此处列举了很多分区，例如 `/opt`，`/usr/sources` 等，但我并不喜欢，也并不觉得有必要将根目录分得如此细碎。对于 UEFI 引导的系统来说（btw 我不认为 BIOS 引导和 UEFI 引导的配置难度的差距有很多观点说得那样巨大）除去可选的 Swap 分区外通常 `/boot/efi`，`/boot`，`/`，`/home` 几个分区就足够了。
 
-- [2.6](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/aboutlfs.html)
+- [2.6. Setting the $LFS Variable and the Umask](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/aboutlfs.html)
 
   `$LFS` 变量很重要！建议写到 Host 的 `/root/.bash_profile` 或 `/etc/profile.d/...` 或类似作用的配置文件里防止忘记设置。
 
-- [2.6](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/mounting.html)
+- [2.7. Mounting the New Partition](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/mounting.html)
 
   可以用一个小脚本挂载分区，推荐使用文件系统 UUID 而非诸如 `/dev/sdc1` 这样的绝对路径：
 
@@ -27,6 +27,7 @@
 
   set -euo pipefail
 
+  # 替换为实际的 UUID
   UUID_EFI="{ESP_UUID}"
   UUID_BOOT="{BOOT_UUID}"
   UUID_LFS="{ROOT_UUID}"
@@ -68,15 +69,15 @@
   mount "$DEV_HOME" "$LFS/home"
   ```
 
-- [3](https://www.linuxfromscratch.org/lfs/view/stable/chapter03/chapter03.html)
+- [3. Packages and Patches](https://www.linuxfromscratch.org/lfs/view/stable/chapter03/chapter03.html)
 
-  强烈建议通过镜像站下载打包好的所有源代码和 patch，否则某些源服务器的下载速度即便在非受限网络环境也很感人。
+  强烈建议通过镜像站下载打包好的所有源代码和 patch，否则某些源服务器的下载速度即便在非受限的网络环境也很感人。
 
-- [4.5](https://www.linuxfromscratch.org/lfs/view/stable/chapter04/aboutsbus.html)
+- [4.5. About SBUs](https://www.linuxfromscratch.org/lfs/view/stable/chapter04/aboutsbus.html)
 
   SBU 只提供大概的预期耗时范围，误差是很大的，尤其对于 BLFS 书中的一些编译时间很长的包（如 Qt，Firefox）来说。
 
-- [5](https://www.linuxfromscratch.org/lfs/view/stable/chapter05/chapter05.html)
+- [5. Compiling a Cross-Toolchain](https://www.linuxfromscratch.org/lfs/view/stable/chapter05/chapter05.html)
 
   从这一章开始将会手动编译大量的包，其中有不少操作是重复的，例如 `tar -xf`，`cd`，`rm -rf` 等，为此可以写一个小脚本节省时间：
 
@@ -99,7 +100,17 @@
       exit 1
   fi
 
-  trap 'cd .. && rm -rf "$dir" && echo "Removed $dir"' EXIT
+  cleanup() {
+      echo "Cleaning up..."
+      cd ..
+      if [[ -z "$dir" || "$dir" == "/" || "$dir" == "." ]]; then
+          echo "Error: Unsafe directory detection."
+          exit 1
+      fi
+      rm -rf "$dir"
+  }
+
+  trap cleanup EXIT INT TERM
   tar -xvf "$tarball"
 
   if [ ! -d "$dir" ]; then
@@ -115,8 +126,6 @@
   ```
 
   它的作用是解压一个只含有一个顶层目录的 tarball，cd 进入解压后得到的目录，生成一个 shell，并在这个 shell 退出时清理先前解压得到的文件。
-
-- [5](https://www.linuxfromscratch.org/lfs/view/stable/chapter05/chapter05.html)
 
   另外还有对于在 LFS 与 BLFS 中编译包的一些通用建议：
 
@@ -216,7 +225,7 @@
 
   - 复刻并裁剪现有配置
 
-    如果将要使用正在构建的 LFS 系统的机器和 Host 完全相同，可以将 Host 现在运行的内核的配置文件搬过来，同时仅启用当前 Host 加载的内核模块，这将极大地减小配置难度和缩短构建耗时：
+    如果将要使用正在构建的 LFS 系统的机器和 Host 完全相同，并且内核版本相同或相近，可以将 Host 现在运行的内核的配置文件搬过来，同时仅启用当前 Host 加载的内核模块，这将极大地减小配置难度和缩短构建耗时：
 
     在 Host 上运行：
 
@@ -265,6 +274,12 @@
 
     - 需要固件支持的驱动程序（如 i915），除非使用 initrd 或将固件内置到内核中。
 
+- [10.4. Using GRUB to Set Up the Boot Process](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/grub.html)
+
+  烈建议使用 PARTUUID 和 UUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定根文件系统和其他分区。
+
+  另外，如果将外置存储设备（如 USB 硬盘）作为根文件系统，建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 参数以防止启动时找不到根文件系统。
+
 ## BLFS
 
 绝大多数的建议都已在 LFS 部分体积，这里只做少数补充：
@@ -272,6 +287,16 @@
 - 阅读顺序
 
   BLFS 并不像 LFS 那样有线性的章节顺序，但仍建议先顺序阅读直到 [After LFS Configuration Issues](https://www.linuxfromscratch.org/blfs/view/stable/postlfs/config.html) 章节**结束**再按自己的需要安装各种包。
+
+- [About Firmware](https://www.linuxfromscratch.org/blfs/view/stable/postlfs/firmware.html)
+
+  一个偷懒的方法是把 Host 的 `/lib/firmware` 目录复制到 LFS 的对应目录下：
+
+  ```bash
+  cp -av /lib/firmware $LFS/lib/
+  ```
+
+  其中 `-a` 选项会保留符号链接和文件权限等信息。
 
 - [Mesa-25.1.8](https://www.linuxfromscratch.org/blfs/view/stable/x/mesa.html)
 
@@ -293,18 +318,20 @@
   其中：
 
   - `-D gallium-drivers=iris,llvmpipe`：
-    - 仅启用 Intel iGPU 的驱动，因为 NVIDIA 专有驱动自带完整的 OpenGL 支持，不需要 Mesa 提供。
-    - 同时启用 llvmpipe 用于软件渲染以防万一。
-    - 对于较新（Gen 8 及更新）的硬件，`crocus`（适用于 Gen 4 到 Gen 7）和 `i915`（更老）用户态 OpenGL 驱动已被废弃，不应再使用。注意此处的 i915 和内核中的 i915 内核驱动是不同的东西。
-  - `-D vulkan-drivers=intel,swrast`：启用 Intel iGPU 的 Vulkan 支持，同时启用 swrast 以防万一。
+    - 不包含 NVIDIA 相关的参数，因为 NVIDIA 专有驱动自带完整的 OpenGL 支持，不需要 Mesa 提供。
+    - 同时启用 llvmpipe 用于 OpenGL 上下文中的软件渲染以防万一。
+    - `iris` 用于 Intel 显卡。对于较新（Gen 8 及更新）的硬件，`crocus`（适用于 Gen 4 到 Gen 7）和 `i915`（更老）用户态 OpenGL 驱动已被废弃，不应再使用。注意此处的 i915 和内核中的 i915 内核驱动是不同的东西。
+  - `-D vulkan-drivers=intel,swrast`：
+    - 启用 Intel iGPU 的 Vulkan 支持。
+    - 同时启用 Vulkan 上下文中的软件光栅化驱动 swrast 以防万一。
   - `-D glvnd=enabled`：启用 GLVND 支持以便和 NVIDIA 专有驱动兼容。libglvnd 需要[在 GLFS 书中安装](https://glfs-book.github.io/glfs/shareddeps/libglvnd.html)。
 
 - [Qt-6.9.2](https://www.linuxfromscratch.org/blfs/view/stable/x/qt6.html)
 
   此版本的 Qt 在构建时可能会出现错误，日志的一部分如下：
 
-  <details>
-  <summary>错误日志</summary>
+      <details>
+      <summary>错误日志</summary>
 
   ```log
   [10697/11095] Linking CXX shared mo...s/position/libqtposition_geoclue2.so
@@ -378,10 +405,10 @@
   ninja: build stopped: subcommand failed.
   ```
 
-  </details>
+      </details>
 
-  原因是源文件包含了多余的 moc 文件导致重复定义。出问题的源文件有两个，可以通过以下命令修复：
+  原因是源文件显式包含了多余的 moc 文件，和自动生成的元对象代码冲突，导致重复定义。出问题的源文件有两个，可以通过以下命令修复：
 
   ```bash
-  sed -i -E '/#include "moc_.+/d' qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosourcefactory_geoclue2.cpp qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosource_geoclue2.cpp
+  sed -i -E 's|\s*#include "moc_.*|// &|g' qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosourcefactory_geoclue2.cpp qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosource_geoclue2.cpp
   ```
