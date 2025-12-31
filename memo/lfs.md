@@ -300,6 +300,26 @@
 
   BLFS 并不像 LFS 那样有线性的章节顺序，但仍建议先顺序阅读直到 [After LFS Configuration Issues](https://www.linuxfromscratch.org/blfs/view/stable/postlfs/config.html) 章节**结束**再按自己的需要安装各种包。
 
+- `su: must be run from a terminal`
+
+  1. What?
+
+     这通常发生在 chroot 后使用 `su` 切换到普通用户，再使用 `su` 试图切换回 root 时。
+
+  2. Why?
+
+     LFS 书中 [7.3. Preparing Virtual Kernel File Systems](https://www.linuxfromscratch.org/lfs/view/stable/chapter07/kernfs.html) 中的 `mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts` 命令将 `/dev/pts` 挂载为全新的 `devpts` 文件系统，导致 tty 上下文丢失，从而无法使用 `su`。
+
+  3. How?
+
+     一个简单的解决方案是使用 `script` 命令重新分配一个伪终端：
+
+     ```bash
+     script /dev/null
+     ```
+
+     之后就可以正常使用 `su` 了。
+
 - [About Firmware](https://www.linuxfromscratch.org/blfs/view/stable/postlfs/firmware.html)
 
   一个偷懒的方法是把 Host 的 `/lib/firmware` 目录复制到 LFS 的对应目录下：
@@ -340,7 +360,7 @@
 
 - [Qt-6.9.2](https://www.linuxfromscratch.org/blfs/view/stable/x/qt6.html)
 
-  此版本的 Qt 在构建时可能会出现错误，日志的一部分如下：
+  此版本的 Qt 的 geoclue2 模块在特定条件下构建时可能会出现错误，日志的一部分如下：
 
   <details>
   <summary>错误日志</summary>
