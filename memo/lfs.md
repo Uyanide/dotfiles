@@ -358,6 +358,8 @@
     - 同时启用 Vulkan 上下文中的软件光栅化驱动 swrast 以防万一。
   - `-D glvnd=enabled`：启用 GLVND 支持以便和 NVIDIA 专有驱动兼容。libglvnd 需要[在 GLFS 书中安装](https://glfs-book.github.io/glfs/shareddeps/libglvnd.html)。
 
+  > 虽然 GLFS 中的 libglvnd 章节在开头处提到了 `If you've come here from the BLFS Mesa page, ...`，但实际上 BLFS 中的 Mesa 章节并没有提到 libglvnd 和除 nouveau 外与 NVIDIA 相关的话题。算个小坑？大概。
+
 - [Qt-6.9.2](https://www.linuxfromscratch.org/blfs/view/stable/x/qt6.html)
 
   此版本的 Qt 的 geoclue2 模块在特定条件下构建时可能会出现错误，日志的一部分如下：
