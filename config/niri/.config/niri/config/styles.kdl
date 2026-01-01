@@ -71,7 +71,7 @@ cursor {
     hide-when-typing
 }
 
-// I love round corners
+// I love rounded corners
 window-rule {
     geometry-corner-radius 14
     clip-to-geometry true

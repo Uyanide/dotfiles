@@ -225,7 +225,7 @@ def main():
     parser.add_argument('-i', '--image', type=str, help="Path to the image")
     parser.add_argument('-f', '--flavor', type=str, help="Flavor to apply")
     parser.add_argument('-c', '--color', type=str, help="Color to match from the palette")
-    parser.add_argument('arguments', nargs='*',
+    parser.add_argument('apps', nargs='*',
                         help="'app1 !app2' to include(only) / exclude(all but) specific applications. "
                         "Available apps: " + ', '.join(SCRIPTS.keys()))
 

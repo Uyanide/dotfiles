@@ -4,5 +4,6 @@
 #   Launch mpv with smooth motion interpolation enabled
 
 export NVPRESENT_ENABLE_SMOOTH_MOTION=1
+export __GL_GSYNC_ALLOWED=0
 
-mpv --vo=gpu-next --gpu-api=vulkan --gpu-context=waylandvk --video-sync=audio "$@"
+mpv --vo=gpu-next --gpu-api=vulkan --gpu-context=waylandvk --video-sync=audio --interpolation=no --hwdec=nvdec-copy "$@"
