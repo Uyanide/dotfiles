@@ -48,7 +48,7 @@ fi
 # Triggered when SSH into the machine
 if [[ $- == *i* ]]; then
     # Set EDITOR and VISUAL, mainly for sudoedit
-    for app in helix nvim vim vi nano; do
+    for app in nvim helix vim vi nano; do
         if command -v "$app" >/dev/null 2>&1; then
             EDITOR="$app"
             VISUAL="$app"

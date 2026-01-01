@@ -11,7 +11,7 @@ if type -q bat
 end
 
 # Editor
-for app in helix nvim vim vi nano
+for app in nvim helix vim vi nano
     if type -q $app
         set -x -g EDITOR $app
         set -x -g VISUAL $app

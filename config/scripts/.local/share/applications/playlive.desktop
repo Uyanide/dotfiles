@@ -2,7 +2,7 @@
 Type=Application
 Name=Play Live Photo
 Comment=Play embedded video from Live Photos
-Exec=/home/kolkas/.local/scripts/playlive %f
+Exec=~/.local/scripts/playlive %f
 Icon=multimedia-video-player
 Terminal=false
 Categories=AudioVideo;Video;Utility;

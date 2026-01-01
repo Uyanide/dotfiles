@@ -4,10 +4,10 @@
 #   Play the video embedded in a live photo file (or so-called Motion Photo).
 #   The literal tags differ between manufacturers, so this script looks for
 #   the common 'ftyp' box that indicates the start of an MP4 video stream
-#   instead of "MotionPhotoVideo" or "EmbeddedVideo" or something.
+#   instead of "MotionPhotoVideo" or "EmbeddedVideo" or anything else.
 #
 # Requirements:
-# - mpv or vlc media player installed.
+# - mpv or vlc.
 #
 # Usage:
 # - playlive <file>
@@ -22,15 +22,6 @@ if [ -z "${1:-}" ]; then
     exit 1
 fi
 
-play_cmd=()
-if command -v mpv >/dev/null 2>&1; then
-    play_cmd=(mpv --title="Live Photo View" --keep-open=no --loop-file=no --loop-playlist=no --idle=no)
-elif command -v vlc >/dev/null 2>&1; then
-    play_cmd=(vlc --play-and-exit)
-else
-    echo "Error: No suitable media player found." >&2
-    exit 1
-fi
 
 file="$1"
 
@@ -52,5 +43,15 @@ fi
 mp4_offset=$((offset - 3))
 
 tail -c "+$mp4_offset" "$file" > "$tmp_video"
+
+play_cmd=()
+if command -v mpv >/dev/null 2>&1; then
+    play_cmd=(mpv --title="Live Photo View: $file" --keep-open=yes --loop-file=yes --loop-playlist=no --idle=yes)
+elif command -v vlc >/dev/null 2>&1; then
+    play_cmd=(vlc --meta-title="Live Photo View: $file")
+else
+    echo "Error: No suitable media player found." >&2
+    exit 1
+fi
 
 "${play_cmd[@]}" "$tmp_video"
