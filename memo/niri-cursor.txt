@@ -1,0 +1,5 @@
+Niri 25.08 版本后, 如果所使用的指针主题的存储位置在 $HOME/.local/share/icons 下, 可能会出现无法识别的问题, 复制一份到全局的 /usr/share/icons 下可解决.
+
+Ref: https://github.com/YaLTeR/niri/issues/2339#issuecomment-3333960702
+
+(这个问题直到接近半年后的今天才在我的电脑上出现也真是奇怪)
