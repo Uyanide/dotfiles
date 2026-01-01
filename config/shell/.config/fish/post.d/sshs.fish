@@ -3,7 +3,7 @@
 if type -q ssh
     bass $(ssh-init) > /dev/null 2>&1
 
-    # avoiding entering passphrase every time
+    # avoid entering passphrase every time
     function sshs
         # test if keys are added to ssh-agent
         if not ssh-add -l > /dev/null 2>&1
