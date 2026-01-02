@@ -23,5 +23,10 @@ use = "llanosrocas/yaziline"
 rev = "6266926"
 hash = "9917ab5cb9bdbab7ca7f2501f84f0f11"
 
+[[plugin.deps]]
+use = "Rolv-Apneseth/starship"
+rev = "eca1861"
+hash = "e519d894e94ded741e06aae4d4775981"
+
 [flavor]
 deps = []
