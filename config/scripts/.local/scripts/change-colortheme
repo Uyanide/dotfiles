@@ -45,11 +45,16 @@ SCRIPTS = {
     "nwg-look": [CONFIG_DIR / "nwg-look" / "apply-color"],
     "mako": [CONFIG_DIR / "mako" / "apply-color"],
     "niri": [CONFIG_DIR / "niri" / "apply-color"],
-    "oh-my-posh": [CONFIG_DIR / "fish" / "apply-color-omp"],  # borrowing fish's directory
+    "oh-my-posh": [
+        CONFIG_DIR / "fish" / "apply-color-omp"
+    ],  # borrowing fish's directory
     "quickshell": [CONFIG_DIR / "quickshell" / "apply-color"],
     "rofi": [CONFIG_DIR / "rofi" / "apply-color"],
     "waybar": [CONFIG_DIR / "waybar" / "apply-color"],
-    "wlogout": [CONFIG_DIR / ".alt" / "wlogout-default" / "apply-color", CONFIG_DIR / ".alt" / "wlogout-niri" / "apply-color"],
+    "wlogout": [
+        CONFIG_DIR / ".alt" / "wlogout-default" / "apply-color",
+        CONFIG_DIR / ".alt" / "wlogout-niri" / "apply-color",
+    ],
     "yazi": [CONFIG_DIR / "yazi" / "apply-color"],
 }
 # or simply `find -L ${CONFIG_DIR} -type f -iname 'apply-color*'` to get all available scripts,
@@ -58,7 +63,7 @@ SCRIPTS = {
 
 def hex2rgb(hex_color: str) -> tuple[int, int, int]:
     """#rrggbb to (r, g, b)"""
-    return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))  # type: ignore
+    return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))  # type: ignore
 
 
 def clamp(x, minimum, maximum) -> float:
@@ -68,27 +73,27 @@ def clamp(x, minimum, maximum) -> float:
 
 def rgb2hsv(rr: int, gg: int, bb: int) -> tuple[float, float, float]:
     """(r, g, b) 0-255 to (h, s, v)"""
-    r, g, b = rr/255.0, gg/255.0, bb/255.0
+    r, g, b = rr / 255.0, gg / 255.0, bb / 255.0
     r = clamp(r, 0.0, 1.0)
     g = clamp(g, 0.0, 1.0)
     b = clamp(b, 0.0, 1.0)
     mx = max(r, g, b)
     mn = min(r, g, b)
-    df = mx-mn
+    df = mx - mn
     h = 0.0
     if mx == mn:
         h = 0.0
     elif mx == r:
-        h = (60 * ((g-b)/df) + 360) % 360
+        h = (60 * ((g - b) / df) + 360) % 360
     elif mx == g:
-        h = (60 * ((b-r)/df) + 120) % 360
+        h = (60 * ((b - r) / df) + 120) % 360
     elif mx == b:
-        h = (60 * ((r-g)/df) + 240) % 360
+        h = (60 * ((r - g) / df) + 240) % 360
     if mx == 0:
         s = 0.0
     else:
-        s = (df/mx)*100
-    v = mx*100
+        s = (df / mx) * 100
+    v = mx * 100
     return h, s, v
 
 
@@ -96,6 +101,7 @@ def extract_color(image_path: str) -> str:
     """Extract a dominant color from the image and return it as a #rrggbb string."""
     # Only import when needed
     from colorthief import ColorThief
+
     ct = ColorThief(image_path)
 
     # Get first 5 dominant colors
@@ -131,13 +137,15 @@ def extract_color(image_path: str) -> str:
 
 def match_color(color: str, palette: dict[str, str]) -> str:
     """Match the given #rrggbb color to the closest flavor in the palette."""
-    color = color.lower().strip().removeprefix('#')
+    color = color.lower().strip().removeprefix("#")
     target_rgb = hex2rgb(color)
     target_h, target_s, target_v = rgb2hsv(*target_rgb)
 
     # Warn if not representative (nearly grayscale)
     if target_s < 5:
-        print(f"Warning: Extracted color {color} is nearly grayscale. Matching might be inaccurate.")
+        print(
+            f"Warning: Extracted color {color} is nearly grayscale. Matching might be inaccurate."
+        )
 
     def get_weighted_distance(hex_val: str) -> float:
         p_rgb = hex2rgb(hex_val)
@@ -148,7 +156,9 @@ def match_color(color: str, palette: dict[str, str]) -> str:
         dr = target_rgb[0] - p_rgb[0]
         dg = target_rgb[1] - p_rgb[1]
         db = target_rgb[2] - p_rgb[2]
-        rgb_distance = ((2 + rmean / 256) * dr**2 + 4 * dg**2 + (2 + (255 - rmean) / 256) * db**2) ** 0.5
+        rgb_distance = (
+            (2 + rmean / 256) * dr**2 + 4 * dg**2 + (2 + (255 - rmean) / 256) * db**2
+        ) ** 0.5
 
         # Hue difference (with wrapping)
         hue_diff = abs(target_h - p_h)
@@ -160,24 +170,27 @@ def match_color(color: str, palette: dict[str, str]) -> str:
 
         return rgb_distance + (hue_diff * hue_weight * 3)
 
-    closest_flavor = min(palette.keys(), key=lambda k: get_weighted_distance(palette[k]))
+    closest_flavor = min(
+        palette.keys(), key=lambda k: get_weighted_distance(palette[k])
+    )
     print(f"Matched color #{color} to {closest_flavor} (#{palette[closest_flavor]})")
     return closest_flavor
 
 
 def pick_flavor_interactive(palette: dict[str, str]) -> str:
     """Prompt the user to pick a flavor interactively."""
+
     def is_interactive() -> bool:
         return sys.stdin.isatty() and sys.stdout.isatty()
 
     def is_truecolor() -> bool:
-        colorterm = os.environ.get('COLORTERM', '')
-        term = os.environ.get('TERM', '')
+        colorterm = os.environ.get("COLORTERM", "")
+        term = os.environ.get("TERM", "")
 
         return (
-            'truecolor' in colorterm or
-            '24bit' in colorterm or
-            term.endswith('-256color')
+            "truecolor" in colorterm
+            or "24bit" in colorterm
+            or term.endswith("-256color")
         )
 
     if is_interactive():
@@ -186,7 +199,9 @@ def pick_flavor_interactive(palette: dict[str, str]) -> str:
         for i, flavor in enumerate(palette.keys(), 1):
             r, g, b = hex2rgb(palette[flavor])
             if isTruecolor:
-                print(f"\033[38;2;{r};{g};{b}m█ {i}. {flavor}: #{palette[flavor]}\033[0m")
+                print(
+                    f"\033[38;2;{r};{g};{b}m█ {i}. {flavor}: #{palette[flavor]}\033[0m"
+                )
             else:
                 print(f"{i}. {flavor}")
         while True:
@@ -221,13 +236,20 @@ def run_script(script_path: Path, args: list[str]):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Change color theme for various applications.")
-    parser.add_argument('-i', '--image', type=str, help="Path to the image")
-    parser.add_argument('-f', '--flavor', type=str, help="Flavor to apply")
-    parser.add_argument('-c', '--color', type=str, help="Color to match from the palette")
-    parser.add_argument('apps', nargs='*',
-                        help="'app1 !app2' to include(only) / exclude(all but) specific applications. "
-                        "Available apps: " + ', '.join(SCRIPTS.keys()))
+    parser = argparse.ArgumentParser(
+        description="Change color theme for various applications."
+    )
+    parser.add_argument("-i", "--image", type=str, help="Path to the image")
+    parser.add_argument("-f", "--flavor", type=str, help="Flavor to apply")
+    parser.add_argument(
+        "-c", "--color", type=str, help="Color to match from the palette"
+    )
+    parser.add_argument(
+        "apps",
+        nargs="*",
+        help="'app1 !app2' to include(only) / exclude(all but) specific applications. "
+        "Available apps: " + ", ".join(SCRIPTS.keys()),
+    )
 
     arguments = parser.parse_args()
 
@@ -238,7 +260,9 @@ def main():
     def parse_flavor(palette: dict[str, str]) -> str:
         if arguments.flavor:
             if arguments.flavor not in palette:
-                print(f"Unknown flavor: {arguments.flavor}. Available flavors: {', '.join(palette.keys())}")
+                print(
+                    f"Unknown flavor: {arguments.flavor}. Available flavors: {', '.join(palette.keys())}"
+                )
                 sys.exit(1)
             flavor = arguments.flavor
         elif arguments.color:
@@ -259,8 +283,8 @@ def main():
     def parse_apps() -> tuple[set[str], set[str]]:
         includes = set()
         excludes = set()
-        for arg in arguments.arguments:
-            if arg.startswith('!'):
+        for arg in arguments.apps:
+            if arg.startswith("!"):
                 excludes.add(arg[1:])
             else:
                 includes.add(arg)
@@ -278,7 +302,9 @@ def main():
             if app in SCRIPTS:
                 apps.add(app)
             else:
-                print(f"Unknown application: {app}. Available applications: {', '.join(SCRIPTS.keys())}")
+                print(
+                    f"Unknown application: {app}. Available applications: {', '.join(SCRIPTS.keys())}"
+                )
                 sys.exit(1)
     else:
         apps = set(SCRIPTS.keys())
@@ -297,10 +323,15 @@ def main():
             for script in SCRIPTS[app]:
                 tasks.append(executor.submit(run_script, script, script_args))
 
-    subprocess.run([
-        "notify-send", "-a", "change-colortheme", "Colortheme Changed",
-        f"Palette: {palette_name}\nFlavor: {flavor}"
-    ])
+    subprocess.run(
+        [
+            "notify-send",
+            "-a",
+            "change-colortheme",
+            "Colortheme Changed",
+            f"Palette: {palette_name}\nFlavor: {flavor}",
+        ]
+    )
 
 
 if __name__ == "__main__":
