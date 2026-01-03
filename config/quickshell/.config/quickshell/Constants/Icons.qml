@@ -28,7 +28,7 @@ Singleton {
     readonly property string tempHigh: ""
     readonly property string tempMedium: ""
     readonly property string tempLow: ""
-    readonly property string global: ""
+    readonly property string ip: "󰇧"
     readonly property string upload: ""
     readonly property string download: ""
     readonly property string speedSlower: "󰾆"

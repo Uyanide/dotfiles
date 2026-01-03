@@ -14,8 +14,12 @@ Singleton {
     readonly property string pixelFormat: "p010le"
     property string recordingDisplay: ""
     readonly property int framerate: 60
-    readonly property var codecParams: Object.freeze(["preset=p5", "rc=vbr", "cq=18", "b:v=80M", "maxrate=120M", "bufsize=160M", "color_range=tv"])
-    readonly property var filterArgs: Object.freeze([])
+    readonly property var codecParams: Object.freeze([
+        "preset=p5", "rc=vbr", "cq=18",
+        "b:v=80M", "maxrate=120M", "bufsize=160M",
+        "color_range=tv"
+    ])
+    readonly property var filterArgs: ""
 
     function getFilename() {
         var d = new Date();
@@ -84,9 +88,9 @@ Singleton {
                 recordProcess.command.push("-p");
                 recordProcess.command.push(param);
             }
-            for (const filter of filterArgs) {
+            if (filterArgs !== "") {
                 recordProcess.command.push("-F");
-                recordProcess.command.push(filter);
+                recordProcess.command.push(filterArgs);
             }
             Logger.log("RecordService", "Starting recording with command: " + recordProcess.command.join(" "));
             recordProcess.onErrorExit = function() {

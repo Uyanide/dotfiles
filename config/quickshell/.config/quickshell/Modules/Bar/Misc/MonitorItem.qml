@@ -8,6 +8,7 @@ Item {
     id: root
 
     required property string symbol
+    property int symbolSize: Fonts.icon
     property real maxValue: 100
     property real value: 100
     property string textValue: "" // override value in textDisplay if set
@@ -29,6 +30,7 @@ Item {
     signal wheelDown()
     signal clicked()
     signal rightClicked()
+    signal middleClicked()
 
     implicitHeight: parent.height - 5
     implicitWidth: parent.height + (_expand ? textDisplay.width : 0)
@@ -74,13 +76,15 @@ Item {
 
         anchors.fill: parent
         hoverEnabled: !disableHover
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         cursorShape: pointerCursor ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton)
                 root.clicked();
             else if (mouse.button === Qt.RightButton)
                 root.rightClicked();
+            else if (mouse.button === Qt.MiddleButton)
+                root.middleClicked();
         }
         onWheel: (wheel) => {
             if (wheel.angleDelta.y > 0)
@@ -142,7 +146,7 @@ Item {
                 anchors.fill: parent
                 text: symbol
                 font.family: Fonts.nerd
-                font.pointSize: Fonts.icon
+                font.pointSize: symbolSize
                 color: root.realColor
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
