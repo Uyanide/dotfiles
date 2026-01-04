@@ -1,0 +1,11 @@
+*
+!.gitignore
+!10-env.fish
+!10-niri-env.fish
+!10-sshs.fish
+!50-prompt.fish
+!50-theme.fish
+!60-alias.fish
+!60-fetch.fish
+!fish_frozen_key_bindings.fish
+!fish_frozen_theme.fish
