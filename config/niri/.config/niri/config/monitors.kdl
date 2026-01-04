@@ -15,7 +15,7 @@ output "eDP-2" {
 
 output "DP-1" {
     mode "2560x1440@179.845"
-    scale 1.0
+    scale 1
     background-color "#1e1e2e"
     backdrop-color "#1e1e2e"
     // transform "90"

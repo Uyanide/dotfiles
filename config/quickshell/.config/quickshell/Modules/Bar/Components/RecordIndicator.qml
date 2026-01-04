@@ -47,7 +47,7 @@ Item {
 
         Text {
             text: Icons.record
-            font.pointSize: Fonts.icon + 6
+            font.pointSize: 18
             color: _actualColor
         }
 
