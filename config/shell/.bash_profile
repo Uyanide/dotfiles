@@ -37,6 +37,11 @@ fi
 [ -d "$HOME/.local/scripts" ] && prepend_path "$HOME/.local/scripts"
 export PATH
 
+# fnm
+if command -v fnm; then
+    eval (fnm env --shell bash)
+fi
+
 # SSH with cross-session ssh-agent
 if [ -x "$HOME/.local/scripts/ssh-init" ]; then
     eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" >/dev/null 2>&1

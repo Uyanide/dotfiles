@@ -26,3 +26,8 @@ end
 
 # gpg
 set -x -g GPG_TTY (tty)
+
+# fnm
+if type -q fnm
+    eval (fnm env --shell fish)
+end
