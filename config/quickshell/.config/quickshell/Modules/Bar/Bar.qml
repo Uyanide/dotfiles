@@ -107,7 +107,7 @@ Variants {
                         PanelService.getPanel("bluetoothPanel")?.toggle(this)
                     }
                     onRightClicked: {
-                        Quickshell.execDetached(["blueberry"]);
+                        Quickshell.execDetached(["blueman-manager"]);
                     }
                 }
 
