@@ -13,7 +13,7 @@ sed -i -E "s/^(gtk-theme=catppuccin-mocha-)[^-]+(-standard\+default)$/\1${colorN
     exit 1
 }
 
-nwg-look -a -x
+nwg-look -a && nwg-look -x
 
 log_success "nwg-look"
 
