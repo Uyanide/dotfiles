@@ -101,9 +101,13 @@ login=/usr/bin/su - kolkas -s /usr/bin/fish --login
 
 kmscon 中 `$TERM` 将会是 `xterm-256color`，不具区分度，需要另寻他路。
 
+> [!NOTE]
+>
+> 不建议在缺少对应 terminfo 的情况下直接在 `kmscon.conf` 中配置 `term=kmscon`，但确实也是一种可行的做法。
+
 > [!IMPORTANT]
 >
-> 以下代码片段适用于 fish shell
+> 以下代码片段适用于 fish shell。
 
 检测所有祖先进程中是否有 kmscon：
 

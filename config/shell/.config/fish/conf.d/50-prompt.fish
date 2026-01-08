@@ -8,5 +8,5 @@ end
 
 # oh-my-posh
 if test -f $HOME/.config/posh_theme.omp.json; and type -q oh-my-posh
-    oh-my-posh init fish --config $HOME/.config/posh_theme.omp.json | source
+    eval (oh-my-posh init fish --config $HOME/.config/posh_theme.omp.json)
 end

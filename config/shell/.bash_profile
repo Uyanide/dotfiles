@@ -1,21 +1,21 @@
 #!/bin/bash
 
 # From archlinux's /etc/profile
-append_path () {
-    case ":$PATH:" in
-        *:"$1":*)
-            ;;
-        *)
-            PATH="${PATH:+$PATH:}$1"
-    esac
+append_path() {
+	case ":$PATH:" in
+	*:"$1":*) ;;
+	*)
+		PATH="${PATH:+$PATH:}$1"
+		;;
+	esac
 }
-prepend_path () {
-    case ":$PATH:" in
-        *:"$1":*)
-            ;;
-        *)
-            PATH="$1${PATH:+:$PATH}"
-    esac
+prepend_path() {
+	case ":$PATH:" in
+	*:"$1":*) ;;
+	*)
+		PATH="$1${PATH:+:$PATH}"
+		;;
+	esac
 }
 
 # Better than nothing
@@ -26,8 +26,9 @@ export XDG_CACHE_HOME="$HOME/.cache"
 
 # Better than nothing
 if [[ -z "$LANG" ]]; then
-    export LANG="en_US.UTF-8"
-    export LC_ALL="en_US.UTF-8"
+	LANG="en_US.UTF-8"
+	LC_ALL="en_US.UTF-8"
+	export LANG LC_ALL
 fi
 
 # Paths
@@ -38,48 +39,48 @@ fi
 export PATH
 
 # fnm
-if command -v fnm; then
-    eval (fnm env --shell bash)
+if command -v fnm &>/dev/null; then
+	eval $(fnm env --shell bash)
 fi
 
 # SSH with cross-session ssh-agent
 if [ -x "$HOME/.local/scripts/ssh-init" ]; then
-    eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" >/dev/null 2>&1
+	eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" >/dev/null 2>&1
 fi
 
 # .profile is not included in the repo
 [ -f "$HOME/.profile" ] && . "$HOME/.profile"
 
-# Triggered when SSH into the machine
+# Triggered in SSH sessions
 if [[ $- == *i* ]]; then
-    # Set EDITOR and VISUAL, mainly for sudoedit
-    for app in nvim helix vim vi nano; do
-        if command -v "$app" >/dev/null 2>&1; then
-            EDITOR="$app"
-            VISUAL="$app"
-            break
-        fi
-    done
-    export EDITOR VISUAL
+	# Set EDITOR and VISUAL, mainly for sudoedit
+	for app in nvim helix vim vi nano; do
+		if command -v "$app" &>/dev/null; then
+			EDITOR="$app"
+			VISUAL="$app"
+			break
+		fi
+	done
+	export EDITOR VISUAL
 
-    # For gpg
-    GPG_TTY=$(tty)
-    export GPG_TTY
+	# For gpg
+	GPG_TTY=$(tty)
+	export GPG_TTY
 
-    # Shortcut alias for launching fish
-    command -v f >/dev/null 2>&1 || {
-        alias f="exec fish"
-    }
-    # Better do this manually since the automatic approach is kinda buggy.
-    # Add this to .bashrc to enable it anyway:
-    #
-    # if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
-    #     shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''
-    #     exec fish $LOGIN_OPTION
-    # fi
+	# Shortcut alias for launching fish
+	command -v f &>/dev/null || {
+		alias f="exec fish"
+	}
+	# Better do this manually since the automatic approach is kinda buggy.
+	# Add this to .bashrc to enable it anyway:
+	#
+	# if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
+	#     shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''
+	#     exec fish $LOGIN_OPTION
+	# fi
 
-    # .bashrc is not included in the repo
-    [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
+	# .bashrc is not included in the repo
+	[ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
 fi
 
 unset append_path
