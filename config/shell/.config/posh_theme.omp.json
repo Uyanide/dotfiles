@@ -6,7 +6,7 @@
             "segments": [
                 {
                     "foreground": "#89b4fa",
-                    "properties": {
+                    "options": {
                         "windows": "\ue62a"
                     },
                     "style": "plain",
@@ -27,7 +27,7 @@
                 },
                 {
                     "foreground": "#94e2d5",
-                    "properties": {
+                    "options": {
                         "folder_separator_icon": "/",
                         "style": "letter"
                     },
@@ -38,12 +38,10 @@
                 {
                     "foreground": "#a6e3a1",
                     "powerline_symbol": "\ue0b1",
-                    "properties": {
-                        "branch_icon": " ",
-                        "fetch_stash_count": true,
+                    "options": {
+                        "branch_icon": "\ue725 ",
                         "fetch_status": true,
-                        "fetch_upstream_icon": true,
-                        "fetch_worktree_count": true
+                        "fetch_upstream_icon": true
                     },
                     "style": "powerline",
                     "template": " {{ .UpstreamIcon }} {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} ",
@@ -74,7 +72,7 @@
                     "foreground_templates": [
                         "{{ if gt .Code 0 }}#f38ba8{{ end }}"
                     ],
-                    "properties": {
+                    "options": {
                         "always_enabled": true
                     },
                     "style": "plain",
