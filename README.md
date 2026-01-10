@@ -77,17 +77,14 @@ This setup is currently only adapted for Niri.
 - `lyrics`, scrolling lyrics player, depends on [a small utility](https://github.com/Uyanide/Spotify_Lyrics) from myself <small>(which also happens to be my frist Golang program :D)</small>.
 - `lyrics-single`, similar to `lyrics`, but only with a single line and can be easily embeded into the status bar.
 
-## Awww (Swww)
-
-The wallpaper will be automatically blurred when there is a window in focus, which is implemented in the [wallpaper-daemon](https://github.com/Uyanide/dotfiles/blob/main/config/scripts/.local/scripts/wallpaper-daemon) script.
-
-This feature is only enabled in Niri. Awww also manages wallpapers of the Hyprland setup, yet only in the regular way.
-
 ## Wallpaper & Colortheme
 
 The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. See also:
 
-- [wallpaper-carousel](https://github.com/Uyanide/Wallpaper_Carousel) to select wallpaper, which implements an Image Carousel with Qt Widgets.
+- [wallpaper-carousel](https://github.com/Uyanide/Wallpaper_Carousel): an Image Carousel implemented with Qt Widgets to browse and set wallpapers from.
+- [wallpaper-daemon](./config/scripts/.local/scripts/wallpaper-daemon): automatic blur (only works in niri).
+- [change-wallpaper](./config/scripts/.local/scripts/change-wallpaper): script that changes wallpaper with a few extra features.
+- [change-colortheme](./config/scripts/.local/scripts/change-colortheme): script that changes color scheme based on wallpaper.
 - [backgrounds collection](https://github.com/Uyanide/backgrounds) for personal use.
 
 ## Rofi
