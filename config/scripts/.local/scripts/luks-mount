@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+# Description:
+#   Mount a LUKS encrypted partition and open a shell in the mounted directory.
+#   - If multiple LUKS devices are found, use fzf to select one (if available).
+#   - Uses environment variables to customize behavior:
+#     - LUKS_PARTITION: Path to the LUKS partition (overrides auto-detection).
+#     - LUKS_MAPPER_NAME: Name for the LUKS mapper (default: luks_mount_<timestamp>).
+#     - LUKS_MOUNT_POINT: Mount point for the decrypted volume (default: /mnt/luks).
+#   - Cleans up on exit (unmounts and closes the LUKS volume).
+# Requirements:
+# - cryptsetup
+# - sudo privileges
+# - fzf (optional, for selecting among multiple LUKS devices)
+
+set -euo pipefail
+
+[ "$(id -u)" -eq 0 ] && {
+    echo "[ERROR] Do not run this script in sudo mode." >&2
+    exit 1
+}
+
+find_luks_device() {
+    # Set $devices array to all LUKS devices
+    # lsblk command explained - n: no headings, p: full path, o: output format, l: list format
+    mapfile -t devices < <(lsblk -nplo NAME,FSTYPE | awk '$2 == "crypto_LUKS" {print $1}')
+
+    if [ ${#devices[@]} -eq 0 ]; then
+        echo "[ERROR] No LUKS devices found." >&2
+        return 1
+    elif [ ${#devices[@]} -eq 1 ]; then
+        echo "${devices[0]}"
+    else
+        # Multiple devices found
+        # Select one using fzf if available
+        if command -v fzf >/dev/null; then
+            printf "%s\n" "${devices[@]}" | fzf --prompt="Select LUKS device: "
+        else
+            echo "[ERROR] Multiple LUKS devices found. Please set LUKS_PARTITION env var." >&2
+            printf "%s\n" "${devices[@]}" >&2
+            return 1
+        fi
+    fi
+}
+
+LUKS_PARTITION="${LUKS_PARTITION:-$(find_luks_device)}"
+[ -z "$LUKS_PARTITION" ] && exit 1
+
+# Default to a unique name based on timestamp
+LUKS_MAPPER_NAME="${LUKS_MAPPER_NAME:-luks_mount_$(date +%s)}"
+# Fixed default mount point though
+LUKS_MOUNT_POINT="${LUKS_MOUNT_POINT:-/mnt/luks}"
+
+echo "[INFO] Partition: $LUKS_PARTITION" >&2
+echo "[INFO] Mapper:    $LUKS_MAPPER_NAME" >&2
+echo "[INFO] Mount:     $LUKS_MOUNT_POINT" >&2
+
+mount_point_created=0
+if [ ! -d "$LUKS_MOUNT_POINT" ]; then
+    sudo mkdir -p "$LUKS_MOUNT_POINT"
+    mount_point_created=1
+fi
+
+if ! sudo cryptsetup open "$LUKS_PARTITION" "$LUKS_MAPPER_NAME"; then
+    echo "[ERROR] Failed to open device." >&2
+    exit 1
+fi
+
+cleanup() {
+    echo "[INFO] Cleaning up..." >&2
+    # Make sure we are not in the mount point when unmounting
+    cd "$HOME" || true
+    if mountpoint -q "$LUKS_MOUNT_POINT"; then
+        sudo umount "$LUKS_MOUNT_POINT" || echo "[WARNING] Failed to unmount." >&2
+    fi
+    if [ -e "/dev/mapper/$LUKS_MAPPER_NAME" ]; then
+        sudo cryptsetup close "$LUKS_MAPPER_NAME" || echo "[WARNING] Failed to close LUKS mapper." >&2
+    fi
+    if [ $mount_point_created -eq 1 ] && [ -d "$LUKS_MOUNT_POINT" ]; then
+        sudo rmdir "$LUKS_MOUNT_POINT" || echo "[WARNING] Failed to remove mount point." >&2
+    fi
+    echo "[INFO] Done." >&2
+}
+trap cleanup EXIT INT TERM
+
+sudo mount "/dev/mapper/$LUKS_MAPPER_NAME" "$LUKS_MOUNT_POINT"
+
+sudo chown "$(whoami):$(whoami)" "$LUKS_MOUNT_POINT"
+
+echo "[INFO] Successfully mounted at $LUKS_MOUNT_POINT." >&2
+echo "[INFO] Exit this shell to unmount and close the LUKS volume..." >&2
+
+cd "$LUKS_MOUNT_POINT"
+USER_SHELL="${SHELL:-/bin/bash}"
+if [[ "$USER_SHELL" == *"/bash" ]]; then
+    "$USER_SHELL" --rcfile <(cat ~/.bashrc 2>/dev/null; printf '%s\n' 'PS1="\[\e[1;31m\][LUKS]\[\e[0m\][\u@\h \W]\$ "') -i
+else
+    "$USER_SHELL"
+fi
