@@ -43,9 +43,9 @@
                         "fetch_status": true,
                         "fetch_upstream_icon": true,
                         "mapped_branches": {
-                            "feat/*": "🚀 ",
-                            "bug/*": "🐛 ",
-                            "dev/*": "🚧 "
+                            "feat/*": "\ud83d\ude80 ",
+                            "bug/*": "\ud83d\udc1b ",
+                            "dev/*": "\ud83d\udea7 "
                         }
                     },
                     "style": "powerline",
