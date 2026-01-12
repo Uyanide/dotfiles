@@ -5,53 +5,53 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 BASE_PKGS = [
-    "clang",    # C/C++ development
+    "clang",  # C/C++ development
     "scripts",  # scripts & snippets
-    "stow"      # --target=~
+    "stow",  # --target=~
 ]
 
 # for TUI only setups
 # e.g. servers that are accessed via SSH only
 TUI_PKGS = [
     *BASE_PKGS,
-    "fastfetch",    # sys info,
-    "helix",        # editor
-    "nvim",         # editor
-    "shell",        # fish & .bash_profile & shell prompt
-    "yazi"          # terminal file manager
+    "fastfetch",  # sys info,
+    "helix",  # editor
+    "nvim",  # editor
+    "shell",  # fish & .bash_profile & shell prompt
+    "yazi",  # terminal file manager
 ]
 
 # for all WMs and DEs
 GUI_BASE_PKGS = [
     *TUI_PKGS,
-    "kitty",        # terminal emulator
-    "ghostty",      # alternative terminal emulator
-    "misc",         # miscellaneous GUI configs (e.g. *-flags)
-    "mpv",          # media player
-    "wallpaper",    # wallpapers & manager
-    "kvantum",      # qt theming
-    "nwg-look"      # gtk theming
+    "kitty",  # terminal emulator
+    "ghostty",  # alternative terminal emulator
+    "misc",  # miscellaneous GUI configs (e.g. *-flags)
+    # "mpv",          # media player
+    "wallpaper",  # wallpapers & manager
+    "kvantum",  # qt theming
+    "nwg-look",  # gtk theming
 ]
 
 # for Hyprland setup
 HYPRLAND_PKGS = [
     *GUI_BASE_PKGS,
-    "eww",      # widgets
-    "hypr",     # hypr family
-    "mako",     # notifications
-    "rofi",     # application launcher
-    "waybar",   # status bar
-    "wlogout"   # logout menu
+    "eww",  # widgets
+    "hypr",  # hypr family
+    "mako",  # notifications
+    "rofi",  # application launcher
+    "waybar",  # status bar
+    "wlogout",  # logout menu
 ]
 
 # for Niri setup
 NIRI_PKGS = [
     *GUI_BASE_PKGS,
-    "hypr",         # for hyprlock & hypridle
-    "niri",         # wm config
-    "quickshell",   # widgets & status bar & notifications & ...
-    "rofi",         # application launcher
-    "wlogout"       # logout menu
+    "hypr",  # for hyprlock & hypridle
+    "niri",  # wm config
+    "quickshell",  # widgets & status bar & notifications & ...
+    "rofi",  # application launcher
+    "wlogout",  # logout menu
 ]
 
 PKGS = {
@@ -59,7 +59,7 @@ PKGS = {
     "tui": TUI_PKGS,
     "gui": GUI_BASE_PKGS,
     "hyprland": HYPRLAND_PKGS,
-    "niri": NIRI_PKGS
+    "niri": NIRI_PKGS,
 }
 
 
@@ -68,25 +68,31 @@ DEST_PATH = Path.home().expanduser()
 
 
 def _log(level: str, message: str):
-    color = "\033[92m" if level == "INFO" else "\033[91m" if level == "ERROR" else "\033[0m"
+    color = (
+        "\033[92m" if level == "INFO" else "\033[91m" if level == "ERROR" else "\033[0m"
+    )
     reset = "\033[0m"
     print(f"{color}[{level}] {message}{reset}")
 
 
 def stow(pkg: str):
-    subprocess.run(["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), pkg], check=True)
+    subprocess.run(
+        ["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), pkg], check=True
+    )
 
 
 def switch(session: str):
-    subprocess.run([str(Path("~/.local/scripts/config-switch").expanduser()), session], check=True)
+    subprocess.run(
+        [str(Path("~/.local/scripts/config-switch").expanduser()), session], check=True
+    )
 
 
 def main():
-    parser = ArgumentParser(description="Stow configuration packages in this repository.")
+    parser = ArgumentParser(
+        description="Stow configuration packages in this repository."
+    )
     parser.add_argument(
-        "package",
-        choices=PKGS.keys(),
-        help="The configuration package to stow."
+        "package", choices=PKGS.keys(), help="The configuration package to stow."
     )
     args = parser.parse_args()
 

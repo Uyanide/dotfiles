@@ -15,8 +15,8 @@ hash = "699fe07e0d2d1b4af8dafb84168eeb04"
 
 [[plugin.deps]]
 use = "KKV9/compress"
-rev = "e2ae983"
-hash = "36b570e2164f6ad2317cfb839e42ef4"
+rev = "e6007f7"
+hash = "e0b1051849756dd72fca874c320259a"
 
 [[plugin.deps]]
 use = "llanosrocas/yaziline"

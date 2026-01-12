@@ -2,7 +2,8 @@
 Type=Application
 Name=Play Live Photo
 Comment=Play embedded video from Live Photos
-Exec=~/.local/scripts/playlive %f
+TryExec=playlive
+Exec=playlive %f
 Icon=multimedia-video-player
 Terminal=false
 Categories=AudioVideo;Video;Utility;
