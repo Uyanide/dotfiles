@@ -14,6 +14,8 @@ import subprocess
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
+MAX_WORKERS = 8
+
 PALETTES = {
     "catppuccin-mocha": {
         "rosewater": "f5e0dc",
@@ -45,9 +47,7 @@ SCRIPTS = {
     "nwg-look": [CONFIG_DIR / "nwg-look" / "apply-color"],
     "mako": [CONFIG_DIR / "mako" / "apply-color"],
     "niri": [CONFIG_DIR / "niri" / "apply-color"],
-    "oh-my-posh": [
-        CONFIG_DIR / "fish" / "apply-color-omp"
-    ],  # borrowing fish's directory
+    "oh-my-posh": [CONFIG_DIR / "fish" / "apply-color-omp"],  # borrowing fish's directory
     "quickshell": [CONFIG_DIR / "quickshell" / "apply-color"],
     "rofi": [CONFIG_DIR / "rofi" / "apply-color"],
     "waybar": [CONFIG_DIR / "waybar" / "apply-color"],
@@ -57,8 +57,8 @@ SCRIPTS = {
     ],
     "yazi": [CONFIG_DIR / "yazi" / "apply-color"],
 }
-# or simply `find -L ${CONFIG_DIR} -type f -iname 'apply-color*'` to get all available scripts,
-# but I do need the exact application names anyway, so hardcoding does make some sense
+# or simply `find [-L] <CONFIG_DIR> -type f -name 'apply-color*'` to get all available scripts,
+# but I need the exact application names anyway, so hardcoding does make some sense
 
 
 def hex2rgb(hex_color: str) -> tuple[int, int, int]:
@@ -318,7 +318,7 @@ def main():
     script_args = [palette_name, flavor, palette[flavor]]
     tasks = []
 
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         for app in apps:
             for script in SCRIPTS[app]:
                 tasks.append(executor.submit(run_script, script, script_args))
@@ -329,7 +329,7 @@ def main():
             "-a",
             "change-colortheme",
             "Colortheme Changed",
-            f"Palette: {palette_name}\nFlavor: {flavor}",
+            f"Palette: {palette_name}\nFlavor: {flavor}\nApplied to {len(apps)} apps",
         ]
     )
 

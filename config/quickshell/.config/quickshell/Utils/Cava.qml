@@ -32,12 +32,13 @@ Scope {
     })
     property var values: Array(count).fill(0)
     property bool forceEnable: false
+    property bool forceDisable: false
 
     Process {
         id: process
 
         stdinEnabled: true
-        running: root.forceEnable || !MusicManager.isAllPaused()
+        running: !root.forceDisable && (MusicManager.isPlaying || root.forceEnable)
         command: ["cava", "-p", "/dev/stdin"]
         onExited: {
             stdinEnabled = true;
