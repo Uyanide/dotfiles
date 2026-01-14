@@ -12,11 +12,16 @@ niri_config_file="$HOME/.config/niri/config/misc.kdl"
 prefer_order=(amd nvidia intel) # AMD -> Nvidia -> Intel
 
 # Get vendor and path of each GPU
-default_dri_path="$(find /dev/dri/card* 2>/dev/null | head -n 1)"
-[[ -z "$default_dri_path" ]] && default_dri_path="/dev/dri/card0"
-intel_path=""
-nvidia_path=""
-amd_path=""
+default_card_path="$(find /dev/dri/card* 2>/dev/null | head -n 1)"
+default_render_path="$(find /dev/dri/renderD* 2>/dev/null | head -n 1)"
+[[ -z "$default_card_path" ]] && default_card_path="/dev/dri/card0"
+[[ -z "$default_render_path" ]] && default_render_path="/dev/dri/renderD128"
+intel_card_path=""
+nvidia_card_path=""
+amd_card_path=""
+intel_render_path=""
+nvidia_render_path=""
+amd_render_path=""
 
 for link in /dev/dri/by-path/*-card; do
     [[ -e "$link" ]] || continue
@@ -25,18 +30,31 @@ for link in /dev/dri/by-path/*-card; do
     [[ -r "$vfile" ]] || continue
     vendor="$(cat "$vfile")"
     case "$vendor" in
-    0x10de) nvidia_path="$card" ;;
-    0x8086) intel_path="$card" ;;
-    0x1002) amd_path="$card" ;;
+    0x10de) nvidia_card_path="$card" ;;
+    0x8086) intel_card_path="$card" ;;
+    0x1002) amd_card_path="$card" ;;
+    esac
+done
+
+for link in /dev/dri/by-path/*-render; do
+    [[ -e "$link" ]] || continue
+    render="$(readlink -f "$link")"
+    vfile="/sys/class/drm/$(basename "$render")/device/vendor"
+    [[ -r "$vfile" ]] || continue
+    vendor="$(cat "$vfile")"
+    case "$vendor" in
+    0x10de) nvidia_render_path="$render" ;;
+    0x8086) intel_render_path="$render" ;;
+    0x1002) amd_render_path="$render" ;;
     esac
 done
 
 # Specify device for brightnessctl
 # Only tested on my laptop with Intel iGPU & Nvidia dGPU
 BRIGHTNESSCTL_DEVICE="auto"
-if [[ -n "$intel_path" ]]; then
+if [[ -n "$intel_card_path" ]]; then
     BRIGHTNESSCTL_DEVICE="intel_backlight"
-elif [[ -n "$nvidia_path" ]]; then
+elif [[ -n "$nvidia_card_path" ]]; then
     BRIGHTNESSCTL_DEVICE="nvidia_0"
 fi
 export BRIGHTNESSCTL_DEVICE
@@ -45,28 +63,28 @@ export BRIGHTNESSCTL_DEVICE
 devices=""
 for who in "${prefer_order[@]}"; do
     case "$who" in
-    nvidia) [[ -n "$nvidia_path" ]] && devices="${devices:+$devices:}$nvidia_path" ;;
-    intel) [[ -n "$intel_path" ]] && devices="${devices:+$devices:}$intel_path" ;;
-    amd) [[ -n "$amd_path" ]] && devices="${devices:+$devices:}$amd_path" ;;
+    nvidia) [[ -n "$nvidia_card_path" ]] && devices="${devices:+$devices:}$nvidia_card_path" ;;
+    intel) [[ -n "$intel_card_path" ]] && devices="${devices:+$devices:}$intel_card_path" ;;
+    amd) [[ -n "$amd_card_path" ]] && devices="${devices:+$devices:}$amd_card_path" ;;
     esac
 done
-HYPR_AQ_DRM_DEVICES="${devices:-$default_dri_path}"
+HYPR_AQ_DRM_DEVICES="${devices:-$default_card_path}"
 export HYPR_AQ_DRM_DEVICES
 
 # But niri only supports choosing one preferred render device
-primary_device="$default_dri_path"
+primary_render_device="$default_render_path"
 for who in "${prefer_order[@]}"; do
     case "$who" in
-    nvidia) [[ -n "$nvidia_path" ]] && {
-        primary_device="$nvidia_path"
+    nvidia) [[ -n "$nvidia_render_path" ]] && {
+        primary_render_device="$nvidia_render_path"
         break
     } ;;
-    intel) [[ -n "$intel_path" ]] && {
-        primary_device="$intel_path"
+    intel) [[ -n "$intel_render_path" ]] && {
+        primary_render_device="$intel_render_path"
         break
     } ;;
-    amd) [[ -n "$amd_path" ]] && {
-        primary_device="$amd_path"
+    amd) [[ -n "$amd_render_path" ]] && {
+        primary_render_device="$amd_render_path"
         break
     } ;;
     esac
@@ -89,5 +107,4 @@ function update_niri_config() {
     fi
 }
 
-update_niri_config "$niri_config_file" "$primary_device"
-
+update_niri_config "$niri_config_file" "$primary_render_device"

@@ -4,7 +4,7 @@
         "doNotDisturb": false
     },
     "primaryColor": "#89b4fa",
-    "showLyricsBar": true,
+    "showLyricsBar": false,
     "sunsetDefaultEnabled": true,
     "wifiEnabled": true
 }
