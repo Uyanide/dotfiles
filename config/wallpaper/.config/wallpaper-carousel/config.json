@@ -1,16 +1,21 @@
 {
-  "wallpaper": {
-    "dirs": ["~/Pictures/backgrounds", "/media/Beta/壁纸/库"],
-    "excludes": ["~/Pictures/backgrounds/nao-stars-crop-adjust-flop.jpg", "~/Pictures/backgrounds/miku-gate.jpg"]
-  },
-  "action": {
-    "confirm": "change-wallpaper \"%1\" 2560 1600"
-  },
-  "style": {
-    "no_loading_screen": false
-  },
-  "sort": {
-    "type": "date",
-    "reverse": true
-  }
+    "wallpaper": {
+        "dirs": [
+            "~/Pictures/backgrounds"
+        ],
+        "excludes": [
+            "~/Pictures/backgrounds/nao-stars-crop-adjust-flop.jpg",
+            "~/Pictures/backgrounds/miku-gate.jpg"
+        ]
+    },
+    "action": {
+        "confirm": "change-wallpaper \"%1\" 2560 1600"
+    },
+    "style": {
+        "no_loading_screen": false
+    },
+    "sort": {
+        "type": "date",
+        "reverse": true
+    }
 }
