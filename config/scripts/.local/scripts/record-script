@@ -8,13 +8,11 @@
 # - wf-recorder
 # - slurp
 
-
 [ -z "$codec" ] && codec="av1_nvenc"
 [ -z "$pixel_format" ] && pixel_format="p010le"
 [ -z "$frame_rate" ] && frame_rate="60"
 [ -z "$codec_params" ] && codec_params=\
-"preset=p5 rc=vbr cq=18 \
-b:v=80M maxrate=120M bufsize=160M \
+"preset=p4 rc=constqp qp=18 \
 color_range=tv"
 [ -z "$filter_args" ] && filter_args=""
 
@@ -53,7 +51,7 @@ if pgrep -x wf-recorder -u "$USER" > /dev/null; then
     notify-send "Recording Stopped" "Stopped" -a 'record-script' &
     pkill -x wf-recorder -u "$USER"
 else
-    notify-send "Starting recording" 'recording_'"$(getdate)"'.mkv' -a 'record-script'
+    notify-send "Starting recording" 'recording_'"$(getdate)"'.mkv' -a 'record-script' &
     if [[ "$1" == "--sound" ]]; then
         wf-recorder  --geometry "$(slurp)" --audio="$(getaudiooutput)" "${recorder_args[@]}" & disown
     elif [[ "$1" == "--fullscreen-sound" ]]; then

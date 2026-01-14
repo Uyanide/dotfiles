@@ -15,8 +15,7 @@ Singleton {
     property string recordingDisplay: ""
     readonly property int framerate: 60
     readonly property var codecParams: Object.freeze([
-        "preset=p5", "rc=vbr", "cq=18",
-        "b:v=80M", "maxrate=120M", "bufsize=160M",
+        "preset=p4", "rc=constqp", "qp=18",
         "color_range=tv"
     ])
     readonly property var filterArgs: ""

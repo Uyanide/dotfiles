@@ -28,6 +28,6 @@ end
 set -x -g GPG_TTY (tty)
 
 # fnm
-if type -q fnm
-    eval (fnm env --shell fish)
-end
+# if type -q fnm
+#     eval (fnm env --shell fish)
+# end

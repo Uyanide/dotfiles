@@ -88,7 +88,7 @@ sudo mount "/dev/mapper/$LUKS_MAPPER_NAME" "$LUKS_MOUNT_POINT"
 sudo chown "$(whoami):$(whoami)" "$LUKS_MOUNT_POINT"
 
 echo "[INFO] Successfully mounted at $LUKS_MOUNT_POINT." >&2
-echo "[INFO] Exit this shell to unmount and close the LUKS volume..." >&2
+echo "[INFO] Exit this shell to unmount and close the LUKS volume." >&2
 
 cd "$LUKS_MOUNT_POINT"
 USER_SHELL="${SHELL:-/bin/bash}"
