@@ -8,10 +8,6 @@
 
 以下内容按照对应章节划分：
 
-- [2.4. Creating a New Partition](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/creatingpartition.html)
-
-  虽然此处列举了很多分区，例如 `/opt`，`/usr/sources` 等，但我并不喜欢，也并不觉得有必要将根目录分得如此细碎。对于 UEFI 引导的系统来说（btw 我不认为 BIOS 引导和 UEFI 引导的配置难度之间的差距有很多观点说得那样巨大）除去可选的 Swap 分区外通常 `/`，`/boot`，`/boot/efi`，`/home` 几个分区就足够了。
-
 - [2.6. Setting the $LFS Variable and the Umask](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/aboutlfs.html)
 
   `$LFS` 变量很重要！建议写到 Host 的 `/root/.bash_profile` 或 `/etc/profile.d/...` 或类似作用的配置文件里防止忘记设置。
