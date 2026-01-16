@@ -3,6 +3,7 @@ fish_add_path $HOME/go/bin
 fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/scripts
 fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.local/share/fnm
 
 # man
 if type -q bat
@@ -29,6 +30,5 @@ set -x -g GPG_TTY (tty)
 
 # fnm
 if type -q fnm
-    fish_add_path $HOME/.local/share/fnm
     eval (fnm env --shell fish)
 end

@@ -40,14 +40,14 @@ fi
 
 # Paths
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-[ -d "$HOME/go/bin" ] && prepend_path "$HOME/go/bin"
-[ -d "$HOME/.local/bin" ] && prepend_path "$HOME/.local/bin"
-[ -d "$HOME/.local/scripts" ] && prepend_path "$HOME/.local/scripts"
+prepend_path "$HOME/go/bin"
+prepend_path "$HOME/.local/bin"
+prepend_path "$HOME/.local/scripts"
+prepend_path "$HOME/.local/share/fnm"
 export PATH
 
 # fnm
 if type fnm &>/dev/null; then
-	prepend_path "$HOME/.local/share/fnm"
 	eval $(fnm env --shell bash)
 fi
 
