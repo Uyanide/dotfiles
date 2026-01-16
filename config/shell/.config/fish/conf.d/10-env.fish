@@ -28,6 +28,7 @@ end
 set -x -g GPG_TTY (tty)
 
 # fnm
-# if type -q fnm
-#     eval (fnm env --shell fish)
-# end
+if type -q fnm
+    fish_add_path $HOME/.local/share/fnm
+    eval (fnm env --shell fish)
+end

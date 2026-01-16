@@ -2,6 +2,8 @@
 
 # From archlinux's /etc/profile
 append_path() {
+	[[ -z "$1" ]] && return
+	[[ -d "$1" ]] || return
 	case ":$PATH:" in
 	*:"$1":*) ;;
 	*)
@@ -10,6 +12,8 @@ append_path() {
 	esac
 }
 prepend_path() {
+	[[ -z "$1" ]] && return
+	[[ -d "$1" ]] || return
 	case ":$PATH:" in
 	*:"$1":*) ;;
 	*)
@@ -43,6 +47,7 @@ export PATH
 
 # fnm
 if type fnm &>/dev/null; then
+	prepend_path "$HOME/.local/share/fnm"
 	eval $(fnm env --shell bash)
 fi
 
