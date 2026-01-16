@@ -16,7 +16,7 @@ AllowShortFunctionsOnASingleLine: Inline
 
 AllowShortLambdasOnASingleLine: All
 
-BreakAfterReturnType: Automatic
+# BreakAfterReturnType: All
 
 BinPackArguments: false
 
@@ -37,21 +37,20 @@ FixNamespaceComments: true
 IncludeBlocks: Regroup
 SortIncludes: true
 IncludeCategories:
-    - Regex: '^<ext/.*\.h>'
-      Priority: 2
-    - Regex: '^<.*\.h>'
-      Priority: 1
-    - Regex: '^<.*'
-      Priority: 2
-    - Regex: '.*'
-      Priority: 3
+  - Regex: '^<ext/.*\.h>'
+    Priority: 2
+  - Regex: '^<.*\.h>'
+    Priority: 1
+  - Regex: '^<.*'
+    Priority: 2
+  - Regex: '.*'
+    Priority: 3
 
 IndentWidth: 4
 
-KeepEmptyLines:
-    AtEndOfFile: true
-    AtStartOfBlock: true
-    AtStartOfFile: false
+KeepEmptyLinesAtTheStartOfBlocks: true
+
+InsertNewlineAtEOF: true
 
 MaxEmptyLinesToKeep: 1
 

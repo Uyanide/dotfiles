@@ -1,7 +1,8 @@
 {
     "wallpaper": {
         "dirs": [
-            "~/Pictures/backgrounds"
+            "~/Pictures/backgrounds",
+            "/media/Beta/壁纸/库/"
         ],
         "excludes": [
             "~/Pictures/backgrounds/nao-stars-crop-adjust-flop.jpg",

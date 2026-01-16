@@ -2,9 +2,13 @@
 
 # Description:
 #   Quick snippet of reflector.
+#
+# Note:
+#   Write the arguments (with '--' prefix) of reflector to /etc/xdg/reflector/reflector.conf
+#   and enable reflector.timer to update mirrorlist automaticly (once a week)
 
-[ -z "$COUNTRY" ] && COUNTRY="Germany"
+[ -z "$COUNTRY" ] && COUNTRY="Germany,Austria"
 
-sudo cp -f /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak || exit 1
+sudo cp -vf /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak || exit 1
 
-sudo reflector --country "$COUNTRY" --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+sudo reflector --verbose --country "$COUNTRY" --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
