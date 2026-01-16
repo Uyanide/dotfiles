@@ -4,33 +4,44 @@
 >
 > 仅记录我的折腾过程, 并非指南, 并非推荐, 并非技术文档.
 
+## 要做什么
+
+1. 在自己的服务器上配置邮件服务器, 直接接收邮件;
+
+2. 使用 SMTP 中继服务发送邮件;
+
+3. 配置 SPF/DKIM/DMARC/MTA-STS 等等.
+
 ## 需要什么
 
 1. 一个中意的域名.
 
-   下文中将使用 `domain.tld` 作为示例域名, 使用 `me@domain.tld` 作为示例邮箱.
+   下文中将使用 `domain.tld` 作为示例域名, 使用 `mail.domain.tld` 作为邮件服务器域名, 使用 `me@domain.tld` 作为示例邮箱.
 
-2. DNS 服务, 需要(至少)支持以下记录类型:
+2. DNS 服务, (至少)需要支持以下记录类型:
 
    - A
    - TXT
    - MX
 
-3. 一个拥有公网 IP 和充足空闲资源的服务器, 并且(至少)需要开通以下 TCP 端口:
+3. SMTP 中继服务.
 
-   - 25
-   - 993
-   - 587 或 465
+   也就是帮你发邮件的服务商, 详见后续章节.
 
-   > 据说很多云服务商屏蔽了 25 端口, 但我用的并没有. 赞美 IONOS!
+4. 一个拥有公网 IP 和充足空闲资源的服务器, 并且(至少)需要开通以下 TCP 端口:
+
+   | 端口 | 用途            | 出站 | 入站 | 说明                                                |
+   | ---- | --------------- | ---- | ---- | --------------------------------------------------- |
+   | 25   | SMTP            | ❌   | ✅   | 核心传输端口. 如果使用 SMTP 中继服务, 则不需要出站  |
+   | 993  | IMAPS           | ❌   | ✅   | 用于邮件客户端收信                                  |
+   | 587  | SMTP Submission | ✅   | ✅   | 支持 STARTTLS. 如果使用 SMTP 中继服务, 则也需要出站 |
+   | 465  | SMTPS           | ❌   | ✅   | 支持 Implicit SSL/TLS.                              |
+
+   很多云服务商会默认屏蔽 25 端口的出站方向流量, 但这对于使用 SMTP 中继服务的场景来说并不重要, 因为发信时直接连接收件方服务器的并非自己的服务器.
 
    同时, 最好支持 rDNS, 也就是把 IP 反解析到域名.
 
-   > 赞美 IONOS!
-
-   下文中将使用 `11.45.1.4` 作为服务器的公网 IP 地址.
-
-4. SMTP 服务商, 主要为了 IP 声誉, 否则发的邮件很容易进别人的垃圾箱. 如 [Resend](https://resend.com).
+   下文中将使用 `1.14.5.14` 作为服务器的公网 IP 地址.
 
 ## 放开那个 25 端口!
 
@@ -58,9 +69,9 @@
 
    如果确实需要系统内部通信, 例如 `cron` 发送邮件通知, 可以安装 `ssmtp` 或 `msmtp` 之类的轻量级 MTA, 参见 [后续章节](#exim4-我呢).
 
-## 注册 SMTP 服务
+## 注册 SMTP 中继服务
 
-此类服务可以大致理解为"帮你发邮件的中介", 他们有一大堆 IP 地址, 这些地址的声誉都不错, 因此用他们发信的话, 邮件更容易送达收件箱而不是自动进入垃圾箱.
+此类服务可以大致理解为"帮你发邮件的中介", 他们有一大堆 IP 地址, 这些地址的声誉都不错, 因此用他们发信的话, 邮件更容易送达收件箱而不是自动进入垃圾箱. 并且也可以避免 25 端口出站被封的问题.
 
 我此次用的是 [Resend](https://resend.com), 其他类似服务还有 [SendGrid](https://sendgrid.com), [Mailgun](https://www.mailgun.com) 等等.
 
@@ -85,7 +96,7 @@
 - MX 记录:
 
   - 主机名: `@`
-  - 值: `mail.domain.tld` (假设邮件服务器域名是 `mail.domain.tld`)
+  - 值: `mail.domain.tld`
   - 优先级: `10`
 
   这将会是邮件的接收和发送服务器.
@@ -93,7 +104,7 @@
 - A 记录:
 
   - 主机名: `mail`
-  - 值: `11.45.1.4`
+  - 值: `1.14.5.14`
 
   指向邮件服务器的公网 IP 地址.
 
@@ -101,7 +112,7 @@
 
 ### 在云服务器商处
 
-将服务器 ip 的 rDNS 设置为 `mail.domain.tld`. 虽然使用 Resend 发信, 但是收信时一些发信方也可能会检查 rDNS, 因此最好设置正确, 有备无患.
+将服务器 ip 的 rDNS 设置为 `mail.domain.tld`. 虽然未来主要使用 Resend 发信, 但是收信时一些发信方也可能会检查 rDNS, 因此最好设置正确, 有备无患.
 
 ### 在服务器上
 
@@ -133,6 +144,9 @@ services:
   mailserver:
     image: docker.io/mailserver/docker-mailserver:latest
     container_name: mailserver
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
     hostname: mail
     domainname: domain.tld
     ports:
@@ -152,20 +166,23 @@ services:
       - ENABLE_SPAMASSASSIN=0
       - ENABLE_RSPAMD=1 # 替代上面几个
       - RSPAMD_LEARN=1 # 自动学习垃圾邮件
-        # 杀毒, 很占资源, 关掉, 个人服务没必要
+        # 杀毒, 很占资源, 关掉
       - ENABLE_CLAMAV=0
         # 防爆破
       - ENABLE_FAIL2BAN=1
+        # 禁止伪造发件人
+      - SPOOF_PROTECTION=1
+        # 启用 MTA-STS
+        # - ENABLE_MTM_STS=1
         # 使用自定义证书
       - SSL_TYPE=manual
         # 与下方挂载路径对应
       - SSL_CERT_PATH=/tmp/ssl/fullchain.pem
       - SSL_KEY_PATH=/tmp/ssl/privkey.pem
         # 使用 Resend 作为中继
-      - RELAY_HOST=smtp.resend.com
-      - RELAY_PORT=587
+      - DEFAULT_RELAY_HOST=[smtp.resend.com]:587
       - RELAY_USER=resend
-      - RELAY_PASSWORD=re_some_random_api_key
+      - RELAY_PASSWORD=res_some_random_api_key
     volumes:
       - ./maildata:/var/mail
       - ./mailstate:/var/mail-state
@@ -175,10 +192,9 @@ services:
       - ./fail2ban:/var/lib/fail2ban
         # 自定义 SSL 证书挂载
       - ./ssl:/tmp/ssl:ro
-    restart: unless-stopped
 ```
 
-以上配置中需要修改的地方有:
+以上配置中**必须**修改的地方有:
 
 - `domain.tld`: 替换为真实域名.
 - `res_some_random_api_key`: 替换为在 SMTP 服务商处创建的 SMTP 凭据或 API Key.
@@ -200,6 +216,18 @@ services:
   - `RSPAMD_GREYLISTING=1`
 
   在第一次接受陌生人邮件时拒绝, 要求对方重试, 这样可以有效减少垃圾邮件, 但会显著增加延迟.
+
+- `ENABLE_MTA_STS=1`:
+
+  MTA-STS 可以防止中间人攻击, 但配置较为复杂, [下文](#更进一步) 将单独介绍.
+
+- `ENABLE_FAIL2BAN=1`:
+
+  Fail2Ban 用于防止暴力破解邮箱密码, 需要 `NET_ADMIN` 权限, 挂载 `./fail2ban` 目录用于保存状态.
+
+- `DEFAULT_RELAY_HOST=[smtp.resend.com]:587`
+
+  中括号用于跳过 MX 查找直接解析 A 记录, 这对于连接明确的 SMTP 中继服务效率更高且更稳定.
 
 如果要进行进一步配置, 必须先启动容器. 此时会报错, 因为还没有创建邮箱账号. 但不用管, 先让它跑着.
 
@@ -337,7 +365,7 @@ docker compose up -d
 
 ## 配置邮件客户端
 
-我并非 TUI 重度爱好者, 所以直接用 Thunderbird 当客户端了.
+我并非 TUI 重度爱好者, 日常用 Thunderbird 当客户端.
 
 1. 在添加邮箱的第一个页面, 点击 `MANUAL CONFIGURATION`.
 
@@ -387,7 +415,7 @@ docker compose up -d
 
    这个过程会自动卸载 `exim4`.
 
-2. 创建用于内网发信的邮箱账号:
+2. 创建用于内网发信的邮箱地址:
 
    ```bash
    docker exec -it mailserver setup email add notification@domain.tld <密码>
@@ -415,7 +443,21 @@ docker compose up -d
    aliases        /etc/aliases
    ```
 
-   这里即使在内网中也使用了 TLS 加密和真实的邮箱与账号. 当然可以通过其他方式绕过限制从而使用任意并不需要真实存在的邮箱地址发信, 但既然存在更安全的实践, 何乐而不为呢.
+   可替换的部分:
+
+   - `system-notifier`: 账户名称, 随便取.
+
+   - `mail.domain.tld`: 邮件服务器地址.
+
+   - `465`: 端口, 也可以使用 `587` 并将 `tls_starttls` 设置为 `on`. 前者使用更安全的 SMTPS, 后者使用 STARTTLS.
+
+   - `notifier@domain.tld`: 用于发信的邮箱地址, 这里使用刚才创建的地址.
+
+   - `<密码>`: 刚才创建地址时设置的密码.
+
+   - `/var/log/msmtp.log`: 日志文件路径, 注意文件权限.
+
+   上述配置使用了 TLS 加密和真实的邮箱与账号. 当然可以通过其他方式绕过限制从而使用任意并不需要真实存在的邮箱地址发信, 但既然存在更安全的实践, 何乐而不为呢.
 
 4. 编辑 `/etc/aliases`, 添加如下内容:
 
@@ -424,7 +466,7 @@ docker compose up -d
    default: me@domain.tld
    ```
 
-   此处的 `me@domain.tld` 替换为希望用于接收系统邮件的邮箱地址.
+   将 `me@domain.tld` 替换为希望用于接收系统邮件的邮箱地址.
 
 5. 测试:
 
@@ -432,9 +474,9 @@ docker compose up -d
    echo "This is a test email from the system." | mail -s "Test Email" root
    ```
 
-   如果一切正常, 你应该会在前面配置的邮箱中收到这封测试邮件.
+   如果一切正常, 你应该会在前面配置的邮箱客户端中收到这封测试邮件.
 
-## Catch-all 邮箱
+## Catch'em All!
 
 如果希望接收发往不存在邮箱地址的邮件, 可以启用 Catch-all 功能. 方法也很简单, 使用 alias 即可:
 
@@ -443,3 +485,81 @@ docker exec -it mailserver setup alias add @domain.tld me@domain.tld
 ```
 
 将其中 `me@domain.tld` 替换为希望接收这些邮件的真实邮箱地址即可.
+
+## 更进一步
+
+MTA-STS (Mail Transfer Agent Strict Transport Security) 通过强制要求发送方使用加密连接发送邮件防止中间人攻击, 对个人邮箱来讲~~看起来其实没啥大用但总归~~是个加分项, 并且确实会让邮箱服务变得更酷.
+
+> [!IMPORTANT]
+>
+> 使用 SMTP 中继服务发送邮件时, MTA-STS 并不会生效, 因为发送方并非直接连接到自己的邮件服务器. 但是对于入站邮件来说, MTA-STS 依然有效.
+
+1. 前置要求
+
+   除了 [开头](#需要什么) 中提到的要求外, 还需要:
+
+   - 部署 HTTPS 静态网站的能力, 用于托管 MTA-STS 策略文件, 且该文件必须通过 HTTPS 提供.
+
+   - 将 `mta-sts.domain.tld` 指向该静态网站的能力, 且访问时返回的 SSL 证书中的 CN 或 SAN 必须包含 `mta-sts.domain.tld`.
+
+2. 新增 DNS 记录
+
+   - A 记录:
+
+     - 主机名: `mta-sts`
+     - 值: 指向托管 MTA-STS 策略文件的服务器 IP 地址.
+
+     如果不在自己的服务器上托管, 可以使用 `CNAME` 记录指向第三方提供的静态网站托管服务.
+
+   - MTA-STS 发现记录 (TXT 记录):
+
+     - 主机名: `_mta-sts`
+     - 值: `v=STSv1; id=2026010101`
+
+     解释:
+
+     - `v=STSv1`: 指定 MTA-STS 版本.
+     - `id=2026010101`: 策略文件的版本号, 每次更新策略文件时需要更改此值以通知发送方.
+
+   - TLS-RPT 报告记录 (TXT 记录):
+
+     指定接收 TLS 报告的邮箱地址.
+
+     - 主机名: `_smtp._tls`
+     - 值: `v=TLSRPTv1; rua=mailto:me@domain.tld`
+
+     解释:
+
+     - `v=TLSRPTv1`: 指定 TLS-RPT 版本.
+     - `rua=mailto:me@domain.tld`: 指定接收报告的邮箱地址.
+
+3. 创建静态网站
+
+   不展开了, 使用 OpenResty 或者直接用 Nginx 甚至借助 Github pages / Netlify / Cloudflare pages 等等都可以, 总之满足前面提到的要求就行.
+
+4. 创建 MTA-STS 策略文件
+
+   在 `mta-sts.domain.tld` 网站根目录下创建 `.well-known/mta-sts.txt` 文件, 内容如下:
+
+   ```plain
+   version: STSv1
+   mode: testing
+   mx: mail.domain.tld
+   max_age: 86400
+   ```
+
+   解释:
+
+   - `version: STSv1`: 指定 MTA-STS 版本.
+
+   - `mode: testing`: 策略模式, 可选值有 `enforce`, `testing`, `none`. `enforce` 表示强制执行策略, `testing` 表示仅测试不强制执行, `none` 表示不启用 MTA-STS. 初始阶段建议使用 `testing`, 确认无误后再改为 `enforce`.
+
+   - `mx: mail.domain.tld`: 指定允许发送邮件的 MX 服务器.
+
+   - `max_age: 86400`: 策略的最大缓存时间, 单位为秒. 这里设置为 86400 秒(1 天). 建议在测试结束确认无误后将此值调大一些, 例如一周(604800 秒) 或更长.
+
+5. 验证配置
+
+   - 通过 [Hardenize](https://www.hardenize.com/) 或类似的在线工具验证 MTA-STS 配置是否正确.
+
+   - 从支持 MTA-STS 的邮箱服务商 (例如 Gmail) 发送测试邮件, 查看 Postfix 日志来验证入站时 TLS 握手等流程是否符合预期. 至于 MTA-STS 是否真的生效, 可以稍后查看 TLS-RPT 报告邮箱收到的相关报告来确认.
