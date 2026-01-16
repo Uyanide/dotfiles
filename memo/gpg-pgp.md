@@ -24,7 +24,7 @@ PGP (Pretty Good Privacy) 是一种数据加密和解密的程序, GnuPG (GNU Pr
    gpg --list-secret-keys --keyid-format=long
    ```
 
-   从中找到你的密钥, 例如:
+   从中找到刚刚生成的密钥, 例如:
 
    ```plain
    sec   ed25519/ABCDEF1234567890 2026-01-01 [SC]
@@ -178,7 +178,7 @@ PGP (Pretty Good Privacy) 是一种数据加密和解密的程序, GnuPG (GNU Pr
 
 ## One More Thing ...
 
-通过 gpg-agent, GPG 密钥可以作为 SSH 密钥使用, 这~~真的很酷~~统一了密钥管理的同时也增加了一些安全性. 论使用体验其实目前的 [ssh-init](config/scripts/.local/scripts/ssh-init) 方案已经足够满足我的要求了, ~~但它真的很酷~~.
+通过 gpg-agent, GPG 密钥可以作为 SSH 密钥使用, 这~~真的很酷~~统一了密钥管理的同时也增加了一些安全性. 论使用体验其实目前的 [ssh-init](../config/scripts/.local/scripts/ssh-init) 方案已经足够满足我的要求了, ~~但它真的很酷~~.
 
 总之, 记录一下折腾过程吧.
 
@@ -224,7 +224,7 @@ PGP (Pretty Good Privacy) 是一种数据加密和解密的程序, GnuPG (GNU Pr
 
 4. 启动!
 
-   参见 [gpg-init](config/scripts/.local/scripts/gpg-init) 脚本.
+   参见 [gpg-init](../config/scripts/.local/scripts/gpg-init) 脚本.
 
    ```bash
    eval $(gpg-init)
