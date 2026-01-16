@@ -30,7 +30,7 @@ GUI_BASE_PKGS = [
     # "mpv",          # media player
     "wallpaper",  # wallpapers & manager
     "kvantum",  # qt theming
-    "nwg-look",  # gtk theming
+    "nwg-look"  # gtk theming
 ]
 
 # for Hyprland setup
@@ -38,6 +38,7 @@ HYPRLAND_PKGS = [
     *GUI_BASE_PKGS,
     "eww",  # widgets
     "hypr",  # hypr family
+    "hyprland",  # wm config
     "mako",  # notifications
     "rofi",  # application launcher
     "waybar",  # status bar
