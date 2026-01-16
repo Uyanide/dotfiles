@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Description:
+#   Initialize gpg-agent for SSH support and set up environment variables.
+#   Designed to replace manual ssh-agent management.
+
+GPG_SSH_SOCKET=$(gpgconf --list-dirs agent-ssh-socket)
+
+if [ -z "$SSH_AUTH_SOCK" ] || [ "$SSH_AUTH_SOCK" != "$GPG_SSH_SOCKET" ]; then
+    echo "export SSH_AUTH_SOCK='$GPG_SSH_SOCKET';"
+fi
+
+# Ensure gpg-agent is aware of the current tty (for passphrase prompts)
+gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1

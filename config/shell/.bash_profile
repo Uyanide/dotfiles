@@ -18,6 +18,9 @@ prepend_path() {
 	esac
 }
 
+# .profile is not included in the repo
+[ -f "$HOME/.profile" ] && . "$HOME/.profile"
+
 # Better than nothing
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -43,13 +46,14 @@ if command -v fnm &>/dev/null; then
 	eval $(fnm env --shell bash)
 fi
 
-# SSH with cross-session ssh-agent
-if [ -x "$HOME/.local/scripts/ssh-init" ]; then
+# export ENABLE_GPG_AGENT_SSH=1 in .profile to enable GPG agent for SSH
+if [ -x "$HOME/.local/scripts/gpg-init" ] && [ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" != "0" ]; then
+	# GPG agent for SSH
+	eval "$($HOME/.local/scripts/gpg-init 2>/dev/null)" >/dev/null 2>&1
+elif [ -x "$HOME/.local/scripts/ssh-init" ]; then
+	# SSH with cross-session ssh-agent
 	eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" >/dev/null 2>&1
 fi
-
-# .profile is not included in the repo
-[ -f "$HOME/.profile" ] && . "$HOME/.profile"
 
 # Triggered in SSH sessions
 if [[ $- == *i* ]]; then
