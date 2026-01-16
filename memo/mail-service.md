@@ -10,17 +10,17 @@
 
    下文中将使用 `domain.tld` 作为示例域名, 使用 `me@domain.tld` 作为示例邮箱.
 
-2. DNS 服务, 需要包含以下记录类型的支持:
+2. DNS 服务, 需要(至少)支持以下记录类型:
 
-   - MX
-   - TXT
    - A
+   - TXT
+   - MX
 
 3. 一个拥有公网 IP 和充足空闲资源的服务器, 并且(至少)需要开通以下 TCP 端口:
 
    - 25
    - 993
-   - 587
+   - 587 或 465
 
    > 据说很多云服务商屏蔽了 25 端口, 但我用的并没有. 赞美 IONOS!
 
@@ -215,7 +215,7 @@ docker compose up -d
 docker exec -it mailserver setup email add me@domain.tld <密码>
 ```
 
-> [!TIPS]
+> [!TIP]
 >
 > 把密码存在 Shell 历史里并不是个好主意. 可以通过在命令的最前面加一个空格来避免保存到历史记录中(具体取决于所使用的 Shell 和其配置). 或者从 stdin 中读取也是个不错的选择.
 
@@ -356,7 +356,14 @@ docker compose up -d
    - SSL: `STARTTLS`
    - Authentication: `Normal password`
 
-> 为什么是英语? 因为我的 LANG 是 en_US.UTF-8 :)
+   或使用安全性更高的 SMTPS:
+
+   - Server hostname: `mail.domain.tld`
+   - Port: `465`
+   - SSL: `SSL/TLS`
+   - Authentication: `Normal password`
+
+   > 为什么是英语? 因为我的 LANG 是 en_US.UTF-8 :)
 
 4. 点击 Test 按钮, 如果一切正常, 会显示成功信息.
 
@@ -392,12 +399,13 @@ docker compose up -d
    defaults
    auth           on
    tls            on
+   tls_starttls   off
    tls_trust_file /etc/ssl/certs/ca-certificates.crt
    logfile        /var/log/msmtp.log
 
    account        system-notifier
    host           mail.domain.tld
-   port           587
+   port           465
    from           notifier@domain.tld
    user           notifier@domain.tld
    password       <密码>
@@ -425,3 +433,13 @@ docker compose up -d
    ```
 
    如果一切正常, 你应该会在前面配置的邮箱中收到这封测试邮件.
+
+## Catch-all 邮箱
+
+如果希望接收发往不存在邮箱地址的邮件, 可以启用 Catch-all 功能. 方法也很简单, 使用 alias 即可:
+
+```bash
+docker exec -it mailserver setup alias add @domain.tld me@domain.tld
+```
+
+将其中 `me@domain.tld` 替换为希望接收这些邮件的真实邮箱地址即可.
