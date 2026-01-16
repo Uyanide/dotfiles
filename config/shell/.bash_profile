@@ -42,15 +42,17 @@ fi
 export PATH
 
 # fnm
-if command -v fnm &>/dev/null; then
+if type fnm &>/dev/null; then
 	eval $(fnm env --shell bash)
 fi
 
 # export ENABLE_GPG_AGENT_SSH=1 in .profile to enable GPG agent for SSH
-if [ -x "$HOME/.local/scripts/gpg-init" ] && [ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" != "0" ]; then
+if [ -x "$HOME/.local/scripts/gpg-init" ] && \
+   [ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" != "0" ] && \
+   type gpgconf &>/dev/null; then
 	# GPG agent for SSH
 	eval "$($HOME/.local/scripts/gpg-init 2>/dev/null)" >/dev/null 2>&1
-elif [ -x "$HOME/.local/scripts/ssh-init" ]; then
+elif [ -x "$HOME/.local/scripts/ssh-init" ] && type ssh-agent &>/dev/null; then
 	# SSH with cross-session ssh-agent
 	eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" >/dev/null 2>&1
 fi
@@ -59,7 +61,7 @@ fi
 if [[ $- == *i* ]]; then
 	# Set EDITOR and VISUAL, mainly for sudoedit
 	for app in nvim helix vim vi nano; do
-		if command -v "$app" &>/dev/null; then
+		if type "$app" &>/dev/null; then
 			EDITOR="$app"
 			VISUAL="$app"
 			break
@@ -72,9 +74,9 @@ if [[ $- == *i* ]]; then
 	export GPG_TTY
 
 	# Shortcut alias for launching fish
-	command -v f &>/dev/null || {
+	if type fish &>/dev/null && ! type f &>/dev/null; then
 		alias f="exec fish"
-	}
+	fi
 	# Better do this manually since the automatic approach is kinda buggy.
 	# Add this to .bashrc to enable it anyway:
 	#
