@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+import os
+import termios
+from select import select
+from time import time_ns
+
+QUERY_ID = time_ns() & 0xFFFFFF
+QUERY_CODE = f"\033_Gi={QUERY_ID},s=1,v=1,a=q,t=d,f=24;AAAA\033\\"
+EXPECTED_RESPONSE = f"\033_Gi={QUERY_ID};OK\033\\"
+# Device Attributes request that most terminals respond to
+FENCE_CODE = "\033[c"
+FENCE_PATTERN = re.compile(r"\033\[\?.*?c")
+TIMEOUT = 0.05  # seconds
+
+# Terminals that are known to support
+SUPPORTED_TERMINALS = {
+    "xterm-kitty",
+    "xterm-ghostty"
+}
+# and those who don't
+UNSUPPORTED_TERMINALS = {
+    "alacritty",
+    "linux",
+    "kmscon"
+}
+# the rest will be tested dynamically
+
+
+def check_terminal_graphics():
+    if os.environ.get("TERM") in UNSUPPORTED_TERMINALS:
+        return False
+    if os.environ.get("TERM") in SUPPORTED_TERMINALS:
+        return True
+
+    code = QUERY_CODE + FENCE_CODE
+
+    fd = sys.stdin.fileno()
+    if not os.isatty(fd):
+        return False
+
+    old_settings = termios.tcgetattr(fd)
+    response = ""
+
+    try:
+        new_settings = termios.tcgetattr(fd)
+        # Disable canonical mode and echo
+        new_settings[3] = new_settings[3] & ~termios.ICANON & ~termios.ECHO
+        termios.tcsetattr(fd, termios.TCSANOW, new_settings)
+
+        sys.stdout.write(code)
+        sys.stdout.flush()
+
+        while True:
+            # Set a timeout to prevent blocking indefinitely
+            r, w, e = select([fd], [], [], TIMEOUT)
+            if not r:
+                break
+
+            char = os.read(fd, 1)
+            if not char:
+                break
+
+            response += char.decode('utf-8', errors='ignore')
+
+            # If received expected response, return True
+            if EXPECTED_RESPONSE in response:
+                return True
+
+            # If received fence response before any expected response, return False
+            if FENCE_PATTERN.search(response):
+                return False
+
+    except Exception:
+        pass
+    finally:
+        termios.tcsetattr(fd, termios.TCSANOW, old_settings)
+
+    return False
+
+
+if __name__ == "__main__":
+    if check_terminal_graphics():
+        sys.exit(0)
+    else:
+        sys.exit(1)

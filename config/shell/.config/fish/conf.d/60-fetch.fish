@@ -1,5 +1,11 @@
 if not set -q fetch_logo_type
-    set -g fetch_logo_type auto
+    if type -q kitty-tgp-query; and kitty-tgp-query
+        set -g fetch_logo_type kitty
+    else if type -q kitty-tgp-query
+        set -g fetch_logo_type logo
+    else
+        set -g fetch_logo_type auto
+    end
 end
 
 if not set -q fetch_color
