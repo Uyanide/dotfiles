@@ -32,3 +32,7 @@ set -x -g GPG_TTY (tty)
 if type -q fnm
     eval (fnm env --shell fish)
 end
+
+# done
+set -U __done_min_cmd_duration 10000
+set -U __done_notification_urgency_level low

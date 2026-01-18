@@ -63,9 +63,9 @@ if type -q zoxide
 end
 
 # rm
-if type -q trash
-    alias rm="echo \"use 'trash' instead :)\"  && sh -c \"exit 42\""
-end
+# if type -q trash
+#     alias rm="echo \"use 'trash' instead :)\"  && sh -c \"exit 42\""
+# end
 
 # ls
 if type -q eza
@@ -85,11 +85,45 @@ alias ....='cd ../../..'
 # grep
 alias grep="grep --color=auto"
 
-# others
+# copy DIR1 DIR2
+function copy
+    set count (count $argv | tr -d \n)
+    if test "$count" = 2; and test -d "$argv[1]"
+        set from (echo $argv[1] | trim-right /)
+        set to (echo $argv[2])
+        command cp -r $from $to
+    else
+        command cp $argv
+    end
+end
+
+
+# wget
+if type -q wget
+    alias wget="wget -c "
+end
+
+# colorize
+alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Sort pacman packages by size
+if type -q expac
+    alias big="expac -H M '%m\t%n' | sort -h | nl"
+end
+
+# clock
 if type -q tty-clock
     alias clock="tty-clock -c -C 4"
 end
 
+# journalctl
+alias jctl="journalctl -p 3 -xb"
+
+# git
 if type -q git
     function gcp
         git add -A || return 1

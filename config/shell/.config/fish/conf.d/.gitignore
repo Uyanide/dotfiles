@@ -1,5 +1,6 @@
 *
 !.gitignore
+!05-done.fish
 !10-env.fish
 !10-niri-env.fish
 !10-sshs.fish
