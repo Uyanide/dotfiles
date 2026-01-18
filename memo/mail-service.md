@@ -19,7 +19,6 @@
    下文中将使用 `domain.tld` 作为示例域名, 使用 `mail.domain.tld` 作为邮件服务器域名, 使用 `me@domain.tld` 作为示例邮箱.
 
 2. DNS 服务, (至少)需要支持以下记录类型:
-
    - A
    - TXT
    - MX
@@ -59,6 +58,26 @@
    nc -vz <服务器公网IP> 25
    ```
 
+> [!TIP]
+>
+> btw, 如果想测 25 端口出站是否被封, 可以借助类似 gmail 这样的公共邮箱服务测试. 先运行:
+>
+> ```bash
+> host -t mx gmail.com
+> ```
+>
+> 这会输出 google 的 SMTP 服务器地址, 选一个即可, 例如 `smtp.gmail.com`. 然后运行:
+>
+> ```bash
+> nc -vz smtp.gmail.com 25
+> ```
+>
+> 如果显示 Success 就没问题, 反之如果报错或超时, 那么说明 25 端口的出站被封了.
+
+> [!IMPORTANT]
+>
+> 再次说明, 如果使用 SMTP 中继服务, 25 端口的出站并不重要. 只需要保证入站开放即可.
+
 2. 解决占用:
 
    我的服务器是 Debian 13 系统, 默认使用 `exim4` 作为邮件传输代理(MTA). 它监听 127.0.0.1:25, 因此除了在防火墙里放行 25 端口外, 还需要禁用 `exim4`.
@@ -94,7 +113,6 @@
 除了上述 SMTP 服务商提供的 DNS 记录外, 还需要添加以下记录:
 
 - MX 记录:
-
   - 主机名: `@`
   - 值: `mail.domain.tld`
   - 优先级: `10`
@@ -102,7 +120,6 @@
   这将会是邮件的接收和发送服务器.
 
 - A 记录:
-
   - 主机名: `mail`
   - 值: `1.14.5.14`
 
@@ -183,6 +200,8 @@ services:
       - DEFAULT_RELAY_HOST=[smtp.resend.com]:587
       - RELAY_USER=resend
       - RELAY_PASSWORD=res_some_random_api_key
+        # 强制使用 ipv4
+        # - POSTFIX_INET_PROTOCOLS=ipv4
     volumes:
       - ./maildata:/var/mail
       - ./mailstate:/var/mail-state
@@ -202,7 +221,6 @@ services:
 一些 environment 的解释:
 
 - 如果机器性能孱弱或很在意占用的资源, 可以关掉 [Raspamd](https://docker-mailserver.github.io/docker-mailserver/latest/config/security/rspamd/) 使用老东西:
-
   - `ENABLE_AMAVIS=1`
   - `ENABLE_OPENDKIM=1`
   - `ENABLE_OPENDMARC=1`
@@ -212,7 +230,6 @@ services:
   - `RSPAMD_LEARN=0`
 
 - 如果垃圾邮件实在太多:
-
   - `RSPAMD_GREYLISTING=1`
 
   在第一次接受陌生人邮件时拒绝, 要求对方重试, 这样可以有效减少垃圾邮件, 但会显著增加延迟.
@@ -228,6 +245,10 @@ services:
 - `DEFAULT_RELAY_HOST=[smtp.resend.com]:587`
 
   中括号用于跳过 MX 查找直接解析 A 记录, 这对于连接明确的 SMTP 中继服务效率更高且更稳定.
+
+- `POSTFIX_INET_PROTOCOLS=ipv4`:
+
+  如果服务器的 IPv6 配置不完善, 可以强制 Postfix 仅使用 IPv4.
 
 如果要进行进一步配置, 必须先启动容器. 此时会报错, 因为还没有创建邮箱账号. 但不用管, 先让它跑着.
 
@@ -256,12 +277,10 @@ SPF 记录用于指定哪些服务器被允许代表该域名发送邮件.
 在 DNS 服务商处添加以下记录:
 
 - SPF 记录 (TXT 记录):
-
   - 主机名: `@`
   - 值: `v=spf1 mx include:resend.com -all` (假设使用 Resend 作为 SMTP 服务商)
 
   解释:
-
   - `v=spf1`: 指定 SPF 版本.
   - `mx`: 允许通过 MX 记录指定的服务器发送邮件.
   - `include:resend.com`: 允许 Resend 的服务器发送邮件.
@@ -284,7 +303,6 @@ DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性.
    如果使用的不是 `rspamd` 而是 `opendkim`, 过程会略有不同. 此时会输出一个容器内路径, 需要到本地的 `./config/opendkim/keys/` 目录下找到对应的公钥文件.
 
 2. 添加 DKIM 记录 (TXT 记录):
-
    - 主机名: `mail._domainkey`
    - 值: 上一步获取的公钥内容. 大概是这样的:
 
@@ -293,7 +311,6 @@ DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性.
      ```
 
    解释:
-
    - `mail`: 选择的选择器名称, 与生成密钥时使用的选择器一致.
    - `_domainkey`: 固定值, 指示这是一个 DKIM 记录.
 
@@ -304,12 +321,10 @@ DMARC 记录用于指定邮件接收方如何处理未通过 SPF 或 DKIM 检查
 在 DNS 服务商处添加以下记录:
 
 - DMARC 记录 (TXT 记录):
-
   - 主机名: `_dmarc`
   - `v=DMARC1; p=none; sp=none; rua=mailto:me@domain.tld`
 
   解释:
-
   - `v=DMARC1`: 指定 DMARC 版本.
   - `p=none`: 对未通过 DMARC 检查的邮件不采取任何措施.
   - `sp=none`: 对子域名的策略同样为 none.
@@ -370,7 +385,6 @@ docker compose up -d
 1. 在添加邮箱的第一个页面, 点击 `MANUAL CONFIGURATION`.
 
 2. Incoming server settings:
-
    - Protocol: IMAP
    - Server hostname: `mail.domain.tld`
    - Port: `993`
@@ -378,14 +392,12 @@ docker compose up -d
    - Authentication: `Normal password`
 
 3. Outgoing server settings:
-
    - Server hostname: `mail.domain.tld`
    - Port: `587`
    - SSL: `STARTTLS`
    - Authentication: `Normal password`
 
    或使用安全性更高的 SMTPS:
-
    - Server hostname: `mail.domain.tld`
    - Port: `465`
    - SSL: `SSL/TLS`
@@ -444,7 +456,6 @@ docker compose up -d
    ```
 
    可替换的部分:
-
    - `system-notifier`: 账户名称, 随便取.
 
    - `mail.domain.tld`: 邮件服务器地址.
@@ -497,39 +508,32 @@ MTA-STS (Mail Transfer Agent Strict Transport Security) 通过强制要求发送
 1. 前置要求
 
    除了 [开头](#需要什么) 中提到的要求外, 还需要:
-
    - 部署 HTTPS 静态网站的能力, 用于托管 MTA-STS 策略文件, 且该文件必须通过 HTTPS 提供.
 
    - 将 `mta-sts.domain.tld` 指向该静态网站的能力, 且访问时返回的 SSL 证书中的 CN 或 SAN 必须包含 `mta-sts.domain.tld`.
 
 2. 新增 DNS 记录
-
    - A 记录:
-
      - 主机名: `mta-sts`
      - 值: 指向托管 MTA-STS 策略文件的服务器 IP 地址.
 
      如果不在自己的服务器上托管, 可以使用 `CNAME` 记录指向第三方提供的静态网站托管服务.
 
    - MTA-STS 发现记录 (TXT 记录):
-
      - 主机名: `_mta-sts`
      - 值: `v=STSv1; id=2026010101`
 
      解释:
-
      - `v=STSv1`: 指定 MTA-STS 版本.
      - `id=2026010101`: 策略文件的版本号, 每次更新策略文件时需要更改此值以通知发送方.
 
    - TLS-RPT 报告记录 (TXT 记录):
 
      指定接收 TLS 报告的邮箱地址.
-
      - 主机名: `_smtp._tls`
      - 值: `v=TLSRPTv1; rua=mailto:me@domain.tld`
 
      解释:
-
      - `v=TLSRPTv1`: 指定 TLS-RPT 版本.
      - `rua=mailto:me@domain.tld`: 指定接收报告的邮箱地址.
 
@@ -549,7 +553,6 @@ MTA-STS (Mail Transfer Agent Strict Transport Security) 通过强制要求发送
    ```
 
    解释:
-
    - `version: STSv1`: 指定 MTA-STS 版本.
 
    - `mode: testing`: 策略模式, 可选值有 `enforce`, `testing`, `none`. `enforce` 表示强制执行策略, `testing` 表示仅测试不强制执行, `none` 表示不启用 MTA-STS. 初始阶段建议使用 `testing`, 确认无误后再改为 `enforce`.
@@ -559,7 +562,6 @@ MTA-STS (Mail Transfer Agent Strict Transport Security) 通过强制要求发送
    - `max_age: 86400`: 策略的最大缓存时间, 单位为秒. 这里设置为 86400 秒(1 天). 建议在测试结束确认无误后将此值调大一些, 例如一周(604800 秒) 或更长.
 
 5. 验证配置
-
    - 通过 [Hardenize](https://www.hardenize.com/) 或类似的在线工具验证 MTA-STS 配置是否正确.
 
    - 从支持 MTA-STS 的邮箱服务商 (例如 Gmail) 发送测试邮件, 查看 Postfix 日志来验证入站时 TLS 握手等流程是否符合预期. 至于 MTA-STS 是否真的生效, 可以稍后查看 TLS-RPT 报告邮箱收到的相关报告来确认.

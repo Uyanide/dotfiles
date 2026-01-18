@@ -39,7 +39,7 @@ Singleton {
             } else {
                 Logger.error("IpService", "Failed to fetch IP");
             }
-        });
+        }, true);
     }
 
     function fetchGeoInfo(notify) {
