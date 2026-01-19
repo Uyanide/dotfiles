@@ -1,22 +1,20 @@
 ### Font packages (involved in fontconfig)
 
-- ttf-sarasa-gothi
-- ttf-symbola (AUR)
-- noto-fonts
-- noto-fonts-cjk
-- noto-fonts-emoji
-- ttf-nerd-fonts-symbols
-- maplemono-nf-cn (AUR)
+- `extra/ttf-sarasa-gothic`
+- `aur/ttf-symbola`
+- `extra/noto-fonts`
+- `extra/noto-fonts-cjk`
+- `extra/noto-fonts-emoji`
+- `extra/ttf-nerd-fonts-symbols`
+- `aur/maplemono-nf-cn`
 
 ### Other fonts (used but not involved in fontconfig)
 
-- Sour Gummy
-- Font Awesome 6 Free
-- Meslo LGM Nerd Font Mono
+- Sour Gummy (from [Google Fonts](https://fonts.google.com/specimen/Sour+Gummy))
+- Font Awesome 6 Free (extracted from an AUR package which no longer exists)
+- `extra/ttf-meslo-nerd`
 
-### Fontconfig configuration
-
-> `~/.config/fontconfig/fonts.conf`
+### Font configuration
 
 ```xml
 <?xml version='1.0'?>
@@ -82,3 +80,9 @@
   </alias>
 </fontconfig>
 ```
+
+### Notes
+
+- `~/.fonts/` is deprecated, use `~/.local/share/fonts/` instead.
+
+- `~/.config/fontconfig/fonts.conf` will be loaded by `/etc/fonts/conf.d/50-user.conf` and therefore takes precedence over the rules defined in files starting with a higher number.

@@ -79,13 +79,11 @@ This setup is currently only adapted for Niri.
 
 ## Wallpaper & Colortheme
 
-The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. See also:
-
 - [wallpaper-carousel](https://github.com/Uyanide/Wallpaper_Carousel): an Image Carousel implemented with Qt Widgets to browse and set wallpapers from.
 - [wallpaper-daemon](./config/scripts/.local/scripts/wallpaper-daemon): automatic blur (only works in niri).
 - [change-wallpaper](./config/scripts/.local/scripts/change-wallpaper): script that changes wallpaper with a few extra features.
-- [change-colortheme](./config/scripts/.local/scripts/change-colortheme): script that changes color scheme based on wallpaper.
-- [backgrounds collection](https://github.com/Uyanide/backgrounds) for personal use.
+- [change-colortheme](./config/scripts/.local/scripts/change-colortheme): script that extract colors from the current wallpaper and generate a catppuccin color scheme accordingly.
+- [backgrounds](https://github.com/Uyanide/backgrounds) collection for personal use (mostly waifus).
 
 ## Rofi
 
