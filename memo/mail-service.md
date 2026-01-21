@@ -324,7 +324,7 @@ DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性.
    - 值: 上一步获取的公钥内容. 大概是这样的:
 
      ```plain
-     v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQ...
+     v=DKIM1; k=rsa; p=MIISncASjsASK...
      ```
 
    解释:
