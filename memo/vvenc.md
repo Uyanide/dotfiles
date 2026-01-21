@@ -206,7 +206,7 @@ mail_success
 
   - `--fga 0`: Disable "film grain analysis" (default disabled). fga in current version of VVenC (1.13.1) is kinda buggy and may lead to crashes in CQP mode. Enable with caution.
 
-  - `--maxrate` or `-m` can be used to set a maximum bitrate. However, `--qpa 1` is required for this to take effect. With these two parameters enabled, this certain pattern is theoretically called **CQF** (Constant Quality Factor) and is noticeably different from CQP.
+  - `--maxrate` or `-m` can be used to set a maximum bitrate. However, `--qpa 1` is required for this to take effect. With these two parameters enabled, this certain pattern of rc theoretically becomes **CQF** (Constant Quality Factor) and behaves noticeably differently comparing to CQP.
 
 ## References
 
