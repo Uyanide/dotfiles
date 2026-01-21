@@ -1,4 +1,6 @@
 > some sample scripts and personal notes regarding VVenC usage.
+>
+> Scripts below use `vvencapp` for better control over encoding parameters. However, `libvvenc` in ffmpeg can be used as well and is generally recommonded ~~for better quality of life~~.
 
 ## VBR with 2 passes
 
@@ -91,16 +93,14 @@ mail_success
 - script explained:
   - `input="$1"`: The source video file is passed as the first argument to the script.
 
-  - Use `vvencapp` or `vvencFFapp` for better control over encoding parameters instead of `ffmpeg -c:v libvvenc`.
-
   - `slice_start` and `slice_duration`: Define the start time and duration of the video slice to be processed. Uncomment the `slice_arg` line to enable slicing.
 
-  - `mailto=""`: Requires capability to send emails from command line. That is to say, a MTA (Mail Transfer Agent) must be installed and configured in the system. Leave empty to use notify-send instead.
+  - `mailto=""` requires capability to send emails from command line, i.e. a **MTA** (Mail Transfer Agent) must be installed and configured in the system. Leave empty to use notify-send to send desktop notifications instead.
 
 - encoder parameters explained:
-  - `-b 3000k`: Target bitrate. The output bitrate could be significantly different, better test before use.
+  - `-b 3000k`: Target bitrate. The output bitrate could be significantly different (commonly 1/2 to 1/3 lower than target).
 
-  - `-rs 4`: Intra period/refresh in seconds. Higher for better compression, lower for better seeking.
+  - `-rs 4` or `--refreshsec 4`: Intra period/refresh in seconds. Higher for better compression, lower for better seeking.
 
   - `--profile main_10`: 10-bit Main profile. Change to `main` for 8-bit encoding.
 
@@ -108,7 +108,7 @@ mail_success
 
   - `--threads 2`: Generally fewer threads yield better encoding quality yet slower speed. The maximum number of parallel frames is determined automatically according to frame size, and might be lower than the thread count specified here.
 
-  - `--qpa 0`: Disable "perceptually motivated QP adaptation", do so if you care about quality metrics or with archival purposes.
+  - `--qpa 0`: Disable "perceptually motivated QP adaptation", do so if you care about quality metrics or compress with archival purposes.
 
   - `-q` or `--qp` will be ignored in VBR mode even if specified.
 
@@ -197,11 +197,17 @@ mail_success
 
 - script explained:
 
-same as above.
+  same as above.
 
 - encoder parameters explained:
-  - `-q 16`: QP, lower is better quality.
+  - `-q 16`: Quantization Parameter, lower qp means better quality, larger file size and slower encoding speed.
 
   - `-rs 4 --profile main_10 --tier high --qpa 0`: Same as above.
 
   - `--fga 0`: Disable "film grain analysis" (default disabled). fga in current version of VVenC (1.13.1) is kinda buggy and may lead to crashes in CQP mode. Enable with caution.
+
+  - `--maxrate` or `-m` can be used to set a maximum bitrate. However, `--qpa 1` is required for this to take effect. With these two parameters enabled, this certain pattern is theoretically called **CQF** (Constant Quality Factor) and is noticeably different from CQP.
+
+## References
+
+- [Usage - fraunhoferhhi/vvenc Wiki](https://github.com/fraunhoferhhi/vvenc/wiki/Usage)
