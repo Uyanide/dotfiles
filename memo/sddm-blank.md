@@ -6,11 +6,11 @@
 >
 > sddm: `cachyos-v3/sddm 0.21.0-8`
 
-SDDM shows a blank screen (only with mouse cursor and tty cursor) after booting into graphical target, but starts normally after restarting the SDDM service.
+SDDM shows a blank screen (possibly only with mouse cursor and tty cursor) after booting into graphical target, but starts normally after restarting the SDDM service.
 
 ## Why
 
-SDDM starts before the NVIDIA driver is fully initialized, causing the greeter session to fail to display properly.
+SDDM started before the NVIDIA driver is fully initialized, causing the greeter session to fail to display anything.
 
 <details>
 <summary>evidence</summary>
@@ -114,7 +114,7 @@ sddm[1150]: Greeter session started successfully
 
 ## How
 
-The key is to avoid timing race between NVIDIA initialization and SDDM start. There are multiple ways to achieve this, two for example:
+The key is to avoid timing race between NVIDIA initialization and SDDM startup. There are multiple ways to achieve this, here are two:
 
 ### Early KMS:
 

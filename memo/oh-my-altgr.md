@@ -1,3 +1,5 @@
+de 布局太全能了
+
 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/KB_Germany_Linux.svg" alt="Deutsche Tastaturbelegung unter Linux"/>
 
 ```

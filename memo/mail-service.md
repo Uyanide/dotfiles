@@ -4,11 +4,66 @@
 >
 > 仅记录我的折腾过程, 并非指南, 并非推荐, 并非技术文档.
 
+## 目录
+
+- [目录](#目录)
+- [要做什么](#要做什么)
+- [需要什么](#需要什么)
+- [放开那个端口!](#放开那个端口)
+- [注册 SMTP 中继服务](#注册-smtp-中继服务)
+- [配置 DNS 和 rDNS](#配置-dns-和-rdns)
+  - [在 DNS 服务商处](#在-dns-服务商处)
+  - [在云服务器商处](#在云服务器商处)
+  - [在服务器上](#在服务器上)
+- [配置邮件服务器](#配置邮件服务器)
+  - [搞定 SSL](#搞定-ssl)
+  - [创建 compose.yaml](#创建-composeyaml)
+  - [创建邮箱账号](#创建邮箱账号)
+  - [配置 SPF](#配置-spf)
+  - [配置 DKIM](#配置-dkim)
+  - [配置 DMARC](#配置-dmarc)
+  - [启动!](#启动)
+  - [Rspamd Web UI](#rspamd-web-ui)
+- [配置邮件客户端](#配置邮件客户端)
+- [exim4: 我呢?](#exim4-我呢)
+- [Catch'em All!](#catchem-all)
+- [Extra Notes](#extra-notes)
+  - [MTA-STS](#mta-sts)
+  - [查看报告](#查看报告)
+  - [邮件传输链路](#邮件传输链路)
+- [为什么要做自建邮局?](#为什么要做自建邮局)
+
 ## 要做什么
+
+一个概览.
 
 1. 在自己的服务器上配置邮件服务器, 直接接收邮件;
 
-2. 使用 SMTP 中继服务发送邮件;
+2. 配置邮件服务器通过 SMTP 中继服务发送邮件;
+
+   > 或者也可以让邮件服务器直接发信, 但要额外做好以下准备:
+   >
+   > - 出入站均畅通无阻的 25 端口
+   >
+   >   大多数云服务商默认封锁 25 端口的出站流量, 需要联系或付费解封.
+   >
+   > - 良好的 IP 声誉
+   >
+   >   可以通过 [mxtoolbox](https://mxtoolbox.com) 或类似网站检查 IP 是否在任意黑名单中. 如果在的话也不是没救, 可以查查对应黑名单的影响范围, 有些其实根本无人在意.
+   >
+   > - 绝对完善的安全策略
+   >
+   >   很多对于使用 SMTP 中继服务时可选的配置在自己发信的场景下是基本要求, 例如 rDNS, DKIM 等. 可以通过 [mail-tester.com](https://www.mail-tester.com) 或 [Hardenize](https://www.hardenize.com/) 等网站检查配置是否完善.
+   >
+   > - 耗费数周乃至数月培养 IP 声誉的时间与物质成本
+   >
+   >   多少沾点玄学. 举个例子, 在这个过程中需要持续向多个公共邮箱平台的多个邮箱发送**有效**邮件, 什么样的邮件是"有效"的? 不知道. 发送多少封才能被认为"无害"? 也不知道. 发送到多少封会被认为"滥用"? 不知道. 不同平台具体采取什么样的评估标准? 还是不知道. 对于纯良的个人邮局来说这无疑是最大的挑战
+   >
+   > - IP 长期保活的持久战准备
+   >
+   >   及时在上面的一点中成功培养了良好的初始声誉, 如果后续不进行长期维护仍然可能会回到垃圾箱. 这不是短期努力可以解决的, 而需要长期坚持.
+   >
+   > 如果确实觉得没问题, 那么可以忽略下文中所有有关 SMTP 中继相关的内容. 其实就本文包含的步骤而言区别并没有很大, 下文中相关的地方会以引用的形式进行标注.
 
 3. 配置 SPF/DKIM/DMARC/MTA-STS 等等.
 
@@ -25,32 +80,22 @@
 
 3. SMTP 中继服务.
 
-   也就是帮你发邮件的服务商, 详见后续章节.
-
-   > 或者也可以自己发, 但要额外做好以下准备:
-   >
-   > - 出入站均畅通无阻的 25 端口
-   > - 良好的 IP 声誉
-   > - 绝对完善的安全策略
-   > - 耗费数周乃至数月培养 IP 声誉的时间与物质成本
-   > - 为 IP 长期保活的持久战准备
-   >
-   > 如果确实觉得没问题, 那么可以忽略下文中所有有关 SMTP 中继相关的内容. 其实就本文包含的步骤而言区别并没有很大, 下文中相关的地方会有额外说明.
+   也就是帮忙发邮件的服务商, 详见后续章节.
 
 4. 一个拥有公网 IP 和充足空闲资源的服务器, 并且(至少)需要开通以下 TCP 端口:
 
    | 端口 | 用途            | 出站 | 入站 | 说明                                                |
    | ---- | --------------- | ---- | ---- | --------------------------------------------------- |
-   | 25   | SMTP            | ❌   | ✅   | 核心传输端口. 如果使用 SMTP 中继服务, 则不需要出站  |
+   | 25   | SMTP            | ⚠️   | ✅   | 核心传输端口. 如果使用 SMTP 中继服务, 则出站可选    |
    | 993  | IMAPS           | ❌   | ✅   | 用于邮件客户端收信                                  |
-   | 587  | SMTP Submission | ✅   | ✅   | 支持 STARTTLS. 如果使用 SMTP 中继服务, 则也需要出站 |
-   | 465  | SMTPS           | ❌   | ✅   | 支持 Implicit SSL/TLS.                              |
+   | 587  | SMTP Submission | ⚠️   | ✅   | 支持 STARTTLS. 如果使用 SMTP 中继服务, 则也需要出站 |
+   | 465  | SMTPS           | ❌   | ✅   | 支持 Implicit SSL/TLS                               |
 
    很多云服务商会默认屏蔽 25 端口的出站方向流量, 但这对于使用 SMTP 中继服务的场景来说并不重要, 因为发信时直接连接收件方服务器的并非自己的服务器.
 
    同时, 最好支持 rDNS, 也就是把 IP 反解析到域名. IPv4 和 IPv6 用到哪个就配置哪个, 都用得到就都配置.
 
-   > 如果不使用 SMTP 中继服务, 则必须配置 rDNS
+   > 如果选择直接发信不使用 SMTP 中继服务, 则必须配置 rDNS
 
    下文中将使用 `1.14.5.14` 作为服务器的公网 IP 地址.
 
@@ -102,7 +147,9 @@
 
 ## 注册 SMTP 中继服务
 
-此类服务可以大致理解为"帮你发邮件的中介", 他们通常有很多 IP 地址, 这些地址的声誉都不错, 配置也很完善, 因此用他们发信的话, 邮件更容易送达收件箱而不是自动被扔进垃圾箱. 并且这也可以避免 25 端口出站被封的问题.
+> 如果选择直接发信不使用 SMTP 中继服务, 则**跳过**本节内容.
+
+此类服务可以大致理解为"帮忙发邮件的中介", 他们通常有很多 IP 地址, 这些地址的声誉都不错, 配置也很完善, 因此用他们发信的话, 邮件更容易送达收件箱而不是自动被扔进垃圾箱. 并且这也可以避免 25 端口出站被封的问题.
 
 我此次用的是 [Resend](https://resend.com), 其他类似服务还有 Amazon SES, Mailgun 等等.
 
@@ -130,8 +177,10 @@
   - 优先级: `10`
 
   这将会是邮件的接收和发送服务器的域名.
-  
-  > 如果乐意的话可以把收信域名, 发信域名, 乃至退信域名等等都拆分开来配置, 但这超过了本文的讨论范围, 因此不做另外说明 ~~主要是懒~~ :)
+
+> [!TIP]
+>
+> 如果乐意的话可以把收信域名, 发信域名, 乃至退信域名等等都拆分开来配置, 但这超过了本文的讨论范围且配置大同小异, 因此不做另外说明 ~~主要是懒~~ :)
 
 - A 记录:
   - 主机名: `mail`
@@ -139,11 +188,13 @@
 
   指向邮件服务器的公网 IP 地址.
 
-其他记录会在启动邮件服务器后配置.
+其他记录将会在启动邮件服务器后配置.
 
 ### 在云服务器商处
 
 将服务器 ip 的 rDNS 设置为 `mail.domain.tld`. 虽然未来主要使用 Resend 发信, 但是收信时一些发信方也可能会检查 rDNS, 因此最好设置正确, 有备无患.
+
+> 如果选择直接发信不使用 SMTP 中继服务, 则**必须**配置 rDNS
 
 ### 在服务器上
 
@@ -168,12 +219,12 @@
 
 或者也可以让 `docker-mailserver` 自己申请证书, 但是我的服务器的 `80` 和 `443` 端口都是 `openresty` 的, 并且恰好有合适的证书, 不想折腾了.
 
-### 创建 `compose.yaml`
+### 创建 compose.yaml
 
 ```yaml
 services:
   mailserver:
-    image: docker.io/mailserver/docker-mailserver:latest
+    image: docker.io/mailserver/docker-mailserver:15.1.0
     container_name: mailserver
     restart: unless-stopped
     cap_add:
@@ -244,11 +295,6 @@ services:
   - `ENABLE_RSPAMD=0`
   - `RSPAMD_LEARN=0`
 
-- 如果不需要 SMTP 中继服务, 可以删除以下环境变量:
-  - `DEFAULT_RELAY_HOST=[smtp.resend.com]:587`
-  - `RELAY_USER=resend`
-  - `RELAY_PASSWORD=res_some_random_api_key`
-
 - 如果垃圾邮件实在太多:
   - `RSPAMD_GREYLISTING=1`
 
@@ -269,6 +315,12 @@ services:
 - `POSTFIX_INET_PROTOCOLS=ipv4`:
 
   如果服务器的 IPv6 配置不完善, 可以强制 Postfix 仅使用 IPv4. 反之也可以只支持 IPv6.
+
+> 如果选择直接发信不使用 SMTP 中继服务, **必须**删除以下环境变量:
+>
+> - `DEFAULT_RELAY_HOST=[smtp.resend.com]:587`
+> - `RELAY_USER=resend`
+> - `RELAY_PASSWORD=res_some_random_api_key`
 
 如果要进行进一步配置, 必须先启动容器. 此时会报错, 因为还没有创建邮箱账号. 但不用管, 先让它跑着.
 
@@ -298,17 +350,24 @@ SPF 记录用于指定哪些服务器被允许代表该域名发送邮件.
 
 - SPF 记录 (TXT 记录):
   - 主机名: `@`
-  - 值: `v=spf1 mx include:resend.com -all` (假设使用 Resend 作为 SMTP 服务商)
+  - 值: `v=spf1 include:resend.com -all` (假设使用 Resend 作为 SMTP 服务商)
 
   解释:
   - `v=spf1`: 指定 SPF 版本.
-  - `mx`: 允许通过 MX 记录指定的服务器发送邮件.
-  - `include:resend.com`: 允许 Resend 的服务器发送邮件.
+  - `include:resend.com`: 仅允许 Resend 的服务器以此域名的名义发送邮件.
   - `-all`: 硬失败, 未授权的服务器发送邮件时拒绝. 因为发行渠道只有 Resend, 所以这样设置是合理的. 如果希望软失败, 即接受但标记为可疑, 可以使用 `~all`.
+
+  > 如果选择直接发信不使用 SMTP 中继服务, 则**需要**将 `include:resend.com` 替换为自己的邮件服务器的 IP 地址或域名, 例如:
+  >
+  > `v=spf1 a:mail.domain.tld -all`
+  >
+  > 详细语法参见 [SPF 规范](https://datatracker.ietf.org/doc/html/rfc7208).
 
 ### 配置 DKIM
 
-DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性.
+DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性. 对于使用 SMTP 中继服务的场景, DKIM 通常由服务商负责配置和签署, 但仍推荐在自建服务器侧进行签名以保证邮件从源头开始的完整性.
+
+> 如果选择直接发信而非使用 SMTP 中继服务, 则本节内容是**必须的**.
 
 1. 生成 DKIM 密钥:
 
@@ -429,9 +488,7 @@ docker compose up -d
 
 5. 输入密码, 完成配置.
 
-现在已经可以试着和其他邮箱互发邮件了! 
-
-别忘了定时检查其他邮箱平台发来的 DMARC 检查结果看 SPF 和 DKIM 配置是否正确.
+现在已经可以试着和其他邮箱互发邮件了!
 
 ## exim4: 我呢?
 
@@ -507,7 +564,7 @@ docker compose up -d
    echo "This is a test email from the system." | mail -s "Test Email" root
    ```
 
-   如果一切正常, 你应该会在前面配置的邮箱客户端中收到这封测试邮件.
+   如果一切正常, 应该会在前面配置的邮箱客户端中收到这封测试邮件.
 
 > [!NOTE]
 >
@@ -527,7 +584,9 @@ docker exec -it mailserver setup alias add @domain.tld me@domain.tld
 >
 > 完全按照上述步骤配置通配符邮箱别名可能会导致后续添加其他邮箱时邮件仍然发到上面指定的 catch-all 邮箱而不是新创建的邮箱. 更好的实践是用到什么邮箱名再创建对应的别名.
 
-## 更进一步
+## Extra Notes
+
+### MTA-STS
 
 **MTA-STS** (Mail Transfer Agent Strict Transport Security) 通过强制要求发送方使用加密连接发送邮件防止中间人攻击, 对个人邮箱来讲~~看起来其实没啥大用但总归~~是个加分项, 并且确实会让邮箱服务变得更酷.
 
@@ -595,6 +654,84 @@ docker exec -it mailserver setup alias add @domain.tld me@domain.tld
    - 通过 [Hardenize](https://www.hardenize.com/) 或类似的在线工具验证 MTA-STS 配置是否正确.
 
    - 从支持 MTA-STS 的邮箱服务商 (例如 Gmail) 发送测试邮件, 查看 Postfix 日志来验证入站时 TLS 握手等流程是否符合预期. 至于 MTA-STS 是否真的生效, 可以稍后查看 TLS-RPT 报告邮箱收到的相关报告来确认.
+
+### 查看报告
+
+上述配置中的 DMARC 和 TLS-RPT 都会发送报告到指定邮箱. 可以定期查看这些报告以了解邮件传输的安全状况和潜在问题, 推荐部署 [Parsedmarc](https://github.com/domainaware/parsedmarc) 或类似工具进行自动化处理.
+
+### 邮件传输链路
+
+> 一些术语简写:
+>
+> - `MTA`: Mail Transfer Agent, 邮件传输代理, 负责在邮件服务器之间传输邮件. 例如 Postfix.
+> - `MDA`: Mail Delivery Agent, 邮件投递代理, 负责将邮件存储到用户邮箱中. 例如 Dovecot.
+> - `MSA`: Mail Submission Agent, 邮件提交代理, 负责接收来自邮件客户端的邮件并将其传递给 MTA. 例如 Postfix.
+> - `MUA`: Mail User Agent, 邮件用户代理, 即邮件客户端. 例如 Thunderbird.
+>
+> 以及位置:
+>
+> - `Local`: 自建邮件服务器.
+> - `Source`: 外部邮件服务器, 发送方.
+> - `Destination`: 外部邮件服务器, 接收方.
+> - `Relay`: SMTP 中继服务.
+
+以本文配置为例:
+
+- 收信
+  1. 外部投递 (Source MTA to Local MTA):
+     - 连接方: 外部邮件服务器.
+
+     - 被连接方: 自建邮件服务器公网 IP.
+
+     - 目标端口: 25.
+
+     - 说明: 标准的 SMTP 传输. 这也是为什么需要开放 25 端口入站.
+
+  2. 本地分发 (Local MTA to Local MDA):
+     - 连接方: 自建邮件服务器.
+
+     - 被连接方: 自建邮件服务器本地存储.
+
+     - 端口: 本地通信, 无需端口.
+
+     - 说明: Postfix (MTA) 接收邮件后，转交给 Dovecot (MDA) 将邮件存入磁盘.
+
+  3. 客户端拉取 (MUA to Local MDA):
+     - 连接方: 邮件客户端 (例如 Thunderbird).
+
+     - 被连接方: 自建邮件服务器公网 IP.
+
+     - 目标端口: 993 (IMAPS).
+
+     - 说明: 使用 IMAPS 拉取邮件.
+
+- 发信
+  1. 客户端提交 (MUA to Local MSA):
+     - 连接方: 邮件客户端 (例如 Thunderbird).
+
+     - 被连接方: 自建邮件服务器公网 IP.
+
+     - 目标端口: 587 (STARTTLS) 或 465 (SSL/TLS).
+
+     - 说明: 把邮件上传到服务器队列中.
+
+  2. 中继转发 (Local MTA to Relay MTA):
+     - 连接方: 自建邮件服务器.
+
+     - 被连接方: SMTP 中继服务.
+
+     - 目标端口: 587 (STARTTLS).
+
+     - 说明: 自建邮件服务器根据 `DEFAULT_RELAY_HOST` 配置, 验证账号密码后将邮件转交给中继商.
+
+  3. 最终投递 (Relay MTA to Destination MTA):
+     - 连接方: SMTP 中继服务.
+
+     - 被连接方: 外部邮件服务器.
+
+     - 目标端口: 25.
+
+     - 说明: 这一步由中继商完成. 收件人会看到类似"由 xxx@send.domain.tld 代发" 的信息.
 
 ---
 

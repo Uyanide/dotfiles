@@ -124,9 +124,7 @@
   它的作用是解压一个只含有一个顶层目录的 tarball，cd 进入解压后得到的目录，生成一个 shell，并在这个 shell 退出时清理先前解压得到的文件。
 
   另外还有对于在 LFS 与 BLFS 中编译包的一些通用建议：
-
   1. 通常来说，应该（或者说请务必）在编译和安装一个包后完全删除它的目录，仅有少数例外：
-
      - linux（保留构建树可以缩短重新构建耗时，或至少保留 config 便于复原配置）
      - blfs-bootscripts（在 BLFS 中）
 
@@ -135,7 +133,6 @@
   2. 通常来说，建议将所有相关的 tarball 和 patch 下载在同一个目录中，并且将 tarball 也解压在这个目录中。如果目录层级与该默认情况不一致的话必须修改 LFS 书中提供的命令中对应的相对路径。
 
   3. 如果和我一样使用 UEFI 引导，那么大概率将会在 [8.64. GRUB-2.12](https://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html) 第一次接触 BLFS。和 LFS 不同，BLFS 中大多数包都是可选的，一个包可能会依赖其他包，这些依赖分为三个层级：
-
      - Required
      - Recommended
      - Optional
@@ -203,7 +200,6 @@
 - [8.64. GRUB-2.12](https://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html)
 
   对于 UEFI 引导的系统，此时需要跳转 BLFS 安装 GRUB。为避免过早地陷入依赖地狱，建议仅按照顺序安装以下包：
-
   1. [efivar-39](https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/efivar.html)
   2. [Popt-1.19](https://www.linuxfromscratch.org/blfs/view/12.4/general/popt.html)
   3. [efibootmgr-18](https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/efibootmgr.html)
@@ -222,7 +218,6 @@
 - [10.3. Linux-6.16.1](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/kernel.html)
 
   内核配置是整本 LFS 书中最具有挑战的环节。对此我可以总结出几点建议：
-
   - 复刻并裁剪现有配置
 
     如果将要使用正在构建的 LFS 系统的机器和 Host 完全相同，并且内核版本相同或相近，可以将 Host 现在运行的内核的配置文件搬过来，同时仅启用当前 Host 加载的内核模块，这将极大地减小配置难度和缩短构建耗时：
@@ -266,12 +261,10 @@
   - `<*>` or `<M>`
 
     对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但有几种情况例外，例如：
-
     - 引导相关的选项（例如 EFI 支持）必须内置，否则无法引导。
     - 一些必要的文件系统（例如 ext4）建议内置，否则可能无法挂载根文件系统。
 
     也有必须模块化的情况，例如：
-
     - 需要固件支持的驱动程序（如 i915），除非使用 initrd 或将固件内置到内核中。
 
 - [10.4. Using GRUB to Set Up the Boot Process](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/grub.html)
@@ -297,7 +290,6 @@
   BLFS 并不像 LFS 那样有线性的章节顺序，但仍建议先顺序阅读直到 [After LFS Configuration Issues](https://www.linuxfromscratch.org/blfs/view/stable/postlfs/config.html) 章节**结束**再按自己的需要安装各种包。
 
 - `su: must be run from a terminal`
-
   1. What?
 
      这通常发生在 chroot 后使用 `su` 切换到普通用户，再使用 `su` 试图切换回 root 时。
@@ -344,7 +336,6 @@
   ```
 
   其中：
-
   - `-D gallium-drivers=iris,llvmpipe`：
     - 不包含 NVIDIA 相关的参数，因为 NVIDIA 专有驱动自带完整的 OpenGL 支持，不需要 Mesa 提供。
     - 同时启用 llvmpipe 用于 OpenGL 上下文中的软件渲染以防万一。
@@ -437,7 +428,7 @@
 
   </details>
 
-  原因是源文件显式包含了多余的 moc 文件，和自动生成的元对象代码冲突，导致重复定义。出问题的源文件有两个，可以通过以下命令修复：
+  原因是源文件显式 include 了多余的 moc 文件，和自动生成的相同作用的代码冲突，导致重复定义。出问题的源文件有两个，可以通过以下命令修复：
 
   ```bash
   sed -i -E 's|\s*#include "moc_.*|// &|g' qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosourcefactory_geoclue2.cpp qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosource_geoclue2.cpp

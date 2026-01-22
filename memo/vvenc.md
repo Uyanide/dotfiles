@@ -208,6 +208,18 @@ mail_success
 
   - `--maxrate` or `-m` can be used to set a maximum bitrate. However, `--qpa 1` is required for this to take effect. With these two parameters enabled, this certain pattern of rc theoretically becomes **CQF** (Constant Quality Factor) and behaves noticeably differently comparing to CQP.
 
+## Extra notes
+
+- Remux 266 bare stream into MKV:
+
+  ```bash
+  ffmpeg -i input.266 -c:v copy -bsf:v setts=ts='N*(1001/24000)/TB' output.mkv
+  ```
+
+  The `bsf:v setts` part is necessary to set correct timestamps, replace `1001/24000` with the reciprocal of the actual frame rate.
+
 ## References
 
 - [Usage - fraunhoferhhi/vvenc Wiki](https://github.com/fraunhoferhhi/vvenc/wiki/Usage)
+
+- [setts - FFmpeg Bitstream Filters Documentation](https://ffmpeg.org/ffmpeg-bitstream-filters.html#setts)
