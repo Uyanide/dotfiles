@@ -7,10 +7,12 @@
 ## 目录
 
 - [目录](#目录)
-- [要做什么](#要做什么)
-- [需要什么](#需要什么)
-- [放开那个端口!](#放开那个端口)
-- [注册 SMTP 中继服务](#注册-smtp-中继服务)
+- [概览](#概览)
+  - [要做什么](#要做什么)
+  - [需要什么](#需要什么)
+- [前置准备](#前置准备)
+  - [放开那个端口!](#放开那个端口)
+  - [注册 SMTP 中继服务](#注册-smtp-中继服务)
 - [配置 DNS 和 rDNS](#配置-dns-和-rdns)
   - [在 DNS 服务商处](#在-dns-服务商处)
   - [在云服务器商处](#在云服务器商处)
@@ -25,15 +27,22 @@
   - [启动!](#启动)
   - [Rspamd Web UI](#rspamd-web-ui)
 - [配置邮件客户端](#配置邮件客户端)
-- [exim4: 我呢?](#exim4-我呢)
-- [Catch'em All!](#catchem-all)
+  - [Thunderbird](#thunderbird)
 - [Extra Notes](#extra-notes)
+  - [exim4: 我呢?](#exim4-我呢)
+  - [Catch'em All!](#catchem-all)
   - [MTA-STS](#mta-sts)
+  - [DMARC Alignment](#dmarc-alignment)
+  - [转发到其他域](#转发到其他域)
   - [查看报告](#查看报告)
   - [邮件传输链路](#邮件传输链路)
-- [为什么要做自建邮局?](#为什么要做自建邮局)
+  - [备份与恢复](#备份与恢复)
+  - [测试工具](#测试工具)
+- [这一切到底是为什么?](#这一切到底是为什么)
 
-## 要做什么
+## 概览
+
+### 要做什么
 
 一个概览.
 
@@ -61,13 +70,13 @@
    >
    > - IP 长期保活的持久战准备
    >
-   >   及时在上面的一点中成功培养了良好的初始声誉, 如果后续不进行长期维护仍然可能会回到垃圾箱. 这不是短期努力可以解决的, 而需要长期坚持.
+   >   和上面一点一样也是黑箱. 即使有良好的初始声誉, 如果后续不进行长期维护仍然可能会回到垃圾箱. 这不是短期努力可以解决的, 需要长期坚持.
    >
-   > 如果确实觉得没问题, 那么可以忽略下文中所有有关 SMTP 中继相关的内容. 其实就本文包含的步骤而言区别并没有很大, 下文中相关的地方会以引用的形式进行标注.
+   > 如果确实觉得以上这些都不算问题, 那么可以忽略下文中所有有关 SMTP 中继相关的内容. 其实就本文包含的步骤而言区别并没有很大, 下文中相关的地方会以引用的形式进行标注.
 
 3. 配置 SPF/DKIM/DMARC/MTA-STS 等等.
 
-## 需要什么
+### 需要什么
 
 1. 一个中意的域名.
 
@@ -99,7 +108,9 @@
 
    下文中将使用 `1.14.5.14` 作为服务器的公网 IP 地址.
 
-## 放开那个端口!
+## 前置准备
+
+### 放开那个端口!
 
 1. 检测 25 端口是否真的开放:
 
@@ -145,7 +156,7 @@
 
    如果确实需要系统内部通信, 例如 `cron` 发送邮件通知, 可以安装 `ssmtp` 或 `msmtp` 之类的轻量级 MTA, 参见 [后续章节](#exim4-我呢).
 
-## 注册 SMTP 中继服务
+### 注册 SMTP 中继服务
 
 > 如果选择直接发信不使用 SMTP 中继服务, 则**跳过**本节内容.
 
@@ -192,7 +203,7 @@
 
 ### 在云服务器商处
 
-将服务器 ip 的 rDNS 设置为 `mail.domain.tld`. 虽然未来主要使用 Resend 发信, 但是收信时一些发信方也可能会检查 rDNS, 因此最好设置正确, 有备无患.
+将服务器 ip 的 rDNS 设置为 `mail.domain.tld`. 这对于使用 SMTP 中继服务的场景来说几乎毫无作用, 但是收信时一些发信方也可能会检查 rDNS, 因此最好设置正确, 有备无患.
 
 > 如果选择直接发信不使用 SMTP 中继服务, 则**必须**配置 rDNS
 
@@ -256,6 +267,8 @@ services:
       - SPOOF_PROTECTION=1
         # 启用 MTA-STS
         # - ENABLE_MTM_STS=1
+        # 启用 SRS
+        # - ENABLE_SRS=1
         # 使用自定义证书
       - SSL_TYPE=manual
         # 与下方挂载路径对应
@@ -295,10 +308,9 @@ services:
   - `ENABLE_RSPAMD=0`
   - `RSPAMD_LEARN=0`
 
-- 如果垃圾邮件实在太多:
-  - `RSPAMD_GREYLISTING=1`
+- `RSPAMD_GREYLISTING=0`
 
-  在第一次接受陌生人邮件时拒绝, 要求对方重试, 这样可以有效减少垃圾邮件, 但会显著增加延迟.
+  启用后, 在第一次接受陌生人邮件时拒绝, 要求对方重试, 这样可以有效减少垃圾邮件, 但会显著增加延迟.
 
 - `ENABLE_MTA_STS=1`:
 
@@ -315,6 +327,10 @@ services:
 - `POSTFIX_INET_PROTOCOLS=ipv4`:
 
   如果服务器的 IPv6 配置不完善, 可以强制 Postfix 仅使用 IPv4. 反之也可以只支持 IPv6.
+
+- `ENABLE_SRS=1`:
+
+  启用 SRS 用于转发场景, 详见 [后续章节](#转发到其他域).
 
 > 如果选择直接发信不使用 SMTP 中继服务, **必须**删除以下环境变量:
 >
@@ -346,15 +362,19 @@ docker exec -it mailserver setup email add me@domain.tld <密码>
 
 SPF 记录用于指定哪些服务器被允许代表该域名发送邮件.
 
+> [!IMPORTANT]
+>
+> 对于使用 SMTP 中继服务的场景, SPF 记录仍然是**必须的**. 即使正常发信时收件方检查的是子域名如 `send.domain.tld` 的 SPF 记录, 但设置根域名 `domain.tld` 的 SPF 记录仍然是良好的实践, 可以防止伪造发件人.
+
 在 DNS 服务商处添加以下记录:
 
 - SPF 记录 (TXT 记录):
   - 主机名: `@`
-  - 值: `v=spf1 include:resend.com -all` (假设使用 Resend 作为 SMTP 服务商)
+  - 值: `v=spf1 -all` (假设使用 Resend 作为 SMTP 服务商)
 
   解释:
   - `v=spf1`: 指定 SPF 版本.
-  - `include:resend.com`: 仅允许 Resend 的服务器以此域名的名义发送邮件.
+  - `include:resend.com`: 仅允许 Resend 的服务器以此域名的名义发送邮件. 因为 Resend 并不会通过根域名发送邮件, 所以这条记录严格来说可以省略.
   - `-all`: 硬失败, 未授权的服务器发送邮件时拒绝. 因为发行渠道只有 Resend, 所以这样设置是合理的. 如果希望软失败, 即接受但标记为可疑, 可以使用 `~all`.
 
   > 如果选择直接发信不使用 SMTP 中继服务, 则**需要**将 `include:resend.com` 替换为自己的邮件服务器的 IP 地址或域名, 例如:
@@ -365,7 +385,11 @@ SPF 记录用于指定哪些服务器被允许代表该域名发送邮件.
 
 ### 配置 DKIM
 
-DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性. 对于使用 SMTP 中继服务的场景, DKIM 通常由服务商负责配置和签署, 但仍推荐在自建服务器侧进行签名以保证邮件从源头开始的完整性.
+DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性.
+
+> [!NOTE]
+>
+> 对于使用 SMTP 中继服务的场景, DKIM 通常由服务商负责配置和签署, 本地 DKIM 在中继场景下不一定会被最终保留或使用, 其价值更多在于内部一致性或未来切换为直连发信的准备.
 
 > 如果选择直接发信而非使用 SMTP 中继服务, 则本节内容是**必须的**.
 
@@ -395,7 +419,7 @@ DKIM (DomainKeys Identified Mail) 用于验证邮件的完整性和真实性. �
 
 ### 配置 DMARC
 
-DMARC 记录用于指定邮件接收方如何处理未通过 SPF 或 DKIM 检查的邮件.
+DMARC (Domain-based Message Authentication, Reporting, and Conformance) 用于指定邮件的处理策略. 更多有关 DMARC Alignment 的内容参见 [后续章节](#dmarc-alignment).
 
 在 DNS 服务商处添加以下记录:
 
@@ -459,7 +483,9 @@ docker compose up -d
 
 ## 配置邮件客户端
 
-我并非 TUI 重度爱好者, 日常用 Thunderbird 当客户端. 这里只涉及这一种客户端的配置方法, 当然其他的也大同小异.
+我并非 TUI 重度爱好者, 日常用 Thunderbird 当客户端, 因此这里只涉及这一种客户端的配置方法, 当然其他的也大同小异.
+
+### Thunderbird
 
 1. 在添加邮箱的第一个页面, 点击 `MANUAL CONFIGURATION`.
 
@@ -490,7 +516,11 @@ docker compose up -d
 
 现在已经可以试着和其他邮箱互发邮件了!
 
-## exim4: 我呢?
+## Extra Notes
+
+本节包含一些额外的说明和可选配置.
+
+### exim4: 我呢?
 
 这个, 不需要了. 既然已经有了邮箱服务, 那么继续使用重量级的 `exim4` 就没什么意义了.
 
@@ -570,7 +600,7 @@ docker compose up -d
 >
 > 此时可将 msmtp 看作 mailserver 的客户端, 因此 `/etc/msmtprc` 中配置的邮件服务器并不一定要部署在本机, 甚至可以是公共邮箱服务.
 
-## Catch'em All!
+### Catch'em All!
 
 如果希望接收发往不存在邮箱地址的邮件, 可以启用 Catch-all 功能. 方法也很简单, 使用 alias 即可:
 
@@ -583,8 +613,6 @@ docker exec -it mailserver setup alias add @domain.tld me@domain.tld
 > [!WARNING]
 >
 > 完全按照上述步骤配置通配符邮箱别名可能会导致后续添加其他邮箱时邮件仍然发到上面指定的 catch-all 邮箱而不是新创建的邮箱. 更好的实践是用到什么邮箱名再创建对应的别名.
-
-## Extra Notes
 
 ### MTA-STS
 
@@ -654,6 +682,129 @@ docker exec -it mailserver setup alias add @domain.tld me@domain.tld
    - 通过 [Hardenize](https://www.hardenize.com/) 或类似的在线工具验证 MTA-STS 配置是否正确.
 
    - 从支持 MTA-STS 的邮箱服务商 (例如 Gmail) 发送测试邮件, 查看 Postfix 日志来验证入站时 TLS 握手等流程是否符合预期. 至于 MTA-STS 是否真的生效, 可以稍后查看 TLS-RPT 报告邮箱收到的相关报告来确认.
+
+### DMARC Alignment
+
+这是一种收信方采取的安全策略, 用于确保发件人的身份与邮件头部的 `From` 地址一致.
+
+- 两种模式
+  1. Relaxed (默认)
+
+     只要域名相同或子域名关系即可通过.
+
+  2. Strict
+
+     必须完全相同才可通过.
+
+  可以在 DMARC 记录中通过 `adkim` 和 `aspf` 标签指定 DKIM 和 SPF 的 Alignment 模式, 例如:
+
+  ```plain
+  v=DMARC1; p=none; adkim=r; aspf=r;
+  ```
+
+  指定了 DKIM 和 SPF 都使用 Relaxed 模式.
+
+  使用 SMTP 中继服务时, **必须**使用 Relaxed 模式, 原因后续会说明.
+
+- 两个步骤
+  1. SPF Alignment
+
+     匹配 `Return-Path` 地址的域名和 `From` 头部的域名是否相同或子域名关系.
+
+  2. DKIM Alignment
+
+     匹配 DKIM 签名中 `d=` 标签的域名和 `From` 头部的域名是否相同或子域名关系.
+
+  二者只要有一个通过即可满足 DMARC Alignment 要求.
+
+- SMTP 中继发信时如何工作
+  - 对于 SPF Alignment
+
+    以 Resend 为例, 其发出的邮件中 `Return-Path` 地址虽然会被改写, 但会被改写为 `<很长一串>@send.domain.tld`, 其域名属于 `domain.tld` 的子域名, 因此在 Relaxed 模式下可以通过 SPF Alignment 检查.
+
+  - 对于 DKIM Alignment
+
+    以 Resend 为例, 在其让添加进 DNS 的记录中有一条便是选择器为 `resend` 的 DKIM 记录, resend 会使用该密钥对发出的邮件进行签名, 签名中的 `d=` 标签会被设置为 `domain.tld`, 因此可以通过 DKIM Alignment 检查.
+
+### 转发到其他域
+
+> [!CAUTION]
+>
+> 大多数 SMTP 中继服务采用严格的发件人核验制度, 即发件人的域名必须是经过验证和配置的域名. 因此如果使用类似的服务发信, 那么自动转发到其他域名很有可能是不可能的事情.
+>
+> 因此本节内容更适合自建邮件服务器并直接发信的场景, 对于没有强商业目的的个人邮箱来说意义不大.
+
+- SRS (Sender Rewriting Scheme)
+
+  用于在转发邮件时重写发件人地址, 改写 envelope sender 为自己域名下的地址, 从而避免 SPF 检查失败的问题.
+
+  对于 docker-mailserver, 只需要在 `compose.yaml` 中添加 `ENABLE_SRS=1` 环境变量即可. 其他相关配置参见 [官方文档](https://docker-mailserver.github.io/docker-mailserver/latest/config/environment/#srs-sender-rewriting-scheme).
+
+  > 在此处我遇到了一个极其诡异的情况, 简单提一嘴:
+  >
+  > - What
+  >
+  >   启用 SRS 后, postfix 迟迟无法启动, postsrsd 长时间以 CPU 满负荷持续运行.
+  >
+  > - Why
+  >
+  >   如果使用 strace 跟踪 postsrsd 进程, 会发现它在不停地尝试关闭一些文件描述符, 类似这样:
+  >
+  >   ```plain
+  >   close(192479922)                        = -1 EBADF (Bad file descriptor)
+  >   ```
+  >
+  >   原因是 postsrsd 在启动时，为了确保环境干净，会执行"关闭从 3 到 MAX 的所有文件描述符"的操作, 而 MAX 的值通过 `sysconf(_SC_OPEN_MAX)` 或 `getrlimit(RLIMIT_NOFILE)` 获取. 在 Docker 容器中, 这个值可能会非常大, 导致 postsrsd 花费大量时间尝试关闭这些不存在的文件描述符.
+  >
+  > - How
+  >
+  >   通过在 `compose.yaml` 中添加 `ulimits` 配置, 将 `nofile` 的软限制和硬限制都设置为一个合理的值, 例如 65535:
+  >
+  >   ```yaml
+  >   services:
+  >     mailserver:
+  >       ...
+  >       ulimits:
+  >         nofile:
+  >           soft: 65535
+  >           hard: 65535
+  >   ```
+  >
+  >   之后重建容器即可.
+
+- ARC (Authenticated Received Chain)
+
+  用于在邮件转发过程中保留并传递上游服务器对 SPF / DKIM / DMARC 的认证结果, 从而帮助下游服务器在 DMARC 检查失败时判断邮件是否原本是可信的.
+  - 为什么需要 ARC
+
+    SRS 会改写 Return-Path, 在 From 域不属于转发域的情况下这会破坏 SPF 对齐. 如果同时一些受 DKIM 签名中 `h=` 标签保护的 Header (在不知情的情况下)调整顺序/增/删/改, 或邮件内容改变, 则会导致 DKIM 签名失效, 从而导致 DMARC 检查失败. 此时如果启用了 ARC, 则可以通过 ARC 链来证明邮件的真实性.
+
+    但同时, ARC 工作的前提条件是转发服务器受目标服务器信任. 这又是一个黑盒, 涉及漫长和玄学的信誉培养过程.
+
+  - 如何启用
+
+    对于启用 Rspamd 的 docker-mailserver, 需要在 `config/rspamd/override.d/arc.conf` 中添加如下内容:
+
+    ```plain
+    sign_local = true;
+    sign_authenticated = true;
+
+    allow_env_sender_mismatch = true;
+    allow_hdr_from_mismatch = true;
+
+    domain {
+      domain.tld {
+        path = "/path/to/dkim/private/key.private.txt";
+        selector = "mail";
+      }
+    }
+    ```
+
+    替换 `domain.tld` 和 `path` 以及 `selector` 为真实值. Rspamd 中, ARC 通常使用和 DKIM 相同的密钥对邮件进行签名.
+
+    `allow_env_sender_mismatch` 和 `allow_hdr_from_mismatch` 用于在转发导致的发件人域名与当前服务器域名不一致时仍然进行签名.
+
+    详细配置参见 [Rspamd 文档](https://docs.rspamd.com/modules/arc/).
 
 ### 查看报告
 
@@ -731,13 +882,39 @@ docker exec -it mailserver setup alias add @domain.tld me@domain.tld
 
      - 目标端口: 25.
 
-     - 说明: 这一步由中继商完成. 收件人会看到类似"由 xxx@send.domain.tld 代发" 的信息.
+     - 说明: 这一步由中继商完成. 部分客户端可能会显示代发信息, 具体取决于中继实现与客户端策略.
+
+### 备份与恢复
+
+> [!CAUTION]
+>
+> 邮件数据一旦丢失几乎不可恢复, 务必定期离机备份.
+
+本文采用 docker 部署邮件服务器, 容器本身是无状态的, 因此只需要备份挂载的卷即可, 不做过多赘述.
+
+唯一需要特殊说明的是务必保留文件权限和属主信息, 否则恢复后邮件服务器可能无法正常工作.
+
+### 测试工具
+
+一些上文中提到或者没提到的在线测试工具:
+
+- [Mail-Tester](https://www.mail-tester.com): 用于测试邮件是否容易被判定为垃圾邮件.
+
+- [MailGenius](https://www.mailgenius.com/): 比 Mail-Tester 更全面和严格的测试工具.
+
+- [Hardenize](https://www.hardenize.com/): 用于测试域名的安全配置, 其中也包括 DMARC, MTA-STS 等邮件服务器相关的配置.
+
+- [MXToolbox](https://mxtoolbox.com/): 提供多种邮件相关的测试工具, 包括黑名单检查, SMTP 测试等等.
+
+- [GMass](https://www.gmass.co/inbox): 提供了 15 个 Gmail 邮箱用于测试邮件送达率.
+
+- [Google Postmaster Tools](https://postmaster.google.com/v2/sender_compliance): 如果主要收件方是 Gmail 且选择自己发信而不使用 SMTP 中继服务, 可以注册并使用该工具来监控邮件送达情况和声誉. 需要注意的是即使"Compliance status"中全部项为绿色, 也不代表邮件一定不会被扔进垃圾箱, 仅供参考.
 
 ---
 
 > What, Why, How. 以上是 What 和 How, 接下来是...
 
-## 为什么要做自建邮局?
+## 这一切到底是为什么?
 
 排除利益驱动, 我能想到的最合适的借口就是"隐私". 可是如果登陆 Resend 的后台看一眼, 就会发现我写的邮件被一封封明晃晃地不加掩饰地放在那里, 所有的内容都以明文的方式被看得一清二楚. 此时和使用公共邮箱服务唯一的区别似乎也就只剩"有一个很酷的后缀"这一点了. 即便真的解决了 25 端口问题 (是的, 写完上述内容的几天后我确实做到了) 从而得以摆脱 SMTP 中继服务, 在惊讶于明明 Mail-Tester 给出了 10/10 的满分评价但还是被 Gmail 扔进垃圾箱的残酷现实之余, 我也意识到自建邮局这条路仅靠热情是绝对走不通的. 一是预热 IP 需要花费的时间成本乃至金钱成本远超我的想象, 二是无论如何邮件内容也会被收件方的平台以算法评估一遍的事实彻底击碎了对于"隐私"乌托邦最后的妄想. 即使有这么多复杂的安全措施, 补齐了传输过程中的每一个可能的安全漏洞, 但真正和我点对点沟通的从来都只是靠着一条条既定规则维系的平台, 而不是我在写下收件地址时心中所想的一个个鲜活的人.
 
