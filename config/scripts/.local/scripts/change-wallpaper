@@ -11,12 +11,13 @@
 # - change-colortheme (from scripts/change-colortheme)
 # - flock (usually part of util-linux)
 
+set -euo pipefail
+
+trap 'echo $LINENO: $BASH_COMMAND' ERR
+
 # Lock
 
-exec {LOCK_FD}>/tmp/"$(basename "$0")".lock || {
-    echo "Failed to open lock file"
-    exit 1
-}
+exec {LOCK_FD}>/tmp/"$(basename "$0")".lock
 
 flock -n "$LOCK_FD" || {
     echo "Another instance is running. Exiting."
@@ -26,7 +27,7 @@ flock -n "$LOCK_FD" || {
 
 # Open a file selection dialog if no argument is provided
 
-if [ -z "$1" ]; then
+if [ -z "${1-}" ]; then
     image=$(zenity --file-selection --title="Open File" --file-filter="*.jpg *.jpeg *.png *.webp *.bmp *.jfif *.tiff *.avif *.heic *.heif")
 else
     image="$1"
@@ -37,8 +38,8 @@ fi
 
 # Obtain screen resolution
 
-screen_width=$2
-screen_height=$3
+screen_width=${2-}
+screen_height=${3-}
 
 [ -z "$screen_width" ] && {
     if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
@@ -56,8 +57,9 @@ screen_height=$3
     fi
 }
 
-[ -z "$screen_width" ] && screen_width=2560
-[ -z "$screen_height" ] && screen_height=1440
+## Default to 2k
+screen_width=${screen_width:-2560}
+screen_height=${screen_height:-1440}
 
 # $HOME/.config/wallpaper-chooser/config.json:
 # ```json
@@ -71,43 +73,57 @@ touch "$image" 2>/dev/null || true # ignore errors
 
 # Copy image to local wallpaper directory
 
+## Format of current and cached wallpaper
 wallpaper_ext="png"
+## Generate a random name for the current wallpaper
+set +o pipefail # SIGPIPE is expected here
 random_name=$(tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 16)
+set -o pipefail
+## Directory to store current wallpaper
 current_dir="$HOME/.local/share/wallpaper/current"
+## Path to current wallpaper image
 wallpaper_image="$current_dir/wallpaper-${random_name}.${wallpaper_ext}"
 
-mkdir -p "$current_dir" || {
-    echo "Could not create directory $current_dir"
-    exit 1
-}
+mkdir -p "$current_dir"
 
-temp_img=$(mktemp --suffix=."$wallpaper_ext") || exit 1
+## Batch copy using a temporary file to avoid incomplete file being used
+temp_img=$(mktemp --suffix=."$wallpaper_ext")
 trap 'rm -f "$temp_img"' EXIT
-magick "$image" -resize "${screen_width}x${screen_height}^" -gravity center -extent "${screen_width}x${screen_height}" "$temp_img" || {
-    echo "Could not resize and crop image"
-    exit 1
-}
-cp "$temp_img" "$wallpaper_image" || exit 1
+magick "$image" -resize "${screen_width}x${screen_height}^" -gravity center -extent "${screen_width}x${screen_height}" "$temp_img"
+cp "$temp_img" "$wallpaper_image"
+
+## Generate hash for caching,
+## based on content of the source image and resolution of the resized image
 hash="$(md5sum "$image" | awk '{print $1}')-${screen_width}x${screen_height}"
 
-# Clean up old wallpapers
+# Clean up old wallpapers in the same directory of current wallpaper.
+# Only keep the newly added one so the wallpaper-daemon can pick it up directly
 
 find "$current_dir" -type f -name "wallpaper-*" ! -name "$(basename "$wallpaper_image")" -delete
 
 # Generate blurred wallpaper
 
+## Similarly, store blurred version of current wallpaper in separate directory
 blur_dir="$HOME/.local/share/wallpaper/blurred"
+## Directory to cache blurred wallpapers, so that we don't need to regenerate
+## them every time when switching wallpapers. This makes it possible to have
+## an auto-played slideshow with blurred wallpapers without noticeable delay.
 blur_cache_dir="$HOME/.local/share/wallpaper/blurred-cache"
-mkdir -p "$blur_dir" "$blur_cache_dir" || {
-    echo "Could not create cache directory"
-    exit 1
-}
+mkdir -p "$blur_dir" "$blur_cache_dir"
 blurred_image="$blur_dir/blurred-${random_name}.${wallpaper_ext}"
 blurred_cache_image="$blur_cache_dir/${hash}.${wallpaper_ext}"
 
 ## Time consuming task (magick -blur) in background
 (
     # notify-send -a "change-wallpaper" "Generating Blurred Wallpaper" "This may take a few seconds..."
+
+    function apply_blured {
+        find "$blur_dir" -type f -name "blurred-*" ! -name "$(basename "$blurred_image")" -delete
+        if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
+            swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
+        fi
+        notify-send -a "change-wallpaper" "Blurred Wallpaper Applied" "$blurred_image" -i "$blurred_image"
+    }
 
     ### Check if cached blurred image exists
     if [ -f "$blurred_cache_image" ]; then
@@ -116,11 +132,7 @@ blurred_cache_image="$blur_cache_dir/${hash}.${wallpaper_ext}"
             echo "Could not copy cached blurred image"
             # exit 1 # Non-critical error
         else
-            find "$blur_dir" -type f -name "blurred-*" ! -name "$(basename "$blurred_image")" -delete
-            if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
-                swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
-            fi
-            notify-send -a "change-wallpaper" "Blurred Wallpaper From Cache" "$blurred_image" -i "$blurred_image"
+            apply_blured
             exit 0
         fi
     fi
@@ -133,7 +145,7 @@ blurred_cache_image="$blur_cache_dir/${hash}.${wallpaper_ext}"
         printf "%.2f", s
     }')
 
-    ### use a temporary file to avoid incomplete file being used
+    ### Batch processing using a temporary file to avoid incomplete file being used
     temp_blurred=$(mktemp --suffix=."$wallpaper_ext") || exit 1
     trap 'rm -f "${temp_blurred}"' EXIT
     magick "$wallpaper_image" -blur 0x"$sigma" "$temp_blurred" || {
@@ -146,18 +158,12 @@ blurred_cache_image="$blur_cache_dir/${hash}.${wallpaper_ext}"
         exit 1
     }
 
-    find "$blur_dir" -type f -name "blurred-*" ! -name "$(basename "$blurred_image")" -delete
-
     cp -f "$blurred_image" "$blurred_cache_image" || {
         echo "Could not cache blurred image"
         # exit 1 # Non-critical error
     }
 
-    if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
-        swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
-    fi
-
-    notify-send -a "change-wallpaper" "Blurred Wallpaper Generated" "$blurred_image" -i "$blurred_image"
+    apply_blured
 ) &
 
 # Apply wallpaper
