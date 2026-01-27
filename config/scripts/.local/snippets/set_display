@@ -9,7 +9,7 @@
 
 # Constants
 niri_config_file="$HOME/.config/niri/config/misc.kdl"
-prefer_order=(intel amd nvidia) # AMD -> Nvidia -> Intel
+prefer_order=(nvidia intel)
 
 # Get vendor and path of each GPU
 default_card_path="$(find /dev/dri/card* 2>/dev/null | head -n 1)"

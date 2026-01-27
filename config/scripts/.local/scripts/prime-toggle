@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+[[ "$XDG_CURRENT_DESKTOP" != "niri" ]] && exit 1
+
+if grep -q 'prefer_order=(nvidia intel)' "$HOME/.local/snippets/set_display"
+then
+    sed -i 's/prefer_order=(nvidia intel)/prefer_order=(intel nvidia)/' "$HOME/.local/snippets/set_display"
+    echo "" > "$HOME/.config/niri/config/prime.kdl"
+    echo "disabled global Nvidia Prime offloading"
+else
+    sed -i 's/prefer_order=(intel nvidia)/prefer_order=(nvidia intel)/' "$HOME/.local/snippets/set_display"
+    cat > "$HOME/.config/niri/config/prime.kdl" << EOF
+environment {
+    __NV_PRIME_RENDER_OFFLOAD "1";
+    __VK_LAYER_NV_optimus "NVIDIA_only"
+    __GLX_VENDOR_LIBRARY_NAME "nvidia"
+}
+EOF
+    echo "enabled global Nvidia Prime offloading"
+fi
+
+# Restart session
+niri msg action quit
