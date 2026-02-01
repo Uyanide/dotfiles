@@ -123,6 +123,15 @@ end
 # journalctl
 alias jctl="journalctl -p 3 -xb"
 
+# nohup
+function nh
+    nohup $argv >/dev/null 2>&1 & disown
+end
+
+# ffmpeg
+alias ffmpeg="ffmpeg -hide_banner -nostdin"
+alias ffprobe="ffprobe -hide_banner"
+
 # git
 if type -q git
     function gcp

@@ -244,7 +244,9 @@
 
     如果内核版本不一致，会在 `make localmodconfig` 时出现很多交互选项，建议全部保持默认，或使用 `make olddefconfig` 来自动处理。
 
-    在此之后，仍建议按照 LFS 书中的指示检查和调整配置选项。
+    对此需要特别注意，大多数成熟发行版的内核都是在有 initrd 的前提下配置、编译和使用的，而在 LFS 中直到 BLFS 才会有涉及到 initrd 的内容， 且因跨度过大，不建议直接从这里跳到 BLFS 中配置 initrd。因此需要针对这点手动做一些调整，否则可能无法启动。具体修改方向在之后会提到。
+
+    在此之后，仍建议（或者说务必）按照 LFS 书中的指示检查和调整配置选项。
 
   - 参考 Host 的内核配置
 
@@ -260,18 +262,22 @@
 
   - `<*>` or `<M>`
 
-    对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但有几种情况例外，例如：
-    - 引导相关的选项（例如 EFI 支持）必须内置，否则无法引导。
-    - 一些必要的文件系统（例如 ext4）建议内置，否则可能无法挂载根文件系统。
+    对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但在**没有配置 initrd**（这将在 BLFS 中涉及），有几种情况例外，例如：
+    - 存储总线和控制器驱动，如 `CONFIG_BLK_DEV_NVME`；
+    - RootFS 所需驱动，如 `CONFIG_EXT4_FS`，`CONFIG_BTRFS_FS`；
+    - 如果全盘加密，输入密码（显然）需要键盘或其他输入设备的驱动；
+    - 基础显示驱动，如 `CONFIG_VT`，`CONFIG_VT_CONSOLE` 等。
 
-    也有必须模块化的情况，例如：
-    - 需要固件支持的驱动程序（如 i915），除非使用 initrd 或将固件内置到内核中。
+    总之，在挂载 RootFS 之前需要的，以及挂载 RootFS 自身需要的，这些驱动需要内置。
+
+    也有在**没有 initrd** 的情况下必须模块化的情况，例如：
+    - 需要外部固件支持的驱动程序（如 `i915`），除非使用 initrd 或通过 `CONFIG_EXTRA_FIRMWARE` 将固件也内置到内核中。
 
 - [10.4. Using GRUB to Set Up the Boot Process](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/grub.html)
 
   强烈建议使用 PARTUUID 和 UUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区。
 
-  另外，如果将外置存储设备（如 USB 硬盘）作为根文件系统，建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 参数以防止启动时找不到根文件系统。
+  另外，如果将外置存储设备（如 USB 硬盘）上的分区作为 RootFS ，建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 参数以防止启动时找不到 RootFS 。
 
 > [!NOTE]
 >
@@ -337,12 +343,13 @@
 
   其中：
   - `-D gallium-drivers=iris,llvmpipe`：
-    - 不包含 NVIDIA 相关的参数，因为 NVIDIA 专有驱动自带完整的 OpenGL 支持，不需要 Mesa 提供。
-    - 同时启用 llvmpipe 用于 OpenGL 上下文中的软件渲染以防万一。
-    - `iris` 用于 Intel 显卡。对于较新（Gen 8 及更新）的硬件，`crocus`（适用于 Gen 4 到 Gen 7）和 `i915`（更老）用户态 OpenGL 驱动已被废弃，不应再使用。注意此处的 i915 和内核中的 i915 内核驱动是不同的东西。
+    - 不包含 NVIDIA 相关的参数，因为 NVIDIA 专有驱动自带完整的 OpenGL 实现，不需要 Mesa 提供；
+    - `iris` 用于现代 Intel 显卡。对于较新（Gen 8 及更新）的硬件，`crocus`（适用于 Gen 4 到 Gen 7.5）和 `i915`（更老）用户态 OpenGL 驱动已被废弃，不应再使用。注意此处的 `i915` 用户态驱动和内核中的 `i915` 模块是不同的东西；
+    - 启用 `llvmpipe` 用于 OpenGL 上下文中的软件渲染以防万一。
   - `-D vulkan-drivers=intel,swrast`：
+    - 不用管 NVIDIA，原因同上。
     - 启用 Intel iGPU 的 Vulkan 支持。
-    - 同时启用 Vulkan 上下文中的软件光栅化驱动 swrast 以防万一。
+    - 启用 Vulkan 上下文中的软件渲染驱动“软件光栅化器” `swrast` 以防万一。注意这里的 `swrast` 实际指 `lavapipe`，和被废弃的 gallium `swrast` 驱动是不同的东西。
   - `-D glvnd=enabled`：启用 GLVND 支持以便和 NVIDIA 专有驱动兼容。libglvnd 需要[在 GLFS 书中安装](https://glfs-book.github.io/glfs/shareddeps/libglvnd.html)。
 
   > 虽然 GLFS 中的 libglvnd 章节在开头处提到了 `If you've come here from the BLFS Mesa page, ...`，但实际上 BLFS 中的 Mesa 章节并没有提到 libglvnd 和除 nouveau 外与 NVIDIA 相关的话题。算个小坑？大概。
@@ -433,3 +440,19 @@
   ```bash
   sed -i -E 's|\s*#include "moc_.*|// &|g' qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosourcefactory_geoclue2.cpp qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosource_geoclue2.cpp
   ```
+
+## References
+
+- [Welcome - Linux From Scratch](https://www.linuxfromscratch.org/)
+
+- [Linux From Scratch - Version 12.4 ](https://www.linuxfromscratch.org/lfs/view/stable/)
+
+- [Linux From Scratch - 版本 12.4-中文翻译版](https://lfs.xry111.site/zh_CN/12.4/)
+
+- [Beyond Linux® From Scratch (System V Edition) - Version 12.4](https://www.linuxfromscratch.org/blfs/view/stable/)
+
+- [meson.build - Mesa/mesa](https://gitlab.freedesktop.org/mesa/mesa/-/blob/main/meson.build)
+
+- [Intel - Gentoo wiki](https://wiki.gentoo.org/wiki/Intel)
+
+- [LFS btw](https://io.uyani.de/s/dg7FbrQefPf8sJq)
