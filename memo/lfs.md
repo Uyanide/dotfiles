@@ -14,7 +14,7 @@
 
 - [2.7. Mounting the New Partition](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/mounting.html)
 
-  可以用一个小脚本挂载分区，推荐使用文件系统 UUID 而非诸如 `/dev/sdc1` 这样的绝对路径：
+  可以用一个小脚本挂载分区。对于指定分区的方式，推荐使用文件系统 UUID 而非诸如 `/dev/sdc1` 这样的绝对路径：
 
   ```bash
   #!/bin/bash
@@ -145,7 +145,20 @@
 
 - [7.4. Entering the Chroot Environment](https://www.linuxfromscratch.org/lfs/view/stable/chapter07/chroot.html)
 
-  对于 chroot 也可以使用一个小脚本显著地改善体验：
+  如果想要使用 `arch-install-scripts` 提供的 `arch-chroot` 脚本偷懒，则必须确保环境变量的清洗与重新设置，至少应确保 `PATH`, `MAKEFLAGS` 和 `TESTSUITEFLAGS` 被正确设置：
+
+  ```bash
+  arch-chroot "$LFS" /usr/bin/env -i \
+      HOME=/root \
+      TERM="$TERM" \
+      PS1='(lfs chroot) \u:\w\$ ' \
+      PATH=/usr/local/bin:/usr/bin:/usr/sbin \
+      MAKEFLAGS="-j$(nproc)" \
+      TESTSUITEFLAGS="-j$(nproc)" \
+      /bin/bash --login
+  ```
+
+  或者完全按照 LFS 书中的 chroot 步骤编写一个小脚本：
 
   ```bash
   #!/bin/bash
@@ -193,10 +206,6 @@
 
   它的作用是自动挂载一系列虚拟文件系统，同时在退出 chroot 时自动清理。
 
-> [!IMPORTANT]
->
-> 此处并不建议使用 `arch-install-scripts` 提供的 `arch-chroot` 偷懒，除非明确知道自己在做什么。
-
 - [8.64. GRUB-2.12](https://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html)
 
   对于 UEFI 引导的系统，此时需要跳转 BLFS 安装 GRUB。为避免过早地陷入依赖地狱，建议仅按照顺序安装以下包：
@@ -205,7 +214,7 @@
   3. [efibootmgr-18](https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/efibootmgr.html)
   4. [GRUB-2.12 for EFI](https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/grub-efi.html)
 
-  这对于引导系统来说已经足够用了。如果需要的话可以再之后再补上文档等其他附加选项。
+  这对于引导系统来说已经足够用了。如果需要的话可以之后再补上文档等其他附加依赖重新构建安装。
 
 - [10.2. Creating the /etc/fstab File](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/fstab.html)
 
@@ -244,9 +253,9 @@
 
     如果内核版本不一致，会在 `make localmodconfig` 时出现很多交互选项，建议全部保持默认，或使用 `make olddefconfig` 来自动处理。
 
-    对此需要特别注意，大多数成熟发行版的内核都是在有 initrd 的前提下配置、编译和使用的，而在 LFS 中直到 BLFS 才会有涉及到 initrd 的内容， 且因跨度过大，不建议直接从这里跳到 BLFS 中配置 initrd。因此需要针对这点手动做一些调整，否则可能无法启动。具体修改方向在之后会提到。
+    对此需要特别注意，大多数成熟发行版的内核都是在有 initrd 的前提下配置、编译和使用的，而在 LFS 中直到 BLFS 才会涉及到 initrd。因跨度过大，不建议直接从这里跳到 BLFS 中配置 initrd。因此需要针对这点手动做一些调整，否则可能无法启动。具体修改方向在之后会提到。
 
-    在此之后，仍建议（或者说务必）按照 LFS 书中的指示检查和调整配置选项。
+    在此之后，仍建议（或者说请务必）按照 LFS 书中的指示检查和调整配置选项。
 
   - 参考 Host 的内核配置
 
@@ -268,7 +277,7 @@
     - 如果全盘加密，输入密码（显然）需要键盘或其他输入设备的驱动；
     - 基础显示驱动，如 `CONFIG_VT`，`CONFIG_VT_CONSOLE` 等。
 
-    总之，在挂载 RootFS 之前需要的，以及挂载 RootFS 自身需要的，这些驱动需要内置。
+    总之，在挂载 RootFS 之前需要的，以及挂载 RootFS 需要的驱动需要内置。
 
     也有在**没有 initrd** 的情况下必须模块化的情况，例如：
     - 需要外部固件支持的驱动程序（如 `i915`），除非使用 initrd 或通过 `CONFIG_EXTRA_FIRMWARE` 将固件也内置到内核中。
@@ -347,8 +356,8 @@
     - `iris` 用于现代 Intel 显卡。对于较新（Gen 8 及更新）的硬件，`crocus`（适用于 Gen 4 到 Gen 7.5）和 `i915`（更老）用户态 OpenGL 驱动已被废弃，不应再使用。注意此处的 `i915` 用户态驱动和内核中的 `i915` 模块是不同的东西；
     - 启用 `llvmpipe` 用于 OpenGL 上下文中的软件渲染以防万一。
   - `-D vulkan-drivers=intel,swrast`：
-    - 不用管 NVIDIA，原因同上。
-    - 启用 Intel iGPU 的 Vulkan 支持。
+    - 不用管 NVIDIA，原因同上；
+    - 启用 Intel iGPU 的 Vulkan 支持；
     - 启用 Vulkan 上下文中的软件渲染驱动“软件光栅化器” `swrast` 以防万一。注意这里的 `swrast` 实际指 `lavapipe`，和被废弃的 gallium `swrast` 驱动是不同的东西。
   - `-D glvnd=enabled`：启用 GLVND 支持以便和 NVIDIA 专有驱动兼容。libglvnd 需要[在 GLFS 书中安装](https://glfs-book.github.io/glfs/shareddeps/libglvnd.html)。
 

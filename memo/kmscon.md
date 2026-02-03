@@ -46,7 +46,7 @@ ExecStart=/usr/bin/kmscon --vt=%I --seats=seat0 --no-switchvt
 
 ```conf
 login=/bin/login -p -f kolkas
-font-name=MesloLGM Nerd Font Mono, Maple Mono NF CN
+font-name=Maple Mono NF CN
 font-size=14
 ```
 
@@ -93,7 +93,9 @@ login=/usr/bin/su - kolkas -s /usr/bin/fish --login
 
 ### 关于字体的补充说明
 
-- kmscon 上 2 字符宽的 nerd font 图标会被裁剪至 1 字符宽。可以使用带有 Mono 后缀的 Meslo 系字体作为首选字体，它的图标字符只有 1 字符宽。
+- ~~kmscon 上 2 字符宽的 nerd font 图标会被裁剪至 1 字符宽。可以使用带有 Mono 后缀的 Meslo 系字体作为首选字体，它的图标字符只有 1 字符宽。~~
+
+  EDIT: kmscon 9.2.0 版本已修复该问题。
 
 - [Archwiki - KMSCON](https://wiki.archlinux.org/title/KMSCON) 上提供了另一种更改字体的方法，即修改 fontconfig 配置，具体做法为在 monospace 字体族中前置添加字体。但这会影响所有使用 fontconfig 和 monospace 字体族的程序，个人认为并非首选。
 
