@@ -1,7 +1,30 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Description:
-#   Quick snippet for cliphist + rofi + wl-copy
+#   ~~Quick~~ snippet for cliphist + rofi + wl-copy
 
-cliphist list | rofi -dmenu -config ~/.config/rofi/dmenu.rasi -display-columns 2 -i | \
-    cliphist decode | wl-copy
+tmp_dir="/tmp/cliphist"
+trap 'rm -rf "$tmp_dir"' EXIT
+mkdir -p "$tmp_dir"
+
+read -r -d '' prog <<EOF
+/^[0-9]+\s<meta http-equiv=/ { next }
+match(\$0, /^([0-9]+)\s(\[\[\s)?binary.*(jpg|jpeg|png|bmp)/, grp) {
+    system("echo " grp[1] "\\\\\t | cliphist decode >$tmp_dir/"grp[1]"."grp[3])
+    print \$0"\0icon\x1f$tmp_dir/"grp[1]"."grp[3]
+    next
+}
+1
+EOF
+
+# Pipeline logic:
+# 1. cliphist list: gives "ID <tab> Content"
+# 2. gawk: adds icon paths
+# 3. rofi -dmenu: shows list, hides column 1 (ID), returns "ID <tab> Content" on select
+# 4. cliphist decode: reads ID from line, gets original content
+
+result=$(cliphist list | gawk "$prog" | rofi -dmenu -display-columns 2 -config "$HOME/.config/rofi/dmenu.rasi" -show-icons -p "Clipboard")
+
+if [[ -n "$result" ]]; then
+    echo "$result" | cliphist decode | wl-copy
+fi

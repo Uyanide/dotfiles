@@ -36,7 +36,7 @@ binds {
     Alt+Space { spawn-sh "pkill -x rofi || rofi -show drun"; }
 
     // Actions
-    Mod+V { spawn-sh "pkill -x rofi || rofi-cliphist"; }
+    Mod+V { spawn-sh "pkill -x shorin-cliphist || ghostty -e shorin-cliphist"; }
     Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
     Ctrl+Alt+Delete { spawn-sh "pkill -x wlogout || wlogout -p layer-shell"; }
     Print { spawn "niri" "msg" "action" "screenshot-screen"; }
