@@ -284,17 +284,13 @@
 
 - [10.4. Using GRUB to Set Up the Boot Process](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/grub.html)
 
-  强烈建议使用 PARTUUID 和 UUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区。
+  强烈建议使用 PARTUUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区。如果已经配置 initrd，则也可以使用文件系统 UUID 来指定根分区。
 
   另外，如果将外置存储设备（如 USB 硬盘）上的分区作为 RootFS ，建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 参数以防止启动时找不到 RootFS 。
 
 > [!NOTE]
 >
 > UUID 和 PARTUUID 可以通过 `lsblk -o NAME,FSTYPE,UUID,PARTUUID` 查看。
-
-> [!NOTE]
->
-> UUID 指的是文件系统 UUID，GRUB 需要具备读取对应文件系统的能力才能识别 UUID。而 PARTUUID 指的是分区 UUID，不依赖文件系统。
 
 ## BLFS
 
