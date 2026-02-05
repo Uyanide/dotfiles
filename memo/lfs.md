@@ -253,7 +253,7 @@
 
     如果内核版本不一致，会在 `make localmodconfig` 时出现很多交互选项，建议全部保持默认，或使用 `make olddefconfig` 来自动处理。
 
-    对此需要特别注意，大多数成熟发行版的内核都是在有 initrd 的前提下配置、编译和使用的，而在 LFS 中直到 BLFS 才会涉及到 initrd。因跨度过大，不建议直接从这里跳到 BLFS 中配置 initrd。因此需要针对这点手动做一些调整，否则可能无法启动。具体修改方向在之后会提到。
+    对此需要特别注意，大多数成熟发行版的内核都是在有 initramfs 的前提下配置、编译和使用的，而在 LFS 中直到 BLFS 才会涉及到 initramfs。因跨度过大，不建议直接从这里跳到 BLFS 中配置 initramfs。因此需要针对这点手动做一些调整，否则可能无法启动。具体修改方向在之后会提到。
 
     在此之后，仍建议（或者说请务必）按照 LFS 书中的指示检查和调整配置选项。
 
@@ -271,7 +271,7 @@
 
   - `<*>` or `<M>`
 
-    对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但在**没有配置 initrd**（这将在 BLFS 中涉及），有几种情况例外，例如：
+    对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但在**没有配置 initramfs**（这将在 BLFS 中涉及），有几种情况例外，例如：
     - 存储总线和控制器驱动，如 `CONFIG_BLK_DEV_NVME`；
     - RootFS 所需驱动，如 `CONFIG_EXT4_FS`，`CONFIG_BTRFS_FS`；
     - 如果全盘加密，输入密码（显然）需要键盘或其他输入设备的驱动；
@@ -279,12 +279,12 @@
 
     总之，在挂载 RootFS 之前需要的，以及挂载 RootFS 需要的驱动需要内置。
 
-    也有在**没有 initrd** 的情况下必须模块化的情况，例如：
-    - 需要外部固件支持的驱动程序（如 `i915`），除非使用 initrd 或通过 `CONFIG_EXTRA_FIRMWARE` 将固件也内置到内核中。
+    也有在**没有 initramfs** 的情况下必须模块化的情况，例如：
+    - 需要外部固件支持的驱动程序（如 `i915`），除非使用 initramfs 或通过 `CONFIG_EXTRA_FIRMWARE` 将固件也内置到内核中。
 
 - [10.4. Using GRUB to Set Up the Boot Process](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/grub.html)
 
-  强烈建议使用 PARTUUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区。如果已经配置 initrd，则也可以使用文件系统 UUID 来指定根分区。
+  强烈建议使用 PARTUUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区。如果已经配置 initramfs，则也可以使用文件系统 UUID 来指定根分区。
 
   另外，如果将外置存储设备（如 USB 硬盘）上的分区作为 RootFS ，建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 参数以防止启动时找不到 RootFS 。
 
