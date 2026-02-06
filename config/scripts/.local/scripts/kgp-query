@@ -19,18 +19,16 @@ FENCE_CODE=$(printf "\033[c")
 # Set terminal to raw mode with timeout as 0.5s
 stty_orig=$(stty -g)
 trap 'stty "$stty_orig"' EXIT
-stty -echo -icanon min 0 time 5
+stty -echo -icanon min 1 time 0
 
 printf "%s%s" "$QUERY_CODE" "$FENCE_CODE" > /dev/tty
 
 response=""
 ret=1
 while true; do
-    char=$(dd bs=1 count=1 2>/dev/null) || break
-
-    if [ -z "$char" ]; then
-        break
-    fi
+    IFS= read -r -N 1 -t 0.3 char || {
+        [ -z "$char" ] && break
+    }
 
     response+="$char"
 

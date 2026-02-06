@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Ensure in a interactive terminal
+[ ! -t 0 ] && exit 1
+
+# Construct query
+QUERY_CODE=$(printf "\033[c")
+
+# Set terminal to raw mode with timeout as 0.5s
+stty_orig=$(stty -g)
+trap 'stty "$stty_orig"' EXIT
+stty -echo -icanon min 1 time 0
+
+printf "%s" "$QUERY_CODE" >/dev/tty
+
+response=""
+while true; do
+	IFS= read -r -N 1 -t 0.3 char || {
+		[ -z "$char" ] && break
+	}
+
+	response+="$char"
+
+	if [[ "$char" = "c" ]]; then
+		break
+	fi
+
+	if [ ${#response} -gt 1024 ]; then
+		break
+	fi
+done
+
+if [[ "$response" =~ $'\x1b'\[\?([0-9;]*)c ]]; then
+    params="${BASH_REMATCH[1]}"
+    
+    IFS=';' read -ra codes <<< "$params"
+    
+    for code in "${codes[@]}"; do
+        if [[ "$code" == "4" ]]; then
+            exit 0
+        fi
+    done
+fi
+
+exit 1

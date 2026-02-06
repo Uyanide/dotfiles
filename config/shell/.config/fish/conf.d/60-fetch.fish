@@ -1,7 +1,9 @@
 if not set -q fetch_logo_type
     if type -q kgp-query; and kgp-query
         set -g fetch_logo_type kitty
-    else if type -q kgp-query
+    else if type -q sixel-query; and sixel-query
+        set -g fetch_logo_type sixel
+    else if type -q kgp-query; or type -q sixel-query
         set -g fetch_logo_type logo
     else
         set -g fetch_logo_type auto
