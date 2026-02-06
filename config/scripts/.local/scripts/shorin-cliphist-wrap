@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# Some wierd workaround
-pkill -f 'ghostty -e shorin-cliphist' || ghostty -e shorin-cliphist

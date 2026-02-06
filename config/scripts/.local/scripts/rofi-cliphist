@@ -2,8 +2,10 @@
 
 # Description:
 #   ~~Quick~~ snippet for cliphist + rofi + wl-copy
+#
+# Credit: https://github.com/sentriz/cliphist/blob/master/contrib/cliphist-rofi-img
 
-tmp_dir="/tmp/cliphist"
+tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' EXIT
 mkdir -p "$tmp_dir"
 
