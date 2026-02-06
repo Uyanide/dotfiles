@@ -1,7 +1,7 @@
 if not set -q fetch_logo_type
-    if type -q kitty-tgp-query; and kitty-tgp-query
+    if type -q kgp-query; and kgp-query
         set -g fetch_logo_type kitty
-    else if type -q kitty-tgp-query
+    else if type -q kgp-query
         set -g fetch_logo_type logo
     else
         set -g fetch_logo_type auto

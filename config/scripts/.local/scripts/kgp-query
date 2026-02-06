@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Ref: https://sw.kovidgoyal.net/kitty/graphics-protocol/#querying-support-and-available-transmission-mediums
+
+set -euo pipefail
+
+# Ensure in a interactive terminal
+[ ! -t 0 ] && exit 1
+
+# Construct query
+QUERY_ID=$RANDOM
+QUERY_CODE=$(printf "\033_Gi=%d,s=1,v=1,a=q,t=d,f=24;AAAA\033\\" "$QUERY_ID")
+EXPECTED_RESPONSE=$(printf "\033_Gi=%d;OK\033\\" "$QUERY_ID")
+# Construct fence code that most terminals will respond to
+# to ensure that at least something will be sent back and
+# to detect the end of the response
+FENCE_CODE=$(printf "\033[c")
+
+# Set terminal to raw mode with timeout as 0.5s
+stty_orig=$(stty -g)
+trap 'stty "$stty_orig"' EXIT
+stty -echo -icanon min 0 time 5
+
+printf "%s%s" "$QUERY_CODE" "$FENCE_CODE" > /dev/tty
+
+response=""
+ret=1
+while true; do
+    char=$(dd bs=1 count=1 2>/dev/null) || break
+
+    if [ -z "$char" ]; then
+        break
+    fi
+
+    response+="$char"
+
+    if [[ "$response" == *"$EXPECTED_RESPONSE"* ]]; then
+        ret=0
+        # Keep reading until response is complete to
+        # avoid leaving unread data in the terminal
+    fi
+
+    if [[ "$response" == *$'\033['*'c' ]]; then
+        break
+    fi
+
+    if [ ${#response} -gt 1024 ]; then
+        break
+    fi
+done
+
+exit $ret
