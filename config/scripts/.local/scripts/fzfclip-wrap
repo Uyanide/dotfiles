@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Description:
+#   Wrapper for fzfclip to ensure only one instance is
+#   running and to launch it in ghostty.
+
+set -euo pipefail
+
+exec {LOCK_FD}>/tmp/"$(basename "$0")".lock
+
+flock -n "$LOCK_FD" || {
+    echo "Another instance is running. Exiting." >&2
+    exit 1
+}
+
+ghostty -e fzfclip "$@"

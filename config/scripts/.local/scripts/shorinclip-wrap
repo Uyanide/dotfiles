@@ -1,3 +1,0 @@
-#!/bin/sh
-
-pkill -f "ghostty -e shorinclip" || ghostty -e shorinclip

@@ -13,8 +13,6 @@
 
 set -euo pipefail
 
-trap 'echo $LINENO: $BASH_COMMAND' ERR
-
 # Lock
 
 exec {LOCK_FD}>/tmp/"$(basename "$0")".lock
