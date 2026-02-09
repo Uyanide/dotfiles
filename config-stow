@@ -24,13 +24,14 @@ TUI_PKGS = [
 # for all WMs and DEs
 GUI_BASE_PKGS = [
     *TUI_PKGS,
+    "cava",
     "kitty",  # terminal emulator
     "ghostty",  # alternative terminal emulator
     "misc",  # miscellaneous GUI configs (e.g. *-flags)
     # "mpv",          # media player
     "wallpaper",  # wallpapers & manager
     "kvantum",  # qt theming
-    "nwg-look"  # gtk theming
+    "nwg-look",  # gtk theming
 ]
 
 # for Hyprland setup
