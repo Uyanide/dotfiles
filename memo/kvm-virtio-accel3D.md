@@ -1,3 +1,5 @@
+> 本篇内容**完全**由 Gemini 生成，虽未验证其准确性，但确实能工作，遂记录于此。
+
 这是一个关于 **Linux (Arch) 宿主机** + **Linux (Gentoo) 客户机** 在 KVM/QEMU 环境下启用 **Virtio-GPU 3D 加速** 遇到黑屏问题的**非完整**排查与解决记录。
 
 ## What
@@ -21,7 +23,6 @@
   ```
 
 - **现象**：
-
   - 虚拟机启动后黑屏，无法进入图形界面。
   - SSH 连接正常，系统内核正常运行。
   - SPICE 窗口内能看到鼠标光标（表示连接建立），但无画面。
@@ -92,7 +93,6 @@ sudo systemctl restart libvirtd
 在 Gentoo Guest 内部，确保驱动栈完整。
 
 1. **Portage 配置** ( 或其他位置)：
-
    - `/etc/portage/make.conf`
 
      ```conf

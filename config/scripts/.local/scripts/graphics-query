@@ -1,24 +1,20 @@
 #!/usr/bin/env bash
 
 # Description:
-#   Query terminal capabilities for graphics support, including:
-#     - Kitty Graphics Protocol (KGP)
-#     - iTerm2 inline images
-#     - Sixel graphics
-#   This script will print three lines of output:
-#     SUPPORT_KGP=1 or 0
-#     SUPPORT_ITERM2=1 or 0
-#     SUPPORT_SIXEL=1 or 0
+#   Query terminal capabilities for graphics support using escape sequences,
+#   without relying on environment variables or external tools.
 #
 # Usage:
+#   This script will print 1 or more of the following strings to stdout, depending
+#   on the detected capabilities:
+#     - "kitty" if Kitty's terminal Graphics Protocol is supported
+#     - "iterm" if iTerm2's inline image support is detected
+#     - "sixels" if Sixel graphics support is detected
 #   Do NOT source this script directly, as it will modify the terminal state
 #   and print its result directly to stdout.
-#   Instead, use command substitution to capture the output, for example:
-#     eval "$(graphics-query)"
-#   or parse the output manually.
 #
 # See also:
-#   - kgp-query: specifically checks for Kitty Graphics Protocol support
+#   - kgp-query: specifically checks for Kitty's terminal Graphics Protocol support
 #   - iterm2-query: specifically checks for iTerm2 inline image support
 #   - sixel-query: specifically checks for Sixel graphics support
 
@@ -43,9 +39,11 @@ stty -echo -icanon min 1 time 0
 
 printf "%s%s%s" "$ITERM2_QUERY_CODE" "$KGP_QUERY_CODE" "$FENCE_CODE" > /dev/tty
 
-response=""
 support_kgp=0
 support_iterm2=0
+support_sixel=0
+
+response=""
 while true; do
     IFS= read -r -N 1 -t 0.3 char || {
         [ -z "$char" ] && break
@@ -70,7 +68,6 @@ while true; do
     fi
 done
 
-support_sixel=0
 if [[ "$response" =~ $'\x1b'\[\?([0-9;]*)c ]]; then
     params="${BASH_REMATCH[1]}"
 
@@ -85,19 +82,13 @@ if [[ "$response" =~ $'\x1b'\[\?([0-9;]*)c ]]; then
 fi
 
 if [ "$support_kgp" -eq 1 ]; then
-    echo "SUPPORT_KGP=1"
-else
-    echo "SUPPORT_KGP=0"
+    echo "kitty"
 fi
 
 if [ "$support_iterm2" -eq 1 ]; then
-    echo "SUPPORT_ITERM2=1"
-else
-    echo "SUPPORT_ITERM2=0"
+    echo "iterm"
 fi
 
 if [ "$support_sixel" -eq 1 ]; then
-    echo "SUPPORT_SIXEL=1"
-else
-    echo "SUPPORT_SIXEL=0"
+    echo "sixels"
 fi
