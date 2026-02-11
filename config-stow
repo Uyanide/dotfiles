@@ -32,6 +32,7 @@ GUI_BASE_PKGS = [
     "wallpaper",  # wallpapers & manager
     "kvantum",  # qt theming
     "nwg-look",  # gtk theming
+    "wezterm",  # alternative terminal emulator
 ]
 
 # for Hyprland setup

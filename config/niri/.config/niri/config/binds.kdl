@@ -14,9 +14,9 @@ binds {
     Mod+E { spawn "dolphin" "--new-window"; }
     Mod+W { spawn-sh "zen || zen-browser"; }
     Mod+X { spawn "gnome-text-editor" "--new-window"; }
-    Mod+B { spawn-sh "pkill -x -n btop || ghostty -e btop"; }
-    Mod+Shift+T { spawn "ghostty" "+new-window"; }
-    Mod+Shift+Return { spawn "ghostty" "+new-window"; }
+    Mod+B { spawn-sh "pkill -x -n btop || wezterm -e btop"; }
+    Mod+Shift+T { spawn "wezterm"; }
+    Mod+Shift+Return { spawn "wezterm"; }
     Mod+T { spawn "kitty"; }
     Mod+Return { spawn "kitty"; }
     Mod+Shift+W { spawn "wallpaper-carousel"; }

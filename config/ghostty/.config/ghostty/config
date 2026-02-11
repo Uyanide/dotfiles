@@ -1,6 +1,6 @@
 theme = Catppuccin Mocha
 
-background-opacity = 0.95
+background-opacity = 0.75
 background-blur = true
 
 window-padding-x = 10
@@ -17,7 +17,7 @@ command = exec fish
 confirm-close-surface = false
 
 font-family = monospace
-font-size = 10
+font-size = 12
 
 cursor-style = bar
 adjust-cursor-thickness = 3

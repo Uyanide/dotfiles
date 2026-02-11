@@ -2,7 +2,7 @@
 
 # Description:
 #   Wrapper for fzfclip to ensure only one instance is
-#   running and to launch it in ghostty.
+#   running and to launch it in terminal.
 
 exec {LOCK_FD}>/tmp/"$(basename "$0")".lock
 
@@ -11,4 +11,4 @@ flock -n "$LOCK_FD" || {
     exit 1
 }
 
-ghostty -e fzfclip "$@" {LOCK_FD}>&-
+wezterm start -- fzfclip "$@" {LOCK_FD}>&-

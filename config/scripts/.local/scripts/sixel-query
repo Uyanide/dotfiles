@@ -34,9 +34,9 @@ done
 
 if [[ "$response" =~ $'\x1b'\[\?([0-9;]*)c ]]; then
     params="${BASH_REMATCH[1]}"
-    
+
     IFS=';' read -ra codes <<< "$params"
-    
+
     for code in "${codes[@]}"; do
         if [[ "$code" == "4" ]]; then
             exit 0

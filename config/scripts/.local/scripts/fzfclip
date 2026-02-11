@@ -37,6 +37,9 @@
 
 set -euo pipefail
 
+SHELL=$(command -v bash)
+export SHELL
+
 _cleanup() {
 	if [ -n "${CACHE_DIR:-}" ] && [ -d "$CACHE_DIR" ]; then
 		rm -rf "$CACHE_DIR"
@@ -407,6 +410,8 @@ copy_selection() {
     else
 		echo -n "$input" | cliphist decode | wl-copy
     fi
+
+	echo -n "$input" | cliphist delete || true
 }
 export -f copy_selection
 
@@ -444,4 +449,4 @@ $RELOAD_CMD | fzf \
 	--preview-window=down:60%,wrap \
 	--preview "preview {}" \
 	--bind "enter:execute-silent(bash -c 'copy_selection \"\$1\"' -- {})+accept" \
-|| [ $? -eq 141 ]
+>/dev/null || [ $? -eq 141 ]
