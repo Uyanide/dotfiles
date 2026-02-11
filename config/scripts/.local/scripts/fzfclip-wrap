@@ -4,8 +4,6 @@
 #   Wrapper for fzfclip to ensure only one instance is
 #   running and to launch it in ghostty.
 
-set -euo pipefail
-
 exec {LOCK_FD}>/tmp/"$(basename "$0")".lock
 
 flock -n "$LOCK_FD" || {
@@ -13,4 +11,4 @@ flock -n "$LOCK_FD" || {
     exit 1
 }
 
-ghostty -e fzfclip "$@"
+ghostty -e fzfclip "$@" {LOCK_FD}>&-

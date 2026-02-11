@@ -45,9 +45,9 @@ mp4_offset=$((offset - 3))
 tail -c "+$mp4_offset" "$file" > "$tmp_video"
 
 play_cmd=()
-if command -v mpv >/dev/null 2>&1; then
+if type mpv >/dev/null 2>&1; then
     play_cmd=(mpv --title="Live Photo View: $file" --keep-open=yes --loop-file=yes --loop-playlist=no --idle=yes)
-elif command -v vlc >/dev/null 2>&1; then
+elif type vlc >/dev/null 2>&1; then
     play_cmd=(vlc --meta-title="Live Photo View: $file")
 else
     echo "Error: No suitable media player found." >&2
