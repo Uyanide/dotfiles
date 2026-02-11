@@ -1,4 +1,6 @@
-de 布局太全能了:
+de 布局太全能了
+
+## Shift & Altgr
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/KB_Germany_Linux.svg" alt="Deutsche Tastaturbelegung unter Linux"/>
 
@@ -24,4 +26,10 @@ altgr | » « ¢ „ “ ” µ · … –
 sh+al ˍ › ‹ © ‚ ‘ ’ º × ÷ —
 ```
 
-btw, `^` 死键对数字键(上方一排和小键盘均可)也有效, 作用为打出n次幂, 例如 `^` + `9` -> `⁹`.
+## Dead keys
+
+- `^`
+  - `^` + `+`: `⁺`
+  - `^` + `-`: `⁻`
+  - `^` + `.`: `·`
+  - `^` + number: `⁹`

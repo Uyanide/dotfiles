@@ -6,8 +6,8 @@
 # Requirements:
 #   - fzf
 #   - cliphist
-#   - wl-clipboard
-#   - python with urllib (for URL quoting/unquoting)
+#   - wl-clipboard (including wl-copy and wl-paste)
+#   - python3 with urllib (for URL quoting/unquoting)
 #   - chafa (optional, for image preview)
 #   - ffmpegthumbnailer (optional, for video thumbnails)
 # Credits:
@@ -50,6 +50,26 @@ _cleanup() {
 }
 trap _cleanup EXIT
 
+_check_dependencies() {
+	local missing=()
+	for cmd in fzf cliphist wl-copy wl-paste python3; do
+		if ! type "$cmd" &>/dev/null; then
+			missing+=("$cmd")
+		fi
+	done
+	if [ ${#missing[@]} -ne 0 ]; then
+		echo "Error: Missing dependencies: ${missing[*]}" >&2
+		exit 1
+	fi
+
+	for cmd in chafa ffmpegthumbnailer; do
+		if ! type "$cmd" &>/dev/null; then
+			echo "Warning: Optional dependency '$cmd' not found. Some features may be unavailable." >&2
+		fi
+	done
+}
+_check_dependencies
+
 CACHE_DIR=$(mktemp -d)
 export CACHE_DIR
 
@@ -58,9 +78,11 @@ export C_PRIMARY='\x1b[1;34m'
 export C_CYAN='\x1b[1;36m'
 export C_RESET='\x1b[0m'
 
+export C_PATTERN='\x1b\[[0-9];?([0-9]+)?m'
+
 # Check for terminal graphics support and set environment variables accordingly
 
-graphics-query() {
+_graphics_query() {
 	# Port of [graphics-query](https://github.com/Uyanide/dotfiles/blob/main/config/scripts/.local/scripts/graphics-query)
 
 	# Ensure in a interactive terminal
@@ -147,9 +169,8 @@ ENABLE_SIXEL=0
 ENABLE_ITERM2=0
 
 _check_graphics_support() {
-	# type graphics-query &>/dev/null || return
 	local result
-	result=$(graphics-query)
+	result=$(_graphics_query)
 	if [[ "$result" == *"kitty"* ]]; then
 		SUPPORT_ICAT=1
 	elif [[ "$result" == *"sixels"* ]]; then
@@ -259,7 +280,7 @@ export -f _preview_text
 _preview_video() {
 	local video_hash thumb_file path
 	path="$1"
-	video_hash=$(echo "$path" | md5sum | cut -d" " -f1)
+	video_hash=$(echo -n "$path" | md5sum | cut -d" " -f1)
 	thumb_file="$CACHE_DIR/$video_hash.png"
 	if [ ! -f "$thumb_file" ]; then
 		if type ffmpegthumbnailer &>/dev/null; then
@@ -309,28 +330,27 @@ preview() {
 
 	entry="$1"
 
-	content=$(echo "$entry" | cut -f2-)
-	mimeType=$(echo "$entry" | cliphist decode | file -b --mime-type -)
-	ext=$(echo "$mimeType" | awk -F"/" "{print \$2}")
+	mimeType=$(echo -n "$entry" | cliphist decode | file -b --mime-type -)
+	ext=$(echo -n "$mimeType" | awk -F"/" "{print \$2}")
 
 	if [[ $mimeType =~ image ]]; then
-		img_hash=$(echo "$entry" | cliphist decode | md5sum | cut -d" " -f1)
+		img_hash=$(echo -n "$entry" | cliphist decode | md5sum | cut -d" " -f1)
 		cache_file="$CACHE_DIR/$img_hash.$ext"
-		[ -f "$cache_file" ] || echo "$entry" | cliphist decode >"$cache_file"
+		[ -f "$cache_file" ] || echo -n "$entry" | cliphist decode >"$cache_file"
 		_preview_image "$cache_file"
 
-	elif path=$(echo "$entry" | cliphist decode) && [[ "$path" == /* ]]; then
+	elif path=$(echo -n "$entry" | cliphist decode) && [[ "$path" == /* ]]; then
 		if [ -e "$path" ]; then
 			_preview_file "$path"
 		else
 			_preview_text "$path does not exist."
 		fi
 
-	elif decoded=$(echo "$entry" | cliphist decode) && [[ "$decoded" == file://* ]]; then
+	elif decoded=$(echo -n "$entry" | cliphist decode) && [[ "$decoded" == file://* ]]; then
 		paths=()
 		for path in $decoded; do
 			raw_path="${path#file://}"
-			raw_path=$(echo "$raw_path" | url_unquote)
+			raw_path=$(echo -n "$raw_path" | url_unquote)
 			paths+=("$raw_path")
 		done
 
@@ -348,7 +368,7 @@ preview() {
 		if [ "$ENABLE_ICAT" = 1 ]; then
 			printf "\x1b_Ga=d\x1b\\"
 		fi
-		_preview_text "$(echo "$entry" | cliphist decode)"
+		_preview_text "$(echo -n "$entry" | cliphist decode)"
 	fi
 }
 export -f preview
@@ -358,12 +378,12 @@ export -f preview
 format_clip_list() {
 	sed -E \
 		-e "s/(\t).*\.(mp4|mkv|webm|avi|mov|flv|wmv)$/\1${C_TERTIARY}[VIDEO]File.\2${C_RESET}/" \
-		-e "s/(\t)file:\/\/.*\.(mp4|mkv|webm|avi|mov|flv|wmv)$/\1${C_TERTIARY}[VIDEO]Url.\2${C_RESET}/" \
-		-e "s/(\t)file:\/\/.*\.gif$/\1${C_PRIMARY}[IMG]Url.gif${C_RESET}/" \
-		-e "s/(\t)file:\/\/.*\.(png|jpg|jpeg|webp|bmp)$/\1${C_TERTIARY}[IMG]Url.\2${C_RESET}/" \
+		-e "s/(\t)file:\/\/.*\.(mp4|mkv|webm|avi|mov|flv|wmv)$/\1${C_TERTIARY}[URL]Video.\2${C_RESET}/" \
+		-e "s/(\t)file:\/\/.*\.gif$/\1${C_PRIMARY}[URL]Image.gif${C_RESET}/" \
+		-e "s/(\t)file:\/\/.*\.(png|jpg|jpeg|webp|bmp)$/\1${C_TERTIARY}[URL]Image.\2${C_RESET}/" \
 		-e "s/(\t)file:\/\/.*/\1${C_CYAN}[URL]File${C_RESET}/" \
-		-e "s/(\t)\/.*\.gif$/\1${C_PRIMARY}[IMG]Path.gif${C_RESET}/" \
-		-e "s/(\t)\/.*\.(png|jpg|jpeg|webp|bmp)$/\1${C_TERTIARY}[IMG]Path.\2${C_RESET}/" \
+		-e "s/(\t)\/.*\.gif$/\1${C_PRIMARY}[PATH]Image.gif${C_RESET}/" \
+		-e "s/(\t)\/.*\.(png|jpg|jpeg|webp|bmp)$/\1${C_TERTIARY}[PATH]Image.\2${C_RESET}/" \
 		-e "s/\[\[ binary data .* (png|jpg|jpeg|gif|webp) .*\]\]/${C_TERTIARY}[IMG]Bin.\1${C_RESET}/" \
 		-e "s/\[\[ binary data .* \]\]/${C_CYAN}[BINARY]${C_RESET}/"
 }
@@ -377,30 +397,16 @@ export -f add_num
 # Action when confirmed
 
 copy_selection() {
-	local input="$1"
-	local decoded
-	decoded=$(echo "$input" | cliphist decode)
-	local mime
-	mime=$(echo "$decoded" | file -b --mime-type -)
+    local input="$1"
+	local content
+	content=$(echo -n "$input" | awk "{print \$3}")
 
-	# Image
-	if [[ "$mime" =~ image ]]; then
-		printf "%s" "$decoded" | wl-copy
+    if [[ "$content" == "[URL]"* ]]; then
+		echo -n "$input" | cliphist decode | wl-copy --type text/uri-list
 
-	# URL starting with file://
-	elif [[ "$decoded" == file://* ]]; then
-		printf "%s" "$decoded" | wl-copy --type text/uri-list
-
-	# file path
-	elif [[ "$decoded" == /* ]] && [ -e "$decoded" ]; then
-		local encoded_path
-		encoded_path=$(echo "$decoded" | url_quote)
-		printf "%s" "file://$encoded_path" | wl-copy --type text/uri-list
-
-	# Other data, just copy
-	else
-		printf "%s" "$decoded" | wl-copy
-	fi
+    else
+		echo -n "$input" | cliphist decode | wl-copy
+    fi
 }
 export -f copy_selection
 

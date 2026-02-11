@@ -5,18 +5,17 @@
 #   without relying on environment variables or external tools.
 #
 # Usage:
-#   This script will print 1 or more of the following strings to stdout, depending
-#   on the detected capabilities:
+#   This script will print one or more of the following strings to stdout, each on a new line,
+#   depending on the detected capabilities:
 #     - "kitty" if Kitty's terminal Graphics Protocol is supported
 #     - "iterm" if iTerm2's inline image support is detected
 #     - "sixels" if Sixel graphics support is detected
-#   Do NOT source this script directly, as it will modify the terminal state
-#   and print its result directly to stdout.
 #
 # See also:
-#   - kgp-query: specifically checks for Kitty's terminal Graphics Protocol support
-#   - iterm2-query: specifically checks for iTerm2 inline image support
-#   - sixel-query: specifically checks for Sixel graphics support
+#   For separate queries for specific protocols, see the related scripts in the same directory:
+#     - kgp-query: specifically checks for Kitty's terminal Graphics Protocol support
+#     - iterm2-query: specifically checks for iTerm2 inline image support
+#     - sixel-query: specifically checks for Sixel graphics support
 
 
 set -euo pipefail
