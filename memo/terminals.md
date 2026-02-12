@@ -5,6 +5,7 @@
 ## Index
 
 - [Index](#index)
+- [前言](#前言)
 - [基本原理](#基本原理)
   - [TTY / PTY](#tty--pty)
   - [Shell](#shell)
@@ -26,10 +27,34 @@
   - [一些概念](#一些概念)
   - [最佳实践](#最佳实践)
 - [GPU 加速](#gpu-加速)
-- [一些特殊者](#一些特殊者)
+- [单独聊聊](#单独聊聊)
   - [Ghostty](#ghostty)
   - [Kmscon](#kmscon)
+  - [Terminal Multiplexer](#terminal-multiplexer)
 - [References](#references)
+
+## 前言
+
+本文会涉及很多经验结论与少数测试, 因此在这里给出我所使用的平台的部分信息与后文所涉及的终端模拟器列表, 以供参考.
+
+- **平台**: Arch Linux (kernel 6.18.9-3-cachyos, glibc 2.43+r5+g856c426a7534-2)
+- **桌面环境**: Niri (Wayland) 25.11
+- **CPU**: 13th Gen Intel(R) Core(TM) i5-13500HX (20) @ 4.70 GHz
+- **GPU**: NVIDIA GeForce RTX 4050 Max-Q / Mobile (with PRIME Render Offload)
+- **终端模拟器**:
+
+  | Terminal      | Version                       | Installed From   |
+  | ------------- | ----------------------------- | ---------------- |
+  | alacritty     | 0.16.1-1.1                    | cachyos-extra-v3 |
+  | foot          | 1.25.0-1                      | extra            |
+  | ghostty       | 1.2.3-2.1                     | cachyos-extra-v3 |
+  | gnome-console | 49.2-1.1                      | cachyos-extra-v3 |
+  | kitty         | 0.45.0-4.1                    | cachyos-extra-v3 |
+  | konsole       | 25.12.2-1.1                   | cachyos-extra-v3 |
+  | rio           | 0.2.37-1.1                    | cachyos-extra-v3 |
+  | tabby-bin     | 1.0.230-1                     | aur              |
+  | warp          | v0.2026.02.10.11.37.stable_01 | AppImage         |
+  | wezterm       | 20240203.110809.5046fc22-2.1  | cachyos-extra-v3 |
 
 ## 基本原理
 
@@ -62,7 +87,7 @@ Shell 是运行在 TTY Slave 端的命令行解释器, 负责:
 
 - 管理前台和后台进程组, 处理信号传递等.
 
-值得注意的是, Shell 中输入命令后的"回显"并不是 Shell 自己完成的, 而必须通过 TTY 的 Line Discipline. 当用户输入字符时, Line Discipline 会将其显示在屏幕上, 从未完成"回显".
+值得注意的是, Shell 中输入命令后的"回显"并不是 Shell 自己完成的, 而必须通过 TTY 的 Line Discipline. 当用户输入字符时, Line Discipline 会将其显示在屏幕上, 从而完成"回显".
 
 ### 终端模拟器
 
@@ -97,7 +122,7 @@ Shell 是运行在 TTY Slave 端的命令行解释器, 负责:
 - **Sixel**: [Sixel](https://en.wikipedia.org/wiki/Sixel)
 - **ITerm**: [ITerm2 Inline Images Protocol](https://iterm2.com/documentation-images.html)
 
-值得一提的是其中 KGP 甚至能被用来在终端模拟器里播放视频, 只需要给 mpv 加上 `--vo=kitty` 参数即可.
+> 值得一提的是其中 KGP 甚至能被用来在终端模拟器里播放视频, 只需要给 mpv 加上 `--vo=kitty` 参数即可.
 
 ### 各终端支持情况
 
@@ -203,7 +228,7 @@ FENCE_CODE=$(printf "\033[c")
 
 # Set terminal to raw mode with timeout
 stty_orig=$(stty -g)
-trap 'stty "$stty_orig"' EXIT
+trap 'stty "$stty_orig"' EXIT INT TERM HUP
 stty -echo -icanon min 1 time 0
 
 printf "%s%s%s" "$ITERM2_QUERY_CODE" "$KGP_QUERY_CODE" "$FENCE_CODE" > /dev/tty
@@ -349,18 +374,6 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
   这再次证明 GPU 加速并非终端模拟器性能的决定性因素.
 
-如果从吞吐与延迟的角度分析:
-
-- KGP 与 ITerm
-  - Kitty 与 WezTerm 的吞吐量较高, 延迟同样较高.
-
-  - Ghostty 与 Konsole 的吞吐量较低, 延迟同样较低.
-
-- Sixel
-  - Konsole 与 Foot 的吞吐量较高, 延迟却较低.
-
-  - WezTerm 的吞吐量中等, 延迟较高.
-
 ## 默认 Shell
 
 > 虽然这和终端模拟器关系不大, 但姑且放这里一起说说.
@@ -415,7 +428,7 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
   fi
   ```
 
-  但值得注意的是, 此方法不保证完全不会出问题, 例如我曾经遇到过在服务器如此配置后 vscode 远程连接无法正常建立的情况.
+  但值得注意的是, 此方法不保证完全不会出问题, 例如我曾经遇到过在服务器如此配置后 vscode 远程连接时 Remote-SSH 插件卡在 "Setting up SSH Host" 无法正常建立连接的情况.
 
   一种更为妥协的办法是通过
 
@@ -429,7 +442,7 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
 虽然听起来高大上, 也是很多终端模拟器写在 Description 里的核心特性之一, 但是在实际使用场景中就我个人经验而言影响并没有想象中那么巨大. 终端模拟器所主要面对的仍然是纯文本场景, 最多换一换颜色, 滚一滚屏幕, 这对于现代 CPU 来说并没有很吃力.
 
-## 一些特殊者
+## 单独聊聊
 
 ### Ghostty
 
@@ -456,6 +469,10 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 ### Kmscon
 
 这是运行在 Linux TTY 上的终端模拟器, 可以在一定程度上作为传统 TTY 的替代品使用, 提供了诸如复杂字体渲染 / CJK 文字 / 多显示器支持等高级功能. 关于此的话题可以在 [kmscon.md](kmscon.md) 中找到.
+
+### Terminal Multiplexer
+
+不知道, 没用过, 不感兴趣. 偶尔有需求时会用 Zellij 玩一玩, 但没什么重度使用经验, 因此不展开说了.
 
 ## References
 

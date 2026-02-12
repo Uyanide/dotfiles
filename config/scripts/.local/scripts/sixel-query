@@ -10,7 +10,7 @@ QUERY_CODE=$(printf "\033[c")
 
 # Set terminal to raw mode with timeout as 0.5s
 stty_orig=$(stty -g)
-trap 'stty "$stty_orig"' EXIT
+trap 'stty "$stty_orig"' EXIT INT TERM HUP
 stty -echo -icanon min 1 time 0
 
 printf "%s" "$QUERY_CODE" >/dev/tty
