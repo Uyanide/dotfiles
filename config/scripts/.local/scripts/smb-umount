@@ -23,6 +23,5 @@ for mp in $mount_points; do
     echo "Unmounting $mp"
     sudo umount "$mp" || {
         echo "Failed to unmount $mp"
-        exit 1
     }
 done

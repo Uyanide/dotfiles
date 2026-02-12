@@ -47,7 +47,7 @@ https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
 - Bar: Waybar | **Quickshell**
 - Shell: **Fish**
 - Prompt: **Oh My Posh**
-- Terminal: **Kitty** & Ghostty
+- Terminal: **Kitty** & (**WezTerm** | Ghostty)
 - Power Menu: **Wlogout**
 - Colorscheme: **Catppuccin Mocha**
 - App Launcher: **Rofi** | Fuzzel
