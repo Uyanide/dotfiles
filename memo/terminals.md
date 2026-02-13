@@ -2,14 +2,15 @@
 
 > 我日常 99% 的时间都在 Wayland (剩下 0.9% 在 Windows, 0.1% 对着 TTY 发呆), 所以本篇内容**完全不会**考虑 X11 环境.
 
-## Index
+## 目录
 
-- [Index](#index)
+- [目录](#目录)
 - [前言](#前言)
 - [基本原理](#基本原理)
   - [TTY / PTY](#tty--pty)
   - [Shell](#shell)
   - [终端模拟器](#终端模拟器)
+  - [PTY 创建流程](#pty-创建流程)
   - [控制序列](#控制序列)
 - [图像协议](#图像协议)
   - [各终端支持情况](#各终端支持情况)
@@ -27,6 +28,8 @@
   - [一些概念](#一些概念)
   - [最佳实践](#最佳实践)
 - [GPU 加速](#gpu-加速)
+  - [测试](#测试)
+  - [结论](#结论)
 - [单独聊聊](#单独聊聊)
   - [Ghostty](#ghostty)
   - [Kmscon](#kmscon)
@@ -56,6 +59,15 @@
   | warp          | v0.2026.02.10.11.37.stable_01 | AppImage         |
   | wezterm       | 20240203.110809.5046fc22-2.1  | cachyos-extra-v3 |
 
+- **其他部分相关软件**:
+
+  | Name      | Version    | Installed From   |
+  | --------- | ---------- | ---------------- |
+  | chafa     | 1.18.0-1.1 | cachyos-extra-v3 |
+  | fish      | 4.4.0-1.1  | cachyos-extra-v3 |
+  | bash      | 5.3.9-2    | cachyos-v3       |
+  | hyperfine | 1.20.0-1.1 | cachyos-extra-v3 |
+
 ## 基本原理
 
 ### TTY / PTY
@@ -74,6 +86,8 @@ TTY 本质为内核中的双向通信管道与数据处理层. 现代 Linux 系�
   - **Raw Mode**: 在此模式下, Line Discipline 不会对输入进行任何处理, 用户输入的每个字符都会立即传递给 Slave 端. 这对于需要实时响应用户输入的应用程序(如文本编辑器和终端复用器)非常重要.
 
   - **Signal Handling**: Line Discipline 还负责处理一些控制字符, 如 Ctrl+C 用于发送中断信号(SIGINT)给前台进程, Ctrl+Z 用于发送挂起信号(SIGTSTP)等.
+
+    Line Discipline 通过 termios 结构体维护控制字符映射表, 详细的 termios 配置可参考 [Linux man-pages: termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html).
 
 ### Shell
 
@@ -98,6 +112,28 @@ Shell 是运行在 TTY Slave 端的命令行解释器, 负责:
 - **输出**: 从 PTY Master 读取字节流, 解析控制序列;
 
 - **渲染**: 根据解析结果更新屏幕显示, 包括文本内容, 光标位置, 颜色等.
+
+### PTY 创建流程
+
+1. 终端模拟器调用 `posix_openpt` 获取 Master 端 FD.
+
+2. 内核 devpts 文件系统在 `/dev/pts` 下创建对应的 Slave 端设备节点.
+
+3. 终端模拟器调用 `grantpt()` 设置 Slave 端权限, `unlockpt()` 解锁.
+
+4. 终端模拟器 `fork()` 出子进程调用 `setsid()` 创建新会话并成为会话首进程.
+
+5. 子进程打开 Slave 端并通过 `dup2()` 重定向 stdin/stdout/stderr 到 Slave 端 FD.
+
+6. 子进程执行 Shell, Master 端由终端模拟器持有.
+
+可通过 `ls -l /proc/$$/fd/` 查看当前 Shell 的 PTY Slave 端:
+
+```bash
+lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 0 -> /dev/pts/2
+lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 1 -> /dev/pts/2
+lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
+```
 
 ### 控制序列
 
@@ -218,6 +254,10 @@ set -euo pipefail
 # Ensure in a interactive terminal
 [ ! -t 0 ] && exit 0
 
+# Increase timeout for SSH sessions
+TIMEOUT=0.3
+[[ -n "${SSH_CONNECTION:-}" ]] && TIMEOUT=1.0
+
 # Construct query
 KGP_QUERY_ID=$RANDOM
 KGP_QUERY_CODE=$(printf "\033_Gi=%d,s=1,v=1,a=q,t=d,f=24;AAAA\033\\" "$KGP_QUERY_ID")
@@ -239,7 +279,7 @@ support_sixel=0
 
 response=""
 while true; do
-    IFS= read -r -N 1 -t 0.3 char || {
+    IFS= read -r -N 1 -t "$TIMEOUT" char || {
         [ -z "$char" ] && break
     }
 
@@ -328,7 +368,7 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
 ### 性能测试
 
-简单的速度测试.
+一些简单的测试.
 
 - 固定宽度连续输出53张中到大尺寸(1920x1080到9457x5324不等)JPEG和PNG图片, 取5次耗时平均, 单位为秒.
 
@@ -340,6 +380,13 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
   | WezTerm  | 4.820 | 6.218  | 5.042 |
   | Foot     | -     | 4.124  | -     |
 
+  说明:
+  - 使用 chafa 转换图片为控制序列. 所有耗时包含 chafa 预处理耗时.
+
+  - KGP 使用 32bit RGBA 格式传输.
+
+  - ITerm 使用 32bit RGBA 以 TIFF 格式传输.
+
 - 连续输出64张小尺寸(50x50以内)PNG图片, 取5次耗时平均, 单位为毫秒.
 
   | Terminal | KGP   | Sixels | ITerm |
@@ -350,29 +397,67 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
   | WezTerm  | 970.4 | 980.2  | 962.0 |
   | Foot     | -     | 719.6  | -     |
 
-可以大致得出以下结论:
+  说明:
+  - 使用 chafa 转换图片为控制序列. 所有耗时包含 chafa 预处理耗时.
 
-- Sixel 确实存在性能优势, 但上下限差距明显.
+  - KGP 使用 32bit RGBA 格式传输.
 
-  因为统一预处理流程, 此处可以排除因量化/抖动等步骤导致的性能差异. 且 Sixel 为 7bit 传输, 省去了 Base64 编解码的开销. 但解析器编写难度大, 流程较为复杂, 因此不同终端模拟器的实现差异较大, 且在大图场景下性能优势并不明显.
+  - ITerm 使用 32bit RGBA 以 TIFF 格式传输.
 
-- KGP 和 ITerm 的性能表现则更受终端模拟器具体实现的影响. 不同终端在面对两种场景时可能有相反的性能表现.
-  - 对于 KGP, 测试中统一转换为 32bit 像素数据传输.
-  - 对于 ITerm, 测试中统一转换为 32bit 像素数据后加上 TIFF 头部传输.
+- 转换 PNG 图片为对应协议数据传输的大小比较.
+  - chafa:
 
-    这能够解释为什么 KGP 和 ITerm 的性能差异在测试中不明显, 因为二者对于同一个终端模拟器来说有相似的解码与渲染开销.
+    ```bash
+    chafa -f <FORMAT> -s 100x <IMAGE>
+    ```
 
-- 小图连续输出场景, Ghostty 和 Foot 的表现优于其他终端模拟器.
+    | Protocol | 原始大小(B) | 控制序列大小(B) | 格式            | 编码   |
+    | -------- | ----------- | --------------- | --------------- | ------ |
+    | KGP      | 8,400,484   | 3,335,131       | 32bit RGBA      | Base64 |
+    | Sixel    | 8,400,484   | 1,227,194       | 256 color       | 7bit   |
+    | ITerm    | 8,400,484   | 3,285,617       | 32bit RGBA TIFF | Base64 |
 
-  主要考察协议握手开销与 IPC 效率.
+  - kitty +kitten icat:
 
-- 大图连续输出场景, Kitty 和 WezTerm 的表现优于其他终端模拟器.
+    ```bash
+    kitty +kitten icat --place "100x32768@0x0" <IMAGE>
+    ```
 
-  主要考察数据传输, 解码与渲染效率.
+    | Protocol | 原始大小(B) | 控制序列大小(B) | 格式      | 编码         |
+    | -------- | ----------- | --------------- | --------- | ------------ |
+    | KGP      | 8,400,484   | 1,182,033       | 24bit RGB | zstd, Base64 |
 
-- Foot 无 GPU 加速, 但在 Sixel 协议下性能表现优于其他终端模拟器.
+  - idog (自己写的)
 
-  这再次证明 GPU 加速并非终端模拟器性能的决定性因素.
+    ```bash
+    idog <IMAGE>
+    ```
+
+    | Protocol | 原始大小(B) | 控制序列大小(B) | 格式 | 编码         |
+    | -------- | ----------- | --------------- | ---- | ------------ |
+    | KGP      | 8,400,484   | 11,152,402      | PNG  | zstd, Base64 |
+
+    该程序基本原理为将 PNG 原始数据通过 zstd 压缩后以 4096 字节为单位分块后分为多个控制序列传输.
+
+  - wezterm imgcat:
+
+    ```bash
+    wezterm imgcat <IMAGE>
+    ```
+
+    | Protocol | 原始大小(B) | 控制序列大小(B) | 格式 | 编码   |
+    | -------- | ----------- | --------------- | ---- | ------ |
+    | ITerm    | 8,400,484   | 11,200,685      | PNG  | Base64 |
+
+    ```bash
+    wezterm imgcat --width 100 <IMAGE>
+    ```
+
+    | Protocol | 原始大小(B) | 控制序列大小(B) | 格式 | 编码   |
+    | -------- | ----------- | --------------- | ---- | ------ |
+    | ITerm    | 8,400,484   | 11,200,695      | PNG  | Base64 |
+
+    是的, 限制宽度并不会减少控制序列的大小, 反而会因为 `,width=100` 元数据增加 10 字节.
 
 ## 默认 Shell
 
@@ -442,6 +527,82 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
 虽然听起来高大上, 也是很多终端模拟器写在 Description 里的核心特性之一, 但是在实际使用场景中就我个人经验而言影响并没有想象中那么巨大. 终端模拟器所主要面对的仍然是纯文本场景, 最多换一换颜色, 滚一滚屏幕, 这对于现代 CPU 来说并没有很吃力.
 
+### 测试
+
+一种流行的测试为输出大量彩色字符并统计耗时. 这里通过输出大量真彩色(24bit RGB)字符来测试渲染性能.
+
+1. 预处理
+
+   ```python
+   #!/usr/bin/env python3
+   import random
+   import sys
+
+
+   def random_rgb() -> str:
+       r = random.randint(0, 255)
+       g = random.randint(0, 255)
+       b = random.randint(0, 255)
+       return f"{r};{g};{b}"
+
+
+   def foreground_rgb(color: str) -> str: return f"\033[38;2;{color}m"
+
+
+   def background_rgb(color: str) -> str: return f"\033[48;2;{color}m"
+
+
+   def reset() -> str: return "\033[0m"
+
+
+   if __name__ == "__main__":
+       if len(sys.argv) != 2:
+           print(f"Usage: {sys.argv[0]} <file_path>")
+           sys.exit(1)
+       path = sys.argv[1]
+       with open(path, "r") as f:
+           for line in f:
+               line = line.rstrip("\n")
+               colored_line = ""
+               for char in line:
+                   colored_line += (
+                       f"{foreground_rgb(random_rgb())}"
+                       f"{background_rgb(random_rgb())}"
+                       f"{char}"
+                       f"{reset()}"
+                   )
+               print(colored_line)
+   ```
+
+   运行后将输出重定向至文件保存.
+
+   > 我选择的测试文本共计 99,595 行, 4,336,577 个字符.
+
+2. cat 得到的文件, 统计耗时, 取10次平均.
+
+   | Terminal      | GPU 加速 | 耗时 (s) |
+   | ------------- | -------- | -------- |
+   | Foot          | ❌       | 0.751    |
+   | Alacritty     | ✅       | 0.920    |
+   | Kitty         | ✅       | 1.388    |
+   | Konsole       | ❌       | 2.247    |
+   | GNOME Console | ❌       | 2.319    |
+   | WezTerm       | ✅       | 3.772    |
+   | Ghostty       | ✅       | 4.002    |
+
+   说明:
+   - 统一字体为 monospace (Maple Mono NF CN), 字体大小为 12pt.
+
+   - 统一窗口大小为 1278 x 1390.
+
+   - 除此之外均为默认配置.
+
+   可见是否支持 GPU 加速并不是决定渲染性能的唯一因素. 这在前文[测试图像协议性能](#性能测试)的结果中也有体现.
+
+### 结论
+
+GPU 加速的实现方式和质量在不同终端模拟器之间差异较大, 因此是否支持 GPU 加速并不能直接等同于渲染性能的好坏. 进一步讲, "更好的渲染性能"甚至不是 GPU 加速的唯一目的, 例如 Ghostty 可以通过 shader 实现各种炫酷的视觉效果, 渲染性能反而是次要的. 因此, 在选择终端模拟器时, 是否支持 GPU 加速可以作为一个参考因素, 但并不应该是唯一的决定因素.
+
 ## 单独聊聊
 
 ### Ghostty
@@ -456,6 +617,9 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
   - 自定义 Shader
 
     简单如光标跳转动画, 复杂如全局光效, 从 CRT 到 Glitchy, 可玩性极高.
+    - [0xhckr/ghostty-shaders](https://github.com/0xhckr/ghostty-shaders) 包含很多现成的 shader, 可以直接拿来使用.
+
+    - [KroneCorylus/ghostty-shader-playground](https://github.com/KroneCorylus/ghostty-shader-playground) 是一个 shader 预览和编辑器, 同时提供了包括光标跳转动画在内的 shader.
 
 - Cons
   - 不稳定
@@ -465,6 +629,26 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
   - 启动速度
 
     相比其他相同定位的终端模拟器, Ghostty 的冷启动速度可以说奇慢无比. 尽管[文档](https://ghostty.org/docs/linux/systemd)有提到在启动 `app-com.mitchellh.ghostty.service` 服务的前提下使用 `ghostty +new-window` 加快启动速度, 但这同时放弃了很多灵活性. 例如, `ghostty +new-window` 无法与 `-e` 参数一起使用, 非冷启动的实例也难以同步环境变量, 以 systemd 服务启动的 ghostty 甚至无法自动同步在 WM 如 niri 处配置的环境变量. 虽然这些缺失的灵活性可以通过其他一些方法弥补, 但这确实是使用其他终端模拟器时不曾面对的问题.
+
+    简单测试:
+
+    ```bash
+    hyperfine --warmup 3 'kitty -e echo' 'ghostty -e echo' 'foot -e echo'
+    ```
+
+    ```
+    Benchmark 1: kitty -e echo
+      Time (mean ± σ):     216.0 ms ±   6.2 ms    [User: 117.9 ms, System: 92.9 ms]
+      Range (min … max):   204.2 ms … 224.6 ms    13 runs
+
+    Benchmark 2: ghostty -e echo
+      Time (mean ± σ):     643.5 ms ±  11.4 ms    [User: 561.1 ms, System: 125.7 ms]
+      Range (min … max):   627.3 ms … 660.6 ms    10 runs
+
+    Benchmark 3: foot -e echo
+      Time (mean ± σ):      32.3 ms ±   1.4 ms    [User: 35.6 ms, System: 8.8 ms]
+      Range (min … max):    28.5 ms …  39.3 ms    89 runs
+    ```
 
 ### Kmscon
 
@@ -476,11 +660,13 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
 ## References
 
+- [The TTY demystified](https://www.linusakesson.net/programming/tty/)
+
+- [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Sixel-Graphics)
+
 - [Kitty Terminal Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
 
 - [Sixel - Wikipedia](https://en.wikipedia.org/wiki/Sixel)
-
-- [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Sixel-Graphics)
 
 - [Feature Reporting Spec - ITerm2](https://iterm2.com/feature-reporting/)
 

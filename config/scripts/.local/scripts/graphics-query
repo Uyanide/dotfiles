@@ -23,6 +23,10 @@ set -euo pipefail
 # Ensure in a interactive terminal
 [ ! -t 0 ] && exit 1
 
+# Increase timeout for SSH sessions
+TIMEOUT=0.3
+[[ -n "${SSH_CONNECTION:-}" ]] && TIMEOUT=1.0
+
 # Construct query
 KGP_QUERY_ID=$RANDOM
 KGP_QUERY_CODE=$(printf "\033_Gi=%d,s=1,v=1,a=q,t=d,f=24;AAAA\033\\" "$KGP_QUERY_ID")
@@ -44,7 +48,7 @@ support_sixel=0
 
 response=""
 while true; do
-    IFS= read -r -N 1 -t 0.3 char || {
+    IFS= read -r -N 1 -t "$TIMEOUT" char || {
         [ -z "$char" ] && break
     }
 
