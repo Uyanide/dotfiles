@@ -19,17 +19,19 @@
     - [基本模式](#基本模式)
     - [KGP](#kgp)
     - [Sixel](#sixel)
-    - [ITerm](#iterm)
+    - [ITerm2](#iterm2)
     - [3 in 1](#3-in-1)
     - [快速检测](#快速检测)
   - [显示效果](#显示效果)
   - [性能测试](#性能测试)
+  - [KGP Unicode Placeholders](#kgp-unicode-placeholders)
+    - [特性](#特性)
+    - [使用](#使用)
+    - [实现](#实现)
 - [默认 Shell](#默认-shell)
   - [一些概念](#一些概念)
   - [最佳实践](#最佳实践)
 - [GPU 加速](#gpu-加速)
-  - [测试](#测试)
-  - [结论](#结论)
 - [单独聊聊](#单独聊聊)
   - [Ghostty](#ghostty)
   - [Kmscon](#kmscon)
@@ -101,7 +103,7 @@ Shell 是运行在 TTY Slave 端的命令行解释器, 负责:
 
 - 管理前台和后台进程组, 处理信号传递等.
 
-值得注意的是, Shell 中输入命令后的"回显"并不是 Shell 自己完成的, 而必须通过 TTY 的 Line Discipline. 当用户输入字符时, Line Discipline 会将其显示在屏幕上, 从而完成"回显".
+值得注意的是, Canonical Mode 下 shell 中输入命令后的"回显"并不是 shell 自己完成的, 而必须通过 TTY 的 Line Discipline. 当用户输入字符时, Line Discipline 会将其显示在屏幕上, 从而完成"回显".
 
 ### 终端模拟器
 
@@ -147,6 +149,10 @@ lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
 - **OSC** (Operating System Command): 以 `\033]` 开头
   - 设置窗口标题: `\033]0;title\a`
   - 设置剪贴板内容: `\033]52;c;data\a`
+  - ITerm2 图片协议: `\033]1337;File=...;...\a`
+
+- **APC** (Application Program Command): 以 `\033_` 开头
+  - Kitty 图像协议: `\033_G...;...\033\\`
 
 下一节将会提到的各类图像协议也是通过控制序列实现的.
 
@@ -156,27 +162,29 @@ lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
 
 - **KGP**(非官方简称): [Kitty Terminal Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
 - **Sixel**: [Sixel](https://en.wikipedia.org/wiki/Sixel)
-- **ITerm**: [ITerm2 Inline Images Protocol](https://iterm2.com/documentation-images.html)
+- **ITerm2**: [ITerm2 Inline Images Protocol](https://iterm2.com/documentation-images.html)
 
 > 值得一提的是其中 KGP 甚至能被用来在终端模拟器里播放视频, 只需要给 mpv 加上 `--vo=kitty` 参数即可.
+
+> 此处 KGP 仅指代传统 Kitty 图像协议, 不包括其中关于 Unicode Placeholders 的部分.
 
 ### 各终端支持情况
 
 不完全统计, 只列举我知道并且确实使用过的.
 
-| Terminal      | KGP | Sixel | ITerm |
-| ------------- | --- | ----- | ----- |
-| Alacritty     | ❌  | ❌    | ❌    |
-| Foot          | ❌  | ✅    | ❌    |
-| Ghostty       | ✅  | ❌    | ❌    |
-| GNOME Console | ❌  | ❌    | ❌    |
-| Kitty         | ✅  | ❌    | ❌    |
-| Konsole       | ✅  | ✅    | ✅    |
-| Rio           | ❌  | ✅    | ❌    |
-| Tabby         | ❌  | ✅    | ❌    |
-| Warp          | ✅  | ❌    | ❌    |
-| WezTerm       | ✅  | ✅    | ✅    |
-| Windows Term. | ❌  | ✅    | ❌    |
+| Terminal      | KGP | Sixel | ITerm2 |
+| ------------- | --- | ----- | ------ |
+| Alacritty     | ❌  | ❌    | ❌     |
+| Foot          | ❌  | ✅    | ❌     |
+| Ghostty       | ✅  | ❌    | ❌     |
+| GNOME Console | ❌  | ❌    | ❌     |
+| Kitty         | ✅  | ❌    | ❌     |
+| Konsole       | ✅  | ✅    | ✅     |
+| Rio           | ❌  | ✅    | ❌     |
+| Tabby         | ❌  | ✅    | ❌     |
+| Warp          | ✅  | ❌    | ❌     |
+| WezTerm       | ✅  | ✅    | ✅     |
+| Windows Term. | ❌  | ✅    | ❌     |
 
 ### 使用方法
 
@@ -192,11 +200,11 @@ lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
   wezterm imgcat /path/to/image
   ```
 
-  将会使用 ITerm2 图片协议形式图片.
+  将会使用 ITerm2 图片协议显示图片.
 
   以上两个指令在其他支持相同协议的终端模拟器同样可用.
 
-- 另一个很好用的通用程序是 [chafa](https://github.com/hpjansson/chafa). 除了自动检测并使用以上三种协议显示图片外, 它还支持以 `symbols` 格式使用 [ANSI 颜色转义序列](https://en.wikipedia.org/wiki/ANSI_escape_code)显示图片的大致样貌, 这在不支持以上任何一种协议的终端模拟器(如 Alacritty)上很好用.
+- 另一个很好用的通用程序是 [chafa](https://github.com/hpjansson/chafa). 除了自动检测并使用以上三种协议显示图片外, 它还支持以 `symbols` 格式使用 [ANSI 颜色转义序列](https://en.wikipedia.org/wiki/ANSI_escape_code)显示图片的大致样貌, 这很适合在不支持以上任何一种协议的终端模拟器(如 Alacritty)上作为 fallback.
 
 ### 检测方法
 
@@ -226,7 +234,9 @@ KGP 提供了[标准化的检测方法](https://sw.kovidgoyal.net/kitty/graphics
 
 - `\033[c`
 
-  这是大多数终端都会响应的 `DA1` 序列, 用于查询终端特性, 标准响应正则为 `\033\[\?[0-9;]*c`, 但是此处只用于标识 Kitty 图像协议查询序列响应的结束, 其本身具体响应了什么并不重要, 这得益于 KGP "在收到查询序列后必须立即相应, 不能先处理其他输入"的规定. 例如, 如果一次查询返回了 `DA1` 的响应而没有有效的 KGP 的相应, 则可视为该终端模拟器不支持 KGP.
+  这是大多数终端都会响应的 `DA1` 序列, 用于查询终端特性, 标准响应正则为 `\033\[\?[0-9;]*c`, 但是此处只用于标识 Kitty 图像协议查询序列响应的结束, 其本身具体响应了什么并不重要, 这得益于 KGP "在收到查询序列后必须立即相应, 不能先处理其他输入"的规定. 例如, 如果一次查询返回了 `DA1` 的响应之前没有有效的 KGP 响应, 则可视为该终端模拟器不支持 KGP.
+
+关于更多构造 KGP 控制序列的话题, 会在[后面](#实现)单独展开.
 
 #### Sixel
 
@@ -234,7 +244,7 @@ Sixel 支持情况可以用 `DA1` 查询, 即 `\033[c`. 如响应中分号分隔
 
 值得注意的一点是, 很多终端复用器(Terminal Multiplexer)如 Tmux / Zellij 也会在 `DA1` 的响应中包含 `4`, 但实际支持情况取决于终端复用器的配置与宿主终端.
 
-#### ITerm
+#### ITerm2
 
 ITerm2 图片协议本质为 `OSC 1337` 控制序列的 `FILE` 特性. ITerm2 文档虽然提供了[检测方法](https://iterm2.com/feature-reporting/), 但一番测试后发现在我认知范围内的支持 ITerm2 图片协议的终端模拟器上均无法得到有效响应.
 
@@ -358,11 +368,11 @@ bash <(curl -fsSL https://tgp.uyani.de/kitty)
 
 ### 显示效果
 
-先说结论, 在大多数终端模拟器上, KGP ≈ ITerm >> Sixel.
+先说结论, 在大多数终端模拟器上, KGP ≈ ITerm2 >> Sixel.
 
 Sixel 是三者之中最老的, 颜色格式类似 GIF89a, 只支持索引颜色和单色键透明度, 画面有明显的颗粒感和色带. 如此妥协换来的是三者之中最强的兼容性, 甚至连 Windows Terminal 都支持 Sixel, 可见一斑.
 
-ITerm 的实现方式很简单粗暴, 它会将图片数据原封不动地交给终端模拟器渲染, 因此实际显示效果极大程度上取决于终端模拟器的实现方式. 不过, 由于终端模拟器能拿到原始的图像二进制数据, 显示效果一般不会比其他二者差.
+ITerm2 的实现方式很简单粗暴, 它会将图片数据原封不动地交给终端模拟器渲染, 因此实际显示效果极大程度上取决于终端模拟器的实现方式. 不过, 由于终端模拟器能拿到原始的图像二进制数据, 显示效果一般不会比其他二者差.
 
 KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit 像素数据, 支持指定 Z-Index 叠加显示, 原生支持动图, 可玩性是三者之中最高的, 显示效果通常也不会差.
 
@@ -372,37 +382,37 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
 - 固定宽度连续输出53张中到大尺寸(1920x1080到9457x5324不等)JPEG和PNG图片, 取5次耗时平均, 单位为秒.
 
-  | Terminal | KGP   | Sixels | ITerm |
-  | -------- | ----- | ------ | ----- |
-  | Kitty    | 4.486 | -      | -     |
-  | Ghostty  | 7.184 | -      | -     |
-  | Konsole  | 7.388 | 4.842  | 7.266 |
-  | WezTerm  | 4.820 | 6.218  | 5.042 |
-  | Foot     | -     | 4.124  | -     |
+  | Terminal | KGP   | Sixels | ITerm2 |
+  | -------- | ----- | ------ | ------ |
+  | Kitty    | 4.486 | -      | -      |
+  | Ghostty  | 7.184 | -      | -      |
+  | Konsole  | 7.388 | 4.842  | 7.266  |
+  | WezTerm  | 4.820 | 6.218  | 5.042  |
+  | Foot     | -     | 4.124  | -      |
 
   说明:
   - 使用 chafa 转换图片为控制序列. 所有耗时包含 chafa 预处理耗时.
 
   - KGP 使用 32bit RGBA 格式传输.
 
-  - ITerm 使用 32bit RGBA 以 TIFF 格式传输.
+  - ITerm2 使用 32bit RGBA 以 TIFF 格式传输.
 
 - 连续输出64张小尺寸(50x50以内)PNG图片, 取5次耗时平均, 单位为毫秒.
 
-  | Terminal | KGP   | Sixels | ITerm |
-  | -------- | ----- | ------ | ----- |
-  | Kitty    | 975.0 | -      | -     |
-  | Ghostty  | 724.9 | -      | -     |
-  | Konsole  | 744.6 | 781.6  | 768.1 |
-  | WezTerm  | 970.4 | 980.2  | 962.0 |
-  | Foot     | -     | 719.6  | -     |
+  | Terminal | KGP   | Sixels | ITerm2 |
+  | -------- | ----- | ------ | ------ |
+  | Kitty    | 975.0 | -      | -      |
+  | Ghostty  | 724.9 | -      | -      |
+  | Konsole  | 744.6 | 781.6  | 768.1  |
+  | WezTerm  | 970.4 | 980.2  | 962.0  |
+  | Foot     | -     | 719.6  | -      |
 
   说明:
   - 使用 chafa 转换图片为控制序列. 所有耗时包含 chafa 预处理耗时.
 
   - KGP 使用 32bit RGBA 格式传输.
 
-  - ITerm 使用 32bit RGBA 以 TIFF 格式传输.
+  - ITerm2 使用 32bit RGBA 以 TIFF 格式传输.
 
 - 转换 PNG 图片为对应协议数据传输的大小比较.
   - chafa:
@@ -415,7 +425,7 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
     | -------- | ----------- | --------------- | --------------- | ------ |
     | KGP      | 8,400,484   | 3,335,131       | 32bit RGBA      | Base64 |
     | Sixel    | 8,400,484   | 1,227,194       | 256 color       | 7bit   |
-    | ITerm    | 8,400,484   | 3,285,617       | 32bit RGBA TIFF | Base64 |
+    | ITerm2   | 8,400,484   | 3,285,617       | 32bit RGBA TIFF | Base64 |
 
   - kitty +kitten icat:
 
@@ -425,7 +435,7 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
     | Protocol | 原始大小(B) | 控制序列大小(B) | 格式      | 编码         |
     | -------- | ----------- | --------------- | --------- | ------------ |
-    | KGP      | 8,400,484   | 1,182,033       | 24bit RGB | zstd, Base64 |
+    | KGP      | 8,400,484   | 1,182,033       | 24bit RGB | zlib, Base64 |
 
   - idog (自己写的)
 
@@ -435,9 +445,9 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
     | Protocol | 原始大小(B) | 控制序列大小(B) | 格式 | 编码         |
     | -------- | ----------- | --------------- | ---- | ------------ |
-    | KGP      | 8,400,484   | 11,152,402      | PNG  | zstd, Base64 |
+    | KGP      | 8,400,484   | 11,152,402      | PNG  | zlib, Base64 |
 
-    该程序基本原理为将 PNG 原始数据通过 zstd 压缩后以 4096 字节为单位分块后分为多个控制序列传输.
+    该程序在此处的作用为将 PNG 原始数据通过 zlib 压缩后以 4096 字节为单位分块后分为多个控制序列传输.
 
   - wezterm imgcat:
 
@@ -447,7 +457,7 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
     | Protocol | 原始大小(B) | 控制序列大小(B) | 格式 | 编码   |
     | -------- | ----------- | --------------- | ---- | ------ |
-    | ITerm    | 8,400,484   | 11,200,685      | PNG  | Base64 |
+    | ITerm2   | 8,400,484   | 11,200,685      | PNG  | Base64 |
 
     ```bash
     wezterm imgcat --width 100 <IMAGE>
@@ -455,9 +465,492 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
     | Protocol | 原始大小(B) | 控制序列大小(B) | 格式 | 编码   |
     | -------- | ----------- | --------------- | ---- | ------ |
-    | ITerm    | 8,400,484   | 11,200,695      | PNG  | Base64 |
+    | ITerm2   | 8,400,484   | 11,200,695      | PNG  | Base64 |
 
     是的, 限制宽度并不会减少控制序列的大小, 反而会因为 `,width=100` 元数据增加 10 字节.
+
+### KGP Unicode Placeholders
+
+#### 特性
+
+Unicode Placeholders 是 Kitty 图像协议的一个独特功能, 它允许使用占位符嵌入图像, 这提供了一些有意思的特性:
+
+- 可在任意支持 Unicode 字符和 `CSI` 前景色控制序列的终端应用中显示图像.
+
+- 对于不支持该协议的终端模拟器, 对应位置会显示为相同大小的(彩色)不明字符, 避免格式错乱.
+
+- 对于一张图像, 可以仅传递一次数据, 后续通过相同 ID 的占位符即可重复引用相同图像.
+
+- 可以通过仅输出部分占位符来实现"裁剪"显示图像的效果.
+
+- 更改终端中字体大小时已经显示的图像会被同比例缩放, 而不会像传统 KGP 那样保持原来的大小不变.
+
+- 只需要简单的清屏即可删除已经显示的图像, 不需要发送额外的控制序列.
+
+#### 使用
+
+该功能可通过 `kitty +kitten icat` 的 `--unicode-placeholders` 参数启用.
+
+如果想自己从头实现控制序列编码, Unicode Placeholders 相较传统办法最大的不同就是在 `APC` 后输出多行由 `U+10EEEE` 和变音符号组成的 Unicode 字符串, 其中 `U+10EEEE` 为占位字符, 变音符号用于标识行号和列号, 文本前景色用于编码图片 ID, 下划线颜色用于编码放置 ID, 背景色用于...充当背景色. 更多细节可以参考 [Kitty 官方文档](https://sw.kovidgoyal.net/kitty/graphics-protocol/#unicode-placeholders).
+
+虽然这个功能很有趣, 但就目前而言真正实现它的终端模拟器寥寥无几, 在[前面的表格](#各终端支持情况)中只有 Kitty 和 Ghostty 位于此列, 其他终端模拟器即便支持 KGP, 也只会同时显示占位符和正常的图片, 效果非常诡异.
+
+#### 实现
+
+指编码端的实现. 如前文所说, 该方法和传统方法在前半部分是几乎完全一致的, 因此实现 Unicode Placeholders 的同时也可以~~顺便~~实现 KGP 的基础部分. 以下摘取[前面](#性能测试)提到的 idog 的 Python 部分实现代码.
+
+- 工具函数
+
+  ```python
+  import base64
+  import random
+  import zlib
+
+  def random_ID(max: int = 0xFFFFFF): return random.randint(0, max)
+  def base64_encode(data: bytes) -> str: return base64.b64encode(data).decode("ascii")
+  def zlib_compress(data: bytes) -> bytes: return zlib.compress(data)
+  ```
+
+  以及构造 PNG 数据的函数, 用于 query 和测试.
+
+  ```python
+  import struct
+
+  def png_makechunk(type: bytes, data: bytes) -> bytes:
+    return struct.pack(">I", len(data)) + type + data + struct.pack(">I", zlib.crc32(type + data))
+
+
+  def mock_png_data(width: int, height: int) -> bytes:
+      data = b"\x89PNG\r\n\x1a\n"
+      # IHDR
+      ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
+      data += png_makechunk(b"IHDR", ihdr)
+      # IDAT
+      compressor = zlib.compressobj(level=9, strategy=zlib.Z_DEFAULT_STRATEGY)
+      idat = compressor.compress(b"".join(
+          b"\x00" + b"\xff\xff\xff\x80" * width for _ in range(height)
+      )) + compressor.flush()
+      data += png_makechunk(b"IDAT", idat)
+      # IEND
+      data += png_makechunk(b"IEND", b"")
+      return data
+  ```
+
+- 构造 KGP 检测序列
+
+  可以大致分为三个部分:
+  - 检测是否支持 KGP
+  - 检测是否支持 Unicode Placeholders
+  - 检测是否支持 Shared Memory 作为传输介质
+
+  其中有不少重复代码, 可以先进行抽象:
+
+  ```python
+  import re
+  import os
+  import sys
+  import termios
+  from select import select
+
+  def do_query(code: str, expected_response: re.Pattern, fence_response: re.Pattern, timeout: float = -1) -> bool:
+      """Helper function to send a query and wait for the expected response"""
+      if timeout < 0:
+          timeout = 1 if os.environ.get("SSH_TTY") else 0.1
+
+      fd = sys.stdin.fileno()
+      if not os.isatty(fd):
+          return False
+
+      old_settings = termios.tcgetattr(fd)
+      response = ""
+
+      try:
+          new_settings = termios.tcgetattr(fd)
+          # Disable canonical mode and echo
+          new_settings[3] = new_settings[3] & ~termios.ICANON & ~termios.ECHO
+          termios.tcsetattr(fd, termios.TCSANOW, new_settings)
+
+          sys.stdout.write(code)
+          sys.stdout.flush()
+
+          success = False
+          while True:
+              # Set a timeout to prevent blocking indefinitely
+              r, w, e = select([fd], [], [], timeout)
+              if not r:
+                  break
+
+              char = os.read(fd, 1)
+              if not char:
+                  break
+
+              response += char.decode('utf-8', errors='ignore')
+
+              if expected_response.search(response):
+                  success = True
+
+              if fence_response.search(response):
+                  break
+
+          return success
+      except Exception:
+          pass
+      finally:
+          termios.tcsetattr(fd, termios.TCSANOW, old_settings)
+
+      return False
+  ```
+
+  检测是否支持 KGP. 该部分原理与[前文](#kgp)所述完全一致:
+
+  ```python
+  def query_support() -> bool:
+      query_id = random_ID(0xFFFFFFFF)
+      query_code = f"\033_Gi={query_id},s=1,v=1,a=q,t=d,f=24;AAAA\033\\"
+      expected_response = re.compile(rf"\033_Gi={query_id};OK\033\\")
+      fence_code = "\033[c"
+      fence_response = re.compile(r"\033\[\?[0-9;]*c")
+
+      return do_query(query_code + fence_code, expected_response, fence_response)
+  ```
+
+  检测是否支持 Unicode Placeholders. KGP 并未针对此功能提供专门的查询方法, 但是如[前文](#使用)所说, 支持该功能的终端模拟器很少, 因此可以通过在检测是否支持 KGP 的基础上添加对终端模拟器特有的环境变量的检查来实现:
+
+  ```python
+  def query_unicode_placeholder_support() -> bool:
+      if os.environ.get("KITTY_PID") or os.environ.get("GHOSTTY_SHELL_FEATURES"):
+          return query_support()
+      return False
+  ```
+
+  类似 `KITTY_PID` 和 `GHOSTTY_SHELL_FEATURES` 这样的环境变量(主观上似乎)比 `TERM` 更可靠. 并且需要注意的是即便明确知道所使用的终端模拟器支持该协议, 最好也用控制序列进行一次验证, 因为终端复用器/配置/特殊环境可能导致实际支持情况与预期不符.
+
+  检测是否支持 Shared Memory 作为传输介质:
+
+  ```python
+  from pathlib import Path
+  from multiprocessing import shared_memory, resource_tracker
+
+  def query_shared_memory_support(format: str = "32") -> bool:
+      # Mock data
+      size = 0
+      data = b""
+
+      if format == "32":
+          size = 4
+          data = b"\x00\x00\x00\x00"
+      elif format == "24":
+          size = 3
+          data = b"\x00\x00\x00"
+      elif format == "100":
+          data = mock_png_data(1, 1)
+          size = len(data)
+      else:
+          raise ValueError(f"Unsupported format: {format}")
+
+      query_id = random_ID(0xFFFFFFFF)
+      memory_name = f"idog_{query_id}"
+      encoded_memory_name = base64_encode(memory_name.encode("utf-8"))
+      shm: shared_memory.SharedMemory | None = None
+      success = False
+      try:
+          shm = shared_memory.SharedMemory(name=memory_name, create=True, size=size)
+          if shm is None or shm.buf is None:
+              return False
+          shm.buf[:size] = data
+          query_code = f"\033_Gi={query_id},s=1,v=1,a=q,t=s,f={format};{encoded_memory_name}\033\\"
+          expected_response = re.compile(rf"\033_Gi={query_id};OK\033\\")
+          fence_code = "\033[c"
+          fence_response = re.compile(r"\033\[\?[0-9;]*c")
+          success = do_query(query_code + fence_code, expected_response, fence_response)
+      except Exception:
+          success = False
+      finally:
+          try:
+              if shm is not None:
+                  shm.close()
+                  if Path(f"/dev/shm/{shm.name}").exists():
+                      shm.unlink()
+                  else:
+                      # shm unlinked by terminal
+                      resource_tracker.unregister(f"/{shm.name}", "shared_memory")
+          except Exception:
+              pass
+
+      return success
+  ```
+
+  需要注意的是, 如果终端模拟器支持 Shared Memory, 则会在数据传输完成后**主动**删除对应的 Shared Memory, 因此需要在 finally 里先检查 Shared Memory 是否已经被删除, 再决定是否需要调用 `unlink`. 如果确认不需要手动 unlink, 则可以调用 `resource_tracker.unregister` 来避免 Python 进程退出时发出警告.
+
+- 基础序列构造
+
+  ```python
+  import fcntl
+  import array
+  import termios
+  import sys
+  from pathlib import Path
+  from PIL import Image
+  from multiprocessing import resource_tracker, shared_memory
+
+
+  class KGPEncoderBase:
+      image_id: int
+      # Original image
+      image: Image.Image
+      # Resized image that fits the terminal dimensions
+      resized_image: Image.Image
+
+      # Displayed image dimensions in terms of character cells
+      displayCols: int
+      displayRows: int
+
+      def __init__(self, path: Path):
+          self._init_id()
+          self._init_image(path)
+          self._init_size()
+
+      def _init_id(self) -> None:
+          """Initialize a random image ID"""
+          self.image_id = random_ID(0xFFFFFFFF)
+
+      def _init_image(self, path: Path) -> None:
+          """Load the image and convert it to a supported pixel format"""
+          image = Image.open(path).convert("RGB")
+          if image.mode in ("RGBA", "LA") or (image.mode == "P" and "transparency" in image.info):
+              self.image = image.convert("RGBA")
+          else:
+              self.image = image.convert("RGB")
+
+      def _init_size(self, max_cols=-1, max_rows=-1) -> None:
+          """Initialize size-related attributes based on the image and terminal dimensions"""
+          # Obtain terminal dimensions via ioctl
+          buf = array.array('H', [0, 0, 0, 0])
+          fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, buf)
+          rows, cols, x_pixels, y_pixels = buf
+          cell_width = x_pixels / cols
+          cell_height = y_pixels / rows
+
+          # Unicode Placeholder method has a maximum size of 289x289 cells
+          new_cols = cols
+          new_rows = rows
+          if max_cols > 0:
+              new_cols = min(cols, max_cols)
+          if max_rows > 0:
+              new_rows = min(rows, max_rows)
+          new_x_pixels = cell_width * new_cols
+          new_y_pixels = cell_height * new_rows
+
+          # If the image is small enough to fit without resizing
+          if self.image.width <= new_x_pixels and self.image.height <= new_y_pixels:
+              self.displayCols = int(self.image.width / cell_width)
+              self.displayRows = int(self.image.height / cell_height)
+              self.displayWidth = self.image.width
+              self.displayHeight = self.image.height
+              self.resized_image = self.image.copy()
+              return
+
+          # Resize while maintaining aspect ratio
+          image_aspect = self.image.width / self.image.height
+          display_aspect = new_x_pixels / new_y_pixels
+          if image_aspect > display_aspect:
+              self.displayCols = new_cols
+              self.displayRows = int(new_x_pixels / image_aspect / cell_height)
+          else:
+              self.displayCols = int(new_y_pixels * image_aspect / cell_width)
+              self.displayRows = new_rows
+
+          displayWidth = int(self.displayCols * cell_width)
+          displayHeight = int(self.displayRows * cell_height)
+
+          self.resized_image = self.image.resize((displayWidth, displayHeight), Image.Resampling.LANCZOS)
+
+      def _shm_name(self) -> str:
+          """Generate a unique shared memory name based on the image ID"""
+          return f"idog_{self.image_id}"
+
+      def _format_KGP(self, payload: str, options: str, chunk_size: int) -> list[str]:
+          """Format the KGP payload into one or more escape sequences based on the chunk size"""
+          if len(payload) <= chunk_size:
+              return [f"\033_G{options};{payload}\033\\"]
+          else:
+              ret = [f"\033_G{options},m=1;{payload[:chunk_size]}\033\\"]
+              for offset in range(chunk_size, len(payload), chunk_size):
+                  chunk = payload[offset:offset + chunk_size]
+                  # m=0 for the last chunk, m=1 for all previous
+                  m = 1 if offset + chunk_size < len(payload) else 0
+                  # The other options only need to be specified in the first chunk, subsequent chunks can omit them
+                  ret.append(f"\033_Gm={m};{chunk}\033\\")
+              return ret
+
+      def _construct_payload(self, medium: str, compress: bool) -> str:
+          """Construct the KGP payload, optionally compressing it"""
+          if medium == "d":
+              if compress:
+                  return base64_encode(zlib_compress(self.resized_image.tobytes()))
+              else:
+                  return base64_encode(self.resized_image.tobytes())
+          if medium == "s":
+              shm_name = self._shm_name()
+              if not Path(f"/dev/shm/{shm_name}").exists():
+                  shm: shared_memory.SharedMemory | None = None
+                  data = self.resized_image.tobytes()
+                  try:
+                      shm = shared_memory.SharedMemory(name=shm_name, create=True, size=len(data))
+                      if shm is None or shm.buf is None:
+                          raise RuntimeError("Failed to create shared memory segment")
+                      shm.buf[:len(data)] = data
+                      resource_tracker.unregister(f"/{shm.name}", "shared_memory")
+                  except FileExistsError:
+                      raise RuntimeError("Shared memory segment already exists")
+              return base64_encode(shm_name.encode("utf-8"))
+          raise ValueError(f"Unsupported transmission medium: {medium}")
+
+      def _gen_options(self, medium: str, compress: bool) -> str:
+          """Generate the options string for the KGP escape sequence"""
+          if medium not in ("d", "s"):
+              raise ValueError(f"Unsupported transmission medium: {medium}")
+          if medium == "s" and compress:
+              compress = False  # Disable compression for shared memory transmission
+          format = "32" if self.image.mode == "RGBA" else "24"
+          # a=T: Action, transmit and display
+          # f=...: Pixel format, 24 for RGB, 32 for RGBA, 100 for PNG
+          # t=...: transmission medium, d for transmitting data directly in control sequence, s for shared memory
+          # c=...,r=...: Specify the image dimensions in terms of character cells
+          # s=...,v=...: Specify the image dimensions in pixels, required when transmitting raw pixel data
+          # o=z: Enable zlib compression (optional)
+          options = f"i={self.image_id},a=T,f={format},t={medium},"\
+              f"c={self.displayCols},r={self.displayRows},"\
+              f"s={self.resized_image.width},v={self.resized_image.height}"
+          if compress:
+              options += ",o=z"
+          return options
+
+      def construct_KGP(self, medium: str = "d", chunk_size: int = 4096, compress: bool = True) -> list[str]:
+          """Construct the KGP escape sequences for the image"""
+          if chunk_size <= 0:
+              raise ValueError("Chunk size must be a positive integer.")
+
+          options = self._gen_options(medium, compress)
+          payload = self._construct_payload(medium, compress)
+          ret = self._format_KGP(payload, options, chunk_size)
+          return ret
+
+      def delete_image(self) -> str:
+          """Construct the escape sequence to delete the image from the terminal"""
+          if Path(f"/dev/shm/{self._shm_name()}").exists():
+              try:
+                  shm = shared_memory.SharedMemory(name=self._shm_name(), create=False)
+                  shm.close()
+                  shm.unlink()
+              except FileNotFoundError:
+                  pass  # Already unlinked by terminal
+          return f"\033_Ga=d,d=i,i={self.image_id}\033\\"
+  ```
+
+  该类接受一个图片路径作为实例化参数, 通过 `ioctl` 获取终端尺寸并计算出合适的显示尺寸, 通过 `PIL` 加载和处理图片, 最后通过 `construct_KGP` 方法生成对应的 KGP 控制序列列表. 并包含一些额外特性:
+  - 选择是否启用 zlib 压缩. 仅在传输介质为直接传输数据(`d`)时有效.
+
+  - 选择传输介质类型. 目前支持直接在控制序列里传输数据(`d`)和通过 Shared Memory 传输(`s`)两种方式.
+
+  - 清除显示的图片. 同时也会尝试删除对应的 Shared Memory.
+
+  对于 Shared Memory 模式, 需要注意的是当发送控制序列后, 该 Shared Memory 的所有权可以被视为**转移**给了终端模拟器, 因此如果终端模拟器不支持 KGP 或环境不支持 Shared Memory, 则极有可能发生泄漏. 因此在使用 Shared Memory 作为传输介质时, 最好先通过类似 `query_shared_memory_support` 的方法进行一次验证, 确保当前环境和终端模拟器确实支持该功能, 再进行后续操作.
+
+- Unicode Placeholders
+
+  有了基类, 后续就方便多了. 只需要修改几个方法即可.
+
+  ```python
+  KGP_PLACEHOLDER = "\U0010EEEE"
+  # https://sw.kovidgoyal.net/kitty/_downloads/f0a0de9ec8d9ff4456206db8e0814937/rowcolumn-diacritics.txt
+  KGP_DIACRITICS = (
+      "\u0305\u030D\u030E\u0310\u0312\u033D\u033E\u033F\u0346\u034A"
+      ...)
+
+
+  class KGPEncoderUnicode(KGPEncoderBase):
+      def _init_id(self):
+          """Initialize a smaller random image ID"""
+          self.image_id = random_ID(0xFFFFFF)
+
+      def _init_size(self, max_cols=-1, max_rows=-1) -> None:
+          if max_cols > 0:
+              max_cols = min(max_cols, len(KGP_DIACRITICS))
+          else:
+              max_cols = len(KGP_DIACRITICS)
+          if max_rows > 0:
+              max_rows = min(max_rows, len(KGP_DIACRITICS))
+          else:
+              max_rows = len(KGP_DIACRITICS)
+          super()._init_size(max_cols, max_rows)
+
+      def _gen_options(self, medium: str, compress: bool) -> str:
+          """Generate the options string for the KGP escape sequence"""
+          options = super()._gen_options(medium, compress)
+          # q=2: Suppress response, required when using Unicode Placeholders
+          # U=1: Enable Unicode Placeholders
+          options += ",q=2,U=1"
+          return options
+
+      def construct_unicode_placeholders(self) -> list[str]:
+          """Construct the Unicode placeholders for the image"""
+          # Using 24-bit True Color foreground to encode the image ID,
+          # the maximum id is therefore 0xFFFFFF, which is likely enough
+          image_id_str = f"\033[38;2;{(self.image_id >> 16) & 0xFF};{(self.image_id >> 8) & 0xFF};{self.image_id & 0xFF}m"
+          ret = []
+          for i in range(self.displayRows):
+              line = image_id_str
+
+              # Placehoder + Row Diacritic + Column Diacritic
+              line += f"{KGP_PLACEHOLDER}{KGP_DIACRITICS[i]}{KGP_DIACRITICS[0]}"
+              for _ in range(1, self.displayCols):
+                  # Col index and row index will be automatically determined
+                  line += KGP_PLACEHOLDER
+
+              line += "\033[39m"
+              ret.append(line)
+
+          return ret
+
+  ```
+
+  唯一新增的方法是 `construct_unicode_placeholders`, 该方法会生成一个字符串列表, 每个字符串代表一行, 所有行的开头是设置前景色的控制序列, 用于编码图片 ID, 后续会通过占位符的前景色来识别该占位符对应的图片. 每个占位符由一个占位字符和两个变音符号组成, 其中一个变音符号用于编码行号, 另一个用于编码列号, 每行的非首个占位符可省去变音符号. 由于变音符号的数量有限, 因此 Unicode Placeholders 的**最大显示尺寸**为 289x289 字符单元. 每行都会重新设置与重置前景色, 以保证最大程度的兼容性.
+
+- 调用实例
+
+  ```python
+  image_path = Path("test.png")
+
+  if not query_support():
+      sys.stderr.write("KGP not supported in this terminal.\n")
+      sys.exit(1)
+
+  medium = "s" if query_shared_memory_support() else "d"
+  placeholders = []
+  encoder = None
+
+  sys.stderr.write("Transmission medium: " + ("Shared Memory\n" if medium == "s" else "Direct Data\n"))
+
+  if query_unicode_placeholder_support():
+      sys.stderr.write("Using Unicode Placeholders\n")
+      encoder = KGPEncoderUnicode(image_path)
+      placeholders = encoder.construct_unicode_placeholders()
+
+  else:
+      sys.stderr.write("Using KGP without Unicode Placeholders\n")
+      encoder = KGPEncoderBase(image_path)
+
+  for seq in encoder.construct_KGP(medium=medium):
+      print(seq, end="")
+  sys.stdout.flush()
+
+  for i, line in enumerate(placeholders):
+      print(line, end="" if i == len(placeholders) - 1 else "\n")
+
+  input()
+  encoder.delete_image()
+  ```
 
 ## 默认 Shell
 
@@ -525,83 +1018,7 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
 
 ## GPU 加速
 
-虽然听起来高大上, 也是很多终端模拟器写在 Description 里的核心特性之一, 但是在实际使用场景中就我个人经验而言影响并没有想象中那么巨大. 终端模拟器所主要面对的仍然是纯文本场景, 最多换一换颜色, 滚一滚屏幕, 这对于现代 CPU 来说并没有很吃力.
-
-### 测试
-
-一种流行的测试为输出大量彩色字符并统计耗时. 这里通过输出大量真彩色(24bit RGB)字符来测试渲染性能.
-
-1. 预处理
-
-   ```python
-   #!/usr/bin/env python3
-   import random
-   import sys
-
-
-   def random_rgb() -> str:
-       r = random.randint(0, 255)
-       g = random.randint(0, 255)
-       b = random.randint(0, 255)
-       return f"{r};{g};{b}"
-
-
-   def foreground_rgb(color: str) -> str: return f"\033[38;2;{color}m"
-
-
-   def background_rgb(color: str) -> str: return f"\033[48;2;{color}m"
-
-
-   def reset() -> str: return "\033[0m"
-
-
-   if __name__ == "__main__":
-       if len(sys.argv) != 2:
-           print(f"Usage: {sys.argv[0]} <file_path>")
-           sys.exit(1)
-       path = sys.argv[1]
-       with open(path, "r") as f:
-           for line in f:
-               line = line.rstrip("\n")
-               colored_line = ""
-               for char in line:
-                   colored_line += (
-                       f"{foreground_rgb(random_rgb())}"
-                       f"{background_rgb(random_rgb())}"
-                       f"{char}"
-                       f"{reset()}"
-                   )
-               print(colored_line)
-   ```
-
-   运行后将输出重定向至文件保存.
-
-   > 我选择的测试文本共计 99,595 行, 4,336,577 个字符.
-
-2. cat 得到的文件, 统计耗时, 取10次平均.
-
-   | Terminal      | GPU 加速 | 耗时 (s) |
-   | ------------- | -------- | -------- |
-   | Foot          | ❌       | 0.751    |
-   | Alacritty     | ✅       | 0.920    |
-   | Kitty         | ✅       | 1.388    |
-   | Konsole       | ❌       | 2.247    |
-   | GNOME Console | ❌       | 2.319    |
-   | WezTerm       | ✅       | 3.772    |
-   | Ghostty       | ✅       | 4.002    |
-
-   说明:
-   - 统一字体为 monospace (Maple Mono NF CN), 字体大小为 12pt.
-
-   - 统一窗口大小为 1278 x 1390.
-
-   - 除此之外均为默认配置.
-
-   可见是否支持 GPU 加速并不是决定渲染性能的唯一因素. 这在前文[测试图像协议性能](#性能测试)的结果中也有体现.
-
-### 结论
-
-GPU 加速的实现方式和质量在不同终端模拟器之间差异较大, 因此是否支持 GPU 加速并不能直接等同于渲染性能的好坏. 进一步讲, "更好的渲染性能"甚至不是 GPU 加速的唯一目的, 例如 Ghostty 可以通过 shader 实现各种炫酷的视觉效果, 渲染性能反而是次要的. 因此, 在选择终端模拟器时, 是否支持 GPU 加速可以作为一个参考因素, 但并不应该是唯一的决定因素.
+虽然听起来高大上, 也是很多终端模拟器写在 Description 里的核心特性之一, 但是在实际使用场景中就我个人经验而言影响并没有想象中那么巨大. 终端模拟器所主要面对的仍然是纯文本场景, 最多换一换颜色, 滚一滚屏幕, 这对于现代 CPU 来说并没有很吃力. 但"更好的渲染性能"甚至不是 GPU 加速的唯一目的, 例如 Ghostty 可以通过 shader 实现各种炫酷的视觉效果, 渲染性能反而是次要的. 因此, 在选择终端模拟器时, 是否支持 GPU 加速可以作为一个参考因素, 但并不应该是唯一的决定因素.
 
 ## 单独聊聊
 
