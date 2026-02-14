@@ -728,6 +728,8 @@ Unicode Placeholders 是 Kitty 图像协议的一个独特功能, 它允许使�
           buf = array.array('H', [0, 0, 0, 0])
           fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, buf)
           rows, cols, x_pixels, y_pixels = buf
+          if 0 in (rows, cols, x_pixels, y_pixels):
+              raise RuntimeError("Failed to get terminal dimensions")
           cell_width = x_pixels / cols
           cell_height = y_pixels / rows
 
@@ -740,6 +742,8 @@ Unicode Placeholders 是 Kitty 图像协议的一个独特功能, 它允许使�
               new_rows = min(rows, max_rows)
           new_x_pixels = cell_width * new_cols
           new_y_pixels = cell_height * new_rows
+          if 0 in (new_cols, new_rows, new_x_pixels, new_y_pixels):
+              raise RuntimeError("Invalid terminal dimensions or maximum size constraints")
 
           # If the image is small enough to fit without resizing
           if self.image.width <= new_x_pixels and self.image.height <= new_y_pixels:
