@@ -930,17 +930,18 @@ Unicode Placeholders 是 Kitty 图像协议的一个独特功能, 它允许使�
       sys.stderr.write("KGP not supported in this terminal.\n")
       sys.exit(1)
 
+  # Prefer Shared memory if supported, fallback to direct
   medium = "s" if query_shared_memory_support() else "d"
   placeholders = []
   encoder = None
 
   sys.stderr.write("Transmission medium: " + ("Shared Memory\n" if medium == "s" else "Direct Data\n"))
 
+  # Prefer Unicode Placeholders if supported, fallback to normal KGP
   if query_unicode_placeholder_support():
       sys.stderr.write("Using Unicode Placeholders\n")
       encoder = KGPEncoderUnicode(image_path)
       placeholders = encoder.construct_unicode_placeholders()
-
   else:
       sys.stderr.write("Using KGP without Unicode Placeholders\n")
       encoder = KGPEncoderBase(image_path)
@@ -949,11 +950,15 @@ Unicode Placeholders 是 Kitty 图像协议的一个独特功能, 它允许使�
       print(seq, end="")
   sys.stdout.flush()
 
+  # placeholders will be empty if using normal KGP,
+  # in which case nothing will be printed in this loop
   for i, line in enumerate(placeholders):
       print(line, end="" if i == len(placeholders) - 1 else "\n")
 
+  # Delete image on user input
   input()
-  encoder.delete_image()
+  print(encoder.delete_image(), end="")
+  sys.stdout.flush()
   ```
 
 ## 默认 Shell
