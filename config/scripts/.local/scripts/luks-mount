@@ -7,17 +7,107 @@
 #     - LUKS_PARTITION: Path to the LUKS partition (overrides auto-detection).
 #     - LUKS_MAPPER_NAME: Name for the LUKS mapper (default: luks_mount_<timestamp>).
 #     - LUKS_MOUNT_POINT: Mount point for the decrypted volume (default: /mnt/luks).
+#     - LUKS_NESTED_UUID: UUID of a device containing a LUKS image file (overrides normal selection).
+#     - LUKS_NESTED_PATH: Relative path to the LUKS image file inside the partition defined by LUKS_NESTED_UUID.
+#	  - LUKS_SHELL: Shell to use inside the mounted directory (defaults to $SHELL).
+#	  - LUKS_SHELL_COMMAND: Optional command to run instead of an interactive shell (e.g. "ls -la" or "htop").
+#	  - LUKS_KEYFILE: Optional path to a keyfile for unlocking the LUKS volume (instead of password prompt).
 #   - Cleans up on exit (unmounts and closes the LUKS volume).
 # Requirements:
 # - cryptsetup
 # - sudo privileges
 # - fzf (optional, for selecting among multiple LUKS devices)
+# - util-linux (findmnt, lsblk)
 
 set -euo pipefail
 
-[ "$(id -u)" -eq 0 ] && {
-	echo "[ERROR] Do not run this script in sudo mode." >&2
-	exit 1
+# [ "$(id -u)" -eq 0 ] && {
+# 	echo "[ERROR] Do not run this script in sudo mode." >&2
+# 	exit 1
+# }
+
+LUKS_PARTITION="${LUKS_PARTITION:-}"
+# Default to a unique name based on timestamp
+LUKS_MAPPER_NAME="${LUKS_MAPPER_NAME:-luks_mount_$(date +%s)}"
+# Fixed default mount point though
+LUKS_MOUNT_POINT="${LUKS_MOUNT_POINT:-/mnt/luks}"
+LUKS_NESTED_UUID="${LUKS_NESTED_UUID:-}"
+LUKS_NESTED_PATH="${LUKS_NESTED_PATH:-}"
+LUKS_SHELL="${LUKS_SHELL:-${SHELL:-/bin/bash}}"
+LUKS_SHELL_COMMAND="${LUKS_SHELL_COMMAND:-}"
+LUKS_KEYFILE="${LUKS_KEYFILE:-}"
+
+# Flag to track if we created the mount point directory
+mountpoint_created=0
+
+# --- Cleanup Logic ---
+cleanup() {
+	echo "[INFO] Cleaning up..." >&2
+	# Make sure we are not in the mount point when unmounting
+	popd &>/dev/null || cd "$HOME" || cd / || true
+	if mountpoint -q "$LUKS_MOUNT_POINT"; then
+		echo "[INFO] Unmounting LUKS volume..." >&2
+		sudo umount "$LUKS_MOUNT_POINT" || echo "[WARNING] Failed to unmount." >&2
+	fi
+	if [ -e "/dev/mapper/$LUKS_MAPPER_NAME" ]; then
+		echo "[INFO] Closing LUKS mapper..." >&2
+		sudo cryptsetup close "$LUKS_MAPPER_NAME" || echo "[WARNING] Failed to close LUKS mapper." >&2
+	fi
+	if [ $mountpoint_created -eq 1 ] && [ -d "$LUKS_MOUNT_POINT" ]; then
+		echo "[INFO] Removing mount point..." >&2
+		sudo rmdir "$LUKS_MOUNT_POINT" || echo "[WARNING] Failed to remove mount point." >&2
+	fi
+	# Cleanup Outer Partition if it exists
+	if [ -n "$OUTER_MOUNT_POINT" ]; then
+		if mountpoint -q "$OUTER_MOUNT_POINT"; then
+			echo "[INFO] Unmounting outer partition..." >&2
+			sudo umount "$OUTER_MOUNT_POINT" || echo "[WARNING] Failed to unmount outer partition." >&2
+		fi
+		if [ -d "$OUTER_MOUNT_POINT" ]; then
+			echo "[INFO] Removing outer mount point..." >&2
+			rmdir "$OUTER_MOUNT_POINT" || echo "[WARNING] Failed to remove outer mount point." >&2
+		fi
+	fi
+	echo "[INFO] Done." >&2
+}
+trap cleanup EXIT INT TERM
+
+# --- Nested Partition Logic ---
+OUTER_MOUNT_POINT=""
+handle_nested_partition() {
+	local uuid="$1"
+	local NESTED_path="$2"
+
+	# Find the device node for the given UUID
+	local outer_device
+	outer_device=$(lsblk -nplo NAME,UUID | awk -v uuid="$uuid" '$2 == uuid {print $1}')
+
+	if [ -z "$outer_device" ]; then
+		echo "[ERROR] Could not find device with UUID=$uuid" >&2
+		exit 1
+	fi
+
+	echo "[INFO] Found outer device: $outer_device" >&2
+
+	# Create a temporary mount point for the outer partition
+	OUTER_MOUNT_POINT=$(mktemp -d -t luks_outer_XXXXXX)
+
+	echo "[INFO] Mounting outer device to $OUTER_MOUNT_POINT..." >&2
+	if ! sudo mount "$outer_device" "$OUTER_MOUNT_POINT"; then
+		echo "[ERROR] Failed to mount outer device." >&2
+		rmdir "$OUTER_MOUNT_POINT"
+		exit 1
+	fi
+
+	local luks_image="$OUTER_MOUNT_POINT/$NESTED_path"
+	if [ ! -f "$luks_image" ]; then
+		echo "[ERROR] LUKS image not found at: $luks_image" >&2
+		sudo umount "$OUTER_MOUNT_POINT"
+		rmdir "$OUTER_MOUNT_POINT"
+		exit 1
+	fi
+
+	LUKS_PARTITION="$luks_image"
 }
 
 find_luks_device() {
@@ -43,58 +133,54 @@ find_luks_device() {
 	fi
 }
 
-LUKS_PARTITION="${LUKS_PARTITION:-$(find_luks_device)}"
-[ -z "$LUKS_PARTITION" ] && exit 1
+if [ -n "$LUKS_NESTED_UUID" ]; then
+	if [ -z "$LUKS_NESTED_PATH" ]; then
+		echo "[ERROR] LUKS_NESTED_PATH must be set when using LUKS_NESTED_UUID." >&2
+		exit 1
+	fi
+	handle_nested_partition "$LUKS_NESTED_UUID" "$LUKS_NESTED_PATH"
+elif [ -z "$LUKS_PARTITION" ]; then
+	LUKS_PARTITION=$(find_luks_device)
+fi
 
-# Default to a unique name based on timestamp
-LUKS_MAPPER_NAME="${LUKS_MAPPER_NAME:-luks_mount_$(date +%s)}"
-# Fixed default mount point though
-LUKS_MOUNT_POINT="${LUKS_MOUNT_POINT:-/mnt/luks}"
+[ -z "$LUKS_PARTITION" ] && exit 1
 
 echo "[INFO] Partition: $LUKS_PARTITION" >&2
 echo "[INFO] Mapper:    $LUKS_MAPPER_NAME" >&2
 echo "[INFO] Mount:     $LUKS_MOUNT_POINT" >&2
 
-mount_point_created=0
 if [ ! -d "$LUKS_MOUNT_POINT" ]; then
 	sudo mkdir -p "$LUKS_MOUNT_POINT"
-	mount_point_created=1
+	mountpoint_created=1
 fi
 
-if ! sudo cryptsetup open "$LUKS_PARTITION" "$LUKS_MAPPER_NAME"; then
+CRYPT_ARGS=()
+if [ -n "$LUKS_KEYFILE" ]; then
+    if [ ! -f "$LUKS_KEYFILE" ]; then
+        echo "[ERROR] Key file not found: $LUKS_KEYFILE" >&2
+        exit 1
+    fi
+    CRYPT_ARGS+=(--key-file "$LUKS_KEYFILE")
+fi
+
+if ! sudo cryptsetup open "${CRYPT_ARGS[@]}" "$LUKS_PARTITION" "$LUKS_MAPPER_NAME"; then
 	echo "[ERROR] Failed to open device." >&2
 	exit 1
 fi
-
-cleanup() {
-	echo "[INFO] Cleaning up..." >&2
-	# Make sure we are not in the mount point when unmounting
-	cd "$HOME" || true
-	if mountpoint -q "$LUKS_MOUNT_POINT"; then
-		sudo umount "$LUKS_MOUNT_POINT" || echo "[WARNING] Failed to unmount." >&2
-	fi
-	if [ -e "/dev/mapper/$LUKS_MAPPER_NAME" ]; then
-		sudo cryptsetup close "$LUKS_MAPPER_NAME" || echo "[WARNING] Failed to close LUKS mapper." >&2
-	fi
-	if [ $mount_point_created -eq 1 ] && [ -d "$LUKS_MOUNT_POINT" ]; then
-		sudo rmdir "$LUKS_MOUNT_POINT" || echo "[WARNING] Failed to remove mount point." >&2
-	fi
-	echo "[INFO] Done." >&2
-}
-trap cleanup EXIT INT TERM
 
 sudo mount "/dev/mapper/$LUKS_MAPPER_NAME" "$LUKS_MOUNT_POINT"
 
 echo "[INFO] Successfully mounted at $LUKS_MOUNT_POINT." >&2
 echo "[INFO] Exit this shell to unmount and close the LUKS volume." >&2
 
-cd "$LUKS_MOUNT_POINT"
-USER_SHELL="${SHELL:-/bin/bash}"
-if [[ "$USER_SHELL" == *"/bash" ]]; then
-	"$USER_SHELL" --rcfile <(
+pushd "$LUKS_MOUNT_POINT" &>/dev/null
+if [[ -n "$LUKS_SHELL_COMMAND" ]]; then
+	eval "$LUKS_SHELL_COMMAND"
+elif [[ "$LUKS_SHELL" == *"/bash" ]]; then
+	"$LUKS_SHELL" --rcfile <(
 		cat ~/.bashrc 2>/dev/null
 		printf '%s\n' 'PS1="\[\e[1;31m\][LUKS]\[\e[0m\][\u@\h \W]\$ "'
 	) -i
 else
-	"$USER_SHELL"
+	"$LUKS_SHELL"
 fi
