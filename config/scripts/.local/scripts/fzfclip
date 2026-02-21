@@ -105,7 +105,7 @@ _graphics_query() {
 		trap 'stty "$stty_orig"' EXIT
 		stty -echo -icanon min 1 time 0
 
-		printf "%s%s%s" "$ITERM2_QUERY_CODE" "$KGP_QUERY_CODE" "$FENCE_CODE" > /dev/tty
+		printf "%s%s%s" "$ITERM2_QUERY_CODE" "$KGP_QUERY_CODE" "$FENCE_CODE" >/dev/tty
 
 		support_kgp=0
 		support_iterm2=0
@@ -139,7 +139,7 @@ _graphics_query() {
 		if [[ "$response" =~ $'\x1b'\[\?([0-9;]*)c ]]; then
 			params="${BASH_REMATCH[1]}"
 
-			IFS=';' read -ra codes <<< "$params"
+			IFS=';' read -ra codes <<<"$params"
 
 			for code in "${codes[@]}"; do
 				if [[ "$code" == "4" ]]; then
@@ -176,9 +176,11 @@ _check_graphics_support() {
 	result=$(_graphics_query)
 	if [[ "$result" == *"kitty"* ]]; then
 		SUPPORT_ICAT=1
-	elif [[ "$result" == *"sixels"* ]]; then
+	fi
+	if [[ "$result" == *"sixels"* ]]; then
 		SUPPORT_SIXEL=1
-	elif [[ "$result" == *"iterm"* ]]; then
+	fi
+	if [[ "$result" == *"iterm"* ]]; then
 		SUPPORT_ITERM2=1
 	fi
 }
@@ -327,7 +329,6 @@ _preview_file() {
 }
 export -f _preview_file
 
-
 preview() {
 	_clear_preview
 
@@ -400,16 +401,16 @@ export -f add_num
 # Action when confirmed
 
 copy_selection() {
-    local input="$1"
+	local input="$1"
 	local content
 	content=$(echo -n "$input" | awk "{print \$3}")
 
-    if [[ "$content" == "[URL]"* ]]; then
+	if [[ "$content" == "[URL]"* ]]; then
 		echo -n "$input" | cliphist decode | wl-copy --type text/uri-list
 
-    else
+	else
 		echo -n "$input" | cliphist decode | wl-copy
-    fi
+	fi
 
 	echo -n "$input" | cliphist delete || true
 }
@@ -449,4 +450,4 @@ $RELOAD_CMD | fzf \
 	--preview-window=down:60%,wrap \
 	--preview "preview {}" \
 	--bind "enter:execute-silent(bash -c 'copy_selection \"\$1\"' -- {})+accept" \
->/dev/null || [ $? -eq 141 ]
+	>/dev/null || [ $? -eq 141 ]

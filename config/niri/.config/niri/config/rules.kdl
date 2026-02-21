@@ -54,6 +54,7 @@ window-rule {
     match app-id="org.gnome.NautilusPreviewer"
     match app-id="coin"
     match app-id="wallpaper-carousel"
+    match app-id="wallreel"
     match app-id="be.alexandervanhee.gradia"
     match title="^(图片查看器)(.*)$" // QQ
     open-floating true
