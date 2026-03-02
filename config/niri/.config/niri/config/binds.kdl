@@ -19,7 +19,7 @@ binds {
     Mod+Shift+Return { spawn "wezterm"; }
     Mod+T { spawn "kitty"; }
     Mod+Return { spawn "kitty"; }
-    Mod+Shift+W { spawn "wallpaper-carousel"; }
+    Mod+Shift+W { spawn "wallreel"; }
     Mod+O { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
 
     // Quickshell

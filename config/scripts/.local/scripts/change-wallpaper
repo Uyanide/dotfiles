@@ -19,7 +19,7 @@ exec {LOCK_FD}>/tmp/"$(basename "$0")".lock
 
 flock -n "$LOCK_FD" || {
     echo "Another instance is running. Exiting."
-    notify-send -a "change-wallpaper" "Error" "Another instance is running. Exiting."
+    # notify-send -a "change-wallpaper" "Error" "Another instance is running. Exiting."
     exit 1
 }
 
@@ -120,7 +120,7 @@ blurred_cache_image="$blur_cache_dir/${hash}.${wallpaper_ext}"
         if [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
             swww img -n backdrop "$blurred_image" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
         fi
-        notify-send -a "change-wallpaper" "Blurred Wallpaper Applied" "$blurred_image" -i "$blurred_image"
+        # notify-send -a "change-wallpaper" "Blurred Wallpaper Applied" "$blurred_image" -i "$blurred_image"
     }
 
     ### Check if cached blurred image exists
@@ -166,19 +166,28 @@ blurred_cache_image="$blur_cache_dir/${hash}.${wallpaper_ext}"
 
 # Apply wallpaper
 
+skip_colortheme=0
+if [ "${4-}" = "--skip-colortheme" ]; then
+    skip_colortheme=1
+fi
+
 if [ "$XDG_CURRENT_DESKTOP" = "Hyprland" ]; then
     swww img -n background "$wallpaper_image" --transition-type fade --transition-duration 2 >/dev/null 2>/dev/null
 
-    notify-send -a "change-wallpaper" "Wallpaper Changed" "$image" -i "$wallpaper_image"
+    # notify-send -a "change-wallpaper" "Wallpaper Changed" "$image" -i "$wallpaper_image"
 
-    change-colortheme -i "$wallpaper_image" || exit 1
+    if [ "$skip_colortheme" = 0 ]; then
+        change-colortheme -i "$wallpaper_image" || exit 1
+    fi
 elif [ "$XDG_CURRENT_DESKTOP" = "niri" ]; then
     ### Handled in wallpaper-daemon
     # swww img -n background "$wallpaper_image" --transition-type fade --transition-duration 2 > /dev/null 2> /dev/null
 
-    notify-send -a "change-wallpaper" "Wallpaper Changed" "$image" -i "$wallpaper_image"
+    # notify-send -a "change-wallpaper" "Wallpaper Changed" "$image" -i "$wallpaper_image"
 
-    change-colortheme -i "$wallpaper_image" || exit 1
+    if [ "$skip_colortheme" = 0 ]; then
+        change-colortheme -i "$wallpaper_image" || exit 1
+    fi
 else
     echo "Unsupported desktop environment: $XDG_CURRENT_DESKTOP"
     exit 1

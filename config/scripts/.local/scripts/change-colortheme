@@ -331,15 +331,15 @@ def main():
             for script in SCRIPTS[app]:
                 tasks.append(executor.submit(run_script, script, script_args))
 
-    subprocess.run(
-        [
-            "notify-send",
-            "-a",
-            "change-colortheme",
-            "Colortheme Changed",
-            f"Palette: {palette_name}\nFlavor: {flavor}\nApplied to {success_count} apps",
-        ]
-    )
+    # subprocess.run(
+    #     [
+    #         "notify-send",
+    #         "-a",
+    #         "change-colortheme",
+    #         "Colortheme Changed",
+    #         f"Palette: {palette_name}\nFlavor: {flavor}\nApplied to {success_count} apps",
+    #     ]
+    # )
 
 
 if __name__ == "__main__":

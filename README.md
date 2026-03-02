@@ -79,7 +79,7 @@ This setup is currently only adapted for Niri.
 
 ## Wallpaper & Colortheme
 
-- [wallpaper-carousel](https://github.com/Uyanide/Wallpaper_Carousel): an Image Carousel implemented with Qt Widgets to browse and set wallpapers from.
+- [WallReel](https://github.com/Uyanide/WallReel): an Image Carousel implemented with QtQuick to browse and set wallpapers from.
 - [wallpaper-daemon](./config/scripts/.local/scripts/wallpaper-daemon): automatic blur (only works in niri).
 - [change-wallpaper](./config/scripts/.local/scripts/change-wallpaper): script that changes wallpaper with a few extra features.
 - [change-colortheme](./config/scripts/.local/scripts/change-colortheme): script that extract colors from the current wallpaper and generate a catppuccin color scheme accordingly.

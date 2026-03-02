@@ -9,13 +9,13 @@ Singleton {
     readonly property string recordingDir: CacheService.recordingDir
     property bool isRecording: false
     property bool isStopping: false
-    readonly property string codec: "av1_nvenc"
+    readonly property string codec: "libx264"
     readonly property string container: "mkv"
-    readonly property string pixelFormat: "p010le"
+    readonly property string pixelFormat: "yuv420p"
     property string recordingDisplay: ""
     readonly property int framerate: 60
     readonly property var codecParams: Object.freeze([
-        "preset=p4", "rc=constqp", "qp=18",
+        "preset=ultrafast", "crf=15", "tune=zerolatency",
         "color_range=tv"
     ])
     readonly property var filterArgs: ""
