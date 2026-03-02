@@ -11,7 +11,7 @@
 ### Other fonts (used but not involved in fontconfig)
 
 - Sour Gummy (from [Google Fonts](https://fonts.google.com/specimen/Sour+Gummy))
-- Font Awesome 6 Free (extracted from an AUR package which no longer exists)
+- Font Awesome 6 Free (extracted from an AUR package that no longer exists)
 - `extra/ttf-meslo-nerd`
 - `archlinuxcn/ttf-lxgw-wenkai`
 
