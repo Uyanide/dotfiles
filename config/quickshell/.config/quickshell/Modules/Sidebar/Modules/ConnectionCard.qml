@@ -8,7 +8,7 @@ import qs.Services
 UBox {
     id: root
 
-    property string currentPanel: "bluetooth" // "bluetooth", "wifi"
+    property string currentPanel: ShellState.leftSiderbarTab // "bluetooth", "wifi"
 
     implicitHeight: contentLoader.implicitHeight + toggleGroup.implicitHeight + Style.marginXS * 2 + Style.marginS * 2
 
@@ -21,13 +21,14 @@ UBox {
             Layout.fillWidth: true
 
             Rectangle {
+                // border.color: Colors.mOutline
+
                 id: toggleGroup
 
                 Layout.preferredWidth: Style.baseWidgetSize * 2.8
                 Layout.preferredHeight: Style.baseWidgetSize
                 radius: Math.min(Style.radiusS, height / 2)
                 color: Colors.mSurface
-                // border.color: Colors.mOutline
 
                 Row {
                     anchors.fill: parent
@@ -41,18 +42,6 @@ UBox {
                         radius: Math.min(Style.radiusS, height / 2)
                         color: root.currentPanel === "bluetooth" ? Colors.mPrimary : "transparent"
 
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-
                         UIcon {
                             anchors.centerIn: parent
                             iconName: "bluetooth"
@@ -63,14 +52,32 @@ UBox {
                                 ColorAnimation {
                                     duration: 200
                                 }
+
                             }
+
                         }
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: root.currentPanel = "bluetooth"
+                            onClicked: ShellState.leftSiderbarTab = "bluetooth"
                             cursorShape: Qt.PointingHandCursor
                         }
+
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+
+                        }
+
                     }
 
                     Rectangle {
@@ -80,18 +87,6 @@ UBox {
                         height: parent.height
                         radius: Math.min(Style.radiusS, height / 2)
                         color: root.currentPanel === "wifi" ? Colors.mPrimary : "transparent"
-
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
 
                         UIcon {
                             anchors.centerIn: parent
@@ -103,16 +98,36 @@ UBox {
                                 ColorAnimation {
                                     duration: 200
                                 }
+
                             }
+
                         }
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: root.currentPanel = "wifi"
+                            onClicked: ShellState.leftSiderbarTab = "wifi"
                             cursorShape: Qt.PointingHandCursor
                         }
+
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+
+                        }
+
                     }
+
                 }
+
             }
 
             Item {
@@ -147,7 +162,9 @@ UBox {
                             }
                             colorFg: Colors.mGreen
                         }
+
                     }
+
                 }
 
                 Component {
@@ -171,8 +188,11 @@ UBox {
                             onClicked: NetworkService.scan()
                             colorFg: Colors.mGreen
                         }
+
                     }
+
                 }
+
             }
 
         }
@@ -186,7 +206,6 @@ UBox {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-
             sourceComponent: currentPanel === "bluetooth" ? bluetoothComponent : wifiComponent
 
             Component {
@@ -196,6 +215,7 @@ UBox {
                     anchors.fill: parent
                     anchors.margins: Style.marginS
                 }
+
             }
 
             Component {
@@ -205,7 +225,11 @@ UBox {
                     anchors.fill: parent
                     anchors.margins: Style.marginS
                 }
+
             }
+
         }
+
     }
+
 }

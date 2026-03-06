@@ -4,10 +4,10 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Bluetooth
 import Quickshell.Wayland
-import qs.Constants
-import qs.Services
 import qs.Components
+import qs.Constants
 import qs.Modules.Sidebar.Misc
+import qs.Services
 
 ColumnLayout {
     spacing: Style.marginM
@@ -119,7 +119,6 @@ ColumnLayout {
             ColumnLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: Style.marginL
-
                 visible: {
                     if (!BluetoothService.adapter || !BluetoothService.adapter.discovering || !Bluetooth.devices)
                         return false;
@@ -138,7 +137,7 @@ ColumnLayout {
                 }
 
                 UText {
-                    text: "Pairing Mode"
+                    text: "Scanning for devices..."
                     pointSize: Style.fontSizeM
                     color: Colors.mOnSurfaceVariant
                     Layout.alignment: Qt.AlignHCenter

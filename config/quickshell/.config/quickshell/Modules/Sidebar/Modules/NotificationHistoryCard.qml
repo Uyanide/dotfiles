@@ -491,7 +491,7 @@ Rectangle {
                                     readonly property real swipeDismissThreshold: Math.max(110, width * 0.3)
                                     readonly property int removeAnimationDuration: Style.animationNormal
                                     readonly property int notificationTextFormat: notificationDelegate.isExpanded ? Text.MarkdownText : Text.StyledText
-                                    readonly property real actionButtonSize: Style.baseWidgetSize * 0.7
+                                    readonly property real actionButtonSize: Style.baseWidgetSize * 0.8
                                     readonly property real buttonClusterWidth: notificationDelegate.actionButtonSize * 2 + Style.marginXS
                                     readonly property real iconSize: 40
                                     // Parse actions safely

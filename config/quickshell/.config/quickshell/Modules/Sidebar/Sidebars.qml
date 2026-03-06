@@ -69,7 +69,7 @@ Variants {
                     Layout.fillWidth: true
                 }
 
-                NotificationHistoryCard {
+                NotificationNoteToggleCard {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                 }

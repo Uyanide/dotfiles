@@ -13,6 +13,8 @@ Singleton {
     property alias notificationsState: adapter.notificationsState
     property alias lyricsState: adapter.lyricsState
     property alias sunsetState: adapter.sunsetState
+    property alias leftSiderbarTab: adapter.leftSiderbarTab
+    property alias rightSiderbarTab: adapter.rightSiderbarTab
 
     function save() {
         saveTimer.restart();
@@ -21,6 +23,8 @@ Singleton {
     onNotificationsStateChanged: save()
     onLyricsStateChanged: save()
     onSunsetStateChanged: save()
+    onLeftSiderbarTabChanged: save()
+    onRightSiderbarTabChanged: save()
     Component.onCompleted: {
         stateFileView.path = stateFile;
     }
@@ -51,6 +55,8 @@ Singleton {
             property var sunsetState: ({
                 "enabled": true
             })
+            property string leftSiderbarTab: "bluetooth"
+            property string rightSiderbarTab: "notes"
         }
 
     }
