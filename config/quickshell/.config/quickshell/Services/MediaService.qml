@@ -186,7 +186,6 @@ Singleton {
         if (newPlayer !== currentPlayer) {
             currentPlayer = newPlayer;
             currentPosition = currentPlayer ? currentPlayer.position : 0;
-            Logger.d("Media", "Switching player");
         }
     }
 

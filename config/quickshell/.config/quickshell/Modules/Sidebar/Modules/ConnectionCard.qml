@@ -10,7 +10,7 @@ UBox {
 
     property string currentPanel: ShellState.leftSiderbarTab // "bluetooth", "wifi"
 
-    implicitHeight: contentLoader.implicitHeight + toggleGroup.implicitHeight + Style.marginXS * 2 + Style.marginS * 2
+    implicitHeight: (root.currentPanel === "bluetooth" ? btContentLoader.implicitHeight : wifiContentLoader.implicitHeight) + toggleGroup.implicitHeight + Style.marginXS * 2 + Style.marginS * 2
 
     ColumnLayout {
         spacing: Style.marginXS
@@ -20,122 +20,62 @@ UBox {
         RowLayout {
             Layout.fillWidth: true
 
-            Rectangle {
-                // border.color: Colors.mOutline
-
+            UDualIconToggle {
                 id: toggleGroup
 
                 Layout.preferredWidth: Style.baseWidgetSize * 2.8
                 Layout.preferredHeight: Style.baseWidgetSize
-                radius: Math.min(Style.radiusS, height / 2)
-                color: Colors.mSurface
-
-                Row {
-                    anchors.fill: parent
-                    spacing: Style.marginS / 2
-
-                    Rectangle {
-                        id: btnBluetooth
-
-                        width: root.currentPanel === "bluetooth" ? (parent.width - parent.spacing) * 0.65 : (parent.width - parent.spacing) * 0.35
-                        height: parent.height
-                        radius: Math.min(Style.radiusS, height / 2)
-                        color: root.currentPanel === "bluetooth" ? Colors.mPrimary : "transparent"
-
-                        UIcon {
-                            anchors.centerIn: parent
-                            iconName: "bluetooth"
-                            iconSize: Style.fontSizeL
-                            color: root.currentPanel === "bluetooth" ? Colors.mOnPrimary : Colors.mOnSurface
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 200
-                                }
-
-                            }
-
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: ShellState.leftSiderbarTab = "bluetooth"
-                            cursorShape: Qt.PointingHandCursor
-                        }
-
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-
-                        }
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-
-                        }
-
-                    }
-
-                    Rectangle {
-                        id: btnWifi
-
-                        width: root.currentPanel === "wifi" ? (parent.width - parent.spacing) * 0.65 : (parent.width - parent.spacing) * 0.35
-                        height: parent.height
-                        radius: Math.min(Style.radiusS, height / 2)
-                        color: root.currentPanel === "wifi" ? Colors.mPrimary : "transparent"
-
-                        UIcon {
-                            anchors.centerIn: parent
-                            iconName: "wifi"
-                            iconSize: Style.fontSizeL
-                            color: root.currentPanel === "wifi" ? Colors.mOnPrimary : Colors.mOnSurface
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 200
-                                }
-
-                            }
-
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: ShellState.leftSiderbarTab = "wifi"
-                            cursorShape: Qt.PointingHandCursor
-                        }
-
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-
-                        }
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-
-                        }
-
-                    }
-
+                firstOptionValue: "bluetooth"
+                firstOptionIcon: "bluetooth"
+                secondOptionValue: "wifi"
+                secondOptionIcon: "wifi"
+                currentValue: root.currentPanel
+                onToggled: (value) => {
+                    ShellState.leftSiderbarTab = value;
                 }
-
             }
 
             Item {
                 Layout.fillWidth: true
             }
 
-            Loader {
-                sourceComponent: currentPanel === "bluetooth" ? bluetoothHeaderComponent : wifiHeaderComponent
+            Item {
+                implicitWidth: Math.max(btHeaderLoader.implicitWidth, wfHeaderLoader.implicitWidth)
+                implicitHeight: Math.max(btHeaderLoader.implicitHeight, wfHeaderLoader.implicitHeight)
+
+                Loader {
+                    id: btHeaderLoader
+
+                    anchors.right: parent.right
+                    sourceComponent: bluetoothHeaderComponent
+                    opacity: root.currentPanel === "bluetooth" ? 1 : 0
+                    visible: opacity > 0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 300
+                        }
+
+                    }
+
+                }
+
+                Loader {
+                    id: wfHeaderLoader
+
+                    anchors.right: parent.right
+                    sourceComponent: wifiHeaderComponent
+                    opacity: root.currentPanel === "wifi" ? 1 : 0
+                    visible: opacity > 0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 300
+                        }
+
+                    }
+
+                }
 
                 Component {
                     id: bluetoothHeaderComponent
@@ -201,12 +141,66 @@ UBox {
             Layout.fillWidth: true
         }
 
-        Loader {
-            id: contentLoader
+        Item {
+            id: contentContainer
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            sourceComponent: currentPanel === "bluetooth" ? bluetoothComponent : wifiComponent
+            clip: true
+
+            Loader {
+                id: btContentLoader
+
+                width: parent.width
+                height: parent.height
+                x: root.currentPanel === "bluetooth" ? 0 : -width
+                opacity: root.currentPanel === "bluetooth" ? 1 : 0
+                sourceComponent: bluetoothComponent
+
+                Behavior on x {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+            }
+
+            Loader {
+                id: wifiContentLoader
+
+                width: parent.width
+                height: parent.height
+                x: root.currentPanel === "wifi" ? 0 : width
+                opacity: root.currentPanel === "wifi" ? 1 : 0
+                sourceComponent: wifiComponent
+
+                Behavior on x {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+            }
 
             Component {
                 id: bluetoothComponent

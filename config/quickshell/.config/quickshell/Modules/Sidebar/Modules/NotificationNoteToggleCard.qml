@@ -14,127 +14,73 @@ Item {
         anchors.fill: parent
         spacing: Style.marginM
 
-        Rectangle {
+        UDualIconToggle {
             id: toggleGroup
 
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredWidth: Style.baseWidgetSize * 2.8
             Layout.preferredHeight: Style.baseWidgetSize
-            radius: Math.min(Style.radiusS, height / 2)
-            color: Colors.mSurface
-
-            Row {
-                anchors.fill: parent
-                spacing: Style.marginS / 2
-
-                Rectangle {
-                    id: btnNotifications
-
-                    width: root.currentPanel === "notifications" ? (parent.width - parent.spacing) * 0.65 : (parent.width - parent.spacing) * 0.35
-                    height: parent.height
-                    radius: Math.min(Style.radiusS, height / 2)
-                    color: root.currentPanel === "notifications" ? Colors.mPrimary : "transparent"
-
-                    UIcon {
-                        anchors.centerIn: parent
-                        iconName: "bell"
-                        iconSize: Style.fontSizeL
-                        color: root.currentPanel === "notifications" ? Colors.mOnPrimary : Colors.mOnSurface
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-
-                        }
-
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: ShellState.rightSiderbarTab = "notifications"
-                        cursorShape: Qt.PointingHandCursor
-                    }
-
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: 250
-                            easing.type: Easing.OutCubic
-                        }
-
-                    }
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                        }
-
-                    }
-
-                }
-
-                Rectangle {
-                    id: btnNotes
-
-                    width: root.currentPanel === "notes" ? (parent.width - parent.spacing) * 0.65 : (parent.width - parent.spacing) * 0.35
-                    height: parent.height
-                    radius: Math.min(Style.radiusS, height / 2)
-                    color: root.currentPanel === "notes" ? Colors.mPrimary : "transparent"
-
-                    UIcon {
-                        anchors.centerIn: parent
-                        iconName: "notes"
-                        iconSize: Style.fontSizeL
-                        color: root.currentPanel === "notes" ? Colors.mOnPrimary : Colors.mOnSurface
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-
-                        }
-
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: ShellState.rightSiderbarTab = "notes"
-                        cursorShape: Qt.PointingHandCursor
-                    }
-
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: 250
-                            easing.type: Easing.OutCubic
-                        }
-
-                    }
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                        }
-
-                    }
-
-                }
-
+            firstOptionValue: "notifications"
+            firstOptionIcon: "bell"
+            secondOptionValue: "notes"
+            secondOptionIcon: "notes"
+            currentValue: root.currentPanel
+            onToggled: (value) => {
+                ShellState.rightSiderbarTab = value;
             }
-
         }
 
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            clip: true
 
             NotificationHistoryCard {
-                anchors.fill: parent
-                visible: root.currentPanel === "notifications"
+                width: parent.width
+                height: parent.height
+                x: root.currentPanel === "notifications" ? 0 : -width
+                opacity: root.currentPanel === "notifications" ? 1 : 0
+
+                Behavior on x {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
             }
 
             NoteCard {
-                anchors.fill: parent
-                visible: root.currentPanel === "notes"
+                width: parent.width
+                height: parent.height
+                x: root.currentPanel === "notes" ? 0 : width
+                opacity: root.currentPanel === "notes" ? 1 : 0
+
+                Behavior on x {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
             }
 
         }

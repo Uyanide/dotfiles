@@ -124,7 +124,7 @@ Singleton {
     Timer {
         id: fetchIPDebouncer
 
-        interval: 1000
+        interval: 5000
         repeat: false
         running: false
         onTriggered: {
