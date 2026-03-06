@@ -1,40 +1,154 @@
 import QtQuick
 import Quickshell
-import qs.Services
+import Quickshell.Io
+import qs.Constants
+import qs.Utils
 pragma Singleton
 
 Singleton {
     id: root
 
-    readonly property color primary: SettingsService.primaryColor
-    readonly property color transparent: "transparent"
-    readonly property color rosewater: "#f5e0dc"
-    readonly property color flamingo: "#f2cdcd"
-    readonly property color pink: "#f5c2e7"
-    readonly property color mauve: "#cba6f7"
-    readonly property color red: "#f38ba8"
-    readonly property color maroon: "#eba0ac"
-    readonly property color peach: "#fab387"
-    readonly property color yellow: "#f9e2af"
-    readonly property color green: "#a6e3a1"
-    readonly property color teal: "#94e2d5"
-    readonly property color sky: "#89dceb"
-    readonly property color sapphire: "#74c7ec"
-    readonly property color blue: "#89b4fa"
-    readonly property color lavender: "#b4befe"
-    readonly property color text: "#cdd6f4"
-    readonly property color subtext1: "#bac2de"
-    readonly property color subtext0: "#a6adc8"
-    readonly property color overlay2: "#9399b2"
-    readonly property color overlay1: "#7f849c"
-    readonly property color overlay0: "#6c7086"
-    readonly property color surface2: "#585b70"
-    readonly property color surface1: "#45475a"
-    readonly property color surface0: "#313244"
-    readonly property color surface: "#292a3c"
-    readonly property color base: "#1e1e2e"
-    readonly property color mantle: "#181825"
-    readonly property color crust: "#11111b"
-    readonly property color distroColor: "#74c7ec"
-    readonly property var cavaList: ["#b4befe", "#89b4fa", "#74c7ec", "#89dceb", "#94e2d5", "#a6e3a1", "#f9e2af", "#fab387"]
+    // Part of material3 color scheme
+    property color mPrimary: defaultColors.mPrimary
+    property color mOnPrimary: defaultColors.mOnPrimary
+    property color mError: defaultColors.mError
+    property color mOnError: defaultColors.mOnError
+    property color mSurface: defaultColors.mSurface
+    property color mOnSurface: defaultColors.mOnSurface
+    property color mSurfaceVariant: defaultColors.mSurfaceVariant
+    property color mOnSurfaceVariant: defaultColors.mOnSurfaceVariant
+    property color mOutline: defaultColors.mOutline
+    property color mShadow: defaultColors.mShadow
+    property color mHover: defaultColors.mHover
+    property color mOnHover: defaultColors.mOnHover
+    // Supplementary colors
+    property color mPink: defaultColors.mPink
+    property color mPurple: defaultColors.mPurple
+    property color mRed: defaultColors.mRed
+    property color mOrange: defaultColors.mOrange
+    property color mYellow: defaultColors.mYellow
+    property color mGreen: defaultColors.mGreen
+    property color mCyan: defaultColors.mCyan
+    property color mSky: defaultColors.mSky
+    property color mBlue: defaultColors.mBlue
+    property color mLavender: defaultColors.mLavender
+    // Special colors
+    property color distro: "#74c7ec"
+    property color transparent: "#00000000"
+    readonly property var cavaList: [mLavender, mBlue, mSky, mCyan, mGreen, mYellow, mOrange, mRed]
+
+    function reloadColors(newColors) {
+        if (typeof newColors === "string") {
+            try {
+                newColors = JSON.parse(newColors);
+            } catch (e) {
+                Logger.e("Colors", "Failed to parse colors.json, using default colors. Error:", e);
+                return ;
+            }
+        } else if (typeof newColors !== "object") {
+            Logger.w("Colors", "Invalid colors data, using default colors. Data:", newColors);
+            return ;
+        }
+        mPrimary = newColors.mPrimary || defaultColors.mPrimary;
+        mOnPrimary = newColors.mOnPrimary || defaultColors.mOnPrimary;
+        mError = newColors.mError || defaultColors.mError;
+        mOnError = newColors.mOnError || defaultColors.mOnError;
+        mSurface = newColors.mSurface || defaultColors.mSurface;
+        mOnSurface = newColors.mOnSurface || defaultColors.mOnSurface;
+        mSurfaceVariant = newColors.mSurfaceVariant || defaultColors.mSurfaceVariant;
+        mOnSurfaceVariant = newColors.mOnSurfaceVariant || defaultColors.mOnSurfaceVariant;
+        mOutline = newColors.mOutline || defaultColors.mOutline;
+        mShadow = newColors.mShadow || defaultColors.mShadow;
+        mHover = newColors.mHover || defaultColors.mHover;
+        mOnHover = newColors.mOnHover || defaultColors.mOnHover;
+        mPink = newColors.mPink || defaultColors.mPink;
+        mPurple = newColors.mPurple || defaultColors.mPurple;
+        mRed = newColors.mRed || defaultColors.mRed;
+        mOrange = newColors.mOrange || defaultColors.mOrange;
+        mYellow = newColors.mYellow || defaultColors.mYellow;
+        mGreen = newColors.mGreen || defaultColors.mGreen;
+        mCyan = newColors.mCyan || defaultColors.mCyan;
+        mSky = newColors.mSky || defaultColors.mSky;
+        mBlue = newColors.mBlue || defaultColors.mBlue;
+        mLavender = newColors.mLavender || defaultColors.mLavender;
+    }
+
+    function setColor(name, value) {
+        if (!adapter.colors)
+            adapter.colors = {
+        };
+
+        adapter.colors[name] = value;
+        colorFile.writeAdapter();
+    }
+
+    function unsetColor(name) {
+        if (!adapter.colors || !(name in adapter.colors))
+            return ;
+
+        delete adapter.colors[name];
+        colorFile.writeAdapter();
+    }
+
+    QtObject {
+        id: defaultColors
+
+        readonly property color mPrimary: "#89b4fa"
+        readonly property color mOnPrimary: "#11111b"
+        readonly property color mError: "#f38ba8"
+        readonly property color mOnError: "#11111b"
+        readonly property color mSurface: "#1e1e2e"
+        readonly property color mOnSurface: "#cdd6f4"
+        readonly property color mSurfaceVariant: "#313244"
+        readonly property color mOnSurfaceVariant: "#a6adc8"
+        readonly property color mOutline: "#585b70"
+        readonly property color mShadow: "#11111b"
+        readonly property color mHover: "#45475a"
+        readonly property color mOnHover: "#cdd6f4"
+        readonly property color mPink: "#f5c2e7"
+        readonly property color mPurple: "#cba6f7"
+        readonly property color mRed: "#f38ba8"
+        readonly property color mOrange: "#fab387"
+        readonly property color mYellow: "#f9e2af"
+        readonly property color mGreen: "#a6e3a1"
+        readonly property color mCyan: "#94e2d5"
+        readonly property color mSky: "#74c7ec"
+        readonly property color mBlue: "#89b4fa"
+        readonly property color mLavender: "#b4befe"
+    }
+
+    FileView {
+        id: colorFile
+
+        path: Paths.configDir + "colors.json"
+        printErrors: false
+        watchChanges: true
+        onFileChanged: reload()
+
+        JsonAdapter {
+            id: adapter
+
+            property var colors: ({
+            })
+        }
+
+    }
+
+    Connections {
+        function onColorsChanged() {
+            colorReloadTimer.restart();
+        }
+
+        target: adapter
+    }
+
+    Timer {
+        id: colorReloadTimer
+
+        interval: 50
+        running: true
+        repeat: false
+        onTriggered: reloadColors(adapter.colors)
+    }
+
 }

@@ -8,64 +8,71 @@ pragma Singleton
 Singleton {
     id: root
 
-    property bool defaultRunning: SettingsService.sunsetDefaultEnabled
     property double _latitude: -1
     property double _longitude: -1
-    property alias isRunning: sunsetProcess.running
     property int temperature: 0
-
-    function startSunset() {
-        if (isRunning)
-            return ;
-
-        if (_latitude == -1 || _longitude == -1) {
-            Logger.warn("Sunset", "Cannot start sunset process, invalid coordinates");
-            return ;
-        }
-        sunsetProcess.command = ["wlsunset", "-l", _latitude.toString(), "-L", _longitude.toString()];
-        sunsetProcess.running = true;
-    }
-
-    function stopSunset() {
-        if (!isRunning)
-            return ;
-
-        sunsetProcess.running = false;
-    }
+    property bool isEnabled: ShellState.sunsetState.enabled || false
 
     function toggleSunset() {
-        if (isRunning)
-            stopSunset();
-        else
-            startSunset();
+        ShellState.sunsetState = {
+            "enabled": !root.isEnabled
+        };
     }
 
     function setLat(lat) {
         _latitude = lat;
-        Logger.log("Sunset", "Updated latitude to " + lat);
+        Logger.i("Sunset", "Updated latitude to " + lat);
         checkStart();
     }
 
     function setLong(lng) {
         _longitude = lng;
-        Logger.log("Sunset", "Updated longitude to " + lng);
+        Logger.i("Sunset", "Updated longitude to " + lng);
         checkStart();
     }
 
     function checkStart() {
-        if (_latitude != -1 && _longitude != -1 && defaultRunning && !isRunning)
-            startSunset();
-
+        if (_latitude !== -1 && _longitude !== -1 && root.isEnabled) {
+            sunsetProcess.command = ["wlsunset", "-l", _latitude.toString(), "-L", _longitude.toString()];
+            sunsetProcess.running = true;
+        }
     }
 
     Connections {
-        target: LocationService.data
-        onLatitudeChanged: {
+        function onLatitudeChanged() {
+            Logger.d("");
             setLat(LocationService.data.latitude);
         }
-        onLongitudeChanged: {
+
+        function onLongitudeChanged() {
             setLong(LocationService.data.longitude);
         }
+
+        target: LocationService.data
+    }
+
+    Connections {
+        function onIsEnabledChanged() {
+            if (root.isEnabled)
+                checkStart();
+            else
+                sunsetProcess.running = false;
+        }
+
+        target: root
+    }
+
+    Connections {
+        function onRunningChanged() {
+            if (!sunsetProcess.running) {
+                temperature = 0;
+                Logger.i("Sunset", "Stopped sunset process");
+            } else {
+                Logger.i("Sunset", "Started sunset process");
+            }
+        }
+
+        target: sunsetProcess
     }
 
     Process {
@@ -80,15 +87,11 @@ Singleton {
                 var tempMatch = line.match(/setting temperature to (\d+) K/);
                 if (tempMatch && tempMatch.length == 2) {
                     temperature = parseInt(tempMatch[1]);
-                    Logger.log("Sunset", "Updated temperature to " + temperature + " K");
+                    Logger.d("Sunset", "Updated temperature to " + temperature + " K");
                 }
             }
         }
 
-    }
-
-    NetworkFetch {
-        id: curl
     }
 
 }

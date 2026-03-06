@@ -6,13 +6,14 @@ import qs.Constants
 Item {
     id: root
 
-    implicitHeight: parent.height
+    implicitHeight: Style.barHeight - Style.marginL * 2
+    implicitWidth: Style.marginM
 
     Rectangle {
         anchors.centerIn: parent
         width: 1.5
-        height: parent.height * 0.32
-        color: Colors.text
+        height: parent.height
+        color: Colors.mOnSurface
     }
 
 }

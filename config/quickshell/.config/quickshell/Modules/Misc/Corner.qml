@@ -11,7 +11,7 @@ Shape {
     property int concaveHeight: 60 * size
     property int offsetX: -20
     property int offsetY: -20
-    property color fillColor: Colors.base
+    property color fillColor: Colors.mSurface
     property int arcRadius: 20 * size
     property var modelData: null
     // Position flags derived from position string

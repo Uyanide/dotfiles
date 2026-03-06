@@ -60,7 +60,7 @@ animations {
 }
 
 layer-rule {
-    match namespace="^swww-daemonbackdrop$"
+    match namespace="backdrop$"
     place-within-backdrop true
 
 }

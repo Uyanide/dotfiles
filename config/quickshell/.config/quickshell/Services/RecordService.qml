@@ -1,12 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Constants
 import qs.Services
 import qs.Utils
 pragma Singleton
 
 Singleton {
-    readonly property string recordingDir: CacheService.recordingDir
+    readonly property string recordingDir: Paths.recordingDir
     property bool isRecording: false
     property bool isStopping: false
     readonly property string codec: "libx264"
@@ -14,10 +15,7 @@ Singleton {
     readonly property string pixelFormat: "yuv420p"
     property string recordingDisplay: ""
     readonly property int framerate: 60
-    readonly property var codecParams: Object.freeze([
-        "preset=ultrafast", "crf=15", "tune=zerolatency",
-        "color_range=tv"
-    ])
+    readonly property var codecParams: Object.freeze(["preset=ultrafast", "crf=15", "tune=zerolatency", "color_range=tv"])
     readonly property var filterArgs: ""
 
     function getFilename() {
@@ -36,12 +34,7 @@ Singleton {
     }
 
     function getVideoSource(callback) {
-        if (niriFocusedOutputProcess.running) {
-            Logger.warn("RecordService", "Already fetching focused output, returning null.");
-            callback(null);
-        }
-        niriFocusedOutputProcess.onGetName = callback;
-        niriFocusedOutputProcess.running = true;
+        return Niri.focusedOutput || null;
     }
 
     function startOrStop() {
@@ -53,11 +46,11 @@ Singleton {
 
     function stop() {
         if (!isRecording) {
-            Logger.warn("RecordService", "Not currently recording, cannot stop.");
+            Logger.w("RecordService", "Not currently recording, cannot stop.");
             return ;
         }
         if (isStopping) {
-            Logger.warn("RecordService", "Already stopping, please wait.");
+            Logger.w("RecordService", "Already stopping, please wait.");
             return ;
         }
         isStopping = true;
@@ -66,41 +59,44 @@ Singleton {
 
     function start() {
         if (isRecording || isStopping) {
-            Logger.warn("RecordService", "Already recording, cannot start.");
+            Logger.w("RecordService", "Already recording, cannot start.");
             return ;
         }
         isRecording = true;
-        getVideoSource((source) => {
-            if (!source) {
-                SendNotification.show("Recording failed", "Could not determine which display to record from.");
-                return ;
-            }
-            recordingDisplay = source;
-            const audioSink = getAudioSink();
-            if (!audioSink) {
-                SendNotification.show("Recording failed", "No audio sink available to record from.");
-                return ;
-            }
-            recordProcess.filePath = recordingDir + getFilename();
-            recordProcess.command = ["wf-recorder", "--audio=" + audioSink, "-o", source, "--codec", codec, "--pixel-format", pixelFormat, "--framerate", framerate.toString(), "-f", recordProcess.filePath];
-            for (const param of codecParams) {
-                recordProcess.command.push("-p");
-                recordProcess.command.push(param);
-            }
-            if (filterArgs !== "") {
-                recordProcess.command.push("-F");
-                recordProcess.command.push(filterArgs);
-            }
-            Logger.log("RecordService", "Starting recording with command: " + recordProcess.command.join(" "));
-            recordProcess.onErrorExit = function() {
-                SendNotification.show("Recording failed", "An error occurred while trying to record the screen.");
-            };
-            recordProcess.onNormalExit = function() {
-                SendNotification.show("Recording stopped", recordProcess.filePath);
-            };
-            recordProcess.running = true;
-            SendNotification.show("Recording started", "Recording to " + recordProcess.filePath);
-        });
+        const source = getVideoSource();
+        if (!source) {
+            SendNotification.show("Recording failed", "Could not determine which display to record from.");
+            Logger.e("RecordService", "No recording source available.");
+            return ;
+        }
+        recordingDisplay = source;
+        const audioSink = getAudioSink();
+        if (!audioSink) {
+            SendNotification.show("Recording failed", "No audio sink available to record from.");
+            Logger.e("RecordService", "No audio sink available.");
+            return ;
+        }
+        recordProcess.filePath = recordingDir + getFilename();
+        recordProcess.command = ["wf-recorder", "--audio=" + audioSink, "-o", source, "--codec", codec, "--pixel-format", pixelFormat, "--framerate", framerate.toString(), "-f", recordProcess.filePath];
+        for (const param of codecParams) {
+            recordProcess.command.push("-p");
+            recordProcess.command.push(param);
+        }
+        if (filterArgs !== "") {
+            recordProcess.command.push("-F");
+            recordProcess.command.push(filterArgs);
+        }
+        Logger.i("RecordService", "Starting recording with command: " + recordProcess.command.join(" "));
+        recordProcess.onErrorExit = function() {
+            Logger.e("RecordService", "Recording process exited with an error.");
+            SendNotification.show("Recording failed", "An error occurred while trying to record the screen.");
+        };
+        recordProcess.onNormalExit = function() {
+            Logger.i("RecordService", "Recording stopped, file saved to: " + recordProcess.filePath);
+            SendNotification.show("Recording stopped", recordProcess.filePath);
+        };
+        recordProcess.running = true;
+        SendNotification.show("Recording started", "Recording to " + recordProcess.filePath);
     }
 
     Process {
@@ -113,13 +109,13 @@ Singleton {
         running: false
         onExited: function(exitCode, exitStatus) {
             if (exitCode === 0) {
-                Logger.log("RecordService", "Recording stopped successfully.");
+                Logger.i("RecordService", "Recording stopped successfully.");
                 if (onNormalExit) {
                     onNormalExit();
                     onNormalExit = null;
                 }
             } else {
-                Logger.error("RecordService", "Recording process exited with error code: " + exitCode);
+                Logger.e("RecordService", "Recording process exited with error code: " + exitCode);
                 if (onErrorExit) {
                     onErrorExit();
                     onErrorExit = null;
@@ -129,38 +125,6 @@ Singleton {
             isStopping = false;
             recordingDisplay = "";
         }
-    }
-
-    Process {
-        id: niriFocusedOutputProcess
-
-        property var onGetName: null
-
-        running: false
-        command: ["niri", "msg", "focused-output"]
-        onExited: function(exitCode, exitStatus) {
-            if (exitCode !== 0) {
-                Logger.error("RecordService", "Failed to get focused output via niri.");
-                if (niriFocusedOutputProcess.onGetName) {
-                    niriFocusedOutputProcess.onGetName(null);
-                    niriFocusedOutputProcess.onGetName = null;
-                }
-            }
-        }
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: (data) => {
-                if (niriFocusedOutputProcess.onGetName) {
-                    const parts = data.split(' ');
-                    const name = parts.length > 0 ? parts[parts.length - 1].slice(1)?.slice(0, -1) : null;
-                    name ? Logger.log("RecordService", "Focused output is: " + name) : Logger.warn("RecordService", "No focused output found.");
-                    niriFocusedOutputProcess.onGetName(name);
-                    niriFocusedOutputProcess.onGetName = null;
-                }
-            }
-        }
-
     }
 
 }

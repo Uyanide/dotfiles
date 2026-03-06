@@ -6,14 +6,7 @@
 }
 . "$HOME/.local/snippets/apply-color-helper"
 
-if pgrep -x "quickshell" -u "$USER" >/dev/null; then
-    qs ipc call colors setPrimary ${colorHex} || {
-        log_error "Failed to send IPC command to quickshell"
-        exit 1
-    }
+qs ipc call colors setColor mPrimary "$colorHex"
 
-    log_success "quickshell"
-else
-    log_error "quickshell is not running. Cannot apply color."
-    exit 1
-fi
+
+log_success "quickshell"

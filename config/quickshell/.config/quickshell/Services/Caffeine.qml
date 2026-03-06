@@ -1,46 +1,33 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.Services
 import qs.Utils
 pragma Singleton
 
 Singleton {
     id: root
 
-    property string reason: "Application request"
     property bool isInhibited: false
+    property string reason: "User requested"
     property var activeInhibitors: []
-    // Different inhibitor strategies
-    property string strategy: "systemd"
+    property var timeout: null // in seconds
+    // True when the native Wayland IdleInhibitor is handling inhibition
+    // (set by the IdleInhibitor element in MainScreen via the nativeInhibitor property)
+    property bool nativeInhibitorAvailable: false
 
-    // Auto-detect the best strategy
-    function detectStrategy() {
-        if (strategy === "auto") {
-            // Check if systemd-inhibit is available
-            try {
-                var systemdResult = Quickshell.execDetached(["which", "systemd-inhibit"]);
-                strategy = "systemd";
-                return ;
-            } catch (e) {
-            }
-            try {
-                var waylandResult = Quickshell.execDetached(["which", "wayhibitor"]);
-                strategy = "wayland";
-                return ;
-            } catch (e) {
-            }
-            strategy = "systemd"; // Fallback to systemd even if not detected
-        }
+    function init() {
+        Logger.i("IdleInhibitor", "Service started");
     }
 
     // Add an inhibitor
     function addInhibitor(id, reason = "Application request") {
-        if (activeInhibitors.includes(id))
+        if (activeInhibitors.includes(id)) {
+            Logger.w("IdleInhibitor", "Inhibitor already active:", id);
             return false;
-
+        }
         activeInhibitors.push(id);
         updateInhibition(reason);
+        Logger.d("IdleInhibitor", "Added inhibitor:", id);
         return true;
     }
 
@@ -48,11 +35,12 @@ Singleton {
     function removeInhibitor(id) {
         const index = activeInhibitors.indexOf(id);
         if (index === -1) {
-            console.log("Inhibitor not found:", id);
+            Logger.w("IdleInhibitor", "Inhibitor not found:", id);
             return false;
         }
         activeInhibitors.splice(index, 1);
         updateInhibition();
+        Logger.d("IdleInhibitor", "Removed inhibitor:", id);
         return true;
     }
 
@@ -62,7 +50,6 @@ Singleton {
         if (shouldInhibit === isInhibited)
             return ;
 
-        // No change needed
         if (shouldInhibit)
             startInhibition(newReason);
         else
@@ -72,13 +59,12 @@ Singleton {
     // Start system inhibition
     function startInhibition(newReason) {
         reason = newReason;
-        if (strategy === "systemd")
-            startSystemdInhibition();
-        else if (strategy === "wayland")
-            startWaylandInhibition();
+        if (nativeInhibitorAvailable)
+            Logger.d("IdleInhibitor", "Native inhibitor active");
         else
-            return ;
+            startSubprocessInhibition();
         isInhibited = true;
+        Logger.i("IdleInhibitor", "Started inhibition:", reason);
     }
 
     // Stop system inhibition
@@ -86,57 +72,127 @@ Singleton {
         if (!isInhibited)
             return ;
 
-        // SIGTERM
-        if (inhibitorProcess.running)
+        if (!nativeInhibitorAvailable && inhibitorProcess.running)
             inhibitorProcess.signal(15);
 
+        // SIGTERM
         isInhibited = false;
+        Logger.i("IdleInhibitor", "Stopped inhibition");
     }
 
-    // Systemd inhibition using systemd-inhibit
-    function startSystemdInhibition() {
+    // Subprocess fallback using systemd-inhibit
+    function startSubprocessInhibition() {
         inhibitorProcess.command = ["systemd-inhibit", "--what=idle", "--why=" + reason, "--mode=block", "sleep", "infinity"];
-        inhibitorProcess.running = true;
-    }
-
-    // Wayland inhibition using wayhibitor or similar
-    function startWaylandInhibition() {
-        inhibitorProcess.command = ["wayhibitor"];
         inhibitorProcess.running = true;
     }
 
     // Manual toggle for user control
     function manualToggle() {
+        // clear any existing timeout
+        timeout = null;
         if (activeInhibitors.includes("manual")) {
-            removeInhibitor("manual");
+            removeManualInhibitor();
             return false;
         } else {
-            addInhibitor("manual", "Manually activated by user");
+            addManualInhibitor(null);
             return true;
         }
     }
 
-    Component.onCompleted: {
-        detectStrategy();
+    function changeTimeout(delta) {
+        if (timeout == null && delta < 0)
+            return ;
+
+        if (timeout == null && delta > 0) {
+            // enable manual inhibitor and set timeout
+            addManualInhibitor(timeout + delta);
+            return ;
+        }
+        if (timeout + delta <= 0) {
+            // disable manual inhibitor
+            removeManualInhibitor();
+            return ;
+        }
+        if (timeout + delta > 0) {
+            // change timeout
+            addManualInhibitor(timeout + delta);
+            return ;
+        }
     }
+
+    function removeManualInhibitor() {
+        if (timeout !== null) {
+            timeout = null;
+            if (inhibitorTimeout.running)
+                inhibitorTimeout.stop();
+
+        }
+        if (activeInhibitors.includes("manual")) {
+            removeInhibitor("manual");
+            Logger.i("IdleInhibitor", "Manual inhibition disabled");
+        }
+    }
+
+    function addManualInhibitor(timeoutSec) {
+        if (!activeInhibitors.includes("manual"))
+            addInhibitor("manual", "Manually activated by user");
+
+        if (timeoutSec === null && timeout === null) {
+            Logger.i("IdleInhibitor", "Manual inhibition enabled");
+            return ;
+        } else if (timeoutSec !== null && timeout === null) {
+            timeout = timeoutSec;
+            inhibitorTimeout.start();
+            Logger.i("IdleInhibitor", "Manual inhibition enabled with timeout:", timeoutSec);
+            return ;
+        } else if (timeoutSec !== null && timeout !== null) {
+            timeout = timeoutSec;
+            Logger.i("IdleInhibitor", "Manual inhibition timeout changed to:", timeoutSec);
+            return ;
+        } else if (timeoutSec === null && timeout !== null) {
+            timeout = null;
+            inhibitorTimeout.stop();
+            Logger.i("IdleInhibitor", "Manual inhibition timeout cleared");
+            return ;
+        }
+    }
+
     // Clean up on shutdown
     Component.onDestruction: {
         stopInhibition();
     }
 
-    // Process for maintaining the inhibition
+    // Process for maintaining the inhibition (subprocess fallback only)
     Process {
         id: inhibitorProcess
 
         running: false
         onExited: function(exitCode, exitStatus) {
-            if (isInhibited)
+            if (isInhibited) {
+                Logger.w("IdleInhibitor", "Inhibitor process exited unexpectedly:", exitCode);
                 isInhibited = false;
-
-            Logger.log("Caffeine", "Inhibitor process exited with code:", exitCode, "status:", exitStatus);
+            }
         }
         onStarted: function() {
-            Logger.log("Caffeine", "Inhibitor process started with PID:", inhibitorProcess.processId);
+            Logger.d("IdleInhibitor", "Inhibitor process started successfully");
+        }
+    }
+
+    Timer {
+        id: inhibitorTimeout
+
+        repeat: true
+        interval: 1000 // 1 second
+        onTriggered: function() {
+            if (timeout == null) {
+                inhibitorTimeout.stop();
+                return ;
+            }
+            timeout -= 1;
+            if (timeout <= 0) {
+                removeManualInhibitor();
+                return ;
+            }
         }
     }
 

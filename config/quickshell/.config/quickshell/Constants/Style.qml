@@ -4,10 +4,6 @@ import Quickshell.Io
 pragma Singleton
 
 Singleton {
-    /*
-    Preset sizes for font, radii, ?
-    */
-
     id: root
 
     // Font size
@@ -19,6 +15,7 @@ Singleton {
     readonly property real fontSizeXL: 16
     readonly property real fontSizeXXL: 18
     readonly property real fontSizeXXXL: 24
+    readonly property real fontNerd: 16
     // Font weight
     readonly property int fontWeightRegular: 400
     readonly property int fontWeightMedium: 500
@@ -50,19 +47,22 @@ Singleton {
     readonly property real opacityHeavy: 0.75
     readonly property real opacityAlmost: 0.95
     readonly property real opacityFull: 1
+    // Shadows
+    readonly property real shadowOpacity: 0.85
+    readonly property real shadowBlur: 1
+    readonly property int shadowBlurMax: 22
+    readonly property real shadowHorizontalOffset: 2
+    readonly property real shadowVerticalOffset: 3
     // Animation duration (ms)
     readonly property int animationFast: 150
     readonly property int animationNormal: 300
     readonly property int animationSlow: 450
     readonly property int animationSlowest: 1000
-    // Delays
-    readonly property int tooltipDelay: 300
-    readonly property int tooltipDelayLong: 1200
-    readonly property int pillDelay: 500
     // Settings widgets base size
-    readonly property real baseWidgetSize: 33
-    readonly property real sliderWidth: 200
+    readonly property int baseWidgetSize: 33
+    readonly property int sliderWidth: 200
     // Bar Dimensions
-    readonly property real barHeight: 45
-    readonly property real capsuleHeight: 35
+    readonly property int barHeight: 45
+    readonly property int sidebarWidth: 360
+    readonly property int capsuleHeight: 35
 }

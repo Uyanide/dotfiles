@@ -32,7 +32,7 @@ Singleton {
   }
 
   function init() {
-    Logger.log("Bluetooth", "Service initialized")
+    Logger.i("Bluetooth", "Service initialized")
   }
 
   Timer {
@@ -46,11 +46,11 @@ Singleton {
     target: adapter
     function onEnabledChanged() {
       if (!adapter) {
-        Logger.warn("Bluetooth", "onEnabledChanged", "No adapter available")
+        Logger.w("Bluetooth", "onEnabledChanged", "No adapter available")
         return
       }
 
-      Logger.debug("Bluetooth", "onEnableChanged", adapter.enabled)
+      Logger.d("Bluetooth", "onEnableChanged", adapter.enabled)
       if (adapter.enabled) {
         discoveryTimer.running = true
       }
@@ -226,7 +226,7 @@ Singleton {
       return
     }
 
-    Logger.i("Bluetooth", "SetBluetoothEnabled", state)
+    Logger.d("Bluetooth", "SetBluetoothEnabled", state)
     adapter.enabled = state
   }
 }

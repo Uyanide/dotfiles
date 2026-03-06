@@ -1,28 +1,27 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import qs.Constants
+import qs.Modules.Background
 import qs.Modules.Bar
 import qs.Modules.Misc
-import qs.Modules.Panel
+import qs.Modules.Sidebar
 import qs.Services
 
 ShellRoot {
     id: root
 
+    Component.onCompleted: {
+        ImageCacheService.init();
+    }
+
     Loader {
         id: loader
 
-        active: CacheService.loaded && NukeKded6.done
+        active: Init.loaded && NukeKded6.done && ImageCacheService.initialized && ShellState.isLoaded
 
         sourceComponent: Item {
             Component.onCompleted: {
                 SunsetService;
-                Niri.onScreenshotCaptured = Screenshot.onScreenshotCaptured;
-            }
-
-            Notification {
-                id: notification
             }
 
             IPCService {
@@ -37,34 +36,16 @@ ShellRoot {
                 id: corners
             }
 
-            CalendarPanel {
-                id: calendarPanel
-
-                objectName: "calendarPanel"
+            Sidebars {
+                id: sidebars
             }
 
-            ControlCenterPanel {
-                id: controlCenterPanel
-
-                objectName: "controlCenterPanel"
+            Notification {
+                id: notification
             }
 
-            NotificationHistoryPanel {
-                id: notificationHistoryPanel
-
-                objectName: "notificationHistoryPanel"
-            }
-
-            WiFiPanel {
-                id: wifiPanel
-
-                objectName: "wifiPanel"
-            }
-
-            BluetoothPanel {
-                id: bluetoothPanel
-
-                objectName: "bluetoothPanel"
+            Background {
+                id: background
             }
 
         }

@@ -15,8 +15,6 @@
 
 <summary>Niri & Quickshell</summary>
 
-https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
-
 <figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
 </figure>
@@ -48,11 +46,11 @@ https://github.com/user-attachments/assets/7e2db305-58bc-4b3d-9c65-7dc0461aead7
 - Shell: **Fish**
 - Prompt: **Oh My Posh**
 - Terminal: **Kitty** & (**WezTerm** | Ghostty)
-- Power Menu: **Wlogout**
+- Power Menu: **Wlogout** & Quickshell
 - Colorscheme: **Catppuccin Mocha**
 - App Launcher: **Rofi** | Fuzzel
 - Desktop Widgets: Eww | **Quickshell**
-- Wallpaper Daemon: **Awww** (previously Swww)
+- Wallpaper Daemon: Awww | **Quickshell**
 - Notification Daemon: Mako | **Quickshell**
 
 (**bold**: currently preferred)
@@ -67,7 +65,7 @@ Ported from Hyprland, and shares some of the desktop components such as hyprlock
 
 ## Quickshell
 
-Not based on, but heavily depends on many modules from [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). A thousand thanks to their great work.
+Not based on, but heavily depends on many modules from (an old version of) [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). A thousand thanks to their great work.
 
 This setup is currently only adapted for Niri.
 
@@ -80,8 +78,6 @@ This setup is currently only adapted for Niri.
 ## Wallpaper & Colortheme
 
 - [WallReel](https://github.com/Uyanide/WallReel): an Image Carousel implemented with QtQuick to browse and set wallpapers from.
-- [wallpaper-daemon](./config/scripts/.local/scripts/wallpaper-daemon): automatic blur (only works in niri).
-- [change-wallpaper](./config/scripts/.local/scripts/change-wallpaper): script that changes wallpaper with a few extra features.
 - [change-colortheme](./config/scripts/.local/scripts/change-colortheme): script that extract colors from the current wallpaper and generate a catppuccin color scheme accordingly.
 - [backgrounds](https://github.com/Uyanide/backgrounds) collection for personal use (mostly waifus).
 

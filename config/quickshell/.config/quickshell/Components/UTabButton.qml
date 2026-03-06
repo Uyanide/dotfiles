@@ -1,0 +1,108 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import qs.Constants
+import qs.Components
+
+Rectangle {
+  id: root
+
+  // Public properties
+  property string text: ""
+  property string icon: ""
+  property bool checked: false
+  property int tabIndex: 0
+  property real pointSize: Style.fontSizeM
+  property bool isFirst: false
+  property bool isLast: false
+
+  // Internal state
+  property bool isHovered: false
+
+  signal clicked
+
+  // Sizing
+  Layout.fillHeight: true
+  implicitWidth: contentLayout.implicitWidth + Style.marginM * 2
+
+  topLeftRadius: isFirst ? Style.radiusM : Style.radiusXXXS
+  bottomLeftRadius: isFirst ? Style.radiusM : Style.radiusXXXS
+  topRightRadius: isLast ? Style.radiusM : Style.radiusXXXS
+  bottomRightRadius: isLast ? Style.radiusM : Style.radiusXXXS
+
+  color: root.isHovered ? Colors.mHover : (root.checked ? Colors.mPrimary : Colors.mSurface)
+  border.color: Colors.mOutline
+  border.width: Style.borderS
+
+  Behavior on color {
+    enabled: !Colors.isTransitioning
+    ColorAnimation {
+      duration: Style.animationFast
+      easing.type: Easing.OutCubic
+    }
+  }
+
+  // Content
+  RowLayout {
+    id: contentLayout
+    anchors.centerIn: parent
+    width: Math.min(implicitWidth, parent.width - Style.marginS * 2)
+    spacing: (root.icon !== "" && root.text !== "") ? Style.marginXS : 0
+
+    UIcon {
+      visible: root.icon !== ""
+      Layout.alignment: Qt.AlignVCenter
+      iconName: root.icon
+      iconSize: root.pointSize * 1.2
+      color: root.isHovered ? Colors.mOnHover : (root.checked ? Colors.mOnPrimary : Colors.mOnSurface)
+
+      Behavior on color {
+        enabled: !Colors.isTransitioning
+        ColorAnimation {
+          duration: Style.animationFast
+          easing.type: Easing.OutCubic
+        }
+      }
+    }
+
+    UText {
+      id: tabText
+      visible: root.text !== ""
+      Layout.alignment: Qt.AlignVCenter
+      Layout.fillWidth: true
+      text: root.text
+      pointSize: root.pointSize
+      font.weight: Style.fontWeightSemiBold
+      color: root.isHovered ? Colors.mOnHover : (root.checked ? Colors.mOnPrimary : Colors.mOnSurface)
+      horizontalAlignment: Text.AlignHCenter
+      verticalAlignment: Text.AlignVCenter
+
+      Behavior on color {
+        enabled: !Colors.isTransitioning
+        ColorAnimation {
+          duration: Style.animationFast
+          easing.type: Easing.OutCubic
+        }
+      }
+    }
+  }
+
+  MouseArea {
+    anchors.fill: parent
+    hoverEnabled: true
+    cursorShape: Qt.PointingHandCursor
+    onEntered: {
+      root.isHovered = true;
+    }
+    onExited: {
+      root.isHovered = false;
+    }
+    onClicked: {
+      root.clicked();
+      // Update parent NTabBar's currentIndex
+      if (root.parent && root.parent.parent && root.parent.parent.currentIndex !== undefined) {
+        root.parent.parent.currentIndex = root.tabIndex;
+      }
+    }
+  }
+}

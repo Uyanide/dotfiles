@@ -3,12 +3,11 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
-import Quickshell.Services.UPower
 import Quickshell.Wayland
+import qs.Components
 import qs.Constants
 import qs.Modules.Bar.Components
-import qs.Modules.Bar.Misc
-import qs.Modules.Misc
+import qs.Modules.Bar.Modules
 import qs.Services
 
 Variants {
@@ -22,6 +21,7 @@ Variants {
 
             screen: modelData
             WlrLayershell.namespace: "quickshell-bar"
+            WlrLayershell.layer: WlrLayer.Top
             color: Colors.transparent
             implicitHeight: Style.barHeight
 
@@ -35,12 +35,11 @@ Variants {
                 id: barBackground
 
                 anchors.fill: parent
-                color: Niri.noFocus ? null : Colors.base
 
                 gradient: Gradient {
                     GradientStop {
                         position: 0
-                        color: Qt.rgba(Colors.base.r, Colors.base.g, Colors.base.b, Niri.noFocus ? 0.8 : 1)
+                        color: Qt.rgba(Colors.mSurface.r, Colors.mSurface.g, Colors.mSurface.b, BarService.focusMode ? 1 : 0.8)
 
                         Behavior on color {
                             ColorAnimation {
@@ -54,7 +53,7 @@ Variants {
 
                     GradientStop {
                         position: 1
-                        color: Qt.rgba(Colors.base.r, Colors.base.g, Colors.base.b, Niri.noFocus ? 0 : 1)
+                        color: Qt.rgba(Colors.mSurface.r, Colors.mSurface.g, Colors.mSurface.b, BarService.focusMode ? 1 : 0)
 
                         Behavior on color {
                             ColorAnimation {
@@ -81,42 +80,22 @@ Variants {
                     leftMargin: 5
                 }
 
-                SymbolButton {
-                    symbol: Icons.distro
-                    buttonColor: Colors.distroColor
-                    onClicked: {
-                        PanelService.getPanel("controlCenterPanel")?.toggle(this)
+                UIconButton {
+                    textOverride: "󰣇"
+                    fontFamily: Fonts.nerd
+                    baseSize: parent.height - Style.marginXXS * 2
+                    iconSize: Style.fontNerd
+                    colorFg: Colors.distro
+                    onClicked: () => {
+                        BarService.toggleLeft();
                     }
-                    onRightClicked: {
-                        Quickshell.execDetached(["rofi", "-show", "drun"]);
+                    onRightClicked: () => {
+                        BarService.toggleRight();
                     }
-                }
-
-                SymbolButton {
-                    symbol: SettingsService.wifiEnabled ? Icons.wifiOn : Icons.wifiOff
-                    buttonColor: Colors.rosewater
-                    onClicked: {
-                        PanelService.getPanel("wifiPanel")?.toggle(this)
-                    }
-                }
-
-                SymbolButton {
-                    symbol: BluetoothService.enabled ? Icons.bluetoothOn : Icons.bluetoothOff
-                    buttonColor: Colors.blue
-                    onClicked: {
-                        PanelService.getPanel("bluetoothPanel")?.toggle(this)
-                    }
-                    onRightClicked: {
-                        Quickshell.execDetached(["blueman-manager"]);
-                    }
-                }
-
-
-                Item {
-                    width: 5
                 }
 
                 Separator {
+                    implicitWidth: Style.marginXL
                 }
 
                 Workspace {
@@ -124,28 +103,17 @@ Variants {
                 }
 
                 Separator {
-                }
-
-                Item {
-                    width: 10
+                    implicitWidth: Style.marginXL
                 }
 
                 CavaBar {
                 }
 
-                Item {
-                    width: 10
-                }
-
                 Separator {
-                }
-
-                Item {
-                    width: 10
+                    implicitWidth: Style.marginXL
                 }
 
                 FocusedWindow {
-                    maxWidth: 400
                 }
 
             }
@@ -176,83 +144,97 @@ Variants {
                     rightMargin: 5
                 }
 
-                RowLayout {
-                    id: monitorsLayout
-                    visible: !SettingsService.showLyricsBar
+                Loader {
+                    sourceComponent: LyricsService.showLyricsBar ? lyricsComponent : monitorsComponent
 
-                    height: parent.height
-                    NetworkSpeed {
+                    Component {
+                        id: monitorsComponent
+
+                        RowLayout {
+                            id: monitorsLayout
+
+                            height: rightLayout.height
+                            spacing: Style.marginM
+                            Component.onCompleted: {
+                                SystemStatService.registerComponent("BarMonitors");
+                            }
+
+                            NetworkSpeed {
+                            }
+
+                            Separator {
+                            }
+
+                            RecordIndicator {
+                            }
+
+                            Ip {
+                            }
+
+                            CpuTemp {
+                            }
+
+                            MemUsage {
+                            }
+
+                            CpuUsage {
+                            }
+
+                            Battery {
+                            }
+
+                            Brightness {
+                                screen: modelData
+                            }
+
+                            Volume {
+                            }
+
+                        }
+
                     }
 
-                    Separator {
+                    Component {
+                        id: lyricsComponent
+
+                        LyricsBar {
+                        }
+
                     }
 
-                    Item {
-                        width: 10
-                    }
-
-                    RecordIndicator {
-                    }
-
-                    Ip {
-                    }
-
-                    CpuTemp {
-                    }
-
-                    MemUsage {
-                    }
-
-                    CpuUsage {
-                    }
-
-                    Battery {
-                    }
-
-                    Brightness {
-                        screen: modelData
-                    }
-
-                    Volume {
-                    }
-                }
-
-                LyricsBar {
-                    id: lyricsBar
-                    visible: SettingsService.showLyricsBar
-                    width: 600
-                }
-
-                Item {
-                    width: 5
                 }
 
                 Separator {
                 }
 
-                Item {
-                    width: 5
-                }
+                RowLayout {
+                    height: rightLayout.height
+                    spacing: Style.marginS
 
-                TrayExpander {
-                    screen: modelData
-                }
-
-                SymbolButton {
-                    symbol: Caffeine.isInhibited ? Icons.idleInhibitorActivated : Icons.idleInhibitorDeactivated
-                    buttonColor: Caffeine.isInhibited ? Colors.peach : Colors.yellow
-                    onClicked: {
-                        Caffeine.manualToggle();
+                    TrayExpander {
+                        screen: modelData
+                        baseSize: rightLayout.height - Style.marginXXS * 2
                     }
 
-                }
-
-                SymbolButton {
-                    symbol: Icons.powerMenu
-                    buttonColor: Colors.red
-                    onClicked: {
-                        Quickshell.execDetached(["wlogout"]);
+                    UIconButton {
+                        iconName: Caffeine.isInhibited ? "mug-off" : "mug"
+                        colorFg: Caffeine.isInhibited ? Colors.mOrange : Colors.mYellow
+                        baseSize: rightLayout.height - Style.marginXXS * 2
+                        alwaysHover: Caffeine.isInhibited
+                        onClicked: () => {
+                            Caffeine.manualToggle();
+                        }
                     }
+
+                    UIconButton {
+                        iconName: "power"
+                        colorFg: Colors.mRed
+                        baseSize: rightLayout.height - Style.marginXXS * 2
+                        onClicked: () => {
+                            BarService.toggleRight();
+                        }
+                    }
+
                 }
 
             }

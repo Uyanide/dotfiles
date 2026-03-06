@@ -1,439 +1,806 @@
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Notifications
 import Quickshell.Wayland
 import Quickshell.Widgets
-import qs.Constants
-import qs.Noctalia
-import qs.Services
 import qs.Utils
+import qs.Services
+import qs.Components
+import qs.Constants
 
 // Simple notification popup - displays multiple notifications
 Variants {
-    // Force removal without animation as fallback
-
-    // If no notification display activated in settings, then show them all
-    model: Quickshell.screens
-
-    delegate: Loader {
-        id: root
-
-        required property ShellScreen modelData
-        property real scaling: 1
-        // Access the notification model from the service
-        property ListModel notificationModel: NotificationService.activeList
-
-        // Loader is active when there are notifications
-        active: notificationModel.count > 0 || delayTimer.running
-
-        // Keep loader active briefly after last notification to allow animations to complete
-        Timer {
-            id: delayTimer
-
-            interval: Style.animationSlow + 200 // Animation duration + buffer
-            repeat: false
-        }
-
-        // Start delay timer when last notification is removed
-        Connections {
-            function onCountChanged() {
-                if (notificationModel.count === 0 && root.active)
-                    delayTimer.restart();
-
-            }
-
-            target: notificationModel
-        }
-
-        sourceComponent: PanelWindow {
-            readonly property string location: "top_right"
-            readonly property bool isTop: (location === "top") || (location.length >= 3 && location.substring(0, 3) === "top")
-            readonly property bool isBottom: (location === "bottom") || (location.length >= 6 && location.substring(0, 6) === "bottom")
-            readonly property bool isLeft: location.indexOf("_left") >= 0
-            readonly property bool isRight: location.indexOf("_right") >= 0
-            readonly property bool isCentered: (location === "top" || location === "bottom")
-            // Store connection for cleanup
-            property var animateConnection: null
-
-            screen: modelData
-            WlrLayershell.namespace: "noctalia-notifications"
-            WlrLayershell.layer: WlrLayer.Overlay
-            color: Color.transparent
-            // Anchor selection based on location (window edges)
-            anchors.top: isTop
-            anchors.bottom: isBottom
-            anchors.left: isLeft
-            anchors.right: isRight
-            // Margins depending on bar position and chosen location
-            margins.top: Style.barHeight + Style.marginM
-            margins.bottom: 0
-            margins.left: 0
-            margins.right: Style.marginM
-            implicitWidth: 360
-            implicitHeight: notificationStack.implicitHeight
-            WlrLayershell.exclusionMode: ExclusionMode.Ignore
-            // Connect to animation signal from service
-            Component.onCompleted: {
-                animateConnection = NotificationService.animateAndRemove.connect(function(notificationId) {
-                    // Find the delegate by notification ID
-                    var delegate = null;
-                    if (notificationStack && notificationStack.children && notificationStack.children.length > 0) {
-                        for (var i = 0; i < notificationStack.children.length; i++) {
-                            var child = notificationStack.children[i];
-                            if (child && child.notificationId === notificationId) {
-                                delegate = child;
-                                break;
-                            }
-                        }
-                    }
-                    if (delegate && delegate.animateOut)
-                        delegate.animateOut();
-                    else
-                        NotificationService.dismissActiveNotification(notificationId);
-                });
-            }
-            // Disconnect when destroyed to prevent memory leaks
-            Component.onDestruction: {
-                if (animateConnection) {
-                    NotificationService.animateAndRemove.disconnect(animateConnection);
-                    animateConnection = null;
-                }
-            }
-
-            // Main notification container
-            ColumnLayout {
-                id: notificationStack
-
-                // Anchor the stack inside the window based on chosen location
-                anchors.top: parent.isTop ? parent.top : undefined
-                anchors.bottom: parent.isBottom ? parent.bottom : undefined
-                anchors.left: parent.isLeft ? parent.left : undefined
-                anchors.right: parent.isRight ? parent.right : undefined
-                anchors.horizontalCenter: parent.isCentered ? parent.horizontalCenter : undefined
-                spacing: Style.marginS
-                width: 360
-                visible: true
-
-                // Multiple notifications display
-                Repeater {
-                    model: notificationModel
-
-                    delegate: Rectangle {
-                        id: card
-
-                        // Store the notification ID and data for reference
-                        property string notificationId: model.id
-                        property var notificationData: model
-                        // Animation properties
-                        property real scaleValue: 0.8
-                        property real opacityValue: 0
-                        property bool isRemoving: false
-
-                        // Animate out when being removed
-                        function animateOut() {
-                            if (isRemoving)
-                                return ;
-
-                            // Prevent multiple animations
-                            isRemoving = true;
-                            scaleValue = 0.8;
-                            opacityValue = 0;
-                        }
-
-                        Layout.preferredWidth: 360
-                        Layout.preferredHeight: notificationLayout.implicitHeight + (Style.marginL * 2)
-                        Layout.maximumHeight: Layout.preferredHeight
-                        radius: Style.radiusL
-                        border.color: Colors.overlay0
-                        border.width: Math.max(1, Style.borderS)
-                        color: Color.mSurface
-                        // Scale and fade-in animation
-                        scale: scaleValue
-                        opacity: opacityValue
-                        // Animate in when the item is created
-                        Component.onCompleted: {
-                            scaleValue = 1;
-                            opacityValue = 1;
-                        }
-                        // Check if this notification is being removed
-                        onIsRemovingChanged: {
-                            if (isRemoving)
-                                removalTimer.start();
-
-                        }
-
-                        // Optimized progress bar container
-                        Rectangle {
-                            id: progressBarContainer
-
-                            // Pre-calculate available width for the progress bar
-                            readonly property real availableWidth: parent.width - (2 * parent.radius)
-
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            height: 2
-                            color: Color.transparent
-
-                            // Actual progress bar - centered and symmetric
-                            Rectangle {
-                                id: progressBar
-
-                                height: parent.height
-                                // Center the bar and make it shrink symmetrically
-                                x: parent.parent.radius + (parent.availableWidth * (1 - model.progress)) / 2
-                                width: parent.availableWidth * model.progress
-                                color: {
-                                    if (model.urgency === NotificationUrgency.Critical || model.urgency === 2)
-                                        return Colors.red;
-                                    else if (model.urgency === NotificationUrgency.Low || model.urgency === 0)
-                                        return Colors.green;
-                                    else
-                                        return Colors.primary;
-                                }
-                                antialiasing: true
-
-                                // Smooth progress animation
-                                Behavior on width {
-                                    enabled: !card.isRemoving // Disable during removal animation
-
-                                    NumberAnimation {
-                                        duration: 100 // Quick but smooth
-                                        easing.type: Easing.Linear
-                                    }
-
-                                }
-
-                                Behavior on x {
-                                    enabled: !card.isRemoving
-
-                                    NumberAnimation {
-                                        duration: 100
-                                        easing.type: Easing.Linear
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                        // Right-click to dismiss
-                        MouseArea {
-                            anchors.fill: parent
-                            acceptedButtons: Qt.RightButton
-                            onClicked: (mouse) => {
-                                if (mouse.button === Qt.RightButton)
-                                    animateOut();
-
-                            }
-                        }
-
-                        // Timer for delayed removal after animation
-                        Timer {
-                            id: removalTimer
-
-                            interval: Style.animationSlow
-                            repeat: false
-                            onTriggered: {
-                                NotificationService.dismissActiveNotification(notificationId);
-                            }
-                        }
-
-                        ColumnLayout {
-                            id: notificationLayout
-
-                            anchors.fill: parent
-                            anchors.margins: Style.marginM
-                            anchors.rightMargin: (Style.marginM + 32) // Leave space for close button
-                            spacing: Style.marginM
-
-                            // Main content section
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Style.marginM
-
-                                ColumnLayout {
-                                    // For real-time notification always show the original image
-                                    // as the cached version is most likely still processing.
-                                    NImageCircled {
-                                        Layout.preferredWidth: 40
-                                        Layout.preferredHeight: 40
-                                        Layout.alignment: Qt.AlignTop
-                                        Layout.topMargin: 30
-                                        imagePath: model.originalImage || ""
-                                        borderColor: Color.transparent
-                                        borderWidth: 0
-                                        fallbackIcon: "bell"
-                                        fallbackIconSize: 24
-                                    }
-
-                                    Item {
-                                        Layout.fillHeight: true
-                                    }
-
-                                }
-
-                                // Text content
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: Style.marginS
-
-                                    // Header section with app name and timestamp
-                                    RowLayout {
-                                        Layout.fillWidth: true
-                                        spacing: Style.marginS
-
-                                        Rectangle {
-                                            Layout.preferredWidth: 6
-                                            Layout.preferredHeight: 6
-                                            radius: Style.radiusXS
-                                            color: {
-                                                if (model.urgency === NotificationUrgency.Critical || model.urgency === 2)
-                                                    return Color.mError;
-                                                else if (model.urgency === NotificationUrgency.Low || model.urgency === 0)
-                                                    return Color.mOnSurface;
-                                                else
-                                                    return Color.mPrimary;
-                                            }
-                                            Layout.alignment: Qt.AlignVCenter
-                                        }
-
-                                        NText {
-                                            text: `${model.appName || I18n.tr("system.unknown-app")} · ${Time.formatRelativeTime(model.timestamp)}`
-                                            color: Color.mSecondary
-                                            pointSize: Style.fontSizeXS
-                                            family: Fonts.sans
-                                        }
-
-                                        Item {
-                                            Layout.fillWidth: true
-                                        }
-
-                                    }
-
-                                    NText {
-                                        text: model.summary || I18n.tr("general.no-summary")
-                                        pointSize: Style.fontSizeL
-                                        font.weight: Style.fontWeightMedium
-                                        color: Color.mOnSurface
-                                        textFormat: Text.PlainText
-                                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                        Layout.fillWidth: true
-                                        maximumLineCount: 3
-                                        elide: Text.ElideRight
-                                        family: Fonts.sans
-                                        visible: text.length > 0
-                                    }
-
-                                    NText {
-                                        text: model.body || ""
-                                        pointSize: Style.fontSizeM
-                                        color: Color.mOnSurface
-                                        textFormat: Text.PlainText
-                                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                        Layout.fillWidth: true
-                                        maximumLineCount: 5
-                                        elide: Text.ElideRight
-                                        family: Fonts.sans
-                                        visible: text.length > 0
-                                    }
-
-                                    // Notification actions
-                                    Flow {
-                                        // Store the notification ID for access in button delegates
-                                        property string parentNotificationId: notificationId
-                                        // Parse actions from JSON string
-                                        property var parsedActions: {
-                                            try {
-                                                return model.actionsJson ? JSON.parse(model.actionsJson) : [];
-                                            } catch (e) {
-                                                return [];
-                                            }
-                                        }
-
-                                        Layout.fillWidth: true
-                                        spacing: Style.marginS
-                                        Layout.topMargin: Style.marginM
-                                        flow: Flow.LeftToRight
-                                        layoutDirection: Qt.LeftToRight
-                                        visible: parsedActions.length > 0
-
-                                        Repeater {
-                                            model: parent.parsedActions
-
-                                            delegate: NButton {
-                                                property var actionData: modelData
-
-                                                text: {
-                                                    var actionText = actionData.text || "Open";
-                                                    // If text contains comma, take the part after the comma (the display text)
-                                                    if (actionText.includes(","))
-                                                        return actionText.split(",")[1] || actionText;
-
-                                                    return actionText;
-                                                }
-                                                fontFamily: Fonts.sans
-                                                fontSize: Style.fontSizeS
-                                                backgroundColor: Color.mPrimary
-                                                textColor: hovered ? Color.mOnTertiary : Color.mOnPrimary
-                                                hoverColor: Color.mTertiary
-                                                outlined: false
-                                                implicitHeight: 24
-                                                onClicked: {
-                                                    NotificationService.invokeAction(parent.parentNotificationId, actionData.identifier);
-                                                }
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                        // Close button positioned absolutely
-                        NIconButton {
-                            icon: "close"
-                            baseSize: Style.baseWidgetSize * 0.6
-                            anchors.top: parent.top
-                            anchors.topMargin: Style.marginM
-                            anchors.right: parent.right
-                            anchors.rightMargin: Style.marginM
-                            onClicked: {
-                                animateOut();
-                            }
-                        }
-
-                        // Animation behaviors
-                        Behavior on scale {
-                            NumberAnimation {
-                                duration: Style.animationNormal
-                                easing.type: Easing.OutExpo
-                            }
-
-                        }
-
-                        Behavior on opacity {
-                            NumberAnimation {
-                                duration: Style.animationNormal
-                                easing.type: Easing.OutQuad
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
+  // If no notification display activated in settings, then show them all
+  model: Quickshell.screens
+
+
+  delegate: Loader {
+    id: root
+
+    // Migrate all settings value to constants
+    readonly property bool overlayLayer: true
+    readonly property string notificationPosition: "top_right"
+    readonly property bool barFloating: true
+    readonly property string barPosition: "top"
+    readonly property int barMarginVertical: 4
+    readonly property int barMarginHorizontal: 4
+    readonly property bool notificationIsFramed: false
+    readonly property int frameThickness: 8
+    readonly property bool notificationCompact: false
+    readonly property double uiScaleRatio: 1
+    readonly property bool animationsDisabled: false
+    readonly property bool clearDismissed: true
+    readonly property real backgroundOpacity: 1.0
+
+    required property ShellScreen modelData
+
+    property ListModel notificationModel: NotificationService.activeList
+
+    // Always create window (but with 0x0 dimensions when no notifications)
+    active: notificationModel.count > 0 || delayTimer.running
+
+    // Keep loader active briefly after last notification to allow animations to complete
+    Timer {
+      id: delayTimer
+      interval: Style.animationSlow + 200
+      repeat: false
     }
 
+    Connections {
+      target: notificationModel
+      function onCountChanged() {
+        if (notificationModel.count === 0 && root.active) {
+          delayTimer.restart();
+        }
+      }
+    }
+
+    sourceComponent: PanelWindow {
+      id: notifWindow
+      screen: modelData
+
+      WlrLayershell.namespace: "noctalia-notifications-" + (screen?.name || "unknown")
+      WlrLayershell.layer: (root.overlayLayer) ? WlrLayer.Overlay : WlrLayer.Top
+      WlrLayershell.exclusionMode: ExclusionMode.Ignore
+
+      color: "transparent"
+
+      // Make shadow area click-through, only notification content is clickable
+      mask: Region {
+        x: 0
+        y: 0
+        width: notifWindow.width
+        height: notifWindow.height
+        intersection: Intersection.Xor
+
+        Region {
+          // The clickable content area is inset by shadowPadding from all edges
+          x: notifWindow.shadowPadding
+          y: notifWindow.shadowPadding
+          width: notifWindow.notifWidth
+          height: Math.max(0, notifWindow.height - notifWindow.shadowPadding * 2)
+          intersection: Intersection.Subtract
+        }
+      }
+
+      // Parse location setting
+      readonly property string location: root.notificationPosition || "top_right"
+      readonly property bool isTop: location.startsWith("top")
+      readonly property bool isBottom: location.startsWith("bottom")
+      readonly property bool isLeft: location.endsWith("_left")
+      readonly property bool isRight: location.endsWith("_right")
+      readonly property bool isCentered: location === "top" || location === "bottom"
+
+      readonly property string barPos: root.barPosition
+      readonly property bool isFloating: root.barFloating
+      readonly property real barHeight: Style.barHeight
+
+      readonly property bool isFramed: root.notificationIsFramed
+      readonly property real frameThickness: root.frameThickness
+
+      readonly property bool isCompact: root.notificationCompact
+      readonly property int notifWidth: Math.round((isCompact ? 320 : 440) * root.uiScaleRatio)
+      readonly property int shadowPadding: Style.shadowBlurMax + Style.marginL
+
+      // Calculate bar and frame offsets for each edge separately
+      readonly property int barOffsetTop: {
+        if (barPos !== "top")
+          return isFramed ? frameThickness : 0;
+        const floatMarginV = isFloating ? Math.ceil(root.barMarginVertical) : 0;
+        return barHeight + floatMarginV;
+      }
+
+      readonly property int barOffsetBottom: {
+        if (barPos !== "bottom")
+          return isFramed ? frameThickness : 0;
+        const floatMarginV = isFloating ? Math.ceil(root.barMarginVertical) : 0;
+        return barHeight + floatMarginV;
+      }
+
+      readonly property int barOffsetLeft: {
+        if (barPos !== "left")
+          return isFramed ? frameThickness : 0;
+        const floatMarginH = isFloating ? Math.ceil(root.barMarginHorizontal) : 0;
+        return barHeight + floatMarginH;
+      }
+
+      readonly property int barOffsetRight: {
+        if (barPos !== "right")
+          return isFramed ? frameThickness : 0;
+        const floatMarginH = isFloating ? Math.ceil(root.barMarginHorizontal) : 0;
+        return barHeight + floatMarginH;
+      }
+
+      // Anchoring
+      anchors.top: isTop
+      anchors.bottom: isBottom
+      anchors.left: isLeft
+      anchors.right: isRight
+
+      // Margins for PanelWindow - only apply bar offset for the specific edge where the bar is
+      margins.top: isTop ? barOffsetTop - shadowPadding + Style.marginM : 0
+      margins.bottom: isBottom ? barOffsetBottom - shadowPadding : 0
+      margins.left: isLeft ? barOffsetLeft - shadowPadding + Style.marginM : 0
+      margins.right: isRight ? barOffsetRight - shadowPadding + Style.marginM : 0
+
+      implicitWidth: notifWidth + shadowPadding * 2
+      implicitHeight: notificationStack.implicitHeight + Style.marginL
+
+      property var animateConnection: null
+
+      Component.onCompleted: {
+        animateConnection = function (notificationId) {
+          var delegate = null;
+          if (notificationRepeater) {
+            for (var i = 0; i < notificationRepeater.count; i++) {
+              var item = notificationRepeater.itemAt(i);
+              if (item?.notificationId === notificationId) {
+                delegate = item;
+                break;
+              }
+            }
+          }
+
+          try {
+            if (delegate && typeof delegate.animateOut === "function" && !delegate.isRemoving) {
+              delegate.animateOut();
+            }
+          } catch (e) {
+            // Service fallback if delegate is already invalid
+            NotificationService.dismissActiveNotification(notificationId);
+          }
+        };
+
+        NotificationService.animateAndRemove.connect(animateConnection);
+      }
+
+      Component.onDestruction: {
+        if (animateConnection) {
+          NotificationService.animateAndRemove.disconnect(animateConnection);
+          animateConnection = null;
+        }
+      }
+
+      ColumnLayout {
+        id: notificationStack
+
+        anchors {
+          top: parent.isTop ? parent.top : undefined
+          bottom: parent.isBottom ? parent.bottom : undefined
+          left: parent.isLeft ? parent.left : undefined
+          right: parent.isRight ? parent.right : undefined
+          horizontalCenter: parent.isCentered ? parent.horizontalCenter : undefined
+        }
+
+        spacing: -notifWindow.shadowPadding * 2 + Style.marginM
+
+        Behavior on implicitHeight {
+          enabled: !root.animationDisabled
+          SpringAnimation {
+            spring: 2.0
+            damping: 0.4
+            epsilon: 0.01
+            mass: 0.8
+          }
+        }
+
+        Repeater {
+          id: notificationRepeater
+          model: notificationModel
+
+          delegate: Item {
+            id: card
+
+            property string notificationId: model.id
+            property var notificationData: model
+            property bool isHovered: false
+            property bool isRemoving: false
+
+            readonly property int animationDelay: index * 100
+            readonly property int slideDistance: 300
+
+            Layout.preferredWidth: notifWidth + notifWindow.shadowPadding * 2
+            Layout.preferredHeight: (notifWindow.isCompact ? compactContent.implicitHeight : notificationContent.implicitHeight) + Style.marginM * 2 + notifWindow.shadowPadding * 2
+            Layout.maximumHeight: Layout.preferredHeight
+
+            // Animation properties
+            property real scaleValue: 0.8
+            property real opacityValue: 0.0
+            property real slideOffset: 0
+            property real swipeOffset: 0
+            property real swipeOffsetY: 0
+            property real pressGlobalX: 0
+            property real pressGlobalY: 0
+            property bool isSwiping: false
+            property bool suppressClick: false
+            readonly property bool useVerticalSwipe: notifWindow.location === "bottom" || notifWindow.location === "top"
+            readonly property real swipeStartThreshold: Math.round(18 * root.uiScaleRatio)
+            readonly property real swipeDismissThreshold: Math.max(110, cardBackground.width * 0.32)
+            readonly property real verticalSwipeDismissThreshold: Math.max(70, cardBackground.height * 0.35)
+
+            scale: scaleValue
+            opacity: opacityValue
+            transform: Translate {
+              x: card.swipeOffset
+              y: card.slideOffset + card.swipeOffsetY
+            }
+
+            readonly property real slideInOffset: notifWindow.isTop ? -slideDistance : slideDistance
+            readonly property real slideOutOffset: slideInOffset
+
+            function clampSwipeDelta(deltaX) {
+              if (notifWindow.isRight)
+                return Math.max(0, deltaX);
+              if (notifWindow.isLeft)
+                return Math.min(0, deltaX);
+              return deltaX;
+            }
+
+            function clampVerticalSwipeDelta(deltaY) {
+              if (notifWindow.isBottom)
+                return Math.max(0, deltaY);
+              if (notifWindow.isTop)
+                return Math.min(0, deltaY);
+              return deltaY;
+            }
+
+            // Animation setup
+            function triggerEntryAnimation() {
+              animInDelayTimer.stop();
+              removalTimer.stop();
+              resumeTimer.stop();
+              isRemoving = false;
+              isHovered = false;
+              isSwiping = false;
+              swipeOffset = 0;
+              swipeOffsetY = 0;
+              if (root.animationDisabled) {
+                slideOffset = 0;
+                scaleValue = 1.0;
+                opacityValue = 1.0;
+                return;
+              }
+
+              slideOffset = slideInOffset;
+              scaleValue = 0.8;
+              opacityValue = 0.0;
+              animInDelayTimer.interval = animationDelay;
+              animInDelayTimer.start();
+            }
+
+            Component.onCompleted: triggerEntryAnimation()
+
+            onNotificationIdChanged: triggerEntryAnimation()
+
+            Timer {
+              id: animInDelayTimer
+              interval: 0
+              repeat: false
+              onTriggered: {
+                if (card.isRemoving)
+                  return;
+                slideOffset = 0;
+                scaleValue = 1.0;
+                opacityValue = 1.0;
+              }
+            }
+
+            function animateOut() {
+              if (isRemoving)
+                return;
+              animInDelayTimer.stop();
+              resumeTimer.stop();
+              isRemoving = true;
+              isSwiping = false;
+              swipeOffset = 0;
+              swipeOffsetY = 0;
+              if (!root.animationDisabled) {
+                slideOffset = slideOutOffset;
+                scaleValue = 0.8;
+                opacityValue = 0.0;
+              }
+            }
+
+            function dismissBySwipe() {
+              if (isRemoving)
+                return;
+              animInDelayTimer.stop();
+              resumeTimer.stop();
+              isRemoving = true;
+              isSwiping = false;
+              if (!root.animationDisabled) {
+                if (useVerticalSwipe) {
+                  swipeOffset = 0;
+                  swipeOffsetY = swipeOffsetY >= 0 ? cardBackground.height + Style.marginXL : -cardBackground.height - Style.marginXL;
+                } else {
+                  swipeOffset = swipeOffset >= 0 ? cardBackground.width + Style.marginXL : -cardBackground.width - Style.marginXL;
+                  swipeOffsetY = 0;
+                }
+                scaleValue = 0.8;
+                opacityValue = 0.0;
+              } else {
+                swipeOffset = 0;
+                swipeOffsetY = 0;
+              }
+            }
+
+            function runAction(actionId, isDismissed) {
+              if (!isDismissed) {
+                NotificationService.focusSenderWindow(model.appName);
+                NotificationService.invokeActionAndSuppressClose(notificationId, actionId);
+              } else if (root.clearDismissed) {
+                NotificationService.removeFromHistory(notificationId);
+              }
+              card.animateOut();
+            }
+
+            Timer {
+              id: removalTimer
+              interval: Style.animationSlow
+              repeat: false
+              onTriggered: {
+                NotificationService.dismissActiveNotification(notificationId);
+              }
+            }
+
+            onIsRemovingChanged: {
+              if (isRemoving) {
+                removalTimer.start();
+              }
+            }
+
+            Behavior on scale {
+              enabled: !root.animationDisabled
+              SpringAnimation {
+                spring: 3
+                damping: 0.4
+                epsilon: 0.01
+                mass: 0.8
+              }
+            }
+
+            Behavior on opacity {
+              enabled: !root.animationDisabled
+              NumberAnimation {
+                duration: Style.animationNormal
+                easing.type: Easing.OutCubic
+              }
+            }
+
+            Behavior on slideOffset {
+              enabled: !root.animationDisabled
+              SpringAnimation {
+                spring: 2.5
+                damping: 0.3
+                epsilon: 0.01
+                mass: 0.6
+              }
+            }
+
+            Behavior on swipeOffset {
+              enabled: !root.animationDisabled && !card.isSwiping
+              NumberAnimation {
+                duration: Style.animationFast
+                easing.type: Easing.OutCubic
+              }
+            }
+
+            Behavior on swipeOffsetY {
+              enabled: !root.animationDisabled && !card.isSwiping
+              NumberAnimation {
+                duration: Style.animationFast
+                easing.type: Easing.OutCubic
+              }
+            }
+
+            // Sub item with the right dimensions, really usefull for the
+            // HoverHandler: card items are overlapping because of the
+            // negative spacing of notificationStack.
+            Item {
+              id: displayedCard
+
+              anchors.fill: parent
+              anchors.margins: notifWindow.shadowPadding
+
+              HoverHandler {
+                onHoveredChanged: {
+                  isHovered = hovered;
+                  if (isHovered) {
+                    resumeTimer.stop();
+                    NotificationService.pauseTimeout(notificationId);
+                  } else {
+                    resumeTimer.start();
+                  }
+                }
+              }
+
+              Timer {
+                id: resumeTimer
+                interval: 50
+                repeat: false
+                onTriggered: {
+                  if (!isHovered) {
+                    NotificationService.resumeTimeout(notificationId);
+                  }
+                }
+              }
+
+              // Right-click to dismiss
+              MouseArea {
+                id: cardDragArea
+                anchors.fill: cardBackground
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                hoverEnabled: true
+                onPressed: mouse => {
+                             if (mouse.button === Qt.LeftButton) {
+                               const globalPoint = cardDragArea.mapToGlobal(mouse.x, mouse.y);
+                               card.pressGlobalX = globalPoint.x;
+                               card.pressGlobalY = globalPoint.y;
+                               card.isSwiping = false;
+                               card.suppressClick = false;
+                             }
+                           }
+                onPositionChanged: mouse => {
+                                     if (!(mouse.buttons & Qt.LeftButton) || card.isRemoving)
+                                     return;
+                                     const globalPoint = cardDragArea.mapToGlobal(mouse.x, mouse.y);
+                                     const rawDeltaX = globalPoint.x - card.pressGlobalX;
+                                     const rawDeltaY = globalPoint.y - card.pressGlobalY;
+                                     const deltaX = card.clampSwipeDelta(rawDeltaX);
+                                     const deltaY = card.clampVerticalSwipeDelta(rawDeltaY);
+                                     if (!card.isSwiping) {
+                                       if (card.useVerticalSwipe) {
+                                         if (Math.abs(deltaY) < card.swipeStartThreshold)
+                                         return;
+                                         card.isSwiping = true;
+                                       } else {
+                                         if (Math.abs(deltaX) < card.swipeStartThreshold)
+                                         return;
+                                         card.isSwiping = true;
+                                       }
+                                     }
+                                     if (card.useVerticalSwipe) {
+                                       card.swipeOffset = 0;
+                                       card.swipeOffsetY = deltaY;
+                                     } else {
+                                       card.swipeOffset = deltaX;
+                                       card.swipeOffsetY = 0;
+                                     }
+                                   }
+                onReleased: mouse => {
+                              if (mouse.button === Qt.RightButton) {
+                                card.animateOut();
+                                if (root.clearDismissed) {
+                                  NotificationService.removeFromHistory(notificationId);
+                                }
+                                return;
+                              }
+
+                              if (mouse.button !== Qt.LeftButton)
+                              return;
+
+                              if (card.isSwiping) {
+                                const dismissDistance = card.useVerticalSwipe ? Math.abs(card.swipeOffsetY) : Math.abs(card.swipeOffset);
+                                const threshold = card.useVerticalSwipe ? card.verticalSwipeDismissThreshold : card.swipeDismissThreshold;
+                                if (dismissDistance >= threshold) {
+                                  card.dismissBySwipe();
+                                  if (root.clearDismissed) {
+                                    NotificationService.removeFromHistory(notificationId);
+                                  }
+                                } else {
+                                  card.swipeOffset = 0;
+                                  card.swipeOffsetY = 0;
+                                }
+                                card.suppressClick = true;
+                                card.isSwiping = false;
+                                return;
+                              }
+
+                              if (card.suppressClick)
+                              return;
+
+                              var actions = model.actionsJson ? JSON.parse(model.actionsJson) : [];
+                              var hasDefault = actions.some(function (a) {
+                                return a.identifier === "default";
+                              });
+                              if (hasDefault) {
+                                card.runAction("default", false);
+                              } else {
+                                NotificationService.focusSenderWindow(model.appName);
+                                card.animateOut();
+                              }
+                            }
+                onCanceled: {
+                  card.isSwiping = false;
+                  card.swipeOffset = 0;
+                  card.swipeOffsetY = 0;
+                }
+              }
+
+              // Background with border
+              Rectangle {
+                id: cardBackground
+                anchors.fill: parent
+                radius: Style.radiusL
+                border.color: Qt.alpha(Colors.mOutline, root.backgroundOpacity || 1.0)
+                border.width: Style.borderS
+                color: Qt.alpha(Colors.mSurface, root.backgroundOpacity || 1.0)
+
+                // Progress bar
+                Rectangle {
+                  anchors.top: parent.top
+                  anchors.left: parent.left
+                  anchors.right: parent.right
+                  height: 2
+                  color: "transparent"
+
+                  Rectangle {
+                    id: progressBar
+                    readonly property real progressWidth: cardBackground.width - (2 * cardBackground.radius)
+                    height: parent.height
+                    x: cardBackground.radius + (progressWidth * (1 - model.progress)) / 2
+                    width: progressWidth * model.progress
+
+                    color: {
+                      var baseColor = model.urgency === 2 ? Colors.mError : model.urgency === 0 ? Colors.mOnSurface : Colors.mPrimary;
+                      return Qt.alpha(baseColor, root.backgroundOpacity || 1.0);
+                    }
+
+                    antialiasing: true
+
+                    Behavior on width {
+                      enabled: !card.isRemoving
+                      NumberAnimation {
+                        duration: 100
+                        easing.type: Easing.Linear
+                      }
+                    }
+
+                    Behavior on x {
+                      enabled: !card.isRemoving
+                      NumberAnimation {
+                        duration: 100
+                        easing.type: Easing.Linear
+                      }
+                    }
+                  }
+                }
+              }
+
+              UDropShadow {
+                anchors.fill: cardBackground
+                source: cardBackground
+                autoPaddingEnabled: true
+              }
+
+              // Content
+              ColumnLayout {
+                id: notificationContent
+                visible: !notifWindow.isCompact
+                anchors.fill: cardBackground
+                anchors.margins: Style.marginM
+                spacing: Style.marginM
+
+                RowLayout {
+                  Layout.fillWidth: true
+                  spacing: Style.marginL
+                  Layout.leftMargin: Style.marginM
+                  Layout.rightMargin: Style.marginM
+                  Layout.topMargin: Style.marginM
+                  Layout.bottomMargin: Style.marginM
+
+                  UImageRounded {
+                    Layout.preferredWidth: Math.round(40 * root.uiScaleRatio)
+                    Layout.preferredHeight: Math.round(40 * root.uiScaleRatio)
+                    Layout.alignment: Qt.AlignVCenter
+                    radius: Math.min(Style.radiusL, Layout.preferredWidth / 2)
+                    imagePath: model.originalImage || ""
+                    borderColor: "transparent"
+                    borderWidth: 0
+                    fallbackIcon: "bell"
+                    fallbackIconSize: 24
+                  }
+
+                  ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: Style.marginS
+
+                    // Header with urgency indicator
+                    RowLayout {
+                      Layout.fillWidth: true
+                      spacing: Style.marginS
+
+                      Rectangle {
+                        Layout.preferredWidth: 6
+                        Layout.preferredHeight: 6
+                        Layout.alignment: Qt.AlignVCenter
+                        radius: Style.radiusXS
+                        color: model.urgency === 2 ? Colors.mError : model.urgency === 0 ? Colors.mOnSurface : Colors.mPrimary
+                      }
+
+                      UText {
+                        text: model.appName || "Unknown App"
+                        pointSize: Style.fontSizeXS
+                        font.weight: Style.fontWeightBold
+                        color: Colors.mPrimary
+                      }
+
+                      UText {
+                        textFormat: Text.PlainText
+                        text: " " + Time.formatRelativeTime(model.timestamp)
+                        pointSize: Style.fontSizeXXS
+                        color: Colors.mOnSurfaceVariant
+                        Layout.alignment: Qt.AlignBottom
+                      }
+
+                      Item {
+                        Layout.fillWidth: true
+                      }
+                    }
+
+                    UText {
+                      text: model.summary || "No summary"
+                      pointSize: Style.fontSizeM
+                      font.weight: Style.fontWeightMedium
+                      color: Colors.mOnSurface
+                      textFormat: Text.StyledText
+                      wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                      maximumLineCount: 3
+                      elide: Text.ElideRight
+                      visible: text.length > 0
+                      Layout.fillWidth: true
+                      Layout.rightMargin: Style.marginM
+                    }
+
+                    UText {
+                      text: model.body || ""
+                      pointSize: Style.fontSizeM
+                      color: Colors.mOnSurface
+                      textFormat: Text.StyledText
+                      wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                      maximumLineCount: 5
+                      elide: Text.ElideRight
+                      visible: text.length > 0
+                      Layout.fillWidth: true
+                      Layout.rightMargin: Style.marginXL
+                    }
+
+                    // Actions
+                    Flow {
+                      Layout.fillWidth: true
+                      spacing: Style.marginS
+                      Layout.topMargin: Style.marginM
+                      flow: Flow.LeftToRight
+
+                      property string parentNotificationId: notificationId
+                      property var parsedActions: {
+                        try {
+                          return model.actionsJson ? JSON.parse(model.actionsJson) : [];
+                        } catch (e) {
+                          return [];
+                        }
+                      }
+                      visible: parsedActions.length > 0
+
+                      Repeater {
+                        model: parent.parsedActions
+
+                        delegate: UButton {
+                          property var actionData: modelData
+
+                          text: {
+                            var actionText = actionData.text || "Open";
+                            if (actionText.includes(",")) {
+                              return actionText.split(",")[1] || actionText;
+                            }
+                            return actionText;
+                          }
+                          fontSize: Style.fontSizeS
+                          backgroundColor: Colors.mPrimary
+                          textColor: hovered ? Colors.mOnHover : Colors.mOnPrimary
+                          hoverColor: Colors.mHover
+                          outlined: false
+                          implicitHeight: 24
+                          onClicked: {
+                            card.runAction(actionData.identifier, false);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              // Close button
+              UIconButton {
+                visible: !notifWindow.isCompact
+                iconName: "close"
+                baseSize: Style.baseWidgetSize * 0.6
+                anchors.top: cardBackground.top
+                anchors.topMargin: Style.marginXL
+                anchors.right: cardBackground.right
+                anchors.rightMargin: Style.marginXL
+
+                onClicked: {
+                  card.runAction("", true);
+                }
+              }
+
+              // Compact content
+              RowLayout {
+                id: compactContent
+                visible: notifWindow.isCompact
+                anchors.fill: cardBackground
+                anchors.margins: Style.marginM
+                spacing: Style.marginS
+
+                UImageRounded {
+                  Layout.preferredWidth: Math.round(24 * root.uiScaleRatio)
+                  Layout.preferredHeight: Math.round(24 * root.uiScaleRatio)
+                  Layout.alignment: Qt.AlignVCenter
+                  radius: Style.radiusXS
+                  imagePath: model.originalImage || ""
+                  borderColor: "transparent"
+                  borderWidth: 0
+                  fallbackIcon: "bell"
+                  fallbackIconSize: 16
+                }
+
+                ColumnLayout {
+                  Layout.fillWidth: true
+                  spacing: Style.marginXS
+
+                  UText {
+                    text: "No summary"
+                    pointSize: Style.fontSizeM
+                    font.weight: Style.fontWeightMedium
+                    color: Colors.mOnSurface
+                    textFormat: Text.StyledText
+                    maximumLineCount: 1
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                  }
+
+                  UText {
+                    visible: model.body && model.body.length > 0
+                    Layout.fillWidth: true
+                    text: model.body || ""
+                    pointSize: Style.fontSizeS
+                    color: Colors.mOnSurfaceVariant
+                    textFormat: Text.StyledText
+                    wrapMode: Text.Wrap
+                    maximumLineCount: 2
+                    elide: Text.ElideRight
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -38,7 +38,7 @@ Scope {
         id: process
 
         stdinEnabled: true
-        running: !root.forceDisable && (MusicManager.isPlaying || root.forceEnable)
+        running: !root.forceDisable && (MediaService.isPlaying || root.forceEnable)
         command: ["cava", "-p", "/dev/stdin"]
         onExited: {
             stdinEnabled = true;

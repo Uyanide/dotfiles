@@ -2,34 +2,103 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Constants
+import qs.Services
 
 Item {
     IpcHandler {
-        function setPrimary(color: color) {
-            SettingsService.primaryColor = color;
+        function startOrStopRecording() {
+            RecordService.startOrStop();
+        }
+
+        target: "recording"
+    }
+
+    IpcHandler {
+        function clearAll() {
+            ImageCacheService.clearAll();
+        }
+
+        target: "cache"
+    }
+
+    IpcHandler {
+        function previewWallpaper(path: string) {
+            BackgroundService.previewWallpaper(path);
+        }
+
+        function setWallpaper(path: string) {
+            BackgroundService.setWallpaper(path);
+        }
+
+        target: "background"
+    }
+
+    IpcHandler {
+        function playPause() {
+            MediaService.playPause();
+        }
+
+        function next() {
+            MediaService.next();
+        }
+
+        function previous() {
+            MediaService.previous();
+        }
+
+        function volumeUp() {
+            AudioService.increaseVolume();
+        }
+
+        function volumeDown() {
+            AudioService.decreaseVolume();
+        }
+
+        function toggleOutputMute() {
+            AudioService.setOutputMuted(!AudioService.muted);
+        }
+
+        function toggleInputMute() {
+            AudioService.setInputMuted(!AudioService.inputMuted);
+        }
+
+        target: "media"
+    }
+
+    IpcHandler {
+        function setColor(name: string, value: color) {
+            Colors.setColor(name, value);
+        }
+
+        function unsetColor(name: string) {
+            Colors.unsetColor(name);
+        }
+
+        function getColor(name: string) : string {
+            const hex = String(Colors[name]);
+            if (hex.startsWith("#") && hex.length === 9)
+                return "#" + hex.substring(3);
+
+            return hex;
         }
 
         target: "colors"
     }
 
     IpcHandler {
-        function toggleCalendar() {
-            calendarPanel.toggle();
+        function toggleLeft() {
+            BarService.toggleLeft();
         }
 
-        function toggleControlCenter() {
-            controlCenterPanel.toggle();
+        function toggleRight() {
+            BarService.toggleRight();
         }
 
-        target: "panels"
-    }
-
-    IpcHandler {
-        function toggleBarLyrics() {
-            SettingsService.showLyricsBar = !SettingsService.showLyricsBar;
+        function toggleLyrics() {
+            LyricsService.toggleLyricsBar();
         }
 
-        target: "lyrics"
+        target: "bars"
     }
 
     IpcHandler {
@@ -41,19 +110,23 @@ Item {
     }
 
     IpcHandler {
-        function startOrStopRecording() {
-            RecordService.startOrStop();
-        }
-
-        target: "recording"
-    }
-
-    IpcHandler {
         function toggleSunset() {
             SunsetService.toggleSunset();
         }
 
         target: "sunset"
+    }
+
+    IpcHandler {
+        function brightnessUp() {
+            BrightnessService.getMonitorForScreen(Niri.focusedScreen).increaseBrightness();
+        }
+
+        function brightnessDown() {
+            BrightnessService.getMonitorForScreen(Niri.focusedScreen).decreaseBrightness();
+        }
+
+        target: "brightness"
     }
 
 }

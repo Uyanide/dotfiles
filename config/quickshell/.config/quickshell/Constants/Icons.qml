@@ -1,53 +1,19 @@
 import QtQuick
+import QtQuick.Controls
 import Quickshell
+import qs.Constants
 import qs.Utils
 pragma Singleton
 
 Singleton {
     id: root
 
-    // Nerd fonts icons
-    readonly property string distro: "󰣇"
-    readonly property string tray: ""
-    readonly property string idleInhibitorActivated: "󰅶"
-    readonly property string idleInhibitorDeactivated: "󰾪"
-    readonly property string powerMenu: "󰐥"
-    readonly property string volumeHigh: ""
-    readonly property string volumeMedium: ""
-    readonly property string volumeLow: ""
-    readonly property string volumeMuted: "󰝟"
-    readonly property string brightness: ""
-    readonly property string charging: ""
-    readonly property string battery100: ""
-    readonly property string battery75: ""
-    readonly property string battery50: ""
-    readonly property string battery25: ""
-    readonly property string battery00: ""
-    readonly property string cpu: "󰘚"
-    readonly property string memory: "󰍛"
-    readonly property string tempHigh: ""
-    readonly property string tempMedium: ""
-    readonly property string tempLow: ""
-    readonly property string ip: "󰇧"
-    readonly property string upload: ""
-    readonly property string download: ""
-    readonly property string speedSlower: "󰾆"
-    readonly property string speedFaster: "󰓅"
-    readonly property string speedReset: "󰾅"
-    readonly property string reset: "󰑙"
-    readonly property string lines: ""
-    readonly property string record: ""
-    readonly property string wifiOn: "󰖩"
-    readonly property string wifiOff: "󰖪"
-    readonly property string bluetoothOn: ""
-    readonly property string bluetoothOff: "󰂲"
-    // Tabler icons
     // Expose the font family name for easy access
     readonly property string fontFamily: currentFontLoader ? currentFontLoader.name : ""
-    readonly property string defaultIcon: TablerIcons.defaultIcon
-    readonly property var icons: TablerIcons.icons
-    readonly property var aliases: TablerIcons.aliases
-    readonly property string fontPath: "/Assets/Fonts/tabler/tabler-icons.ttf"
+    readonly property string defaultIcon: IconsTabler.defaultIcon
+    readonly property var icons: IconsTabler.icons
+    readonly property var aliases: IconsTabler.aliases
+    readonly property string fontPath: "/Assets/Fonts/tabler/noctalia-tabler-icons.ttf"
     // Current active font loader
     property FontLoader currentFontLoader: null
     property int fontVersion: 0
@@ -68,6 +34,7 @@ Singleton {
     }
 
     function loadFontWithCacheBusting() {
+        Logger.d("Icons", "Loading font with cache busting");
         // Destroy old loader first
         if (currentFontLoader) {
             currentFontLoader.destroy();
@@ -82,24 +49,29 @@ Singleton {
                                            `, root, "dynamicFontLoader_" + fontVersion);
         // Connect to the new loader's status changes
         currentFontLoader.statusChanged.connect(function() {
-            if (currentFontLoader.status === FontLoader.Ready)
+            if (currentFontLoader.status === FontLoader.Ready) {
+                Logger.d("Icons", "Font loaded successfully:", currentFontLoader.name, "(version " + fontVersion + ")");
                 fontReloaded();
-            else if (currentFontLoader.status === FontLoader.Error)
-                Logger.error("Icons", "Font failed to load (version " + fontVersion + ")");
+            } else if (currentFontLoader.status === FontLoader.Error) {
+                Logger.e("Icons", "Font failed to load (version " + fontVersion + ")");
+            }
         });
     }
 
     function reloadFont() {
+        Logger.d("Icons", "Forcing font reload...");
         fontVersion++;
         loadFontWithCacheBusting();
     }
 
     Component.onCompleted: {
+        Logger.i("Icons", "Service started");
         loadFontWithCacheBusting();
     }
 
     Connections {
         function onReloadCompleted() {
+            Logger.d("Icons", "Quickshell reload completed - forcing font reload");
             reloadFont();
         }
 

@@ -2,40 +2,38 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Constants
-import qs.Services
 pragma Singleton
 
 Singleton {
-    property alias primaryColor: adapter.primaryColor
-    property alias showLyricsBar: adapter.showLyricsBar
-    property alias notifications: adapter.notifications
+    id: root
+
+    property string settingsFilePath: Paths.configDir + "settings.json"
+    property alias geoInfoToken: adapter.geoInfoToken
+    property alias ipAliases: adapter.ipAliases
     property alias location: adapter.location
+    property alias backgroundPath: adapter.backgroundPath
     property alias wifiEnabled: adapter.wifiEnabled
-    property alias sunsetDefaultEnabled: adapter.sunsetDefaultEnabled
-    property string settingsFilePath: Qt.resolvedUrl("../Assets/Config/Settings.json")
 
     FileView {
-        id: settingsFile
+        id: settingFile
 
         path: settingsFilePath
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            reload();
+        }
         onAdapterUpdated: writeAdapter()
 
         JsonAdapter {
             id: adapter
 
-            property string primaryColor: "#89b4fa"
-            property bool showLyricsBar: false
-            property JsonObject notifications
-            property string location: "New York"
-            property bool wifiEnabled: true
-            property bool sunsetDefaultEnabled: true
-
-            notifications: JsonObject {
-                property bool doNotDisturb: false
+            property string geoInfoToken: ""
+            property var ipAliases: {
+                "127.0.0.1": "localhost"
             }
-
+            property string location: "New York"
+            property string backgroundPath: ""
+            property bool wifiEnabled: true
         }
 
     }

@@ -1,39 +1,30 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Uyanide/WallReel/refs/heads/master/config.schema.json",
-    "wallpaper": {
-        "dirs": [
-            {
-                "path": "~/Pictures/backgrounds"
-            },
-            {
-                "path": "/media/Beta/壁纸/库"
-            }
-        ],
-        "excludes": [
-            "nao-stars-crop-adjust-flop.jpg",
-            "miku-gate.jpg",
-            "\\.md$"
-        ]
-    },
-    "action": {
-        "onSelected": "change-wallpaper '{{ path }}' 2560 1440 --skip-colortheme; change-colortheme -c '{{ colorHex }}'",
-        "onPreview": "change-colortheme -c '{{ colorHex }}' niri quickshell; swww img -n background \"{{ path }}\" --transition-type fade --transition-duration 0.5",
-        "quitOnSelected": true,
-        "saveState": [
-            {
-                "key": "flavor",
-                "fallback": "#89b4fa",
-                "command": "cat ~/.config/posh_theme.omp.json | jq -r .blocks[0].segments[0].foreground"
-            },
-            {
-                "key": "wallpaper",
-                "fallback": "$HOME/Pictures/backgrounds/miku-space.jpg",
-                "command": "find ~/.local/share/wallpaper/current -type f | head -n 1"
-            }
-        ],
-        "onRestore": "change-colortheme -c '{{ flavor }}' niri quickshell; swww img -n background \"{{ wallpaper }}\" --transition-type fade --transition-duration 0.5"
-    },
-    "cache": {
-        "maxImageEntries": 300
-    }
+  "$schema": "https://raw.githubusercontent.com/Uyanide/WallReel/refs/heads/master/config.schema.json",
+  "wallpaper": {
+    "dirs": [
+      {
+        "path": "~/Pictures/backgrounds"
+      },
+      {
+        "path": "/media/Beta/壁纸/库"
+      }
+    ],
+    "excludes": ["nao-stars-crop-adjust-flop.jpg", "miku-gate.jpg", "\\.md$"]
+  },
+  "action": {
+    "onSelected": "qs ipc call background setWallpaper '{{ path }}'; qs ipc call colors setColor mPrimary '{{ colorHex }}'",
+    "onPreview": "qs ipc call background previewWallpaper '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
+    "quitOnSelected": true,
+    "saveState": [
+      {
+        "key": "flavor",
+        "fallback": "#89b4fa",
+        "command": "qs ipc call colors getColor mPrimary"
+      }
+    ],
+    "onRestore": "qs ipc call background previewWallpaper ''; change-colortheme -c '{{ flavor }}' quickshell niri"
+  },
+  "cache": {
+    "maxImageEntries": 300
+  }
 }

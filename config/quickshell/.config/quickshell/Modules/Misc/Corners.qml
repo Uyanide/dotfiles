@@ -10,12 +10,11 @@ import qs.Services
 Scope {
     id: rootScope
 
-    property var shell
     property string namespace: "quickshell-corners"
     property int topMargin: 45
     property int cornerHeight: 20
     property real cornerSize: 1
-    property real opacity: Niri.noFocus ? 0 : 1
+    property real opacity: BarService.focusMode ? 1 : 0
 
     Item {
         id: cornersRootItem
@@ -26,7 +25,15 @@ Scope {
             model: Quickshell.screens
 
             Item {
+                id: screenItem
+
                 property var modelData
+                // property int leftOffset: BarService.leftOffset(modelData)
+                // property int rightOffset: BarService.rightOffset(modelData)
+                readonly property var leftBar: BarService.getLeftSidebar(modelData.name)
+                readonly property var rightBar: BarService.getRightSidebar(modelData.name)
+                property int leftOffset: leftBar?.isOpen ? leftBar.barWidth : 0
+                property int rightOffset: rightBar?.isOpen ? rightBar.barWidth : 0
 
                 PanelWindow {
                     id: fakeBar
@@ -45,7 +52,7 @@ Scope {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: Colors.base
+                        color: Colors.mSurface
                         opacity: rootScope.opacity
                     }
 
@@ -59,9 +66,10 @@ Scope {
                     color: "transparent"
                     screen: modelData
                     margins.top: topMargin
+                    margins.left: screenItem.leftOffset
                     WlrLayershell.exclusionMode: ExclusionMode.Ignore
                     visible: true
-                    WlrLayershell.layer: WlrLayer.Background
+                    WlrLayershell.layer: WlrLayer.Top
                     aboveWindows: false
                     WlrLayershell.namespace: namespace
                     implicitHeight: cornerHeight
@@ -87,9 +95,10 @@ Scope {
                     color: "transparent"
                     screen: modelData
                     margins.top: topMargin
+                    margins.right: screenItem.rightOffset
                     WlrLayershell.exclusionMode: ExclusionMode.Ignore
                     visible: true
-                    WlrLayershell.layer: WlrLayer.Background
+                    WlrLayershell.layer: WlrLayer.Top
                     aboveWindows: false
                     WlrLayershell.namespace: namespace
                     implicitHeight: cornerHeight
@@ -114,9 +123,10 @@ Scope {
                     anchors.left: true
                     color: "transparent"
                     screen: modelData
+                    margins.left: screenItem.leftOffset
                     WlrLayershell.exclusionMode: ExclusionMode.Ignore
                     visible: true
-                    WlrLayershell.layer: WlrLayer.Background
+                    WlrLayershell.layer: WlrLayer.Top
                     aboveWindows: false
                     WlrLayershell.namespace: namespace
                     implicitHeight: cornerHeight
@@ -141,9 +151,10 @@ Scope {
                     anchors.right: true
                     color: "transparent"
                     screen: modelData
+                    margins.right: screenItem.rightOffset
                     WlrLayershell.exclusionMode: ExclusionMode.Ignore
                     visible: true
-                    WlrLayershell.layer: WlrLayer.Background
+                    WlrLayershell.layer: WlrLayer.Top
                     aboveWindows: false
                     WlrLayershell.namespace: namespace
                     implicitHeight: cornerHeight
@@ -161,6 +172,22 @@ Scope {
 
                 }
 
+                Behavior on leftOffset {
+                    NumberAnimation {
+                        duration: Style.animationSlow
+                        easing.type: Easing.InOutCubic
+                    }
+
+                }
+
+                Behavior on rightOffset {
+                    NumberAnimation {
+                        duration: Style.animationSlow
+                        easing.type: Easing.InOutCubic
+                    }
+
+                }
+
             }
 
         }
@@ -169,7 +196,7 @@ Scope {
 
     Behavior on opacity {
         NumberAnimation {
-            duration: 1000
+            duration: Style.animationSlowest
             easing.type: Easing.InOutCubic
         }
 

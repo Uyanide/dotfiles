@@ -1,9 +1,6 @@
 // Switch configs
 spawn-at-startup "config-switch" "niri"
 
-// Wallpaper
-spawn-at-startup "wallpaper-daemon"
-
 // Not necessary maybe ...
 spawn-at-startup "fcitx5"
 
@@ -23,7 +20,7 @@ spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 spawn-at-startup "solaar" "-w" "hide"
 
 // Some other heavy apps
-spawn-at-startup "sunshine"
+// spawn-at-startup "sunshine"
 // spawn-at-startup "spotify"
 // spawn-at-startup "thunderbird"
 
