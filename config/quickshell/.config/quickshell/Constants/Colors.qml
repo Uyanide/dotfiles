@@ -36,6 +36,7 @@ Singleton {
     property color distro: "#74c7ec"
     property color transparent: "#00000000"
     readonly property var cavaList: [mLavender, mBlue, mSky, mCyan, mGreen, mYellow, mOrange, mRed]
+    readonly property var noteList: [mLavender, mBlue, mSky, mCyan, mGreen, mYellow, mOrange, mRed, mPurple, mPink]
 
     function reloadColors(newColors) {
         if (typeof newColors === "string") {

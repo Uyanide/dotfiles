@@ -87,7 +87,7 @@ Rectangle {
                         model: NotesService.notesModel
 
                         delegate: UBox {
-                            property color accentColor: Colors.cavaList[model.colorIdx % Colors.cavaList.length]
+                            property color accentColor: Colors.noteList[model.colorIdx % Colors.noteList.length]
 
                             width: notesColumn.width
                             implicitHeight: noteLayout.implicitHeight + Style.marginM * 2
@@ -104,13 +104,13 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: parent
                                 acceptedButtons: Qt.LeftButton
-                                onClicked: NotesService.openNote(model.noteId)
+                                onClicked: NotesService.openNote(model.notePath)
                             }
 
                             FileView {
                                 id: fileView
 
-                                path: NotesService.notesDir + "/" + model.noteId + ".txt"
+                                path: model.notePath
                                 watchChanges: true
                                 onFileChanged: reload()
                             }
@@ -140,7 +140,7 @@ Rectangle {
                                     iconName: "trash"
                                     baseSize: Style.baseWidgetSize * 0.8
                                     colorFg: Colors.mError
-                                    onClicked: NotesService.deleteNote(model.noteId)
+                                    onClicked: NotesService.deleteNote(model.notePath)
                                 }
 
                             }

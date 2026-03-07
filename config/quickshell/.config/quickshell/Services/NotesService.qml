@@ -8,119 +8,112 @@ pragma Singleton
 Singleton {
     id: root
 
-    property string notesDir: Paths.cacheDir + "/notes"
-    property var notes: []
     property ListModel notesModel
 
-    function loadNotes() {
-        listProcess.running = true;
-    }
-
     function createNote() {
-        var id = new Date().getTime().toString();
-        var filePath = notesDir + "/" + id + ".txt";
-        // Random color index from 0 to 7
-        var colorIdx = Math.floor(Math.random() * 8);
-        createProcess.command = ["sh", "-c", "mkdir -p " + notesDir + " && echo 'New Note' > " + filePath + " && echo " + colorIdx + " > " + filePath + ".color"];
+        if (createProcess.running) {
+            Logger.w("Notes", "Create process is already running, skipping new note creation.");
+            return ;
+        }
+        const fileName = generateFileName();
+        const path = Paths.notesDir + "/" + fileName;
+        createProcess.currentNote = {
+            "notePath": path,
+            "colorIdx": strToColor(fileName)
+        };
+        createProcess.command = ["touch", path];
         createProcess.running = true;
     }
 
-    function deleteNote(id) {
-        var filePath = notesDir + "/" + id + ".txt";
-        var colorPath = notesDir + "/" + id + ".txt.color";
-        deleteProcess.command = ["rm", "-f", filePath, colorPath];
+    function deleteNote(path) {
+        if (deleteProcess.running) {
+            Logger.w("Notes", "Delete process is already running, skipping note deletion.");
+            return ;
+        }
+        deleteProcess.currentPath = path;
+        deleteProcess.command = ["rm", "-f", path];
         deleteProcess.running = true;
     }
 
-    function openNote(id) {
-        var filePath = notesDir + "/" + id + ".txt";
-        openProcess.command = ["gnome-text-editor", filePath];
-        openProcess.running = true;
+    function openNote(path) {
+        Quickshell.execDetached(["wezterm", "start", "--", "sh", "-c", `exec nvim "${path}"`]);
     }
 
-    Component.onCompleted: {
-        loadNotes();
+    function strToColor(str) {
+        let hash = 5381;
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
+        }
+        return hash >>> 0;
     }
 
-    Process {
-        id: openProcess
+    function generateFileName() {
+        const timestamp = Time.timestamp;
+        const randomPart = Math.floor(Math.random() * 1e+06);
+        return `note_${timestamp}_${randomPart}.txt`;
     }
 
     Process {
         id: createProcess
 
-        onExited: root.loadNotes()
+        property var currentNote
+
+        onExited: (ret) => {
+            if (ret !== 0 || !currentNote) {
+                Logger.e("Notes", `Failed to create note file: ${ret}`);
+                return ;
+            }
+            notesModel.append(currentNote);
+            const toOpen = currentNote.notePath;
+            currentNote = null;
+            root.openNote(toOpen);
+        }
     }
 
     Process {
         id: deleteProcess
 
-        onExited: root.loadNotes()
+        property string currentPath
+
+        onExited: (ret) => {
+            if (ret !== 0) {
+                Logger.e("Notes", `Failed to delete note file: ${ret}`);
+                return ;
+            }
+            for (let i = 0; i < notesModel.count; i++) {
+                if (notesModel.get(i).notePath === currentPath) {
+                    notesModel.remove(i);
+                    break;
+                }
+            }
+            currentPath = "";
+        }
     }
 
     Process {
-        id: listProcess
+        id: initProcess
 
-        command: ["sh", "-c", "mkdir -p " + notesDir + " && ls -1 " + notesDir + " | grep '\\.txt$' || true"]
+        running: true
+        command: ["sh", "-c", "ls -p -tr " + Paths.notesDir]
 
         stdout: StdioCollector {
             id: listCollector
 
             onStreamFinished: {
-                var files = listCollector.text.split('\n');
+                const files = listCollector.text.split('\n');
                 notesModel.clear();
                 for (var i = 0; i < files.length; i++) {
-                    if (files[i] === "")
+                    const fileName = files[i].trim();
+                    if (!fileName || !fileName.endsWith(".txt"))
                         continue;
 
-                    var id = files[i].replace(".txt", "");
-                    var contentFile = notesDir + "/" + files[i];
-                    var colorFile = notesDir + "/" + files[i] + ".color";
-                    // create an intermediate reader process
-                    readProcessComponent.createObject(root, {
-                        "noteId": id,
-                        "contentFile": contentFile,
-                        "colorFile": colorFile
-                    }).run();
-                }
-            }
-        }
-
-    }
-
-    Component {
-        id: readProcessComponent
-
-        Process {
-            id: p
-
-            property string noteId
-            property string contentFile
-            property string colorFile
-
-            function run() {
-                running = true;
-            }
-
-            command: ["sh", "-c", "cat " + colorFile + " 2>/dev/null || echo 0; head -n 5 " + contentFile]
-
-            stdout: StdioCollector {
-                id: readCollector
-
-                onStreamFinished: {
-                    var lines = readCollector.text.split('\n');
-                    var colorIdx = parseInt(lines[0] || "0");
-                    lines.shift();
-                    var contentLines = lines.join('\n').trim();
                     notesModel.append({
-                        "noteId": p.noteId,
-                        "title": contentLines,
-                        "colorIdx": colorIdx
+                        "notePath": Paths.notesDir + "/" + fileName,
+                        "colorIdx": strToColor(fileName)
                     });
-                    p.destroy();
+                    Logger.d("Notes", "Loaded note: " + fileName);
                 }
             }
-
         }
 
     }

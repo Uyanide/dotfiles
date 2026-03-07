@@ -12,7 +12,7 @@ Singleton {
 
     Component.onCompleted: {
         let mkdirs = "";
-        for (const dir of [Paths.cacheDir, Paths.configDir, Paths.recordingDir]) {
+        for (const dir of [Paths.cacheDir, Paths.configDir, Paths.recordingDir, Paths.notesDir]) {
             mkdirs += `mkdir -p "${dir}" && `;
         }
         mkdirs += "true";
