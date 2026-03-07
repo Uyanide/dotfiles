@@ -17,15 +17,13 @@ UBox {
     readonly property bool weatherReady: LocationService.data.weather !== null
     // Test mode: set to "clear_day", "clear_night", "rain", "snow", "cloud" or "fog"
     property string testEffects: ""
-    // Weather condition detection
-    readonly property int currentWeatherCode: weatherReady ? LocationService.data.weather.current_weather.weathercode : 0
-    readonly property bool isDayTime: weatherReady ? LocationService.data.weather.current_weather.is_day : true
-    readonly property bool isRaining: testEffects === "rain" || (testEffects === "" && ((currentWeatherCode >= 51 && currentWeatherCode <= 67) || (currentWeatherCode >= 80 && currentWeatherCode <= 82)))
-    readonly property bool isSnowing: testEffects === "snow" || (testEffects === "" && ((currentWeatherCode >= 71 && currentWeatherCode <= 77) || (currentWeatherCode >= 85 && currentWeatherCode <= 86)))
-    readonly property bool isCloudy: testEffects === "cloud" || (testEffects === "" && (currentWeatherCode === 3))
-    readonly property bool isFoggy: testEffects === "fog" || (testEffects === "" && (currentWeatherCode >= 40 && currentWeatherCode <= 49))
-    readonly property bool isClearDay: testEffects === "clear_day" || (testEffects === "" && (currentWeatherCode === 0 && isDayTime))
-    readonly property bool isClearNight: testEffects === "clear_night" || (testEffects === "" && (currentWeatherCode === 0 && !isDayTime))
+    // Weather condition detection (delegates to LocationService, with testEffects override)
+    readonly property bool isRaining: testEffects === "rain" || (testEffects === "" && LocationService.isRaining)
+    readonly property bool isSnowing: testEffects === "snow" || (testEffects === "" && LocationService.isSnowing)
+    readonly property bool isCloudy: testEffects === "cloud" || (testEffects === "" && LocationService.isCloudy)
+    readonly property bool isFoggy: testEffects === "fog" || (testEffects === "" && LocationService.isFoggy)
+    readonly property bool isClearDay: testEffects === "clear_day" || (testEffects === "" && LocationService.isClearDay)
+    readonly property bool isClearNight: testEffects === "clear_night" || (testEffects === "" && LocationService.isClearNight)
 
     implicitHeight: Math.max(100, content.implicitHeight + Style.marginXL * 2)
 

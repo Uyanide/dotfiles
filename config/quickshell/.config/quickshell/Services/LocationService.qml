@@ -27,6 +27,15 @@ Singleton {
         const lon = parseFloat(root.stableLongitude).toFixed(4);
         return `${lat}, ${lon}`;
     }
+    // Weather condition detection
+    readonly property int currentWeatherCode: data.weather ? data.weather.current_weather.weathercode : -1
+    readonly property bool isDayTime: data.weather ? data.weather.current_weather.is_day : true
+    readonly property bool isRaining: currentWeatherCode >= 0 && ((currentWeatherCode >= 51 && currentWeatherCode <= 67) || (currentWeatherCode >= 80 && currentWeatherCode <= 82) || (currentWeatherCode >= 95 && currentWeatherCode <= 99))
+    readonly property bool isSnowing: currentWeatherCode >= 0 && ((currentWeatherCode >= 71 && currentWeatherCode <= 77) || (currentWeatherCode >= 85 && currentWeatherCode <= 86))
+    readonly property bool isCloudy: currentWeatherCode >= 0 && (currentWeatherCode === 2 || currentWeatherCode === 3)
+    readonly property bool isFoggy: currentWeatherCode >= 0 && (currentWeatherCode >= 40 && currentWeatherCode <= 49)
+    readonly property bool isClearDay: currentWeatherCode >= 0 && (currentWeatherCode === 0 || currentWeatherCode === 1) && isDayTime
+    readonly property bool isClearNight: currentWeatherCode >= 0 && (currentWeatherCode === 0 || currentWeatherCode === 1) && !isDayTime
 
     function init() {
         Logger.i("Location", "Service started");
