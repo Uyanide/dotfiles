@@ -16,11 +16,11 @@
 <summary>Niri & Quickshell</summary>
 
 <figure>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.jpg?raw=true"/>
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.webp?raw=true"/>
 </figure>
 
 <figure>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.jpg?raw=true"/>
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.webp?raw=true"/>
 </figure>
 
 </details>
