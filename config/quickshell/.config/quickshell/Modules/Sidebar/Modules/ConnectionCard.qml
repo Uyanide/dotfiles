@@ -8,7 +8,7 @@ import qs.Services
 UBox {
     id: root
 
-    property string currentPanel: ShellState.leftSiderbarTab // "bluetooth", "wifi"
+    readonly property string currentPanel: ShellState.leftSiderbarTab // "bluetooth", "wifi"
 
     implicitHeight: (root.currentPanel === "bluetooth" ? btContentLoader.implicitHeight : wifiContentLoader.implicitHeight) + toggleGroup.implicitHeight + Style.marginXS * 2 + Style.marginS * 2
 

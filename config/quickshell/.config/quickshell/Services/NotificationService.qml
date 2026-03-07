@@ -20,8 +20,8 @@ Singleton {
   property string historyFile: Paths.cacheDir + "notifications.json"
 
   // State
-  property real lastSeenTs: ShellState.notificationsState.lastSeenTs || 0
-  property bool doNotDisturb: ShellState.notificationsState.doNotDisturb || false
+  readonly property real lastSeenTs: ShellState.notificationsState.lastSeenTs || 0
+  readonly property bool doNotDisturb: ShellState.notificationsState.doNotDisturb || false
 
   // Models
   property ListModel activeList: ListModel {}

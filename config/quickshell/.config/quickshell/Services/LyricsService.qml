@@ -21,7 +21,7 @@ Singleton {
     //   line 2 <- current line
     //   line 3
     property var lyrics: Array(linesCount).fill(" ")
-    property bool showLyricsBar: ShellState.lyricsState.showLyricsBar || false
+    readonly property bool showLyricsBar: ShellState.lyricsState.showLyricsBar || false
 
     function toggleLyricsBar() {
         ShellState.lyricsState = {

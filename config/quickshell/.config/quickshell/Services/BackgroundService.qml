@@ -8,14 +8,15 @@ pragma Singleton
 Singleton {
     id: root
 
-    property string backgroundWidth: "2560"
-    property string backgroundHeight: "1440"
+    readonly property string backgroundWidth: "2560"
+    readonly property string backgroundHeight: "1440"
     property string cachedPath: ""
-    property string cachedBlurredPath: ""
     property string previewPath: ""
     // Preserved for getBlurredOverview
-    property string tintColor: Colors.mSurface
-    property bool isDarkMode: false
+    readonly property string tintColor: Colors.mSurface
+    readonly property real tintOpacity: 0.5
+    readonly property real blurPercentage: 1
+    readonly property real blurRadius: 32
 
     function loadBackground() {
         if (!SettingsService.backgroundPath) {
@@ -29,14 +30,6 @@ Singleton {
             }
             cachedPath = path;
             Logger.i("BackgroundService", "Loaded background image as cached path: " + path);
-            ImageCacheService.getBlurredOverview(SettingsService.backgroundPath, backgroundWidth, backgroundHeight, tintColor, isDarkMode, function(blurredPath) {
-                if (!blurredPath) {
-                    Logger.e("BackgroundService", "Failed to load blurred background image from path: " + SettingsService.backgroundPath);
-                    return ;
-                }
-                cachedBlurredPath = blurredPath;
-                Logger.i("BackgroundService", "Loaded blurred background image as cached blurred path: " + blurredPath);
-            });
         });
     }
 
@@ -63,17 +56,19 @@ Singleton {
             if (!exists)
                 return ;
 
-            SettingsService.backgroundPath = path;
+            loadWallpaperDebouncer.pendingPath = path;
             loadWallpaperDebouncer.start();
         });
     }
 
     Component.onCompleted: {
+        loadWallpaperDebouncer.pendingPath = SettingsService.backgroundPath;
         loadWallpaperDebouncer.start();
     }
 
     Connections {
         function onBackgroundPathChanged() {
+            loadWallpaperDebouncer.pendingPath = SettingsService.backgroundPath;
             loadWallpaperDebouncer.start();
         }
 
@@ -83,10 +78,13 @@ Singleton {
     Timer {
         id: loadWallpaperDebouncer
 
+        property string pendingPath: ""
+
         interval: 200
         running: false
         repeat: false
         onTriggered: {
+            SettingsService.backgroundPath = pendingPath;
             root.loadBackground();
         }
     }

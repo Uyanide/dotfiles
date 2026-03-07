@@ -8,7 +8,7 @@ import qs.Services
 Item {
     id: root
 
-    property string currentPanel: ShellState.rightSiderbarTab // "notifications", "notes"
+    readonly property string currentPanel: ShellState.rightSiderbarTab // "notifications", "notes"
 
     ColumnLayout {
         anchors.fill: parent

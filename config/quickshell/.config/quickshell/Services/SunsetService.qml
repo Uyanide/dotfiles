@@ -11,7 +11,7 @@ Singleton {
     property double _latitude: -1
     property double _longitude: -1
     property int temperature: 0
-    property bool isEnabled: ShellState.sunsetState.enabled || false
+    readonly property bool isEnabled: ShellState.sunsetState.enabled || false
 
     function toggleSunset() {
         ShellState.sunsetState = {
