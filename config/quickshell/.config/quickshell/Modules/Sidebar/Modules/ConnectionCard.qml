@@ -10,8 +10,6 @@ UBox {
 
     readonly property string currentPanel: ShellState.leftSiderbarTab // "bluetooth", "wifi"
 
-    implicitHeight: (root.currentPanel === "bluetooth" ? btContentLoader.implicitHeight : wifiContentLoader.implicitHeight) + toggleGroup.implicitHeight + Style.marginXS * 2 + Style.marginS * 2
-
     ColumnLayout {
         spacing: Style.marginXS
         anchors.fill: parent

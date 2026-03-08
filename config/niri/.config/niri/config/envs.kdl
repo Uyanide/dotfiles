@@ -24,4 +24,6 @@ environment {
     XCURSOR_THEME "Bibata-Modern-Ice"
     XCURSOR_SIZE "24"
     ELECTRON_OZONE_PLATFORM_HINT "wayland"
+    QSG_RHI_BACKEND "vulkan"
+    // GSK_RENDERER "vulkan"
 }

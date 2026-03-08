@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+[ -z "${1:-}" ] && { echo "Usage: $0 <tarball>"; exit 1; }
+
+tarball=$(realpath "$1")
+top_dir=$(tar -tf "$tarball" | sed -e 's/^\.\///' | cut -d/ -f1 | sort -u)
+
+if [ "$(echo "$top_dir" | wc -l)" -ne 1 ]; then
+    echo "Error: Tarball must contain a single top-level directory."
+    exit 1
+fi
+
+mountpoint=$(mktemp -d)
+cleanup() {
+    cd /
+    umount "$mountpoint" 2>/dev/null || true
+    rmdir "$mountpoint"
+}
+trap cleanup EXIT
+
+sudo mount -t tmpfs -o size=8G tmpfs "$mountpoint"
+tar -xf "$tarball" -C "$mountpoint"
+
+cd "$mountpoint/$top_dir"
+echo "Spawning shell in tmpfs. Type 'exit' to finish and cleanup."
+bash

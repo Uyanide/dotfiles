@@ -61,7 +61,7 @@ Based on an old version of [end-4/dots-hyprland](https://github.com/end-4/dots-h
 
 ## Niri
 
-Ported from Hyprland, and shares some of the desktop components such as hyprlock & hypridle, but uses quickshell as bar / desktop widgets / notification daemon / ...
+Ported from Hyprland, and shares some desktop components such as hyprlock & hypridle, but uses quickshell as bar / desktop widgets / notification daemon / ...
 
 ## Quickshell
 
