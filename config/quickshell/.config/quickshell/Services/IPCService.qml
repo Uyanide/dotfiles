@@ -6,7 +6,7 @@ import qs.Services
 
 Item {
     IpcHandler {
-        function startOrStopRecording() {
+        function startOrStop() {
             RecordService.startOrStop();
         }
 
@@ -22,11 +22,11 @@ Item {
     }
 
     IpcHandler {
-        function previewWallpaper(path: string) {
+        function preview(path: string) {
             BackgroundService.previewWallpaper(path);
         }
 
-        function setWallpaper(path: string) {
+        function set(path: string) {
             BackgroundService.setWallpaper(path);
         }
 
@@ -66,15 +66,15 @@ Item {
     }
 
     IpcHandler {
-        function setColor(name: string, value: color) {
+        function set(name: string, value: color) {
             Colors.setColor(name, value);
         }
 
-        function unsetColor(name: string) {
+        function unset(name: string) {
             Colors.unsetColor(name);
         }
 
-        function getColor(name: string) : string {
+        function get(name: string) : string {
             const hex = String(Colors[name]);
             if (hex.startsWith("#") && hex.length === 9)
                 return "#" + hex.substring(3);
@@ -102,7 +102,7 @@ Item {
     }
 
     IpcHandler {
-        function toggleInhibitor() {
+        function toggle() {
             Caffeine.manualToggle();
         }
 
@@ -110,7 +110,7 @@ Item {
     }
 
     IpcHandler {
-        function toggleSunset() {
+        function toggle() {
             SunsetService.toggleSunset();
         }
 
@@ -118,11 +118,11 @@ Item {
     }
 
     IpcHandler {
-        function brightnessUp() {
+        function up() {
             BrightnessService.getMonitorForScreen(Niri.focusedScreen).increaseBrightness();
         }
 
-        function brightnessDown() {
+        function down() {
             BrightnessService.getMonitorForScreen(Niri.focusedScreen).decreaseBrightness();
         }
 
@@ -134,7 +134,7 @@ Item {
             NotesService.openRecent();
         }
 
-        function createNote() {
+        function create() {
             NotesService.createNote();
         }
 

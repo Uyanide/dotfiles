@@ -13,8 +13,6 @@ binds {
     Mod+C { spawn "code"; }
     Mod+E { spawn "dolphin" "--new-window"; }
     Mod+W { spawn-sh "zen || zen-browser"; }
-    Mod+X { spawn "qs" "ipc" "call" "notes" "openRecent"; }
-    Mod+Shift+X { spawn "qs" "ipc" "call" "notes" "createNote"; }
     Mod+B { spawn-sh "pkill -x -n btop || wezterm -e btop"; }
     Mod+Shift+T { spawn "wezterm"; }
     Mod+Shift+Return { spawn "wezterm"; }
@@ -29,9 +27,11 @@ binds {
     Mod+N { spawn "qs" "ipc" "call" "bars" "toggleRight"; }
     Mod+Shift+L { spawn "qs" "ipc" "call" "bars" "toggleLyrics"; }
     Mod+Shift+K { spawn-sh "quickshell-kill || quickshell"; }
-    Mod+I { spawn "qs" "ipc" "call" "idleInhibitor" "toggleInhibitor"; }
-    Mod+Alt+R { spawn "qs" "ipc" "call" "recording" "startOrStopRecording"; }
-    Mod+Shift+E { spawn "qs" "ipc" "call" "sunset" "toggleSunset"; }
+    Mod+I { spawn "qs" "ipc" "call" "idleInhibitor" "toggle"; }
+    Mod+Alt+R { spawn "qs" "ipc" "call" "recording" "startOrStop"; }
+    Mod+Shift+E { spawn "qs" "ipc" "call" "sunset" "toggle"; }
+    Mod+X { spawn "qs" "ipc" "call" "notes" "openRecent"; }
+    Mod+Shift+X { spawn "qs" "ipc" "call" "notes" "create"; }
 
     // Rofi
     Mod+D { spawn-sh "pkill -x rofi || rofi -show run"; }
@@ -40,9 +40,9 @@ binds {
     // Actions
     Mod+V { spawn-sh "fzfclip-wrap"; }
     Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
-    Print { spawn "niri" "msg" "action" "screenshot-screen"; }
-    Mod+Shift+S { spawn "niri" "msg" "action" "screenshot"; }
-    Mod+Ctrl+Shift+S { spawn "niri" "msg" "action" "screenshot-window"; }
+    Print { screenshot-screen; }
+    Mod+Shift+S { screenshot; }
+    Mod+Ctrl+Shift+S { screenshot-window; }
     Mod+Shift+C { spawn "hyprpicker" "-a"; }
 
     // Session
@@ -59,8 +59,8 @@ binds {
     XF86AudioPrev        allow-when-locked=true { spawn "qs" "ipc" "call" "media" "previous"; }
 
     // Brightness
-    XF86MonBrightnessUp allow-when-locked=true { spawn "qs" "ipc" "call" "brightness" "brightnessUp"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "qs" "ipc" "call" "brightness" "brightnessDown"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "qs" "ipc" "call" "brightness" "up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "qs" "ipc" "call" "brightness" "down"; }
 
     // Window management
     Mod+Tab repeat=false { toggle-overview; }

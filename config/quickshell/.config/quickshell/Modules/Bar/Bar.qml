@@ -270,9 +270,14 @@ Variants {
                     Layout.fillHeight: true
                     spacing: Style.marginS
 
-                    TrayExpander {
-                        screen: modelData
-                        baseSize: rightLayout.height - Style.marginXS * 2
+                    Loader {
+                        active: NukeKded6.done
+
+                        sourceComponent: TrayExpander {
+                            screen: modelData
+                            baseSize: rightLayout.height - Style.marginXS * 2
+                        }
+
                     }
 
                     UIconButton {

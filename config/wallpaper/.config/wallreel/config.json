@@ -16,17 +16,17 @@
         ]
     },
     "action": {
-        "onSelected": "qs ipc call background setWallpaper '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
-        "onPreview": "qs ipc call background previewWallpaper '{{ path }}'; touch '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
+        "onSelected": "qs ipc call background set '{{ path }}'; touch '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
+        "onPreview": "qs ipc call background preview '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
         "quitOnSelected": true,
         "saveState": [
             {
                 "key": "flavor",
                 "fallback": "#89b4fa",
-                "command": "qs ipc call colors getColor mPrimary"
+                "command": "qs ipc call colors get mPrimary"
             }
         ],
-        "onRestore": "qs ipc call background previewWallpaper ''; change-colortheme -c '{{ flavor }}' quickshell niri"
+        "onRestore": "qs ipc call background preview ''; change-colortheme -c '{{ flavor }}' quickshell niri"
     },
     "cache": {
         "maxImageEntries": 300

@@ -6,7 +6,7 @@
 }
 . "$HOME/.local/snippets/apply-color-helper"
 
-qs ipc call colors setColor mPrimary "$colorHex"
+qs ipc call colors set mPrimary "$colorHex"
 
 
 log_success "quickshell"
