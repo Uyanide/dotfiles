@@ -9,6 +9,7 @@ Singleton {
     id: root
 
     property ListModel notesModel
+    property string recentNotePath: ""
 
     function createNote() {
         if (createProcess.running) {
@@ -36,7 +37,15 @@ Singleton {
     }
 
     function openNote(path) {
+        recentNotePath = path;
         Quickshell.execDetached(["wezterm", "start", "--", "sh", "-c", `exec nvim "${path}"`]);
+    }
+
+    function openRecent() {
+        if (recentNotePath)
+            openNote(recentNotePath);
+        else
+            createNote();
     }
 
     function strToColor(str) {
@@ -86,6 +95,12 @@ Singleton {
                     break;
                 }
             }
+            if (recentNotePath === currentPath)
+                if (notesModel.count > 0)
+                recentNotePath = notesModel.get(0).notePath;
+            else
+                recentNotePath = "";;
+
             currentPath = "";
         }
     }
@@ -94,7 +109,7 @@ Singleton {
         id: initProcess
 
         running: true
-        command: ["sh", "-c", "ls -p -tr " + Paths.notesDir]
+        command: ["sh", "-c", "ls -p -t " + Paths.notesDir]
 
         stdout: StdioCollector {
             id: listCollector
@@ -113,6 +128,9 @@ Singleton {
                     });
                     Logger.d("Notes", "Loaded note: " + fileName);
                 }
+                if (notesModel.count > 0)
+                    recentNotePath = notesModel.get(0).notePath;
+
             }
         }
 

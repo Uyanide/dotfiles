@@ -148,14 +148,12 @@ UBox {
             Layout.fillHeight: true
             clip: true
 
-            Loader {
-                id: btContentLoader
-
+            BluetoothCard {
                 width: parent.width
                 height: parent.height
                 x: root.currentPanel === "bluetooth" ? 0 : -width
                 opacity: root.currentPanel === "bluetooth" ? 1 : 0
-                sourceComponent: bluetoothComponent
+                anchors.margins: Style.marginS
 
                 Behavior on x {
                     NumberAnimation {
@@ -175,14 +173,12 @@ UBox {
 
             }
 
-            Loader {
-                id: wifiContentLoader
-
+            WifiCard {
                 width: parent.width
                 height: parent.height
                 x: root.currentPanel === "wifi" ? 0 : width
                 opacity: root.currentPanel === "wifi" ? 1 : 0
-                sourceComponent: wifiComponent
+                anchors.margins: Style.marginS
 
                 Behavior on x {
                     NumberAnimation {
@@ -198,26 +194,6 @@ UBox {
                         easing.type: Easing.OutCubic
                     }
 
-                }
-
-            }
-
-            Component {
-                id: bluetoothComponent
-
-                BluetoothCard {
-                    anchors.fill: parent
-                    anchors.margins: Style.marginS
-                }
-
-            }
-
-            Component {
-                id: wifiComponent
-
-                WifiCard {
-                    anchors.fill: parent
-                    anchors.margins: Style.marginS
                 }
 
             }

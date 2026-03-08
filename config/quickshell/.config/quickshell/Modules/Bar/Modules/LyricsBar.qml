@@ -10,12 +10,6 @@ Rectangle {
     color: Colors.mSurface
     border.color: Colors.mPrimary
     border.width: Style.borderS
-    Component.onCompleted: {
-        LyricsService.startSyncing();
-    }
-    Component.onDestruction: {
-        LyricsService.stopSyncing();
-    }
     implicitHeight: Style.barHeight - Style.marginXS * 2
     implicitWidth: 600
 

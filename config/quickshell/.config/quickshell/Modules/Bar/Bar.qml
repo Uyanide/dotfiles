@@ -72,18 +72,18 @@ Variants {
             RowLayout {
                 id: leftLayout
 
-                height: parent.height - 10
+                height: parent.height - Style.marginXS * 2
 
                 anchors {
                     left: parent.left
                     verticalCenter: parent.verticalCenter
-                    leftMargin: 5
+                    leftMargin: Style.marginXS
                 }
 
                 UIconButton {
                     textOverride: "󰣇"
                     fontFamily: Fonts.nerd
-                    baseSize: parent.height - Style.marginXXS * 2
+                    baseSize: parent.height - Style.marginXS * 2
                     iconSize: Style.fontNerd
                     colorFg: Colors.distro
                     onClicked: () => {
@@ -121,7 +121,7 @@ Variants {
             RowLayout {
                 id: middleLayout
 
-                height: parent.height - 10
+                height: parent.height - Style.marginXS * 2
 
                 anchors {
                     horizontalCenter: parent.horizontalCenter
@@ -136,68 +136,127 @@ Variants {
             RowLayout {
                 id: rightLayout
 
-                height: parent.height - 10
+                height: parent.height - Style.marginXS * 2
 
                 anchors {
                     right: parent.right
                     verticalCenter: parent.verticalCenter
-                    rightMargin: 5
+                    rightMargin: Style.marginXS
                 }
 
-                Loader {
-                    sourceComponent: LyricsService.showLyricsBar ? lyricsComponent : monitorsComponent
+                Connections {
+                    target: LyricsService
+                    onShowLyricsBarChanged: {
+                        if (LyricsService.showLyricsBar) {
+                            LyricsService.registerComponent("LyricsBar");
+                            SystemStatService.unregisterComponent("BarMonitors");
+                        } else {
+                            LyricsService.unregisterComponent("LyricsBar");
+                            SystemStatService.registerComponent("BarMonitors");
+                        }
+                    }
+                }
 
-                    Component {
-                        id: monitorsComponent
+                Item {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
 
-                        RowLayout {
-                            id: monitorsLayout
+                    RowLayout {
+                        id: monitorsLayout
 
-                            height: rightLayout.height
-                            spacing: Style.marginM
-                            Component.onCompleted: {
+                        anchors.right: parent.right
+                        height: parent.height
+                        y: LyricsService.showLyricsBar ? Style.barHeight : 0
+                        opacity: LyricsService.showLyricsBar ? 0 : 1
+                        spacing: Style.marginM
+                        Component.onCompleted: {
+                            if (!LyricsService.showLyricsBar)
                                 SystemStatService.registerComponent("BarMonitors");
+
+                        }
+                        Component.onDestruction: {
+                            SystemStatService.unregisterComponent("BarMonitors");
+                        }
+
+                        NetworkSpeed {
+                        }
+
+                        Separator {
+                        }
+
+                        RecordIndicator {
+                        }
+
+                        Ip {
+                        }
+
+                        CpuTemp {
+                        }
+
+                        MemUsage {
+                        }
+
+                        CpuUsage {
+                        }
+
+                        Battery {
+                        }
+
+                        Brightness {
+                            screen: modelData
+                        }
+
+                        Volume {
+                        }
+
+                        Behavior on y {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.OutCubic
                             }
 
-                            NetworkSpeed {
-                            }
+                        }
 
-                            Separator {
-                            }
-
-                            RecordIndicator {
-                            }
-
-                            Ip {
-                            }
-
-                            CpuTemp {
-                            }
-
-                            MemUsage {
-                            }
-
-                            CpuUsage {
-                            }
-
-                            Battery {
-                            }
-
-                            Brightness {
-                                screen: modelData
-                            }
-
-                            Volume {
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.OutCubic
                             }
 
                         }
 
                     }
 
-                    Component {
-                        id: lyricsComponent
+                    LyricsBar {
+                        id: lyricsBar
 
-                        LyricsBar {
+                        anchors.right: parent.right
+                        height: parent.height
+                        y: LyricsService.showLyricsBar ? 0 : -Style.barHeight
+                        opacity: LyricsService.showLyricsBar ? 1 : 0
+                        Component.onCompleted: {
+                            if (LyricsService.showLyricsBar)
+                                LyricsService.registerComponent("LyricsBar");
+
+                        }
+                        Component.onDestruction: {
+                            LyricsService.unregisterComponent("LyricsBar");
+                        }
+
+                        Behavior on y {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 300
+                                easing.type: Easing.OutCubic
+                            }
+
                         }
 
                     }
@@ -208,18 +267,18 @@ Variants {
                 }
 
                 RowLayout {
-                    height: rightLayout.height
+                    Layout.fillHeight: true
                     spacing: Style.marginS
 
                     TrayExpander {
                         screen: modelData
-                        baseSize: rightLayout.height - Style.marginXXS * 2
+                        baseSize: rightLayout.height - Style.marginXS * 2
                     }
 
                     UIconButton {
                         iconName: Caffeine.isInhibited ? "mug-off" : "mug"
                         colorFg: Caffeine.isInhibited ? Colors.mOrange : Colors.mYellow
-                        baseSize: rightLayout.height - Style.marginXXS * 2
+                        baseSize: rightLayout.height - Style.marginXS * 2
                         alwaysHover: Caffeine.isInhibited
                         onClicked: () => {
                             Caffeine.manualToggle();
@@ -229,7 +288,7 @@ Variants {
                     UIconButton {
                         iconName: "power"
                         colorFg: Colors.mRed
-                        baseSize: rightLayout.height - Style.marginXXS * 2
+                        baseSize: rightLayout.height - Style.marginXS * 2
                         onClicked: () => {
                             BarService.toggleRight();
                         }

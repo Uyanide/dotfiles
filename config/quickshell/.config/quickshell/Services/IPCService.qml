@@ -129,4 +129,16 @@ Item {
         target: "brightness"
     }
 
+    IpcHandler {
+        function openRecent() {
+            NotesService.openRecent();
+        }
+
+        function createNote() {
+            NotesService.createNote();
+        }
+
+        target: "notes"
+    }
+
 }

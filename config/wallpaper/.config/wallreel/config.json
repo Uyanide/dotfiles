@@ -17,7 +17,7 @@
     },
     "action": {
         "onSelected": "qs ipc call background setWallpaper '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
-        "onPreview": "qs ipc call background previewWallpaper '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
+        "onPreview": "qs ipc call background previewWallpaper '{{ path }}'; touch '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
         "quitOnSelected": true,
         "saveState": [
             {

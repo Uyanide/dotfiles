@@ -15,7 +15,10 @@ Singleton {
     readonly property string offsetFile: Paths.cacheDir + "/spotify-lyrics-offset.txt"
     property int offset: 0 // in ms
     readonly property int offsetStep: 500 // in ms
-    property int referenceCount: 0
+    property var _registered: ({
+    })
+    readonly property int _registeredCount: Object.keys(_registered).length
+    readonly property bool shouldRun: _registeredCount > 0
     // with linesCount=3 and linesAhead=1, lyrics will be like:
     //   line 1
     //   line 2 <- current line
@@ -30,29 +33,35 @@ Singleton {
     }
 
     function startSyncing() {
-        referenceCount++;
-        Logger.d("LyricsService", "Reference count:", referenceCount);
-        if (referenceCount === 1) {
-            Logger.d("LyricsService", "Starting lyrics syncing");
-            // fill lyrics with empty lines
-            lyrics = Array(linesCount).fill(" ");
-            listenProcess.exec(["sh", "-c", `pkill -x spotify-lyrics -u $USER; spotify-lyrics listen -l ${linesCount} -a ${linesAhead} -f ${offsetFile}`]);
-        }
+        Logger.d("Lyrics", "Starting lyrics syncing");
+        // fill lyrics with empty lines
+        lyrics = Array(linesCount).fill(" ");
+        listenProcess.exec(["sh", "-c", `pkill -x spotify-lyrics -u $USER; spotify-lyrics listen -l ${linesCount} -a ${linesAhead} -f ${offsetFile}`]);
     }
 
     function stopSyncing() {
-        referenceCount--;
-        Logger.d("LyricsService", "Reference count:", referenceCount);
-        if (referenceCount <= 0) {
-            Logger.d("LyricsService", "Stopping lyrics syncing");
-            // kinda ugly but works, meanwhile:
-            //   listenProcess.signal(9)
-            //   listenProcess.signal(15)
-            //   listenProcess.running = false
-            //   counting on exec() to terminate previous exec()
-            // all don't work
-            listenProcess.exec(["sh", "-c", `pkill -x spotify-lyrics -u $USER`]);
-        }
+        Logger.d("Lyrics", "Stopping lyrics syncing");
+        // kinda ugly but works, meanwhile:
+        //   listenProcess.signal(9)
+        //   listenProcess.signal(15)
+        //   listenProcess.running = false
+        //   counting on exec() to terminate previous exec()
+        // all don't work
+        Quickshell.execDetached(["sh", "-c", `pkill -x spotify-lyrics -u $USER`]);
+    }
+
+    function registerComponent(componentId) {
+        root._registered[componentId] = true;
+        root._registered = Object.assign({
+        }, root._registered);
+        Logger.d("Lyrics", "Component registered:", componentId, "- total:", root._registeredCount);
+    }
+
+    function unregisterComponent(componentId) {
+        delete root._registered[componentId];
+        root._registered = Object.assign({
+        }, root._registered);
+        Logger.d("Lyrics", "Component unregistered:", componentId, "- total:", root._registeredCount);
     }
 
     function writeOffset() {
@@ -89,6 +98,12 @@ Singleton {
             SendNotification.show("Lyrics Offset Changed", `Current offset: ${offset} ms`);
 
         writeOffset();
+    }
+    onShouldRunChanged: {
+        if (shouldRun)
+            startSyncing();
+        else
+            stopSyncing();
     }
 
     Process {
@@ -129,7 +144,7 @@ Singleton {
                     const val = parseInt(fileContents);
                     if (!isNaN(val)) {
                         offset = val;
-                        Logger.d("LyricsService", "Loaded offset:", offset);
+                        Logger.d("Lyrics", "Loaded offset:", offset);
                     } else {
                         offset = 0;
                         writeOffset();
@@ -139,14 +154,14 @@ Singleton {
                     writeOffset();
                 }
             } catch (e) {
-                Logger.e("LyricsService", "Error reading offset file:", e);
+                Logger.e("Lyrics", "Error reading offset file:", e);
             }
         }
         onLoadFailed: {
-            Logger.e("LyricsService", "Error loading offset file.");
+            Logger.e("Lyrics", "Error loading offset file.");
         }
         onSaveFailed: {
-            Logger.e("LyricsService", "Error saving offset file.");
+            Logger.e("Lyrics", "Error saving offset file.");
         }
     }
 

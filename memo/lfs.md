@@ -145,20 +145,7 @@
 
 - [7.4. Entering the Chroot Environment](https://www.linuxfromscratch.org/lfs/view/stable/chapter07/chroot.html)
 
-  如果想要使用 `arch-install-scripts` 提供的 `arch-chroot` 脚本偷懒，则必须确保环境变量的清洗与重新设置，至少应确保 `PATH`, `MAKEFLAGS` 和 `TESTSUITEFLAGS` 被正确设置：
-
-  ```bash
-  arch-chroot "$LFS" /usr/bin/env -i \
-      HOME=/root \
-      TERM="$TERM" \
-      PS1='(lfs chroot) \u:\w\$ ' \
-      PATH=/usr/local/bin:/usr/bin:/usr/sbin \
-      MAKEFLAGS="-j$(nproc)" \
-      TESTSUITEFLAGS="-j$(nproc)" \
-      /bin/bash --login
-  ```
-
-  或者完全按照 LFS 书中的 chroot 步骤编写一个小脚本：
+  完全按照 LFS 书中的 chroot 步骤编写一个小脚本：
 
   ```bash
   #!/bin/bash
@@ -205,6 +192,10 @@
   ```
 
   它的作用是自动挂载一系列虚拟文件系统，同时在退出 chroot 时自动清理。
+
+> [!IMPORTANT]
+>
+> 不建议使用 `arch-install-scripts` 提供的 `arch-chroot` 脚本偷懒, 即使用的话也需要做一些修改, 如对 `/dev` 不同的处理方式与默认缺失的环境变量.
 
 - [8.64. GRUB-2.12](https://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html)
 

@@ -10,10 +10,10 @@ UBox {
     id: lyricsBox
 
     Component.onCompleted: {
-        LyricsService.startSyncing();
+        LyricsService.registerComponent("LyricsCard");
     }
     Component.onDestruction: {
-        LyricsService.stopSyncing();
+        LyricsService.unregisterComponent("LyricsCard");
     }
 
     ColumnLayout {

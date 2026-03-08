@@ -1,14 +1,3 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-# Description:
-#   Wrapper for fzfclip to ensure only one instance is
-#   running and to launch it in terminal.
-
-exec {LOCK_FD}>/tmp/"$(basename "$0")".lock
-
-flock -n "$LOCK_FD" || {
-    echo "Another instance is running. Exiting." >&2
-    exit 1
-}
-
-wezterm start -- fzfclip "$@" {LOCK_FD}>&-
+wezterm start -- fzfclip "$@"
