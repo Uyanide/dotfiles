@@ -8,7 +8,8 @@ pragma Singleton
 Singleton {
     id: root
 
-    property bool loaded: false
+    property bool dirsLoaded: false
+    property bool initialized: dirsLoaded && ImageCacheService.initialized && ShellState.isLoaded
 
     Component.onCompleted: {
         let mkdirs = "";
@@ -27,7 +28,7 @@ Singleton {
         running: false
         onExited: (code, status) => {
             if (code === 0)
-                root.loaded = true;
+                root.dirsLoaded = true;
             else
                 Logger.e("Init", `Failed to create necessary directories: ${code} (${status})`);
         }

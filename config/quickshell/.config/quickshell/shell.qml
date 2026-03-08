@@ -12,15 +12,18 @@ ShellRoot {
 
     Component.onCompleted: {
         ImageCacheService.init();
-        SunsetService;
     }
 
     Loader {
         id: loader
 
-        active: Init.loaded && ImageCacheService.initialized && ShellState.isLoaded
+        active: Init.initialized
 
         sourceComponent: Item {
+            Component.onCompleted: {
+                SunsetService;
+            }
+
             IPCService {
                 id: ipcService
             }

@@ -145,8 +145,7 @@ Variants {
                 }
 
                 Connections {
-                    target: LyricsService
-                    onShowLyricsBarChanged: {
+                    function onShowLyricsBarChanged() {
                         if (LyricsService.showLyricsBar) {
                             LyricsService.registerComponent("LyricsBar");
                             SystemStatService.unregisterComponent("BarMonitors");
@@ -155,6 +154,8 @@ Variants {
                             SystemStatService.registerComponent("BarMonitors");
                         }
                     }
+
+                    target: LyricsService
                 }
 
                 Item {
