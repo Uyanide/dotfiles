@@ -10,6 +10,10 @@ Item {
             RecordService.startOrStop();
         }
 
+        function saveReplay() {
+            RecordService.stopReplay();
+        }
+
         target: "recording"
     }
 

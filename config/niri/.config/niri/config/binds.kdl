@@ -29,6 +29,7 @@ binds {
     Mod+Shift+K { spawn-sh "quickshell-kill || quickshell"; }
     Mod+I { spawn "qs" "ipc" "call" "idleInhibitor" "toggle"; }
     Mod+Alt+R { spawn "qs" "ipc" "call" "recording" "startOrStop"; }
+    Mod+Alt+G { spawn "qs" "ipc" "call" "recording" "saveReplay"; }
     Mod+Shift+E { spawn "qs" "ipc" "call" "sunset" "toggle"; }
     Mod+X { spawn "qs" "ipc" "call" "notes" "openRecent"; }
     Mod+Shift+X { spawn "qs" "ipc" "call" "notes" "create"; }

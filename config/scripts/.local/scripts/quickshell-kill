@@ -3,11 +3,16 @@
 pid=$(pgrep -x quickshell)
 [ -z "$pid" ] && exit 1
 
-for child in $(pgrep -P "$pid" 2>/dev/null); do
-    kill "$child"
-done
+# for child in $(pgrep -P "$pid" 2>/dev/null); do
+# 	kill "$child"
+# done
 
-sleep 0.3
+children=$(pgrep -P "$pid" 2>/dev/null)
 
 kill "$pid"
 
+sleep 0.5
+
+for child in $children; do
+	kill "$child" || true
+done
