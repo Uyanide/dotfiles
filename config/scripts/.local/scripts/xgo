@@ -123,7 +123,7 @@ def main():
     args = parser.parse_args()
     archive = args.archive.strip()
 
-    if archive.suffix in ['https://', 'http://']:
+    if archive.startswith(('https://', 'http://')):
         archive = download_to(archive, Path.cwd())
     else:
         archive = Path(args.archive).resolve()
