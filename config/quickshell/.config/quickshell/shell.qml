@@ -22,6 +22,7 @@ ShellRoot {
         sourceComponent: Item {
             Component.onCompleted: {
                 SunsetService;
+                NotesService;
             }
 
             IPCService {

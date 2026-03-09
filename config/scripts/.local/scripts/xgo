@@ -10,11 +10,29 @@ import sys
 import tempfile
 import tarfile
 import zipfile
+import requests
 from pathlib import Path
 
 DEFAULT_SHELL = "bash"
 DEFAULT_TMPFS_SIZE = "8G"
 SIZE_PATTERN = re.compile(r"^[1-9][0-9]*[KMGkmg]?$")
+
+
+def download_to(url: str, dest_dir: Path) -> Path:
+    local_filename = url.split('/')[-1]
+    dest_path = dest_dir / local_filename
+
+    print(f"Downloading '{url}' to '{dest_path}'...")
+    try:
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open(dest_path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+    except Exception as e:
+        sys.exit(f"Error: Failed to download '{url}': {e}")
+
+    return dest_path
 
 
 def check_dependencies(use_tmpfs: bool, is_zip: bool, is_tar: bool):
@@ -92,7 +110,7 @@ def extract_archive(archive_path: Path, dest_dir: Path, strip_components: int = 
 
 def main():
     parser = argparse.ArgumentParser(description="Extract an archive to a directory and spawn a shell.")
-    parser.add_argument("archive", type=Path, help="Path to the tarball or zip file")
+    parser.add_argument("archive", type=str, help="Path to the tarball or zip file")
     parser.add_argument("--exec", "-e", dest="cmd", default=DEFAULT_SHELL,
                         help=f"Command to spawn (default: '{DEFAULT_SHELL}')")
     parser.add_argument("--target", "-t", type=Path, help="Target directory for extraction.")
@@ -103,6 +121,11 @@ def main():
 
     args = parser.parse_args()
     archive = args.archive.resolve()
+
+    if archive.suffix in ['https://', 'http://']:
+        archive = download_to(archive, Path.cwd())
+    else:
+        archive = Path(args.archive).resolve()
 
     if not archive.exists() or not archive.is_file():
         sys.exit(f"Error: Archive '{archive}' does not exist or is not a file.")

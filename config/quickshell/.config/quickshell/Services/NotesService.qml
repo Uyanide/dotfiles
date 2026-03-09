@@ -72,7 +72,7 @@ Singleton {
                 Logger.e("Notes", `Failed to create note file: ${ret}`);
                 return ;
             }
-            notesModel.append(currentNote);
+            root.notesModel.append(currentNote);
             const toOpen = currentNote.notePath;
             currentNote = null;
             root.openNote(toOpen);
@@ -89,17 +89,17 @@ Singleton {
                 Logger.e("Notes", `Failed to delete note file: ${ret}`);
                 return ;
             }
-            for (let i = 0; i < notesModel.count; i++) {
-                if (notesModel.get(i).notePath === currentPath) {
-                    notesModel.remove(i);
+            for (let i = 0; i < root.notesModel.count; i++) {
+                if (root.notesModel.get(i).notePath === currentPath) {
+                    root.notesModel.remove(i);
                     break;
                 }
             }
-            if (recentNotePath === currentPath)
-                if (notesModel.count > 0)
-                recentNotePath = notesModel.get(0).notePath;
+            if (root.recentNotePath === currentPath)
+                if (root.notesModel.count > 0)
+                root.recentNotePath = root.notesModel.get(0).notePath;
             else
-                recentNotePath = "";;
+                root.recentNotePath = "";;
 
             currentPath = "";
         }
@@ -116,20 +116,20 @@ Singleton {
 
             onStreamFinished: {
                 const files = listCollector.text.split('\n');
-                notesModel.clear();
+                root.notesModel.clear();
                 for (var i = 0; i < files.length; i++) {
                     const fileName = files[i].trim();
                     if (!fileName || !fileName.endsWith(".txt"))
                         continue;
 
-                    notesModel.append({
+                    root.notesModel.append({
                         "notePath": Paths.notesDir + "/" + fileName,
                         "colorIdx": strToColor(fileName)
                     });
                     Logger.d("Notes", "Loaded note: " + fileName);
                 }
-                if (notesModel.count > 0)
-                    recentNotePath = notesModel.get(0).notePath;
+                if (root.notesModel.count > 0)
+                    root.recentNotePath = root.notesModel.get(0).notePath;
 
             }
         }
