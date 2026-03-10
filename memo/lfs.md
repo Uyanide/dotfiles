@@ -313,3 +313,20 @@ meson setup build                   \
 ### Better targo
 
 [上文](#5-compiling-a-cross-toolchain)中有提供一个用于简化构建流程的脚本, 本仓库中还有一个功能更丰富的版本 [xgo](https://github.com/Uyanide/dotfiles/blob/main/config/scripts/.local/scripts/xgo), 使用 Python 编写, 适合在 BLFS 中使用.
+
+### LFS btw
+
+<details>
+<summary>🤓</summary>
+
+<figure>
+  <img src="https://io.uyani.de/s/dg7FbrQefPf8sJq/preview" alt="SysV btw" />
+  <figcaption>一周目 (LFS-12.4-SysV)</figcaption>
+</figure>
+
+<figure>
+  <img src="https://io.uyani.de/s/kt4rQkNXJWd9yik/preview" alt="Systemd btw" />
+  <figcaption>二周目 (LFS-13.0-Systemd)</figcaption>
+</figure>
+
+</details>
