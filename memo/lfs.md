@@ -1,454 +1,311 @@
-记录一些在安装 LFS 时踩的一些坑和其他值得一提的事情。
+记录一些在安装 LFS 时踩的一些坑和其他值得一提的事情.
 
 > [!IMPORTANT]
 >
-> 本文中的 LFS 仅指代 12.4 SysV 版本
+> 本文中的 LFS 仅指代 12.4 SysV 版本.
+>
+> EDIT: 现在也适用于 13.0 Systemd 版本.
 
 ## LFS
 
-以下内容按照对应章节划分：
+以下内容按照对应章节划分:
 
-- [2.6. Setting the $LFS Variable and the Umask](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/aboutlfs.html)
+### 2.6. Setting the $LFS Variable and the Umask
 
-  `$LFS` 变量很重要！建议写到 Host 的 `/root/.bash_profile` 或 `/etc/profile.d/...` 或类似作用的配置文件里防止忘记设置。
+`$LFS` 变量很重要! 建议写到 Host 的 `/root/.bash_profile` 或 `/etc/profile.d/...` 或类似作用的配置文件里防止忘记设置.
 
-- [2.7. Mounting the New Partition](https://www.linuxfromscratch.org/lfs/view/stable/chapter02/mounting.html)
+### 3. Packages and Patches
 
-  可以用一个小脚本挂载分区。对于指定分区的方式，推荐使用文件系统 UUID 而非诸如 `/dev/sdc1` 这样的绝对路径：
+强烈建议通过镜像站下载打包好的所有源代码和 patch, 否则某些源服务器的下载速度即便在非受限的网络环境也很感人.
 
-  ```bash
-  #!/bin/bash
+### 4.5. About SBUs
 
-  [ -z "$LFS" ] && exit 1
+SBU 只提供大概的预期耗时范围, 误差是很大的, 尤其对于 BLFS 书中的一些编译时间很长的包 (如 Qt, Firefox) 来说.
 
-  set -euo pipefail
+### 5. Compiling a Cross-Toolchain
 
-  # 替换为实际的 UUID
-  UUID_EFI="{ESP_UUID}"
-  UUID_BOOT="{BOOT_UUID}"
-  UUID_LFS="{ROOT_UUID}"
-  UUID_HOME="{HOME_UUID}"
+#### targo
 
-  ensure_device() {
-      local uuid="$1"
-      local path="/dev/disk/by-uuid/$uuid"
-      if [ ! -e "$path" ]; then
-          echo "Device with UUID $uuid not found at $path" >&2
-          exit 1
-      fi
-      echo "$path"
-  }
+从这一章开始将会手动编译大量的包, 其中有不少操作是重复的, 例如 `tar -xf`, `cd`, `rm -rf` 等, 为此可以写一个小脚本 targo 节省时间:
 
-  mkdir_p() {
-      local d="$1"
-      if [ ! -d "$d" ]; then
-          mkdir -p "$d"
-      fi
-  }
+```bash
+#!/bin/bash
 
-  mkdir_p "$LFS"
+set -euo pipefail
 
-  DEV_LFS="$(ensure_device "$UUID_LFS")"
-  DEV_BOOT="$(ensure_device "$UUID_BOOT")"
-  DEV_EFI="$(ensure_device "$UUID_EFI")"
-  DEV_HOME="$(ensure_device "$UUID_HOME")"
+[ -z "${1:-}" ] && {
+    echo "Usage: $0 <tarball>"
+    exit 1
+}
 
-  mount "$DEV_LFS" "$LFS"
+tarball=$(realpath "$1")
 
-  mkdir_p "$LFS/boot"
-  mount "$DEV_BOOT" "$LFS/boot"
+dir=$(tar -tf "$tarball" | sed -e 's/^\.\///' | cut -d/ -f1 | sort -u)
 
-  mkdir_p "$LFS/boot/efi"
-  mount "$DEV_EFI" "$LFS/boot/efi"
+if [ "$(echo "$dir" | wc -l)" -ne 1 ]; then
+    echo "Error: Tarball must contain a single top-level directory."
+    exit 1
+fi
 
-  mkdir_p "$LFS/home"
-  mount "$DEV_HOME" "$LFS/home"
-  ```
+cleanup() {
+    echo "Cleaning up..."
+    cd ..
+    if [[ -z "$dir" || "$dir" == "/" || "$dir" == "." ]]; then
+        echo "Error: Unsafe directory for cleanup: $dir"
+        exit 1
+    fi
+    rm -rf "$dir"
+}
 
-- [3. Packages and Patches](https://www.linuxfromscratch.org/lfs/view/stable/chapter03/chapter03.html)
+trap cleanup EXIT INT TERM
+tar -xvf "$tarball"
 
-  强烈建议通过镜像站下载打包好的所有源代码和 patch，否则某些源服务器的下载速度即便在非受限的网络环境也很感人。
+if [ ! -d "$dir" ]; then
+    echo "Error: Failed to extract directory: $dir"
+    exit 1
+fi
 
-- [4.5. About SBUs](https://www.linuxfromscratch.org/lfs/view/stable/chapter04/aboutsbus.html)
+cd "$dir"
 
-  SBU 只提供大概的预期耗时范围，误差是很大的，尤其对于 BLFS 书中的一些编译时间很长的包（如 Qt，Firefox）来说。
+echo "Spawning shell. Type 'exit' to finish and cleanup."
 
-- [5. Compiling a Cross-Toolchain](https://www.linuxfromscratch.org/lfs/view/stable/chapter05/chapter05.html)
+bash
+```
 
-  从这一章开始将会手动编译大量的包，其中有不少操作是重复的，例如 `tar -xf`，`cd`，`rm -rf` 等，为此可以写一个小脚本节省时间：
+它的作用是解压一个只含有一个顶层目录的 tarball, cd 进入解压后得到的目录, 生成一个 shell, 并在这个 shell 退出时清理先前解压得到的文件. 在此基础上可做如下改进:
 
-  ```bash
-  #!/bin/bash
+#### tmpfs
 
-  set -euo pipefail
+先在目标位置挂载 tmpfs 再解压文件. 编译期间会进行高频的硬盘 IO, 将此过程放到内存上可以减少硬盘损耗也可以稍稍加速. 不过有几点需要注意:
 
-  [ -z "${1:-}" ] && {
-      echo "Usage: $0 <tarball>"
-      exit 1
-  }
+- 部分包(不在少数)的部分测试会依赖文件系统特性. 如 [Python-3.14.3](https://www.linuxfromscratch.org/lfs/view/stable-systemd/chapter08/Python.html) 的 `test_file` 测试, 如果构建目录为 tmpfs, 则会因为缓冲区大小与预期不符而出现 `AssertionError` 断言错误, 而缓冲区大小通常由底层文件系统的块大小决定, 因此是 tmpfs 导致的环境差异导致测试失败.
 
-  tarball=$(realpath "$1")
+- 谨防 OOM. 多核编译本就需要耗费大量内存, 例如 [Gentoo 手册](https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Stage)中建议为每个 job 至少预留 2 GiB 内存, 而复杂的包的构建目录体积也会随着构建过程而膨胀, 二者共同作用更显内存紧张, 而如果真的触及上限, 如果有 swap 则会使用到硬盘, 这和使用 tmpfs 最初的目的相背; 如果触发 OOM Killer 更是会导致编译失败. 因此编译大包时还是建议老老实实用硬盘.
 
-  dir=$(tar -tf "$tarball" | sed -e 's/^\.\///' | cut -d/ -f1 | sort -u)
+- tmpfs 造成的环境差异也会导致少数包在 configure 阶段就出现问题. 这属于少数特例, 不过多说明~~主要是忘了具体是哪个包了:/~~
 
-  if [ "$(echo "$dir" | wc -l)" -ne 1 ]; then
-      echo "Error: Tarball must contain a single top-level directory."
-      exit 1
-  fi
+#### 通用建议 (同样适用于其他书如 BLFS)
 
-  cleanup() {
-      echo "Cleaning up..."
-      cd ..
-      if [[ -z "$dir" || "$dir" == "/" || "$dir" == "." ]]; then
-          echo "Error: Unsafe directory for cleanup: $dir"
-          exit 1
-      fi
-      rm -rf "$dir"
-  }
+1. 通常来说, 应该 (或者说请务必) 在编译和安装一个包后完全删除它的目录, 仅有少数例外:
+   - linux (保留构建树可以缩短重新构建耗时, 或至少保留 `.config` 便于复原配置)
+   - blfs-bootscripts (对于 blfs-sysv)
+   - blfs-systemd-units (对于 blfs-systemd)
 
-  trap cleanup EXIT INT TERM
-  tar -xvf "$tarball"
+   注意一些需要多次编译的包, 例如 gcc, 也应该在每次编译与安装后完全删除目录.
 
-  if [ ! -d "$dir" ]; then
-      echo "Error: Failed to extract directory: $dir"
-      exit 1
-  fi
+2. 通常来说, 建议将所有相关的 tarball 和 patch 下载在同一个目录中, 并且将 tarball 也解压在这个目录中. 如果目录层级与该默认情况不一致的话必须修改 LFS 书中提供的命令中对应的相对路径.
 
-  cd "$dir"
+3. 如果和我一样使用 UEFI 引导, 那么大概率将会在安装 GRUB 时第一次接触 BLFS. 和 LFS 不同, BLFS 中大多数包都是可选的, 具体安装什么由依赖关系决定. 一个包可能会依赖其他包, 这些依赖分为三个层级:
+   - **Required** 是必要的依赖;
+   - **Recommended** 通常建议当成 Required 看待, 因为书中大多数情况会假设读者会装这些包, 如果决定不装必须明确其功能与影响, 也可能需要相应地调整书中给出的命令, 不能无脑 CV;
+   - **Optional**: 酌情安装, 很多时候是文档或测试相关的依赖.
 
-  echo "Spawning shell. Type 'exit' to finish and cleanup."
+4. 如果想要的包在 LFS 和 BLFS 包中都没有, 例如 fish、libglvnd、flatpak 等, 不妨先检查 [GLFS](https://www.linuxfromscratch.org/glfs/) 和 [SLFS](https://www.linuxfromscratch.org/slfs/) 或同系列的其他书中是否有涉及, 如果有的话将节约很多学习和试错成本.
 
-  bash
-  ```
+   另外也可以看其他发行版是怎么打包这些软件的, 例如 [Archlinux 官方构建仓库](https://gitlab.archlinux.org/archlinux/packaging/packages)中的 PKGBUILD 能为构建流程提供很多参考.
 
-  它的作用是解压一个只含有一个顶层目录的 tarball，cd 进入解压后得到的目录，生成一个 shell，并在这个 shell 退出时清理先前解压得到的文件。
+### 7.4. Entering the Chroot Environment
 
-  另外还有对于在 LFS 与 BLFS 中编译包的一些通用建议：
-  1. 通常来说，应该（或者说请务必）在编译和安装一个包后完全删除它的目录，仅有少数例外：
-     - linux（保留构建树可以缩短重新构建耗时，或至少保留 config 便于复原配置）
-     - blfs-bootscripts（在 BLFS 中）
+完全按照 LFS 书中的 chroot 步骤编写一个小脚本:
 
-     注意一些需要多次编译的包，例如 gcc，也应该在每次编译与安装后完全删除目录。
+```bash
+#!/bin/bash
 
-  2. 通常来说，建议将所有相关的 tarball 和 patch 下载在同一个目录中，并且将 tarball 也解压在这个目录中。如果目录层级与该默认情况不一致的话必须修改 LFS 书中提供的命令中对应的相对路径。
+[ -z "$LFS" ] && exit 1
 
-  3. 如果和我一样使用 UEFI 引导，那么大概率将会在 [8.64. GRUB-2.12](https://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html) 第一次接触 BLFS。和 LFS 不同，BLFS 中大多数包都是可选的，一个包可能会依赖其他包，这些依赖分为三个层级：
-     - Required
-     - Recommended
-     - Optional
+# mount virtual file systems
 
-       其中 `Required` 是必要的依赖；`Recommended` 通常建议当成 `Required` 看待，除非明确知道对应包的用途和不安装它的影响；`Optional` 酌情安装，很多时候是文档相关的依赖。
+mkdir -pv $LFS/{dev,proc,sys,run}
 
-       更多关于安装 UEFI 版 GRUB 的话题将会在之后的章节中讨论。
+mount -v --bind /dev $LFS/dev
 
-  4. 如果想要的包在 LFS 和 BLFS 包中都没有，例如 fish、libglvnd、flatpak 等，不妨先检查 [GLFS](https://www.linuxfromscratch.org/glfs/) 和 [SLFS](https://www.linuxfromscratch.org/slfs/) 或同系列的其他书中是否有涉及，如果有的话将节约很多学习和试错成本。
+mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
+mount -vt proc proc $LFS/proc
+mount -vt sysfs sysfs $LFS/sys
+mount -vt tmpfs tmpfs $LFS/run
 
-- [7.4. Entering the Chroot Environment](https://www.linuxfromscratch.org/lfs/view/stable/chapter07/chroot.html)
+if [ -h $LFS/dev/shm ]; then
+    install -v -d -m 1777 $LFS$(realpath /dev/shm)
+else
+    mount -vt tmpfs -o nosuid,nodev tmpfs $LFS/dev/shm
+fi
 
-  完全按照 LFS 书中的 chroot 步骤编写一个小脚本：
+# cleanup (defer)
 
-  ```bash
-  #!/bin/bash
+cleanup() {
+    echo "Cleaning up..."
+    mountpoint -q $LFS/dev/shm && umount $LFS/dev/shm
+    umount $LFS/dev/pts
+    umount $LFS/{sys,proc,run,dev}
+}
+trap cleanup EXIT INT TERM
 
-  [ -z "$LFS" ] && exit 1
+# chroot
 
-  # mount virtual file systems
+chroot "$LFS" /usr/bin/env -i \
+    HOME=/root \
+    TERM="$TERM" \
+    PS1='(lfs chroot) \u:\w\$ ' \
+    PATH=/usr/local/bin:/usr/bin:/usr/sbin \
+    MAKEFLAGS="-j$(nproc)" \
+    TESTSUITEFLAGS="-j$(nproc)" \
+    /bin/bash --login
+```
 
-  mkdir -pv $LFS/{dev,proc,sys,run}
+它的作用是自动挂载一系列虚拟文件系统, 同时在退出 chroot 时自动清理.
 
-  mount -v --bind /dev $LFS/dev
+自动挂载, 自动chroot, 自动清理, 如果手动安装过 archlinux 或 Gentoo 的话可能会很快联想到 arch-install-scripts 提供的 `arch-chroot` 脚本. 但此处并不推荐用此方法偷懒, 原因有三:
 
-  mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
-  mount -vt proc proc $LFS/proc
-  mount -vt sysfs sysfs $LFS/sys
-  mount -vt tmpfs tmpfs $LFS/run
+- `arch-chroot` 挂载 `/dev` 的方式为 `mount -t devtmpfs` 而非 `mount --bind`, 这会导致 `/dev/fd` 等核心软链接消失从而诱发很多问题, 例如交叉编译的工具链完全不可用.
 
-  if [ -h $LFS/dev/shm ]; then
-      install -v -d -m 1777 $LFS$(realpath /dev/shm)
-  else
-      mount -vt tmpfs -o nosuid,nodev tmpfs $LFS/dev/shm
-  fi
+- `arch-chroot` 并未清空环境变量, 这会对环境隔离造成影响. 同时 `arch-chroot` 也没有设置 `MAKEFLAGS`, `TESTSUITEFLAGS` 等关键的环境变量, 后续在别的地方设置.
 
-  # cleanup (defer)
+- `arch-chroot` 会将 Host 的 `/run` 通过绑定的方式挂载, 这也会对环境隔离造成影响.
 
-  cleanup() {
-      echo "Cleaning up..."
-      mountpoint -q $LFS/dev/shm && umount $LFS/dev/shm
-      umount $LFS/dev/pts
-      umount $LFS/{sys,proc,run,dev}
-  }
-  trap cleanup EXIT INT TERM
+另外再多说一嘴, 将 `$LFS/dev/pts` 挂载为全新的 tmpfs 会导致 TTY 上下文丢失, 进而导致非 root 用户执行 su 时遇到 `su: must be run from a terminal` 错误. 有两个解决方向:
 
-  # chroot
+- 使用 `mount --bind` 挂载 `$LFS/dev/pts` 从而保留 TTY 上下文.
 
-  chroot "$LFS" /usr/bin/env -i \
-      HOME=/root \
-      TERM="$TERM" \
-      PS1='(lfs chroot) \u:\w\$ ' \
-      PATH=/usr/local/bin:/usr/bin:/usr/sbin \
-      MAKEFLAGS="-j$(nproc)" \
-      TESTSUITEFLAGS="-j$(nproc)" \
-      /bin/bash --login
-  ```
+- 在 chroot 后使用 `script` 命令或 `tmux` 等终端复用器重新创建 TTY 上下文.
 
-  它的作用是自动挂载一系列虚拟文件系统，同时在退出 chroot 时自动清理。
+### 8.66. GRUB
+
+对于 UEFI 引导的系统, 此时需要跳转 BLFS 安装 GRUB.为避免~~过早地~~陷入依赖地狱, 建议仅按照顺序安装以下包:
+
+1. efivar
+2. Popt
+3. efibootmgr
+4. GRUB for EFI
+
+这对于引导系统来说已经足够用了. 如果需要的话可以之后再补上文档等其他附加依赖重新构建安装.
+
+### 10.2. Creating the /etc/fstab File
+
+可以使用 `arch-install-scripts` 提供的 `genfstab` 偷懒.
 
 > [!IMPORTANT]
 >
-> 不建议使用 `arch-install-scripts` 提供的 `arch-chroot` 脚本偷懒, 即使用的话也需要做一些修改, 如对 `/dev` 不同的处理方式与默认缺失的环境变量.
+> SysV 版本的 LFS 需要在 `/etc/fstab` 中指定一系列虚拟文件系统, 如果不这样做的话这些目录将不会自动挂载, 导致无法启动.
 
-- [8.64. GRUB-2.12](https://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html)
+### 10.3. Linux
 
-  对于 UEFI 引导的系统，此时需要跳转 BLFS 安装 GRUB。为避免过早地陷入依赖地狱，建议仅按照顺序安装以下包：
-  1. [efivar-39](https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/efivar.html)
-  2. [Popt-1.19](https://www.linuxfromscratch.org/blfs/view/12.4/general/popt.html)
-  3. [efibootmgr-18](https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/efibootmgr.html)
-  4. [GRUB-2.12 for EFI](https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/grub-efi.html)
+正如书中所说,
 
-  这对于引导系统来说已经足够用了。如果需要的话可以之后再补上文档等其他附加依赖重新构建安装。
+> Building the linux kernel for the first time is one of the most challenging tasks in LFS.
 
-- [10.2. Creating the /etc/fstab File](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/fstab.html)
+内核配置是整本 LFS 书中最具有挑战的环节. 对此我可以总结出几点建议:
 
-  可以使用 `arch-install-scripts` 提供的 `genfstab` 偷懒。
+- initramfs
 
-> [!IMPORTANT]
->
-> 不同于常见的发行版，LFS 需要在 `/etc/fstab` 中指定一系列虚拟文件系统，如果不这样做的话会导致无法启动。
+  LFS 本书并未涉及这部分内容, 而现代成熟发行版几乎无一例外都使用 initramfs 进行引导. 有无 initramfs 对内核配置的影响是巨大的, 例如:
+  - 挂载 RootFS 所需驱动如 `CONFIG_EXT4_FS`, `CONFIG_BTRFS_FS` 必须内置, 否则即使 Bootloader 认识 RootFS, 内核也不认识;
 
-- [10.3. Linux-6.16.1](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/kernel.html)
+  - 需要外部固件支持的驱动程序 (如 `i915`) 在没有 initramfs 时必须编译为模块, 否则如果提前加载将找不到对应的固件;
 
-  内核配置是整本 LFS 书中最具有挑战的环节。对此我可以总结出几点建议：
-  - 复刻并裁剪现有配置
+  如果不急于验收的话可以暂时搁置 LFS 本书的后续章节, 先推进 BLFS 直到 [About Initramfs](https://www.linuxfromscratch.org/blfs/view/stable-systemd/postlfs/initramfs.html) 了解相关内容后再回来构建内核. 不过我其实更推荐使用 [Dracut](https://github.com/dracut-ng/dracut-ng/) 构建 initramfs, 比起 BLFS 书中的脚本要省心不少.
 
-    如果将要使用正在构建的 LFS 系统的机器和 Host 完全相同，并且内核版本相同或相近，可以将 Host 现在运行的内核的配置文件搬过来，同时仅启用当前 Host 加载的内核模块，这将极大地减小配置难度和缩短构建耗时：
+- 内核版本
 
-    在 Host 上运行：
+  内核版本其实并没有那么重要. 更新内核版本几乎不会对系统造成什么兼容性问题 (除了树外模块如 NVIDIA 专有驱动, 之后再提). 使用和 Host 相同版本的驱动可以很方便地复用配置, 当前 Host 加载的模块信息也能为内核配置提供参考.
 
-    ```bash
-    # 进入内核源码目录
-    cd /path/to/lfs/sources/linux-6.16.1
+- 复刻并裁剪现有配置
 
-    # 导出当前内核配置（如果 Host 有 /proc/config.gz）
-    zcat /proc/config.gz > .config
-    ```
+  如果将要使用正在构建的 LFS 系统的机器和 Host 完全相同, 并且内核版本相同或相近, 可以将 Host 现在运行的内核的配置文件搬过来, 同时根据当前 Host 加载的内核模块进行裁剪, 这将极大地减小配置难度以及缩短构建耗时.
 
-    在 chroot 环境中运行：
+  在 Host 上运行:
 
-    ```bash
-    # 进入内核源码目录
-    cd /path/to/lfs/sources/linux-6.16.1
+  ```bash
+  # 进入内核源码目录
+  cd /path/to/lfs/sources/linux-x.x.x
 
-    # 裁剪配置
-    make localmodconfig
-    ```
+  # 导出当前内核配置 (如果 Host 有 /proc/config.gz)
+  zcat /proc/config.gz > .config
+  ```
 
-    如果内核版本不一致，会在 `make localmodconfig` 时出现很多交互选项，建议全部保持默认，或使用 `make olddefconfig` 来自动处理。
+  在 chroot 环境中运行:
 
-    对此需要特别注意，大多数成熟发行版的内核都是在有 initramfs 的前提下配置、编译和使用的，而在 LFS 中直到 BLFS 才会涉及到 initramfs。因跨度过大，不建议直接从这里跳到 BLFS 中配置 initramfs。因此需要针对这点手动做一些调整，否则可能无法启动。具体修改方向在之后会提到。
+  ```bash
+  # 进入内核源码目录
+  cd /path/to/lfs/sources/linux-x.x.x
 
-    在此之后，仍建议（或者说请务必）按照 LFS 书中的指示检查和调整配置选项。
+  # 裁剪配置
+  make localmodconfig
+  ```
 
-  - 参考 Host 的内核配置
+  如果内核版本不一致, 会在 `make localmodconfig` 时出现一些交互选项, 建议全部保持默认, 或使用 `make olddefconfig` 来自动处理.
 
-    即使不打算直接使用 Host 的内核配置，Host 加载的内核模块也能为 LFS 内核的配置提供很好的参考，例如当一个门类下有很多并列且可选的选项时，可以优先启用 Host 当前加载的模块对应的选项。
+  在此之后, 仍建议 (或者说请务必) 按照 LFS 书中的指示检查和调整配置选项.
 
-  - BLFS 要求的内核配置
+- NVIDIA
 
-    除 LFS 书中列出的内核配置选项外，BLFS 中单独列出了所有涉及的包需要的内核配置选项，建议在配置内核时参考 [BLFS Index of Kernel Settings](https://www.linuxfromscratch.org/blfs/view/12.4/longindex.html#kernel-config-index) 一节，确保启用了所有必要的选项，否则后续可能需要多次重新编译内核。
+  NVIDIA 专有驱动的安装指引在 [GLFS 中](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/drivers-NVIDIA.html)有单独说明, 但其依赖众多, 在此之前需要安装很多 BLFS 和 GLFS 中的软件包, 因此不必心急, 可以先按需安装 BLFS 中的其他包, 等到需要 [Mesa](https://www.linuxfromscratch.org/blfs/view/stable-systemd/x/mesa.html) 作为依赖时再去 GLFS 中安装 NVIDIA 驱动, 这将会轻松不少.
 
-  - 对于 NVIDIA
+  关于其对内核配置的影响, 总结出来有以下两点:
+  - 禁用 nouveau. 除非显卡型号过于老旧, 否则不推荐使用内核中的 nouveau 驱动, 对应配置选项如 `CONFIG_DRM_NOUVEAU` `CONFIG_FB_NVIDIA` 等可留空. [GLFS 相关页面页脚](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/NVIDIA.html#ftn.idm139677630432800)有提到
 
-    如果之后会安装闭源的 NVIDIA 驱动程序，则不建议在内核中启用 nouveau 驱动，因为这会导致闭源驱动无法正常工作，后续禁用 nouveau 将会是额外的工作量。
+    > NVIDIA's kernel modules will fail to compile with TTY support unless a graphics driver is included in the kernel. Nouveau is used here, though alternate graphics drivers may also work.
 
-  - `<*>` or `<M>`
+    但我并未遇到此问题, 留待后续验证.
 
-    对于大多数选项，建议选择模块化（M）而非内置（\*）。这将显著减少内核体积，并且提高灵活性。但在**没有配置 initramfs**（这将在 BLFS 中涉及），有几种情况例外，例如：
-    - 存储总线和控制器驱动，如 `CONFIG_BLK_DEV_NVME`；
-    - RootFS 所需驱动，如 `CONFIG_EXT4_FS`，`CONFIG_BTRFS_FS`；
-    - 如果全盘加密，输入密码（显然）需要键盘或其他输入设备的驱动；
-    - 基础显示驱动，如 `CONFIG_VT`，`CONFIG_VT_CONSOLE` 等。
+  - 树外模块高度依赖内核版本, 例如 NVIDIA-590.48.01 在 Linux-6.19.6 环境下无法编译, 这主要是由于 Linux 内核不稳定的内部 API. 解决方法很粗暴, 等 NVIDIA 更新适配新内核, 或者自己打补丁. 补丁可以在其他发行版的软件包构建仓库中找到, 例如 Archlinux 的 [nvidia-utils](https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils) 仓库.
 
-    总之，在挂载 RootFS 之前需要的，以及挂载 RootFS 需要的驱动需要内置。
+### 10.4. Using GRUB to Set Up the Boot Process
 
-    也有在**没有 initramfs** 的情况下必须模块化的情况，例如：
-    - 需要外部固件支持的驱动程序（如 `i915`），除非使用 initramfs 或通过 `CONFIG_EXTRA_FIRMWARE` 将固件也内置到内核中。
+强烈建议使用 PARTUUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区. 如果已经配置 initramfs, 则也可以使用文件系统 UUID 来指定根分区.
 
-- [10.4. Using GRUB to Set Up the Boot Process](https://www.linuxfromscratch.org/lfs/view/stable/chapter10/grub.html)
-
-  强烈建议使用 PARTUUID 替代传统的 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 分区和根分区。如果已经配置 initramfs，则也可以使用文件系统 UUID 来指定根分区。
-
-  另外，如果将外置存储设备（如 USB 硬盘）上的分区作为 RootFS ，建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 参数以防止启动时找不到 RootFS 。
+另外, 如果将外置存储设备 (如 USB 硬盘) 上的分区作为 RootFS , 建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 内核参数以防止启动时找不到 RootFS .
 
 > [!NOTE]
 >
-> UUID 和 PARTUUID 可以通过 `lsblk -o NAME,FSTYPE,UUID,PARTUUID` 查看。
+> UUID 和 PARTUUID 可以通过 `lsblk -o NAME,FSTYPE,UUID,PARTUUID` 查看.
 
 ## BLFS
 
-绝大多数的建议都已在 LFS 部分提及，这里只做少数补充：
+绝大多数的建议都已在 LFS 部分提及, 这里只做少数补充:
 
-- 阅读顺序
+### 阅读顺序
 
-  BLFS 并不像 LFS 那样有线性的章节顺序，但仍建议先顺序阅读直到 [After LFS Configuration Issues](https://www.linuxfromscratch.org/blfs/view/stable/postlfs/config.html) 章节**结束**再按自己的需要安装各种包。
+BLFS 并不像 LFS 那样有线性的章节顺序, 但仍建议先顺序阅读直到 After LFS Configuration Issues 章节**结束**再按自己的需要安装各种包.
 
-- `su: must be run from a terminal`
-  1. What?
+### About Firmware
 
-     这通常发生在 chroot 后使用 `su` 切换到普通用户，再使用 `su` 试图切换回 root 时。
+一个偷懒的方法是把 Host 的 `/lib/firmware` 目录复制到 LFS 的对应目录下:
 
-  2. Why?
+```bash
+cp -av /lib/firmware $LFS/lib/
+```
 
-     LFS 书中 [7.3. Preparing Virtual Kernel File Systems](https://www.linuxfromscratch.org/lfs/view/stable/chapter07/kernfs.html) 中的 `mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts` 命令将 `/dev/pts` 挂载为全新的 `devpts` 文件系统，导致 tty 上下文丢失，从而无法使用 `su`。
+其中 `-a` 选项会保留符号链接和文件权限等信息.
 
-  3. How?
+### Mesa
 
-     一个简单的解决方案是使用 `script` 命令重新分配一个伪终端：
+如果计划安装 NVIDIA 专有驱动, 则建议先去 [GLFS](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/drivers-nvidia.html) 安装完成后再去 [GLFS 中的 Mesa 页面](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/mesa.html) 继续安装, 或者至少应先安装 [libglvnd](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/libglvnd.html) 再安装 Mesa. 这么做的原因在 [GLFS 相关页面](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/aboutgl.html) 有详细说明.
 
-     ```bash
-     script /dev/null
-     ```
+此处记录我使用 Intel iGPU (i915) 和 NVIDIA dGPU (NVIDIA 专有驱动) 的混合显卡系统时的 Mesa 构建参数:
 
-     之后就可以正常使用 `su` 了。
+```
+meson setup build                   \
+  --prefix=$XORG_PREFIX             \
+  --buildtype=release               \
+  -D platforms=x11,wayland          \
+  -D gallium-drivers=iris,llvmpipe  \
+  -D vulkan-drivers=intel,swrast    \
+  -D valgrind=disabled              \
+  -D video-codecs=all               \
+  -D libunwind=disabled             \
+  -D glvnd=enabled
+```
 
-- [About Firmware](https://www.linuxfromscratch.org/blfs/view/stable/postlfs/firmware.html)
+其中:
 
-  一个偷懒的方法是把 Host 的 `/lib/firmware` 目录复制到 LFS 的对应目录下：
+- `-D gallium-drivers=iris,llvmpipe`:
+  - `iris` 用于现代 Intel 显卡.对于较新 (Gen 8 及更新) 的硬件, `crocus` (适用于 Gen 4 到 Gen 7.5) 和 `i915` (更老) 用户态 OpenGL 驱动已被废弃, 不应再使用.注意此处的 `i915` 用户态驱动和内核中的 `i915` 模块是不同的东西；
+  - 启用 `llvmpipe` 用于 OpenGL 上下文中的软件渲染以防万一.
+- `-D vulkan-drivers=intel,swrast`:
+  - 启用 Intel iGPU 的 Vulkan 支持；
+  - 启用 Vulkan 上下文中的软件渲染驱动“软件光栅化器” `swrast` 以防万一.注意这里的 `swrast` 实际指 `lavapipe`, 和被废弃的 gallium `swrast` 驱动是不同的东西.
+- `-D glvnd=enabled`:启用 GLVND 支持.
 
-  ```bash
-  cp -av /lib/firmware $LFS/lib/
-  ```
+### Better targo
 
-  其中 `-a` 选项会保留符号链接和文件权限等信息。
-
-- [Mesa-25.1.8](https://www.linuxfromscratch.org/blfs/view/stable/x/mesa.html)
-
-  此处记录使用 Intel iGPU（i915）和 NVIDIA dGPU（NVIDIA 专有驱动）的混合显卡系统时的配置方法：
-
-  ```
-  meson setup build                   \
-    --prefix=$XORG_PREFIX             \
-    --buildtype=release               \
-    -D platforms=x11,wayland          \
-    -D gallium-drivers=iris,llvmpipe  \
-    -D vulkan-drivers=intel,swrast    \
-    -D valgrind=disabled              \
-    -D video-codecs=all               \
-    -D libunwind=disabled             \
-    -D glvnd=enabled
-  ```
-
-  其中：
-  - `-D gallium-drivers=iris,llvmpipe`：
-    - 不包含 NVIDIA 相关的参数，因为 NVIDIA 专有驱动自带完整的 OpenGL 实现，不需要 Mesa 提供；
-    - `iris` 用于现代 Intel 显卡。对于较新（Gen 8 及更新）的硬件，`crocus`（适用于 Gen 4 到 Gen 7.5）和 `i915`（更老）用户态 OpenGL 驱动已被废弃，不应再使用。注意此处的 `i915` 用户态驱动和内核中的 `i915` 模块是不同的东西；
-    - 启用 `llvmpipe` 用于 OpenGL 上下文中的软件渲染以防万一。
-  - `-D vulkan-drivers=intel,swrast`：
-    - 不用管 NVIDIA，原因同上；
-    - 启用 Intel iGPU 的 Vulkan 支持；
-    - 启用 Vulkan 上下文中的软件渲染驱动“软件光栅化器” `swrast` 以防万一。注意这里的 `swrast` 实际指 `lavapipe`，和被废弃的 gallium `swrast` 驱动是不同的东西。
-  - `-D glvnd=enabled`：启用 GLVND 支持以便和 NVIDIA 专有驱动兼容。libglvnd 需要[在 GLFS 书中安装](https://glfs-book.github.io/glfs/shareddeps/libglvnd.html)。
-
-  > 虽然 GLFS 中的 libglvnd 章节在开头处提到了 `If you've come here from the BLFS Mesa page, ...`，但实际上 BLFS 中的 Mesa 章节并没有提到 libglvnd 和除 nouveau 外与 NVIDIA 相关的话题。算个小坑？大概。
-
-- [Qt-6.9.2](https://www.linuxfromscratch.org/blfs/view/stable/x/qt6.html)
-
-  此版本的 Qt 的 geoclue2 模块在特定条件下构建时可能会出现错误，日志的一部分如下：
-
-  <details>
-  <summary>错误日志</summary>
-
-  ```log
-  [10697/11095] Linking CXX shared mo...s/position/libqtposition_geoclue2.so
-
-  FAILED: [code=1] qtbase/plugins/position/libqtposition_geoclue2.so
-
-  : && /usr/bin/c++ -fPIC -DNDEBUG -O2  -shared -Wl,--no-undefined -Wl,--version-script,/home/kolkas/qtbuild/qt-everywhere-src-6.9.2/qtpositioning/src/plugins/position/geoclue2/QGeoPositionInfoSourceFactoryGeoclue2Plugin.version -Wl,-z,relro,-z,now -Wl,--enable-new-dtags  -o qtbase/plugins/position/libqtposition_geoclue2.so qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/client_interface.cpp.o qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/location_interface.cpp.o qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/manager_interface.cpp.o qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/geocluetypes.cpp.o qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosourcefactory_geoclue2.cpp.o  -Wl,-rpath,/home/kolkas/qtbuild/qt-everywhere-src-6.9.2/qtbase/lib:  qtbase/lib/libQt6DBus.so.6.9.2  qtbase/lib/libQt6Positioning.so.6.9.2  qtbase/lib/libQt6Core.so.6.9.2 && :
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o:(.data.rel.ro+0x160): multiple definition of `OrgFreedesktopGeoClue2ClientInterface::staticMetaObject'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:(.data.rel.ro+0x120): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o:(.data.rel.ro+0xc0): multiple definition of `OrgFreedesktopGeoClue2LocationInterface::staticMetaObject'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:(.data.rel.ro+0x80): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o:(.data.rel.ro+0x40): multiple definition of `OrgFreedesktopGeoClue2ManagerInterface::staticMetaObject'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:(.data.rel.ro+0x0): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ClientInterface::metaObject() const':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x30): multiple definition of `OrgFreedesktopGeoClue2ClientInterface::metaObject() const'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x0): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2LocationInterface::metaObject() const':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x50): multiple definition of `OrgFreedesktopGeoClue2LocationInterface::metaObject() const'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x20): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ManagerInterface::metaObject() const':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x70): multiple definition of `OrgFreedesktopGeoClue2ManagerInterface::metaObject() const'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x40): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ClientInterface::LocationUpdated(QDBusObjectPath const&, QDBusObjectPath const&)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0xb0): multiple definition of `OrgFreedesktopGeoClue2ClientInterface::LocationUpdated(QDBusObjectPath const&, QDBusObjectPath const&)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x60): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ClientInterface::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x2af0): multiple definition of `OrgFreedesktopGeoClue2ClientInterface::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0xc0): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2LocationInterface::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x3440): multiple definition of `OrgFreedesktopGeoClue2LocationInterface::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0xb60): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ManagerInterface::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x4140): multiple definition of `OrgFreedesktopGeoClue2ManagerInterface::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x1000): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ClientInterface::qt_metacast(char const*)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x4bc0): multiple definition of `OrgFreedesktopGeoClue2ClientInterface::qt_metacast(char const*)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x1a80): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2LocationInterface::qt_metacast(char const*)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x4c20): multiple definition of `OrgFreedesktopGeoClue2LocationInterface::qt_metacast(char const*)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x1ae0): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ManagerInterface::qt_metacast(char const*)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x4c80): multiple definition of `OrgFreedesktopGeoClue2ManagerInterface::qt_metacast(char const*)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x1b40): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ClientInterface::qt_metacall(QMetaObject::Call, int, void**)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x4ce0): multiple definition of `OrgFreedesktopGeoClue2ClientInterface::qt_metacall(QMetaObject::Call, int, void**)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x1ba0): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2LocationInterface::qt_metacall(QMetaObject::Call, int, void**)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x4dc0): multiple definition of `OrgFreedesktopGeoClue2LocationInterface::qt_metacall(QMetaObject::Call, int, void**)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x1c80): first defined here
-
-  /usr/bin/ld: qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/qgeopositioninfosource_geoclue2.cpp.o: in function `OrgFreedesktopGeoClue2ManagerInterface::qt_metacall(QMetaObject::Call, int, void**)':
-
-  qgeopositioninfosource_geoclue2.cpp:(.text+0x4e10): multiple definition of `OrgFreedesktopGeoClue2ManagerInterface::qt_metacall(QMetaObject::Call, int, void**)'; qtpositioning/src/plugins/position/geoclue2/CMakeFiles/QGeoPositionInfoSourceFactoryGeoclue2Plugin.dir/QGeoPositionInfoSourceFactoryGeoclue2Plugin_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x1cd0): first defined here
-
-  collect2: error: ld returned 1 exit status
-
-  [10716/11095] Building CXX object q...hell.dir/qwaylandqtshellchrome.cpp.o
-
-  ninja: build stopped: subcommand failed.
-  ```
-
-  </details>
-
-  原因是源文件显式 include 了多余的 moc 文件，和自动生成的相同作用的代码冲突，导致重复定义。出问题的源文件有两个，可以通过以下命令修复：
-
-  ```bash
-  sed -i -E 's|\s*#include "moc_.*|// &|g' qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosourcefactory_geoclue2.cpp qtpositioning/src/plugins/position/geoclue2/qgeopositioninfosource_geoclue2.cpp
-  ```
-
-## References
-
-- [Welcome - Linux From Scratch](https://www.linuxfromscratch.org/)
-
-- [Linux From Scratch - Version 12.4 ](https://www.linuxfromscratch.org/lfs/view/stable/)
-
-- [Linux From Scratch - 版本 12.4-中文翻译版](https://lfs.xry111.site/zh_CN/12.4/)
-
-- [Beyond Linux® From Scratch (System V Edition) - Version 12.4](https://www.linuxfromscratch.org/blfs/view/stable/)
-
-- [meson.build - Mesa/mesa](https://gitlab.freedesktop.org/mesa/mesa/-/blob/main/meson.build)
-
-- [Intel - Gentoo wiki](https://wiki.gentoo.org/wiki/Intel)
-
-- [LFS btw](https://io.uyani.de/s/dg7FbrQefPf8sJq)
+[上文](#5-compiling-a-cross-toolchain)中有提供一个用于简化构建流程的脚本, 本仓库中还有一个功能更丰富的版本 [xgo](https://github.com/Uyanide/dotfiles/blob/main/config/scripts/.local/scripts/xgo), 使用 Python 编写, 适合在 BLFS 中使用.
