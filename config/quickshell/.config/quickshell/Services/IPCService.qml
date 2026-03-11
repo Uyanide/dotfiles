@@ -34,6 +34,10 @@ Item {
             BackgroundService.setWallpaper(path);
         }
 
+        function next() {
+            WallpaperCycle.applyNext();
+        }
+
         target: "background"
     }
 

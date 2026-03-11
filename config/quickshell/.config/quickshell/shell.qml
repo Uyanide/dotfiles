@@ -23,6 +23,7 @@ ShellRoot {
             Component.onCompleted: {
                 SunsetService;
                 NotesService;
+                WallpaperCycle;
             }
 
             IPCService {

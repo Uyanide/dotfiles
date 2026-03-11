@@ -13,6 +13,7 @@ Singleton {
     property alias location: adapter.location
     property alias backgroundPath: adapter.backgroundPath
     property alias wifiEnabled: adapter.wifiEnabled
+    property alias cycleWallpapers: adapter.cycleWallpapers
 
     FileView {
         id: settingFile
@@ -34,6 +35,7 @@ Singleton {
             property string location: "New York"
             property string backgroundPath: ""
             property bool wifiEnabled: true
+            property list<string> cycleWallpapers: []
         }
 
     }

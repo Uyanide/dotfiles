@@ -115,28 +115,28 @@ set -euo pipefail
 
 # mount virtual file systems
 
-mkdir -pv $LFS/{dev,proc,sys,run}
+mkdir -pv "$LFS"/{dev,proc,sys,run}
 
-mount -v --bind /dev $LFS/dev
+mountpoint -q "$LFS"/dev || mount -v --bind /dev "$LFS"/dev
 
-mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
-mount -vt proc proc $LFS/proc
-mount -vt sysfs sysfs $LFS/sys
-mount -vt tmpfs tmpfs $LFS/run
+mountpoint -q "$LFS"/dev/pts || mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
+mountpoint -q "$LFS"/proc || mount -vt proc proc "$LFS"/proc
+mountpoint -q "$LFS"/sys || mount -vt sysfs sysfs "$LFS"/sys
+mountpoint -q "$LFS"/run || mount -vt tmpfs tmpfs "$LFS"/run
 
-if [ -h $LFS/dev/shm ]; then
-    install -v -d -m 1777 $LFS$(realpath /dev/shm)
+if [ -h "$LFS"/dev/shm ]; then
+    install -v -d -m 1777 "${LFS}$(realpath /dev/shm)"
 else
-    mount -vt tmpfs -o nosuid,nodev tmpfs $LFS/dev/shm
+    mount -vt tmpfs -o nosuid,nodev tmpfs "$LFS"/dev/shm
 fi
 
 # cleanup (defer)
 
 cleanup() {
     echo "Cleaning up..."
-    mountpoint -q $LFS/dev/shm && umount $LFS/dev/shm
-    umount $LFS/dev/pts
-    umount $LFS/{sys,proc,run,dev}
+    mountpoint -q "$LFS"/dev/shm && umount "$LFS"/dev/shm || true
+    umount "$LFS"/dev/pts || true
+    umount "$LFS"/{sys,proc,run,dev} || true
 }
 trap cleanup EXIT INT TERM
 
@@ -239,7 +239,7 @@ chroot "$LFS" /usr/bin/env -i \
   NVIDIA 专有驱动的安装指引在 [GLFS 中](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/drivers-NVIDIA.html)有详细说明. 但其依赖众多, 其中包括很多 BLFS 和 GLFS 中的软件包. 因此不必心急, 可以先按需安装 BLFS 中的其他包, 等到需要 [Mesa](https://www.linuxfromscratch.org/blfs/view/stable-systemd/x/mesa.html) 作为依赖时再去 GLFS 中安装 NVIDIA 驱动, 这将会轻松不少.
 
   关于其对内核配置的影响, 总结出来有以下两点:
-  - 禁用 nouveau. 除非显卡型号过于老旧, 否则不推荐使用内核中的 nouveau 驱动, 对应配置选项如 `CONFIG_DRM_NOUVEAU` `CONFIG_FB_NVIDIA` 等可留空. [GLFS NVIDIA-590.48.01 页面页脚](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/NVIDIA.html#ftn.idm139677630432800)有提到
+  - 禁用 nouveau. 除非显卡型号过于老旧, 否则不推荐使用内核中的 nouveau 驱动, 对应配置选项如 `CONFIG_DRM_NOUVEAU` `CONFIG_FB_NVIDIA` 等可留空. [GLFS NVIDIA-590.48.01 页面页脚](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/nvidia.html)有提到
 
     > NVIDIA's kernel modules will fail to compile with TTY support unless a graphics driver is included in the kernel. Nouveau is used here, though alternate graphics drivers may also work.
 
