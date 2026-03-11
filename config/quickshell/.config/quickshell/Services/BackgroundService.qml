@@ -62,11 +62,10 @@ Singleton {
         });
     }
 
-    function toggleChooser() {
-        if (wallreelProcess.running)
-            wallreelProcess.signal(2);
-        else
+    function openChooser() {
+        if (!wallreelProcess.running)
             wallreelProcess.running = true;
+
     }
 
     Component.onCompleted: {

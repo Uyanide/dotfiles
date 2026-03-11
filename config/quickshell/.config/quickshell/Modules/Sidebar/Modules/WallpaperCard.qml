@@ -22,11 +22,12 @@ RowLayout {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton
-            onClicked: BackgroundService.toggleChooser()
+            onClicked: BackgroundService.openChooser()
             cursorShape: Qt.PointingHandCursor
         }
 
         Rectangle {
+            visible: WallpaperCycle.enabled
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             width: Style.marginS
@@ -70,7 +71,7 @@ RowLayout {
             baseSize: Style.baseWidgetSize * 0.8
             iconName: WallpaperCycle.enabled ? "player-pause" : "player-play"
             colorFg: WallpaperCycle.enabled ? Colors.mGreen : Colors.mRed
-            alwaysHover: !WallpaperCycle.enabled
+            alwaysHover: WallpaperCycle.enabled
             onClicked: WallpaperCycle.playPause()
         }
 
