@@ -69,6 +69,10 @@ Variants {
                     Layout.fillWidth: true
                 }
 
+                WallpaperCard {
+                    Layout.fillWidth: true
+                }
+
                 NotificationNoteToggleCard {
                     Layout.fillWidth: true
                     Layout.fillHeight: true

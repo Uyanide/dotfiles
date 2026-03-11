@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import qs.Constants
 import qs.Services
 import qs.Utils
@@ -56,19 +57,24 @@ Singleton {
             if (!exists)
                 return ;
 
-            loadWallpaperDebouncer.pendingPath = path;
+            SettingsService.backgroundPath = path;
             loadWallpaperDebouncer.start();
         });
     }
 
+    function toggleChooser() {
+        if (wallreelProcess.running)
+            wallreelProcess.signal(2);
+        else
+            wallreelProcess.running = true;
+    }
+
     Component.onCompleted: {
-        loadWallpaperDebouncer.pendingPath = SettingsService.backgroundPath;
         loadWallpaperDebouncer.start();
     }
 
     Connections {
         function onBackgroundPathChanged() {
-            loadWallpaperDebouncer.pendingPath = SettingsService.backgroundPath;
             loadWallpaperDebouncer.start();
         }
 
@@ -78,15 +84,19 @@ Singleton {
     Timer {
         id: loadWallpaperDebouncer
 
-        property string pendingPath: ""
-
         interval: 200
         running: false
         repeat: false
         onTriggered: {
-            SettingsService.backgroundPath = pendingPath;
             root.loadBackground();
         }
+    }
+
+    Process {
+        id: wallreelProcess
+
+        running: false
+        command: ["wallreel"]
     }
 
 }
