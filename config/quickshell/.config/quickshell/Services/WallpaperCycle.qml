@@ -45,7 +45,7 @@ Singleton {
     Timer {
         id: cycleTimer
 
-        running: false
+        running: true
         repeat: true
         interval: root.cycleInterval * 1000
         onTriggered: {
