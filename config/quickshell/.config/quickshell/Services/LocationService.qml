@@ -7,6 +7,8 @@ pragma Singleton
 
 // Location and weather service with decoupled geocoding and weather fetching.
 Singleton {
+    //console.log(JSON.stringify(weatherData))
+
     id: root
 
     property string locationFile: Paths.cacheDir + "location.json"
@@ -145,8 +147,6 @@ Singleton {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-                //console.log(JSON.stringify(weatherData))
-
                 if (xhr.status === 200) {
                     try {
                         var weatherData = JSON.parse(xhr.responseText);
@@ -242,6 +242,46 @@ Singleton {
             return "Thunderstorm";
 
         return "Unknown";
+    }
+
+    function weatherColorFromCode(code) {
+        // Clear sky
+        if (code === 0)
+            return Colors.mYellow;
+
+        // Mainly clear / Partly cloudy
+        if (code === 1 || code === 2)
+            return Colors.mSky;
+
+        // Overcast
+        if (code === 3)
+            return Colors.mLavender;
+
+        // Fog
+        if (code === 45 || code === 48)
+            return Colors.mCyan;
+
+        // Drizzle / Rain / Rain showers
+        if ((code >= 51 && code <= 55) || (code >= 61 && code <= 65) || (code >= 80 && code <= 82))
+            return Colors.mBlue;
+
+        // Freezing drizzle / Freezing rain
+        if ((code >= 56 && code <= 57) || (code >= 66 && code <= 67))
+            return Colors.mPurple;
+
+        // Snow / Snow showers
+        if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86))
+            return Colors.mLavender;
+
+        // Thunderstorm
+        if (code === 95)
+            return Colors.mOrange;
+
+        // Thunderstorm with hail
+        if (code >= 96 && code <= 99)
+            return Colors.mRed;
+
+        return Colors.mSky;
     }
 
     // --------------------------------

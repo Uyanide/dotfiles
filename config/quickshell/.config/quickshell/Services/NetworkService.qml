@@ -85,12 +85,12 @@ Singleton {
   }
 
   function setWifiEnabled(enabled) {
-    SettingsService.wifiEnabled = enabled
+    ShellState.wifiEnabled = enabled
     wifiStateEnableProcess.running = true
   }
 
   function scan() {
-    if (!SettingsService.wifiEnabled)
+    if (!ShellState.wifiEnabled)
       return
 
     if (scanning) {
@@ -236,8 +236,8 @@ Singleton {
       onStreamFinished: {
         const enabled = text.trim() === "enabled"
         Logger.i("Network", "Wi-Fi adapter was detect as enabled:", enabled)
-        if (SettingsService.wifiEnabled !== enabled) {
-          SettingsService.wifiEnabled = enabled
+        if (ShellState.wifiEnabled !== enabled) {
+          ShellState.wifiEnabled = enabled
         }
       }
     }
@@ -247,7 +247,7 @@ Singleton {
   Process {
     id: wifiStateEnableProcess
     running: false
-    command: ["nmcli", "radio", "wifi", SettingsService.wifiEnabled ? "on" : "off"]
+    command: ["nmcli", "radio", "wifi", ShellState.wifiEnabled ? "on" : "off"]
 
     stdout: StdioCollector {
       onStreamFinished: {

@@ -11,12 +11,10 @@ Singleton {
     property double _latitude: -1
     property double _longitude: -1
     property int temperature: 0
-    readonly property bool isEnabled: ShellState.sunsetState.enabled || false
+    readonly property bool isEnabled: ShellState.sunsetEnabled
 
     function toggleSunset() {
-        ShellState.sunsetState = {
-            "enabled": !root.isEnabled
-        };
+        ShellState.sunsetEnabled = !root.isEnabled;
     }
 
     function setLat(lat) {

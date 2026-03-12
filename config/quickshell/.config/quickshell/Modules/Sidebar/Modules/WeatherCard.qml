@@ -113,7 +113,7 @@ UBox {
                     Layout.alignment: Qt.AlignVCenter
                     iconName: weatherReady ? LocationService.weatherSymbolFromCode(LocationService.data.weather.current_weather.weathercode, LocationService.data.weather.current_weather.is_day) : "weather-cloud-off"
                     iconSize: Style.fontSizeXXXL * 1.75
-                    color: Colors.mPrimary
+                    color: weatherReady ? LocationService.weatherColorFromCode(LocationService.data.weather.current_weather.weathercode) : Colors.mPrimary
                 }
 
                 ColumnLayout {
@@ -198,7 +198,7 @@ UBox {
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         iconName: LocationService.weatherSymbolFromCode(LocationService.data.weather.daily.weathercode[index])
                         iconSize: Style.fontSizeXXL * 1.6
-                        color: Colors.mPrimary
+                        color: LocationService.weatherColorFromCode(LocationService.data.weather.daily.weathercode[index])
                     }
 
                     UText {

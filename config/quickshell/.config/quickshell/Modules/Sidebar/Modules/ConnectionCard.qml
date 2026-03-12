@@ -112,7 +112,7 @@ UBox {
                         UToggle {
                             id: wifiSwitch
 
-                            checked: SettingsService.wifiEnabled
+                            checked: ShellState.wifiEnabled
                             onToggled: (checked) => {
                                 return NetworkService.setWifiEnabled(checked);
                             }
@@ -122,7 +122,7 @@ UBox {
                         UIconButton {
                             iconName: "refresh"
                             baseSize: Style.baseWidgetSize * 0.8
-                            enabled: SettingsService.wifiEnabled && !NetworkService.scanning
+                            enabled: ShellState.wifiEnabled && !NetworkService.scanning
                             onClicked: NetworkService.scan()
                             colorFg: Colors.mGreen
                         }

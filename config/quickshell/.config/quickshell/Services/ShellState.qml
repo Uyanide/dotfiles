@@ -12,9 +12,10 @@ Singleton {
     property bool isLoaded: false
     property alias notificationsState: adapter.notificationsState
     property alias lyricsState: adapter.lyricsState
-    property alias sunsetState: adapter.sunsetState
+    property alias sunsetEnabled: adapter.sunsetEnabled
     property alias leftSiderbarTab: adapter.leftSiderbarTab
     property alias rightSiderbarTab: adapter.rightSiderbarTab
+    property alias wifiEnabled: adapter.wifiEnabled
 
     function save() {
         saveTimer.restart();
@@ -22,9 +23,10 @@ Singleton {
 
     onNotificationsStateChanged: save()
     onLyricsStateChanged: save()
-    onSunsetStateChanged: save()
+    onSunsetEnabledChanged: save()
     onLeftSiderbarTabChanged: save()
     onRightSiderbarTabChanged: save()
+    onWifiEnabledChanged: save()
     Component.onCompleted: {
         stateFileView.path = stateFile;
     }
@@ -52,11 +54,10 @@ Singleton {
             property var lyricsState: ({
                 "showLyricsBar": false
             })
-            property var sunsetState: ({
-                "enabled": true
-            })
+            property bool sunsetEnabled: true
             property string leftSiderbarTab: "bluetooth"
             property string rightSiderbarTab: "notes"
+            property bool wifiEnabled: true
         }
 
     }

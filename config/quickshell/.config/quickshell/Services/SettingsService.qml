@@ -12,7 +12,6 @@ Singleton {
     property alias ipAliases: adapter.ipAliases
     property alias location: adapter.location
     property alias backgroundPath: adapter.backgroundPath
-    property alias wifiEnabled: adapter.wifiEnabled
     property alias cycleWallpapers: cycleSettings.wallpapers
     property alias cycleShuffle: cycleSettings.shuffle
     property alias cycleInterval: cycleSettings.interval
@@ -37,7 +36,6 @@ Singleton {
             }
             property string location: "New York"
             property string backgroundPath: ""
-            property bool wifiEnabled: true
             property JsonObject cycle: JsonObject {
                 id: cycleSettings
 

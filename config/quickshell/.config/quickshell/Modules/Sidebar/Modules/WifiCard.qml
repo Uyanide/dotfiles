@@ -3,8 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
-import qs.Constants
 import qs.Components
+import qs.Constants
 import qs.Services
 import qs.Utils
 
@@ -62,7 +62,7 @@ ColumnLayout {
 
         // WiFi disabled state
         ColumnLayout {
-            visible: !SettingsService.wifiEnabled
+            visible: !ShellState.wifiEnabled
             anchors.fill: parent
             spacing: Style.marginS
 
@@ -99,7 +99,7 @@ ColumnLayout {
 
         // Scanning state
         ColumnLayout {
-            visible: SettingsService.wifiEnabled && NetworkService.scanning && Object.keys(NetworkService.networks).length === 0
+            visible: ShellState.wifiEnabled && NetworkService.scanning && Object.keys(NetworkService.networks).length === 0
             anchors.fill: parent
             spacing: Style.marginL
 
@@ -129,7 +129,7 @@ ColumnLayout {
 
         // Networks list container
         UScrollView {
-            visible: SettingsService.wifiEnabled && (!NetworkService.scanning || Object.keys(NetworkService.networks).length > 0)
+            visible: ShellState.wifiEnabled && (!NetworkService.scanning || Object.keys(NetworkService.networks).length > 0)
             anchors.fill: parent
             horizontalPolicy: ScrollBar.AlwaysOff
             verticalPolicy: ScrollBar.AsNeeded
@@ -143,7 +143,7 @@ ColumnLayout {
                 // Network list
                 Repeater {
                     model: {
-                        if (!SettingsService.wifiEnabled)
+                        if (!ShellState.wifiEnabled)
                             return [];
 
                         const nets = Object.values(NetworkService.networks);
@@ -519,7 +519,7 @@ ColumnLayout {
 
         // Empty state when no networks
         ColumnLayout {
-            visible: SettingsService.wifiEnabled && !NetworkService.scanning && Object.keys(NetworkService.networks).length === 0
+            visible: ShellState.wifiEnabled && !NetworkService.scanning && Object.keys(NetworkService.networks).length === 0
             anchors.fill: parent
             spacing: Style.marginL
 
