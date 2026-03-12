@@ -10,157 +10,157 @@ recent-windows {
 
 binds {
     // Apps
-    Mod+C { spawn "code"; }
-    Mod+E { spawn "dolphin" "--new-window"; }
-    Mod+W { spawn-sh "zen || zen-browser"; }
-    Mod+B { spawn-sh "pkill -x -n btop || wezterm -e btop"; }
-    Mod+Shift+T { spawn "wezterm"; }
-    Mod+Shift+Return { spawn "wezterm"; }
-    Mod+T { spawn "kitty"; }
-    Mod+Return { spawn "kitty"; }
-    Mod+Shift+W { spawn "wallreel"; }
-    Mod+O { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
-    Ctrl+Alt+Delete { spawn-sh "pkill -x wlogout || wlogout"; }
+    Mod+C               repeat=false    { spawn "code"; }
+    Mod+E               repeat=false    { spawn "dolphin" "--new-window"; }
+    Mod+W               repeat=false    { spawn-sh "zen || zen-browser"; }
+    Mod+B               repeat=false    { spawn-sh "pkill -x -n btop || wezterm -e btop"; }
+    Mod+Shift+T         repeat=false    { spawn "wezterm"; }
+    Mod+Shift+Return    repeat=false    { spawn "wezterm"; }
+    Mod+T               repeat=false    { spawn "kitty"; }
+    Mod+Return          repeat=false    { spawn "kitty"; }
+    Mod+Shift+W         repeat=false    { spawn "wallreel"; }
+    Mod+O               repeat=false    { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
+    Ctrl+Alt+Delete     repeat=false    { spawn-sh "pkill -x wlogout || wlogout"; }
+    Mod+P               repeat=false    { spawn-sh "wl-mirror $(niri msg --json focused-output | jq -r .name)"; }
+
 
     // Quickshell
-    Mod+Space { spawn "qs" "ipc" "call" "bars" "toggleLeft"; }
-    Mod+N { spawn "qs" "ipc" "call" "bars" "toggleRight"; }
-    Mod+Shift+L { spawn "qs" "ipc" "call" "bars" "toggleLyrics"; }
-    Mod+Shift+K { spawn-sh "quickshell-kill || quickshell"; }
-    Mod+I { spawn "qs" "ipc" "call" "idleInhibitor" "toggle"; }
-    Mod+Alt+R { spawn "qs" "ipc" "call" "recording" "startOrStop"; }
-    Mod+Alt+G { spawn "qs" "ipc" "call" "recording" "saveReplay"; }
-    Mod+Shift+E { spawn "qs" "ipc" "call" "sunset" "toggle"; }
-    Mod+X { spawn "qs" "ipc" "call" "notes" "openRecent"; }
-    Mod+Shift+X { spawn "qs" "ipc" "call" "notes" "create"; }
+    Mod+Space           repeat=false    { spawn "qs" "ipc" "call" "bars" "toggleLeft"; }
+    Mod+N               repeat=false    { spawn "qs" "ipc" "call" "bars" "toggleRight"; }
+    Mod+Shift+L         repeat=false    { spawn "qs" "ipc" "call" "bars" "toggleLyrics"; }
+    Mod+Shift+K         repeat=false    { spawn-sh "quickshell-kill || quickshell"; }
+    Mod+I               repeat=false    { spawn "qs" "ipc" "call" "idleInhibitor" "toggle"; }
+    Mod+Alt+R           repeat=false    { spawn "qs" "ipc" "call" "recording" "startOrStop"; }
+    Mod+Alt+G           repeat=false    { spawn "qs" "ipc" "call" "recording" "saveReplay"; }
+    Mod+Shift+E         repeat=false    { spawn "qs" "ipc" "call" "sunset" "toggle"; }
+    Mod+X               repeat=false    { spawn "qs" "ipc" "call" "notes" "openRecent"; }
+    Mod+Shift+X         repeat=false    { spawn "qs" "ipc" "call" "notes" "create"; }
 
     // Rofi
-    Mod+D { spawn-sh "pkill -x rofi || rofi -show run"; }
-    Alt+Space { spawn-sh "pkill -x rofi || rofi -show drun"; }
+    Mod+D               repeat=false    { spawn-sh "pkill -x rofi || rofi -show run"; }
+    Alt+Space           repeat=false    { spawn-sh "pkill -x rofi || rofi -show drun"; }
 
     // Actions
-    Mod+V { spawn-sh "fzfclip-wrap"; }
-    Mod+Period { spawn-sh "pkill -x rofi || rofi-emoji"; }
-    Print { screenshot-screen; }
-    Mod+Shift+S { screenshot; }
-    Mod+Ctrl+Shift+S { screenshot-window; }
-    Mod+Shift+C { spawn "hyprpicker" "-a"; }
-
-    // Session
-    Mod+L { spawn "loginctl" "lock-session"; }
+    Mod+V               repeat=false    { spawn-sh "fzfclip-wrap"; }
+    Mod+Period          repeat=false    { spawn-sh "pkill -x rofi || rofi-emoji"; }
+    Print               repeat=false    { screenshot-screen; }
+    Mod+Shift+S         repeat=false    { screenshot; }
+    Mod+Ctrl+Shift+S    repeat=false    { screenshot-window; }
+    Mod+Shift+C         repeat=false    { spawn "hyprpicker" "-a"; }
 
     // Media
-    XF86AudioRaiseVolume allow-when-locked=true { spawn "qs" "ipc" "call" "media" "volumeUp"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn "qs" "ipc" "call" "media" "volumeDown"; }
-    XF86AudioMute        allow-when-locked=true { spawn "qs" "ipc" "call" "media" "toggleOutputMute"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn "qs" "ipc" "call" "media" "toggleInputMute"; }
-    XF86AudioPlay        allow-when-locked=true { spawn "qs" "ipc" "call" "media" "playPause"; }
-    XF86AudioPause       allow-when-locked=true { spawn "qs" "ipc" "call" "media" "playPause"; }
-    XF86AudioNext        allow-when-locked=true { spawn "qs" "ipc" "call" "media" "next"; }
-    XF86AudioPrev        allow-when-locked=true { spawn "qs" "ipc" "call" "media" "previous"; }
+    XF86AudioRaiseVolume    allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "volumeUp"; }
+    XF86AudioLowerVolume    allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "volumeDown"; }
+    XF86AudioMute           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "toggleOutputMute"; }
+    XF86AudioMicMute        allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "toggleInputMute"; }
+    XF86AudioPlay           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "playPause"; }
+    XF86AudioPause          allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "playPause"; }
+    XF86AudioNext           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "next"; }
+    XF86AudioPrev           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "previous"; }
 
     // Brightness
-    XF86MonBrightnessUp allow-when-locked=true { spawn "qs" "ipc" "call" "brightness" "up"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "qs" "ipc" "call" "brightness" "down"; }
+    XF86MonBrightnessUp     allow-when-locked=true  { spawn "qs" "ipc" "call" "brightness" "up"; }
+    XF86MonBrightnessDown   allow-when-locked=true  { spawn "qs" "ipc" "call" "brightness" "down"; }
 
     // Window management
-    Mod+Tab repeat=false { toggle-overview; }
+    Mod+Tab repeat=false    { toggle-overview; }
 
-    Mod+Q repeat=false { close-window; }
+    Mod+Q   repeat=false    { close-window; }
+    Alt+F4  repeat=false    { close-window; } // can't imagine this does not come as default
 
-    Mod+Left  { focus-column-left; }
-    Mod+Down  { focus-window-or-workspace-down; }
-    Mod+Up    { focus-window-or-workspace-up; }
-    Mod+Right { focus-column-right; }
+    Mod+Left                { focus-column-left; }
+    Mod+Down                { focus-window-or-workspace-down; }
+    Mod+Up                  { focus-window-or-workspace-up; }
+    Mod+Right               { focus-column-right; }
 
-    Mod+Shift+Left  { move-column-left; }
-    Mod+Shift+Down  { move-window-down-or-to-workspace-down; }
-    Mod+Shift+Up    { move-window-up-or-to-workspace-up; }
-    Mod+Shift+Right { move-column-right; }
+    Mod+Shift+Left          { move-column-left; }
+    Mod+Shift+Down          { move-window-down-or-to-workspace-down; }
+    Mod+Shift+Up            { move-window-up-or-to-workspace-up; }
+    Mod+Shift+Right         { move-column-right; }
 
-    Mod+Home { focus-column-first; }
-    Mod+End  { focus-column-last; }
-    Mod+Shift+Home { move-column-to-first; }
-    Mod+Shift+End  { move-column-to-last; }
+    Mod+Home                { focus-column-first; }
+    Mod+End                 { focus-column-last; }
+    Mod+Shift+Home          { move-column-to-first; }
+    Mod+Shift+End           { move-column-to-last; }
 
-    Mod+Ctrl+Left  { focus-monitor-left; }
-    Mod+Ctrl+Down  { focus-monitor-down; }
-    Mod+Ctrl+Up    { focus-monitor-up; }
-    Mod+Ctrl+Right { focus-monitor-right; }
+    Mod+Ctrl+Left           { focus-monitor-left; }
+    Mod+Ctrl+Down           { focus-monitor-down; }
+    Mod+Ctrl+Up             { focus-monitor-up; }
+    Mod+Ctrl+Right          { focus-monitor-right; }
 
-    Mod+Shift+Ctrl+Left  { move-window-to-monitor-left; }
-    Mod+Shift+Ctrl+Down  { move-window-to-monitor-down; }
-    Mod+Shift+Ctrl+Up    { move-window-to-monitor-up; }
-    Mod+Shift+Ctrl+Right { move-window-to-monitor-right; }
+    Mod+Shift+Ctrl+Left     { move-window-to-monitor-left; }
+    Mod+Shift+Ctrl+Down     { move-window-to-monitor-down; }
+    Mod+Shift+Ctrl+Up       { move-window-to-monitor-up; }
+    Mod+Shift+Ctrl+Right    { move-window-to-monitor-right; }
 
-    Mod+Page_Down      { focus-workspace-down; }
-    Mod+Page_Up        { focus-workspace-up; }
-    Mod+Shift+Page_Down { move-window-to-workspace-down; }
-    Mod+Shift+Page_Up   { move-window-to-workspace-up; }
+    Mod+Page_Down           { focus-workspace-down; }
+    Mod+Page_Up             { focus-workspace-up; }
+    Mod+Shift+Page_Down     { move-window-to-workspace-down; }
+    Mod+Shift+Page_Up       { move-window-to-workspace-up; }
 
-    Mod+Ctrl+Shift+Page_Down { move-workspace-down; }
-    Mod+Ctrl+Shift+Page_Up   { move-workspace-up; }
+    Mod+Ctrl+Shift+Page_Down{ move-workspace-down; }
+    Mod+Ctrl+Shift+Page_Up  { move-workspace-up; }
 
-    Mod+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
-    Mod+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
-    Mod+Shift+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
-    Mod+Shift+WheelScrollUp   cooldown-ms=150 { move-column-to-workspace-up; }
+    Mod+WheelScrollDown         cooldown-ms=150     { focus-workspace-down; }
+    Mod+WheelScrollUp           cooldown-ms=150     { focus-workspace-up; }
+    Mod+Shift+WheelScrollDown   cooldown-ms=150     { move-column-to-workspace-down; }
+    Mod+Shift+WheelScrollUp     cooldown-ms=150     { move-column-to-workspace-up; }
 
-    Mod+WheelScrollRight     cooldown-ms=150 { focus-column-right; }
-    Mod+WheelScrollLeft      cooldown-ms=150 { focus-column-left; }
-    Mod+Shift+WheelScrollRight { move-column-right; }
-    Mod+Shift+WheelScrollLeft  { move-column-left; }
+    Mod+WheelScrollRight        cooldown-ms=150     { focus-column-right; }
+    Mod+WheelScrollLeft         cooldown-ms=150     { focus-column-left; }
+    Mod+Shift+WheelScrollRight  cooldown-ms=150     { move-column-right; }
+    Mod+Shift+WheelScrollLeft   cooldown-ms=150     { move-column-left; }
 
-    Mod+1 { focus-workspace 1; }
-    Mod+2 { focus-workspace 2; }
-    Mod+3 { focus-workspace 3; }
-    Mod+4 { focus-workspace 4; }
-    Mod+5 { focus-workspace 5; }
-    Mod+6 { focus-workspace 6; }
-    Mod+7 { focus-workspace 7; }
-    Mod+8 { focus-workspace 8; }
-    Mod+9 { focus-workspace 9; }
-    Mod+Alt+1 { move-window-to-workspace 1; }
-    Mod+Alt+2 { move-window-to-workspace 2; }
-    Mod+Alt+3 { move-window-to-workspace 3; }
-    Mod+Alt+4 { move-window-to-workspace 4; }
-    Mod+Alt+5 { move-window-to-workspace 5; }
-    Mod+Alt+6 { move-window-to-workspace 6; }
-    Mod+Alt+7 { move-window-to-workspace 7; }
-    Mod+Alt+8 { move-window-to-workspace 8; }
-    Mod+Alt+9 { move-window-to-workspace 9; }
+    Mod+1               repeat=false    { focus-workspace 1; }
+    Mod+2               repeat=false    { focus-workspace 2; }
+    Mod+3               repeat=false    { focus-workspace 3; }
+    Mod+4               repeat=false    { focus-workspace 4; }
+    Mod+5               repeat=false    { focus-workspace 5; }
+    Mod+6               repeat=false    { focus-workspace 6; }
+    Mod+7               repeat=false    { focus-workspace 7; }
+    Mod+8               repeat=false    { focus-workspace 8; }
+    Mod+9               repeat=false    { focus-workspace 9; }
+    Mod+Alt+1           repeat=false    { move-window-to-workspace 1; }
+    Mod+Alt+2           repeat=false    { move-window-to-workspace 2; }
+    Mod+Alt+3           repeat=false    { move-window-to-workspace 3; }
+    Mod+Alt+4           repeat=false    { move-window-to-workspace 4; }
+    Mod+Alt+5           repeat=false    { move-window-to-workspace 5; }
+    Mod+Alt+6           repeat=false    { move-window-to-workspace 6; }
+    Mod+Alt+7           repeat=false    { move-window-to-workspace 7; }
+    Mod+Alt+8           repeat=false    { move-window-to-workspace 8; }
+    Mod+Alt+9           repeat=false    { move-window-to-workspace 9; }
 
-    Mod+Alt+Left  { consume-or-expel-window-left; }
-    Mod+Alt+Right { consume-or-expel-window-right; }
+    Mod+Alt+Left        repeat=false    { consume-or-expel-window-left; }
+    Mod+Alt+Right       repeat=false    { consume-or-expel-window-right; }
 
-    Mod+Shift+Comma  { consume-window-into-column; }
-    Mod+Shift+Period { expel-window-from-column; }
-    Mod+Shift+M { toggle-column-tabbed-display; }
+    Mod+Shift+Comma     repeat=false    { consume-window-into-column; }
+    Mod+Shift+Period    repeat=false    { expel-window-from-column; }
+    Mod+Shift+M         repeat=false    { toggle-column-tabbed-display; }
 
-    Mod+R { switch-preset-column-width; }
-    Mod+Shift+R { switch-preset-window-height; }
-    Mod+Ctrl+R { reset-window-height; }
-    Mod+F { maximize-column; }
-    Mod+Shift+F { fullscreen-window; }
-    Mod+Ctrl+F { expand-column-to-available-width; }
-    Mod+M { maximize-window-to-edges; }
+    Mod+R               cooldown-ms=150 { switch-preset-column-width; }
+    Mod+Shift+R         cooldown-ms=150 { switch-preset-window-height; }
+    Mod+Ctrl+R          repeat=false    { reset-window-height; }
+    Mod+F               repeat=false    { maximize-column; }
+    Mod+Shift+F         repeat=false    { fullscreen-window; }
+    Mod+Ctrl+F          repeat=false    { expand-column-to-available-width; }
+    Mod+M               repeat=false    { maximize-window-to-edges; }
 
-    Mod+Y { center-column; }
+    Mod+Y               repeat=false    { center-column; }
 
-    Mod+Minus { set-column-width "-10%"; }
-    Mod+Plus { set-column-width "+10%"; }
+    Mod+Minus                           { set-column-width "-10%"; }
+    Mod+Plus                            { set-column-width "+10%"; }
 
-    Mod+Shift+Minus { set-window-height "-10%"; }
-    Mod+Shift+Plus { set-window-height "+10%"; }
+    Mod+Shift+Minus                     { set-window-height "-10%"; }
+    Mod+Shift+Plus                      { set-window-height "+10%"; }
 
-    Mod+Alt+Space { toggle-window-floating; }
-    // Alt+Tab { switch-focus-between-floating-and-tiling; }
+    Mod+Alt+Space       repeat=false    { toggle-window-floating; }
+    Mod+Shift+Tab                       { switch-focus-between-floating-and-tiling; }
 
-    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    Mod+Escape          allow-inhibiting=false repeat=false     { toggle-keyboard-shortcuts-inhibit; }
 
-    Mod+Shift+Q allow-inhibiting=false { quit; }
+    // Session
+    Mod+Shift+Q         allow-inhibiting=false repeat=false     { quit; }
+    Mod+Shift+P         allow-inhibiting=false repeat=false     { spawn-sh "hyprlock & niri msg action power-off-monitors"; }
+    Mod+L               allow-inhibiting=false repeat=false     { spawn "loginctl" "lock-session"; }
 
-    Mod+Shift+P { spawn-sh "(hyprlock &) && niri msg action power-off-monitors"; }
-
-    Mod+P repeat=false { spawn-sh "wl-mirror $(niri msg --json focused-output | jq -r .name)"; }
 }

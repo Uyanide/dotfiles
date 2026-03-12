@@ -8,7 +8,7 @@ environment {
 
     // Themes
     QT_QPA_PLATFORM "wayland"
-    QT_QPA_PLATFORMTHEME "kde"
+    QT_QPA_PLATFORMTHEME "kde" // looks nicer than kvantum
     QT_STYLE_OVERRIDE "Kvantum"
 
     // Nvidia

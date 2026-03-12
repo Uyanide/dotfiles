@@ -14,7 +14,7 @@ spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
 spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 
 // wlsunset
-// spawn-at-startup "sunset"
+// spawn-at-startup "sunset" // managed by quickshell
 
 // Logitech
 spawn-at-startup "solaar" "-w" "hide"
@@ -32,5 +32,3 @@ spawn-at-startup "quickshell"
 
 // According to (https://ghostty.org/docs/linux/systemd#starting-ghostty-at-login)
 // spawn-sh-at-startup "systemctl start --user app-com.mitchellh.ghostty.service"
-// No, do not do this, otherwise the envs defined in envs.kdl won't be applied to ghostty.
-// Unless you have something like "config/shell/.config/fish/prev.d/niri-env.fish"
