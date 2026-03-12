@@ -11,11 +11,14 @@ Singleton {
     property alias geoInfoToken: adapter.geoInfoToken
     property alias ipAliases: adapter.ipAliases
     property alias location: adapter.location
+    property alias latitude: adapter.latitude
+    property alias longitude: adapter.longitude
     property alias backgroundPath: adapter.backgroundPath
     property alias cycleWallpapers: cycleSettings.wallpapers
     property alias cycleShuffle: cycleSettings.shuffle
     property alias cycleInterval: cycleSettings.interval
     property alias cycleEnabled: cycleSettings.enabled
+    property bool isLoaded: false
 
     FileView {
         id: settingFile
@@ -26,6 +29,8 @@ Singleton {
             reload();
         }
         onAdapterUpdated: writeAdapter()
+        onLoaded: isLoaded = true
+        onLoadFailed: isLoaded = true // Will create on change
 
         JsonAdapter {
             id: adapter
@@ -35,6 +40,8 @@ Singleton {
                 "127.0.0.1": "localhost"
             }
             property string location: "New York"
+            property string latitude: "43"
+            property string longitude: "-75"
             property string backgroundPath: ""
             property JsonObject cycle: JsonObject {
                 id: cycleSettings

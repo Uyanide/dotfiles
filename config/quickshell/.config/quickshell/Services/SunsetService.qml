@@ -8,8 +8,8 @@ pragma Singleton
 Singleton {
     id: root
 
-    property double _latitude: -1
-    property double _longitude: -1
+    property string _latitude: SettingsService.latitude
+    property string _longitude: SettingsService.longitude
     property int temperature: 0
     readonly property bool isEnabled: ShellState.sunsetEnabled
 
@@ -17,36 +17,15 @@ Singleton {
         ShellState.sunsetEnabled = !root.isEnabled;
     }
 
-    function setLat(lat) {
-        _latitude = lat;
-        Logger.i("Sunset", "Updated latitude to " + lat);
-        checkStart();
-    }
-
-    function setLong(lng) {
-        _longitude = lng;
-        Logger.i("Sunset", "Updated longitude to " + lng);
-        checkStart();
-    }
-
     function checkStart() {
-        if (_latitude !== -1 && _longitude !== -1 && root.isEnabled) {
-            sunsetProcess.command = ["wlsunset", "-l", _latitude.toString(), "-L", _longitude.toString()];
+        if (_latitude !== "" && _longitude !== "" && root.isEnabled) {
+            sunsetProcess.command = ["wlsunset", "-l", _latitude, "-L", _longitude];
+            sunsetProcess.running = true;
+        } else if (root.isEnabled) {
+            Logger.w("Sunset", "Missing coordinates, starting wlsunset without location");
+            sunsetProcess.command = ["wlsunset"];
             sunsetProcess.running = true;
         }
-    }
-
-    Connections {
-        function onLatitudeChanged() {
-            Logger.d("");
-            setLat(LocationService.data.latitude);
-        }
-
-        function onLongitudeChanged() {
-            setLong(LocationService.data.longitude);
-        }
-
-        target: LocationService.data
     }
 
     Connections {

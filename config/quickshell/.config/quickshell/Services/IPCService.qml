@@ -38,6 +38,10 @@ Item {
             WallpaperCycle.applyNext();
         }
 
+        function prev() {
+            WallpaperCycle.applyPrev();
+        }
+
         target: "background"
     }
 

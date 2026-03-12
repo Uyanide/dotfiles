@@ -9,7 +9,7 @@ Singleton {
     id: root
 
     property bool dirsLoaded: false
-    property bool initialized: dirsLoaded && ImageCacheService.initialized && ShellState.isLoaded
+    property bool initialized: dirsLoaded && ImageCacheService.initialized && ShellState.isLoaded && SettingsService.isLoaded
 
     Component.onCompleted: {
         let mkdirs = "";
