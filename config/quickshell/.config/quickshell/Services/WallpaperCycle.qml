@@ -69,6 +69,7 @@ Singleton {
     }
 
     function _scheduleCycle(secondsFromNow) {
+        if (!enabled) return;
         const seconds = Math.max(1, Math.floor(secondsFromNow));
         timeUntilNextCycle = seconds;
         nextCycleDeadlineMs = Date.now() + (seconds * 1000);

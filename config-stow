@@ -36,16 +36,16 @@ GUI_BASE_PKGS = [
 ]
 
 # for Hyprland setup
-HYPRLAND_PKGS = [
-    *GUI_BASE_PKGS,
-    "eww",  # widgets
-    "hypr",  # hypr family
-    "hyprland",  # wm config
-    "mako",  # notifications
-    "rofi",  # application launcher
-    "waybar",  # status bar
-    "wlogout",  # logout menu
-]
+# HYPRLAND_PKGS = [
+#     *GUI_BASE_PKGS,
+#     "eww",  # widgets
+#     "hypr",  # hypr family
+#     "hyprland",  # wm config
+#     "mako",  # notifications
+#     "rofi",  # application launcher
+#     "waybar",  # status bar
+#     "wlogout",  # logout menu
+# ]
 
 # for Niri setup
 NIRI_PKGS = [
@@ -61,7 +61,7 @@ PKGS = {
     "base": BASE_PKGS,
     "tui": TUI_PKGS,
     "gui": GUI_BASE_PKGS,
-    "hyprland": HYPRLAND_PKGS,
+    # "hyprland": HYPRLAND_PKGS,
     "niri": NIRI_PKGS,
 }
 
@@ -119,6 +119,13 @@ def main():
         try:
             switch("niri")  # "niri" as defined by niri
             _log("INFO", "Switched session to niri.")
+        except subprocess.CalledProcessError as e:
+            _log("ERROR", f"Failed to switch session: {e}")
+
+    else:
+        try:
+            switch("default")  # "default" as defined by me :)
+            _log("INFO", "Switched session to default.")
         except subprocess.CalledProcessError as e:
             _log("ERROR", f"Failed to switch session: {e}")
 
