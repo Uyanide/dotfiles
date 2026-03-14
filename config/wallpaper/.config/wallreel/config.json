@@ -4,9 +4,6 @@
         "dirs": [
             {
                 "path": "~/Pictures/backgrounds"
-            },
-            {
-                "path": "/media/Beta/壁纸/库"
             }
         ],
         "excludes": [

@@ -1,32 +1,30 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # Description:
 #   Updates configurations of several apps according to the current (or given as parameter) desktop environment.
 
-if [ -z "$1" ]; then
-    desktop="$XDG_CURRENT_DESKTOP"
-else
-    desktop="$1"
-fi
+desktop=${1:-${XDG_CURRENT_DESKTOP:-default}}
 
 for item in "kitty" "wlogout"; do
-    if [ ! -L "$HOME/.config/$item" ] && [ -e "$HOME/.config/$item" ]; then
-        echo "Error: $HOME/.config/$item exists and is not a symlink." >&2
-        exit 1
-    elif [ -L "$HOME/.config/$item" ]; then
-        rm "$HOME/.config/$item" || {
-            echo "Error: Failed to remove existing symlink $HOME/.config/$item." >&2
-            exit 1
-        }
-    fi
+	if [ ! -L "$HOME/.config/$item" ] && [ -e "$HOME/.config/$item" ]; then
+		echo "Error: $HOME/.config/$item exists and is not a symlink." >&2
+		exit 1
+	elif [ -L "$HOME/.config/$item" ]; then
+		rm -f "$HOME/.config/$item" || {
+			echo "Error: Failed to remove existing symlink $HOME/.config/$item." >&2
+			exit 1
+		}
+	fi
 
-    if [ "$desktop" = "niri" ] || [ "$desktop" = "GNOME" ]; then
-        if [ -e "$HOME/.config/.alt/${item}-niri" ]; then
-            ln -svf ".alt/${item}-niri" "$HOME/.config/$item"
-        elif [ -e "$HOME/.config/.alt/${item}-default" ]; then
-            ln -svf ".alt/${item}-default" "$HOME/.config/$item"
-        fi
-    else
-        [ -e "$HOME/.config/.alt/${item}-default" ]  && ln -svf ".alt/${item}-default" "$HOME/.config/$item"
-    fi
+	if [ "$desktop" = "niri" ] || [ "$desktop" = "GNOME" ]; then
+		if [ -e "$HOME/.config/.alt/${item}-niri" ]; then
+			ln -svf ".alt/${item}-niri" "$HOME/.config/$item"
+		elif [ -e "$HOME/.config/.alt/${item}-default" ]; then
+			ln -svf ".alt/${item}-default" "$HOME/.config/$item"
+		fi
+	else
+		[ -e "$HOME/.config/.alt/${item}-default" ] && ln -svf ".alt/${item}-default" "$HOME/.config/$item"
+	fi
 done
