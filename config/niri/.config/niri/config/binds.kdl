@@ -41,7 +41,7 @@ binds {
     Alt+Space           repeat=false    { spawn-sh "pkill -x rofi || rofi -show drun"; }
 
     // Actions
-    Mod+V               repeat=false    { spawn-sh "fzfclip-wrap"; }
+    Mod+V               repeat=false    { spawn "wezterm" "start" "--" "fzfclip-wrap"; }
     Mod+Period          repeat=false    { spawn-sh "pkill -x rofi || rofi-emoji"; }
     Print               repeat=false    { screenshot-screen; }
     Mod+Shift+S         repeat=false    { screenshot; }

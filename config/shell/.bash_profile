@@ -34,8 +34,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # Better than nothing
 if [[ -z "$LANG" ]]; then
 	LANG="en_US.UTF-8"
-	LC_ALL="en_US.UTF-8"
-	export LANG LC_ALL
+	export LANG
 fi
 
 # Paths
@@ -48,21 +47,21 @@ export PATH
 
 # fnm
 if type fnm &>/dev/null; then
-	eval $(fnm env --shell bash)
+	eval "$(fnm env --shell bash)"
 fi
 
 # export ENABLE_GPG_AGENT_SSH=1 in .profile to enable GPG agent for SSH
 if [ -x "$HOME/.local/scripts/gpg-init" ] && \
-   [ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" != "0" ] && \
+   [ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" = "1" ] && \
    type gpgconf &>/dev/null; then
 	# GPG agent for SSH
-	eval "$($HOME/.local/scripts/gpg-init 2>/dev/null)" >/dev/null 2>&1
+	eval "$($HOME/.local/scripts/gpg-init 2>/dev/null)" &>/dev/null
 elif [ -x "$HOME/.local/scripts/ssh-init" ] && type ssh-agent &>/dev/null; then
 	# SSH with cross-session ssh-agent
-	eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" >/dev/null 2>&1
+	eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" &>/dev/null
 fi
 
-# Triggered in SSH sessions
+# Triggered in interactive shells (e.g. ssh)
 if [[ $- == *i* ]]; then
 	# Set EDITOR and VISUAL, mainly for sudoedit
 	for app in nvim helix vim vi nano; do
@@ -74,9 +73,34 @@ if [[ $- == *i* ]]; then
 	done
 	export EDITOR VISUAL
 
+	# Create shortcut alias for helix
+	if type helix &>/dev/null && ! type hx &>/dev/null; then
+		alias hx="helix"
+	fi
+
 	# For gpg
-	GPG_TTY=$(tty)
-	export GPG_TTY
+	if type gpgconf &>/dev/null; then
+		GPG_TTY=$(tty)
+		export GPG_TTY
+	fi
+
+	if [ -x "$HOME/.local/scripts/gpg-init" ] && \
+   		[ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" = "1" ] && \
+   		type gpgconf &>/dev/null; then
+		true
+	elif [ -x "$HOME/.local/scripts/ssh-init" ] && type ssh-add &>/dev/null; then
+		function sshs() {
+			# test if keys are added to ssh-agent
+			if ! ssh-add -l &>/dev/null; then
+				if [ -n "$ssh_keys" ]; then
+					ssh-add "${ssh_keys[@]}"
+				else
+					ssh-add
+				fi
+			fi
+			ssh "$@"
+		}
+	fi
 
 	# Shortcut alias for launching fish
 	if type fish &>/dev/null && ! type f &>/dev/null; then

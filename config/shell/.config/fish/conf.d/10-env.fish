@@ -1,9 +1,4 @@
-# PATH
-fish_add_path $HOME/go/bin
-fish_add_path $HOME/.cargo/bin
-fish_add_path $HOME/.local/scripts
-fish_add_path $HOME/.local/bin
-fish_add_path $HOME/.local/share/fnm
+# PATH is managed by .bash_profile
 
 # man
 if type -q bat
@@ -27,11 +22,6 @@ end
 
 # gpg
 set -x -g GPG_TTY (tty)
-
-# fnm
-if type -q fnm
-    eval (fnm env --shell fish)
-end
 
 # done
 set -U __done_min_cmd_duration 10000

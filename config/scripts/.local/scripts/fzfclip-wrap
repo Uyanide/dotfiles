@@ -1,3 +1,10 @@
 #!/bin/sh
 
-wezterm start -- fzfclip "$@"
+lockfile=/tmp/fzfclip.lock
+exec {LOCK_FD}>"$lockfile"
+flock -n "$LOCK_FD" || {
+    echo "Another instance is running." >&2
+    exit 1
+}
+
+fzfclip "$@"
