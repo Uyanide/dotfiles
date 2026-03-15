@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
+import shutil
 from argparse import ArgumentParser
 from pathlib import Path
 
@@ -65,6 +66,12 @@ PKGS = {
     "niri": NIRI_PKGS,
 }
 
+SESSION_NAME = {
+    "hyprland": "Hyprland",
+    "niri": "niri",
+    "default": "default",
+}
+
 
 PKGS_PATH = Path(__file__).resolve().parent.resolve() / "config"
 DEST_PATH = Path.home().expanduser()
@@ -78,9 +85,24 @@ def _log(level: str, message: str):
     print(f"{color}[{level}] {message}{reset}")
 
 
+def check_deps() -> bool:
+    required_deps = ["stow"]
+    for dep in required_deps:
+        if not shutil.which(dep):
+            _log("ERROR", f"Required dependency '{dep}' is not installed.")
+            return False
+    return True
+
+
 def stow(pkg: str):
     subprocess.run(
         ["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), pkg], check=True
+    )
+
+
+def unstow(pkg: str):
+    subprocess.run(
+        ["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), "-D", pkg], check=True,
     )
 
 
@@ -91,43 +113,49 @@ def switch(session: str):
 
 
 def main():
+    if not check_deps():
+        exit(1)
+
     parser = ArgumentParser(
         description="Stow configuration packages in this repository."
     )
     parser.add_argument(
-        "package", choices=PKGS.keys(), help="The configuration package to stow."
+        "package", choices=PKGS.keys(), help="The configuration package group to stow."
+    )
+    parser.add_argument(
+        "--unstow",
+        action="store_true",
+        help="Unstow the specified package group instead of stowing it.",
     )
     args = parser.parse_args()
 
     selected_pkgs = PKGS[args.package]
+    is_unstow = args.unstow
 
     for pkg in selected_pkgs:
         try:
-            stow(pkg)
-            _log("INFO", f"Successfully stowed package '{pkg}'.")
+            if is_unstow:
+                unstow(pkg)
+                _log("INFO", f"Successfully unstowed package '{pkg}'.")
+            else:
+                stow(pkg)
+                _log("INFO", f"Successfully stowed package '{pkg}'.")
         except subprocess.CalledProcessError as e:
             _log("ERROR", f"Failed to stow package '{pkg}': {e}")
 
-    if args.package == "hyprland":
-        try:
-            switch("Hyprland")  # "Hyprland" as defined by hyprland
-            _log("INFO", "Switched session to hyprland.")
-        except subprocess.CalledProcessError as e:
-            _log("ERROR", f"Failed to switch session: {e}")
+    if is_unstow:
+        return  # No need to switch session if we're just unstowing
 
-    elif args.package == "niri":
-        try:
-            switch("niri")  # "niri" as defined by niri
-            _log("INFO", "Switched session to niri.")
-        except subprocess.CalledProcessError as e:
-            _log("ERROR", f"Failed to switch session: {e}")
-
+    if args.package in SESSION_NAME:
+        session = SESSION_NAME[args.package]
     else:
-        try:
-            switch("default")  # "default" as defined by me :)
-            _log("INFO", "Switched session to default.")
-        except subprocess.CalledProcessError as e:
-            _log("ERROR", f"Failed to switch session: {e}")
+        session = SESSION_NAME["default"]
+
+    try:
+        switch(session)
+        _log("INFO", f"Switched to session profile '{session}'.")
+    except subprocess.CalledProcessError as e:
+        _log("ERROR", f"Failed to switch session profile '{session}': {e}")
 
 
 if __name__ == "__main__":
