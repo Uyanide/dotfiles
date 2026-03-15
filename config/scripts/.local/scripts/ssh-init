@@ -17,6 +17,7 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
         . "$agent_file" > /dev/null 2>&1
         # check if the socket is actually working
         if [ "$(ssh-add -l > /dev/null 2>&1; echo $?)" -eq 2 ]; then
+            # if not, unset it to create a new one
             unset SSH_AUTH_SOCK
         fi
     fi

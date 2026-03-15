@@ -6,6 +6,11 @@
 
 GPG_SSH_SOCKET=$(gpgconf --list-dirs agent-ssh-socket)
 
+if [ -z "$GPG_SSH_SOCKET" ]; then
+    echo "Error: gpgconf did not return a valid SSH socket path." >&2
+    exit 1
+fi
+
 if [ -z "$SSH_AUTH_SOCK" ] || [ "$SSH_AUTH_SOCK" != "$GPG_SSH_SOCKET" ]; then
     echo "export SSH_AUTH_SOCK='$GPG_SSH_SOCKET';"
 fi

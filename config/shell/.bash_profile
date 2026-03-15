@@ -50,73 +50,25 @@ if type fnm &>/dev/null; then
 	eval "$(fnm env --shell bash)"
 fi
 
-# export ENABLE_GPG_AGENT_SSH=1 in .profile to enable GPG agent for SSH
-if [ -x "$HOME/.local/scripts/gpg-init" ] && \
-   [ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" = "1" ] && \
-   type gpgconf &>/dev/null; then
+# export UY_ENABLE_GPG_AGENT_SSH=1 in .profile to enable GPG agent for SSH
+if type gpgconf &>/dev/null && type gpg-connect-agent &>/dev/null &&
+	[ -x "$HOME/.local/scripts/gpg-init" ] &&
+   	[ "${UY_ENABLE_GPG_AGENT_SSH:-0}" = "1" ]; then
 	# GPG agent for SSH
 	eval "$($HOME/.local/scripts/gpg-init 2>/dev/null)" &>/dev/null
-elif [ -x "$HOME/.local/scripts/ssh-init" ] && type ssh-agent &>/dev/null; then
+fi
+
+if type ssh-add &>/dev/null && type ssh-agent &>/dev/null &&
+	{ [ -z "$SSH_AUTH_SOCK" ] ||
+	  [ "$(ssh-add -l &>/dev/null; echo $?)" -eq 2 ]; } &&
+	[ -x "$HOME/.local/scripts/ssh-init" ]; then
+	unset SSH_AUTH_SOCK
 	# SSH with cross-session ssh-agent
 	eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" &>/dev/null
+	export UY_USING_SSH_AGENT=1
 fi
 
-# Triggered in interactive shells (e.g. ssh)
-if [[ $- == *i* ]]; then
-	# Set EDITOR and VISUAL, mainly for sudoedit
-	for app in nvim helix vim vi nano; do
-		if type "$app" &>/dev/null; then
-			EDITOR="$app"
-			VISUAL="$app"
-			break
-		fi
-	done
-	export EDITOR VISUAL
-
-	# Create shortcut alias for helix
-	if type helix &>/dev/null && ! type hx &>/dev/null; then
-		alias hx="helix"
-	fi
-
-	# For gpg
-	if type gpgconf &>/dev/null; then
-		GPG_TTY=$(tty)
-		export GPG_TTY
-	fi
-
-	if [ -x "$HOME/.local/scripts/gpg-init" ] && \
-   		[ -n "$ENABLE_GPG_AGENT_SSH" ] && [ "$ENABLE_GPG_AGENT_SSH" = "1" ] && \
-   		type gpgconf &>/dev/null; then
-		true
-	elif [ -x "$HOME/.local/scripts/ssh-init" ] && type ssh-add &>/dev/null; then
-		function sshs() {
-			# test if keys are added to ssh-agent
-			if ! ssh-add -l &>/dev/null; then
-				if [ -n "$ssh_keys" ]; then
-					ssh-add "${ssh_keys[@]}"
-				else
-					ssh-add
-				fi
-			fi
-			ssh "$@"
-		}
-	fi
-
-	# Shortcut alias for launching fish
-	if type fish &>/dev/null && ! type f &>/dev/null; then
-		alias f="exec fish"
-	fi
-	# Better do this manually since the automatic approach is kinda buggy.
-	# Add this to .bashrc to enable it anyway:
-	#
-	# if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
-	#     shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''
-	#     exec fish $LOGIN_OPTION
-	# fi
-
-	# .bashrc is not included in the repo
-	[ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
-fi
+[ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
 
 unset append_path
 unset prepend_path
