@@ -140,10 +140,11 @@ if [[ ${UY_USING_SSH_AGENT:-0} == 1 ]]; then
 fi
 
 # Auto-login to fish if UY_ENABLE_FISH_AUTO_LOGIN=1 is set in .profile
-if type fish &>/dev/null && [[ ${UY_ENABLE_FISH_AUTO_LOGIN:-0} == 1 ]]; then
+if type fish &>/dev/null; then
     alias f="exec fish"
 
-    if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
+    if  [[ ${UY_ENABLE_FISH_AUTO_LOGIN:-0} == 1 ]] &&
+        [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
         shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''
         exec fish $LOGIN_OPTION
     fi
