@@ -111,6 +111,9 @@ Item {
                 anchors.centerIn: parent
                 onPaint: {
                     var ctx = getContext("2d");
+                    if (!ctx)
+                        return ;
+
                     ctx.reset();
                     var centerX = width / 2;
                     var centerY = height / 2;

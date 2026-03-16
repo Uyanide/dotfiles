@@ -509,4 +509,71 @@ Singleton {
 
     }
 
+    PanelWindow {
+        id: fallbackRenderer
+
+        implicitWidth: 0
+        implicitHeight: 0
+        WlrLayershell.exclusionMode: ExclusionMode.Ignore
+        WlrLayershell.namespace: "noctalia-image-cache-renderer"
+        color: "transparent"
+
+        Image {
+            id: fallbackImage
+
+            property string cacheKey: ""
+            property string destPath: ""
+            property int targetSize: 256
+
+            function processNextFallback() {
+                cacheKey = "";
+                destPath = "";
+                source = "";
+                if (fallbackQueue.length > 0) {
+                    const next = fallbackQueue.shift();
+                    cacheKey = next.cacheKey;
+                    destPath = next.destPath;
+                    targetSize = next.size;
+                    source = next.sourcePath;
+                } else {
+                    fallbackProcessing = false;
+                }
+            }
+
+            width: targetSize
+            height: targetSize
+            visible: true
+            cache: false
+            asynchronous: true
+            fillMode: Image.PreserveAspectCrop
+            mipmap: true
+            antialiasing: true
+            onStatusChanged: {
+                if (!cacheKey)
+                    return ;
+
+                if (status === Image.Ready) {
+                    grabToImage(function(result) {
+                        if (result.saveToFile(destPath)) {
+                            Logger.d("ImageCache", "Fallback cache created:", destPath);
+                            root.notifyCallbacks(cacheKey, destPath, true);
+                        } else {
+                            Logger.e("ImageCache", "Failed to save fallback cache");
+                            root.notifyCallbacks(cacheKey, "", false);
+                        }
+                        processNextFallback();
+                    });
+                } else if (status === Image.Error) {
+                    Logger.e("ImageCache", "Fallback image load failed");
+                    root.notifyCallbacks(cacheKey, "", false);
+                    processNextFallback();
+                }
+            }
+        }
+
+        mask: Region {
+        }
+
+    }
+
 }
