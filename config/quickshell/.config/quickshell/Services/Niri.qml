@@ -11,7 +11,9 @@ Singleton {
     property int floatingWindowPosition: Number.MAX_SAFE_INTEGER
     property ListModel workspaces
     property var windows: []
-    property bool hasFocusedWindow: focusedWindowIndex >= 0 && focusedWindowIndex < windows.length
+    property var windowIndexCache: ({
+    })
+    property bool hasFocusedWindow: focusedWindowIndex >= 0
     property int focusedWindowIndex: -1
     property string focusedWindowAppId: hasFocusedWindow ? windows[focusedWindowIndex].appId : ""
     property string focusedWindowTitle: hasFocusedWindow ? windows[focusedWindowIndex].title : ""
@@ -215,30 +217,56 @@ Singleton {
         });
     }
 
+    function _rebuildWindowIndexCache() {
+        const cache = {
+        };
+        for (var i = 0; i < windows.length; i++) {
+            cache[windows[i].id] = i;
+        }
+        windowIndexCache = cache;
+    }
+
+    function _syncFocusedWindowIndex(preferredWindowId) {
+        var nextIndex = -1;
+        if (preferredWindowId !== undefined && preferredWindowId !== null) {
+            const cachedIndex = windowIndexCache[preferredWindowId];
+            if (cachedIndex !== undefined)
+                nextIndex = cachedIndex;
+
+        }
+
+        if (nextIndex < 0 && focusedWindowIndex >= 0 && focusedWindowIndex < windows.length && windows[focusedWindowIndex].isFocused)
+            nextIndex = focusedWindowIndex;
+
+        if (nextIndex < 0)
+            nextIndex = windows.findIndex((w) => {
+                return w.isFocused;
+            });
+
+        const hasChanged = nextIndex !== focusedWindowIndex;
+        focusedWindowIndex = nextIndex;
+        return hasChanged;
+    }
+
     function recollectWindows(windowsData) {
         const windowsList = [];
         for (const win of windowsData) {
             windowsList.push(getWindowData(win));
         }
         windows = toSortedWindowList(windowsList);
+        _rebuildWindowIndexCache();
+        const focusedChanged = _syncFocusedWindowIndex();
         windowListChanged();
-        // Find focused window index in the SORTED windows array
-        focusedWindowIndex = -1;
-        for (var i = 0; i < windows.length; i++) {
-            if (windows[i].isFocused) {
-                focusedWindowIndex = i;
-                break;
-            }
-        }
-        activeWindowChanged();
+        if (focusedChanged)
+            activeWindowChanged();
+
     }
 
     function _handleWindowOpenedOrChanged(eventData) {
         try {
             const windowData = eventData.window;
-            const existingIndex = windows.findIndex((w) => {
-                return w.id === windowData.id;
-            });
+            const cachedIndex = windowIndexCache[windowData.id];
+            const existingIndex = cachedIndex !== undefined ? cachedIndex : -1;
             const newWindow = getWindowData(windowData);
             // Find the previously focused window ID before any modifications
             const previouslyFocusedId = focusedWindowIndex >= 0 && focusedWindowIndex < windows.length ? windows[focusedWindowIndex].id : null;
@@ -247,19 +275,19 @@ Singleton {
             else
                 windows.push(newWindow);
             windows = toSortedWindowList(windows);
+            _rebuildWindowIndexCache();
+            const focusedChanged = _syncFocusedWindowIndex(newWindow.isFocused ? windowData.id : null);
             if (newWindow.isFocused) {
-                focusedWindowIndex = windows.findIndex((w) => {
-                    return w.id === windowData.id;
-                });
                 // Clear focus on the previously focused window by ID (not index, since list was re-sorted)
                 if (previouslyFocusedId !== null && previouslyFocusedId !== windowData.id) {
-                    const oldFocusedWindow = windows.find((w) => {
-                        return w.id === previouslyFocusedId;
-                    });
+                    const oldFocusedIndex = windowIndexCache[previouslyFocusedId];
+                    const oldFocusedWindow = oldFocusedIndex !== undefined ? windows[oldFocusedIndex] : null;
                     if (oldFocusedWindow)
                         oldFocusedWindow.isFocused = false;
 
                 }
+                activeWindowChanged();
+            } else if (focusedChanged) {
                 activeWindowChanged();
             }
             windowListChanged();
@@ -272,17 +300,15 @@ Singleton {
     function _handleWindowClosed(eventData) {
         try {
             const windowId = eventData.id;
-            const windowIndex = windows.findIndex((w) => {
-                return w.id === windowId;
-            });
+            const cachedIndex = windowIndexCache[windowId];
+            const windowIndex = cachedIndex !== undefined ? cachedIndex : -1;
             if (windowIndex >= 0) {
-                if (windowIndex === focusedWindowIndex) {
-                    focusedWindowIndex = -1;
-                    activeWindowChanged();
-                } else if (focusedWindowIndex > windowIndex) {
-                    focusedWindowIndex--;
-                }
+                const wasFocused = windows[windowIndex].isFocused;
                 windows.splice(windowIndex, 1);
+                _rebuildWindowIndexCache();
+                if (_syncFocusedWindowIndex() || wasFocused)
+                    activeWindowChanged();
+
                 windowListChanged();
                 workspaceUpdateTimer.restart();
             }
@@ -303,21 +329,20 @@ Singleton {
     function _handleWindowFocusChanged(eventData) {
         try {
             const focusedId = eventData.id;
-            if (windows[focusedWindowIndex])
+            const previousFocusedId = focusedWindowIndex >= 0 && focusedWindowIndex < windows.length ? windows[focusedWindowIndex].id : null;
+            if (focusedWindowIndex >= 0 && focusedWindowIndex < windows.length)
                 windows[focusedWindowIndex].isFocused = false;
 
             if (focusedId) {
-                const newIndex = windows.findIndex((w) => {
-                    return w.id === focusedId;
-                });
+                const cachedIndex = windowIndexCache[focusedId];
+                const newIndex = cachedIndex !== undefined ? cachedIndex : -1;
                 if (newIndex >= 0 && newIndex < windows.length)
                     windows[newIndex].isFocused = true;
 
-                focusedWindowIndex = newIndex >= 0 ? newIndex : -1;
-            } else {
-                focusedWindowIndex = -1;
             }
-            activeWindowChanged();
+            if (_syncFocusedWindowIndex(focusedId) || previousFocusedId !== focusedId)
+                activeWindowChanged();
+
         } catch (e) {
             Logger.e("NiriService", "Error handling WindowFocusChanged:", e);
         }
@@ -325,17 +350,27 @@ Singleton {
 
     function _handleWindowLayoutsChanged(eventData) {
         try {
+            const previousFocusedId = focusedWindowIndex >= 0 && focusedWindowIndex < windows.length ? windows[focusedWindowIndex].id : null;
+            var hasMatchedWindow = false;
             for (const change of eventData.changes) {
                 const windowId = change[0];
                 const layout = change[1];
-                const window = windows.find((w) => {
-                    return w.id === windowId;
-                });
+                const windowIndex = windowIndexCache[windowId];
+                const window = windowIndex !== undefined ? windows[windowIndex] : null;
                 if (window)
                     window.position = getWindowPosition(layout);
 
+                hasMatchedWindow = hasMatchedWindow || window !== null;
+
             }
+            if (!hasMatchedWindow)
+                return ;
+
             windows = toSortedWindowList(windows);
+            _rebuildWindowIndexCache();
+            if (_syncFocusedWindowIndex(previousFocusedId))
+                activeWindowChanged();
+
             windowListChanged();
         } catch (e) {
             Logger.e("NiriService", "Error handling WindowLayoutChanged:", e);
