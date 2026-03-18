@@ -7,17 +7,9 @@ import qs.Utils
 pragma Singleton
 
 Singleton {
-    // Connections {
-    //     function onSinkChanged() {
-    //         if (!isReplayInitStarted && AudioService.sink) {
-    //             Logger.i("RecordService", "Audio sink available, starting replay buffer.");
-    //             startReplay();
-    //             isReplayInitStarted = true;
-    //         }
-    //     }
-    //     target: AudioService
-    // }
-
+    // Enabling replay may consume noticeably more resources -
+    // around 500MiB of RAM and 4% of CPU on my machine. Use with caution
+    readonly property bool replayEnabled: false
     readonly property string recordingDir: Paths.recordingDir
     property bool isRecording: false
     property bool isReplayInitStarted: false
@@ -147,7 +139,7 @@ Singleton {
         replayProcess.running = true;
     }
 
-    function stopReplay() {
+    function stopReplay(save = true) {
         if (!isReplayStarted) {
             Logger.w("RecordService", "Replay buffer not active, cannot stop.");
             return ;
@@ -158,7 +150,10 @@ Singleton {
         }
         isReplayStopping = true;
         replayStopTimeout.restart();
-        replayProcess.signal(10); // SIGUSR1
+        if (save)
+            replayProcess.signal(10);
+        else
+            replayProcess.signal(2);
     }
 
     Component.onDestruction: function() {
@@ -168,6 +163,32 @@ Singleton {
         if (replayProcess.running)
             replayProcess.signal(2);
 
+    }
+
+    Connections {
+        function onSinkChanged() {
+            if (!replayEnabled)
+                return ;
+
+            // if (!isReplayInitStarted && AudioService.sink) {
+            //     Logger.i("RecordService", "Audio sink available, starting replay buffer.");
+            //     startReplay();
+            //     isReplayInitStarted = true;
+            // }
+            if (!AudioService.sink) {
+                Logger.w("RecordService", "Audio sink lost.");
+                return ;
+            }
+            if (isReplayStarted) {
+                Logger.i("RecordService", "Audio sink changed, restarting replay buffer.");
+                stopReplay(false);
+            } else {
+                Logger.i("RecordService", "Audio sink available, starting replay buffer.");
+                startReplay();
+            }
+        }
+
+        target: AudioService
     }
 
     Process {

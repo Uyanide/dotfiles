@@ -15,7 +15,7 @@ RowLayout {
         Layout.fillWidth: true
         height: Style.baseWidgetSize * 3.2 + Style.marginS * 3
         radius: Style.radiusM
-        imagePath: BackgroundService.cachedPath
+        imagePath: BackgroundService.displayPath
         fallbackIcon: "wallpaper"
         layer.enabled: true
 
