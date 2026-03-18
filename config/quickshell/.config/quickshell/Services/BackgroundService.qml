@@ -53,6 +53,7 @@ Singleton {
             return ;
 
         previewPath = ""; // clear preview path
+        cachedPath = ""; // clear cached path
         ImageCacheService.checkFileExists(path, function(exists) {
             if (!exists)
                 return ;

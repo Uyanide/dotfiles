@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Constants
+import qs.Services
 import qs.Utils
 pragma Singleton
 
@@ -75,20 +76,37 @@ Singleton {
     }
 
     function setColor(name, value) {
-        if (!adapter.colors)
-            adapter.colors = {
-        };
-
-        adapter.colors[name] = value;
-        colorFile.writeAdapter();
+        let state = ShellState.colorState;
+        state[name] = value;
+        ShellState.colorState = state;
     }
 
     function unsetColor(name) {
-        if (!adapter.colors || !(name in adapter.colors))
-            return ;
+        let state = ShellState.colorState;
+        delete state[name];
+        ShellState.colorState = state;
+    }
 
-        delete adapter.colors[name];
-        colorFile.writeAdapter();
+    Component.onCompleted: {
+        reloadColors(ShellState.colorState);
+    }
+
+    Connections {
+        target: ShellState
+        onColorStateChanged: {
+            reloadTimer.restart();
+        }
+    }
+
+    Timer {
+        id: reloadTimer
+
+        interval: 500
+        running: false
+        repeat: false
+        onTriggered: {
+            reloadColors(ShellState.colorState);
+        }
     }
 
     QtObject {
@@ -116,40 +134,6 @@ Singleton {
         readonly property color mSky: "#74c7ec"
         readonly property color mBlue: "#89b4fa"
         readonly property color mLavender: "#b4befe"
-    }
-
-    FileView {
-        id: colorFile
-
-        path: Paths.configDir + "colors.json"
-        printErrors: false
-        watchChanges: true
-        onFileChanged: reload()
-
-        JsonAdapter {
-            id: adapter
-
-            property var colors: ({
-            })
-        }
-
-    }
-
-    Connections {
-        function onColorsChanged() {
-            colorReloadTimer.restart();
-        }
-
-        target: adapter
-    }
-
-    Timer {
-        id: colorReloadTimer
-
-        interval: 50
-        running: true
-        repeat: false
-        onTriggered: reloadColors(adapter.colors)
     }
 
 }

@@ -28,6 +28,8 @@ Singleton {
         }
     }
 
+    Component.onCompleted: checkStart()
+
     Connections {
         function onIsEnabledChanged() {
             if (root.isEnabled)

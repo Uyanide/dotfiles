@@ -16,6 +16,7 @@ Singleton {
     property alias leftSiderbarTab: adapter.leftSiderbarTab
     property alias rightSiderbarTab: adapter.rightSiderbarTab
     property alias wifiEnabled: adapter.wifiEnabled
+    property alias colorState: adapter.colorState
 
     function save() {
         saveTimer.restart();
@@ -27,6 +28,7 @@ Singleton {
     onLeftSiderbarTabChanged: save()
     onRightSiderbarTabChanged: save()
     onWifiEnabledChanged: save()
+    onColorStateChanged: save()
     Component.onCompleted: {
         stateFileView.path = stateFile;
     }
@@ -58,6 +60,8 @@ Singleton {
             property string leftSiderbarTab: "bluetooth"
             property string rightSiderbarTab: "notes"
             property bool wifiEnabled: true
+            property var colorState: ({
+            })
         }
 
     }
