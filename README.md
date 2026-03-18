@@ -15,6 +15,8 @@
 
 <summary>Niri & Quickshell</summary>
 
+https://github.com/user-attachments/assets/af29bcac-7207-4f23-88bb-d8c5d447776a
+
 <figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.webp?raw=true"/>
 </figure>
