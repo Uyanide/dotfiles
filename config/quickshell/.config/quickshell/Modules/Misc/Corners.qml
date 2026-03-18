@@ -36,29 +36,6 @@ Scope {
                 property int rightOffset: rightBar?.isOpen ? rightBar.barWidth : 0
 
                 PanelWindow {
-                    id: fakeBar
-
-                    anchors.top: true
-                    anchors.left: true
-                    anchors.right: true
-                    color: "transparent"
-                    screen: modelData
-                    WlrLayershell.exclusionMode: ExclusionMode.Ignore
-                    visible: true
-                    WlrLayershell.layer: WlrLayer.Background
-                    aboveWindows: false
-                    WlrLayershell.namespace: namespace
-                    implicitHeight: topMargin
-
-                    Rectangle {
-                        anchors.fill: parent
-                        color: Colors.mSurface
-                        opacity: rootScope.opacity
-                    }
-
-                }
-
-                PanelWindow {
                     id: topLeftPanel
 
                     anchors.top: true

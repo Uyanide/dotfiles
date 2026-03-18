@@ -11,8 +11,8 @@ Singleton {
 
     readonly property string backgroundWidth: "2560"
     readonly property string backgroundHeight: "1440"
-    property string _cachedPath: ""
-    property string _previewPath: ""
+    property string cachedPath: ""
+    property string previewPath: ""
     property string displayPath: ""
     property bool inPreviewMode: false
     // Preserved for getBlurredOverview
@@ -29,27 +29,25 @@ Singleton {
         ImageCacheService.getLarge(SettingsService.backgroundPath, backgroundWidth, backgroundHeight, function(path) {
             if (!path) {
                 Logger.e("BackgroundService", "Failed to load background image from path: " + SettingsService.backgroundPath);
+                cachedPath = "";
                 return ;
             }
-            _cachedPath = path;
+            cachedPath = path;
             Logger.i("BackgroundService", "Loaded background image as cached path: " + path);
-            setDisplayTimer.restart();
         });
     }
 
     function previewWallpaper(path) {
         if (!path) {
-            _previewPath = "";
-            setDisplayTimer.restart();
+            previewPath = "";
             return ;
         }
         ImageCacheService.checkFileExists(path, function(exists) {
             if (!exists) {
-                _previewPath = "";
+                previewPath = "";
                 return ;
             }
-            _previewPath = path;
-            setDisplayTimer.restart();
+            previewPath = path;
         });
     }
 
@@ -57,9 +55,8 @@ Singleton {
         if (!path)
             return ;
 
-        _previewPath = ""; // clear preview path
-        _cachedPath = ""; // clear cached path
-        setDisplayTimer.restart();
+        previewPath = ""; // clear preview path
+        cachedPath = ""; // clear cached path
         ImageCacheService.checkFileExists(path, function(exists) {
             if (!exists)
                 return ;
@@ -75,6 +72,25 @@ Singleton {
 
     }
 
+    function updateDisplay() {
+        if (root.previewPath) {
+            root.displayPath = root.previewPath;
+            root.inPreviewMode = true;
+        } else if (root.cachedPath) {
+            root.displayPath = root.cachedPath;
+            root.inPreviewMode = false;
+        } else {
+            root.displayPath = "";
+            root.inPreviewMode = false;
+        }
+    }
+
+    onCachedPathChanged: {
+        Qt.callLater(updateDisplay);
+    }
+    onPreviewPathChanged: {
+        Qt.callLater(updateDisplay);
+    }
     Component.onCompleted: {
         loadTimer.start();
     }
@@ -97,16 +113,6 @@ Singleton {
         running: false
         repeat: false
         onTriggered: {
-            if (root._previewPath) {
-                root.displayPath = root._previewPath;
-                root.inPreviewMode = true;
-            } else if (root._cachedPath) {
-                root.displayPath = root._cachedPath;
-                root.inPreviewMode = false;
-            } else {
-                root.displayPath = "";
-                root.inPreviewMode = false;
-            }
         }
     }
 
