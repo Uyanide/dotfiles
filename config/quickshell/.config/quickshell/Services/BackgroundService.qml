@@ -11,8 +11,10 @@ Singleton {
 
     readonly property string backgroundWidth: "2560"
     readonly property string backgroundHeight: "1440"
-    property string cachedPath: ""
-    property string previewPath: ""
+    property string _cachedPath: ""
+    property string _previewPath: ""
+    property string displayPath: ""
+    property bool inPreviewMode: false
     // Preserved for getBlurredOverview
     readonly property string tintColor: Colors.mSurface
     readonly property real tintOpacity: 0.5
@@ -29,22 +31,25 @@ Singleton {
                 Logger.e("BackgroundService", "Failed to load background image from path: " + SettingsService.backgroundPath);
                 return ;
             }
-            cachedPath = path;
+            _cachedPath = path;
             Logger.i("BackgroundService", "Loaded background image as cached path: " + path);
+            setDisplayTimer.restart();
         });
     }
 
     function previewWallpaper(path) {
         if (!path) {
-            previewPath = "";
+            _previewPath = "";
+            setDisplayTimer.restart();
             return ;
         }
         ImageCacheService.checkFileExists(path, function(exists) {
             if (!exists) {
-                previewPath = "";
+                _previewPath = "";
                 return ;
             }
-            previewPath = path;
+            _previewPath = path;
+            setDisplayTimer.restart();
         });
     }
 
@@ -52,14 +57,15 @@ Singleton {
         if (!path)
             return ;
 
-        previewPath = ""; // clear preview path
-        cachedPath = ""; // clear cached path
+        _previewPath = ""; // clear preview path
+        _cachedPath = ""; // clear cached path
+        setDisplayTimer.restart();
         ImageCacheService.checkFileExists(path, function(exists) {
             if (!exists)
                 return ;
 
             SettingsService.backgroundPath = path;
-            loadWallpaperDebouncer.start();
+            loadTimer.restart();
         });
     }
 
@@ -70,25 +76,37 @@ Singleton {
     }
 
     Component.onCompleted: {
-        loadWallpaperDebouncer.start();
-    }
-
-    Connections {
-        function onBackgroundPathChanged() {
-            loadWallpaperDebouncer.start();
-        }
-
-        target: SettingsService
+        loadTimer.start();
     }
 
     Timer {
-        id: loadWallpaperDebouncer
+        id: loadTimer
 
-        interval: 200
+        interval: 300
         running: false
         repeat: false
         onTriggered: {
-            root.loadBackground();
+            loadBackground();
+        }
+    }
+
+    Timer {
+        id: setDisplayTimer
+
+        interval: 100
+        running: false
+        repeat: false
+        onTriggered: {
+            if (root._previewPath) {
+                root.displayPath = root._previewPath;
+                root.inPreviewMode = true;
+            } else if (root._cachedPath) {
+                root.displayPath = root._cachedPath;
+                root.inPreviewMode = false;
+            } else {
+                root.displayPath = "";
+                root.inPreviewMode = false;
+            }
         }
     }
 

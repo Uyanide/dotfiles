@@ -20,8 +20,8 @@ Variants {
         PanelWindow {
             id: bgWindow
 
-            readonly property bool doBlur: BarService.focusMode && (BackgroundService.previewPath === "")
-            readonly property string imagePath: BackgroundService.previewPath || BackgroundService.cachedPath
+            readonly property bool doBlur: BarService.focusMode && !BackgroundService.inPreviewMode
+            readonly property string imagePath: BackgroundService.displayPath
 
             screen: modelData
             WlrLayershell.namespace: "quickshell-background"
@@ -133,7 +133,7 @@ Variants {
             id: bdWindow
 
             property bool doBlur: true
-            property string imagePath: BackgroundService.cachedPath
+            property string imagePath: BackgroundService.displayPath
 
             screen: modelData
             WlrLayershell.namespace: "quickshell-backdrop"
