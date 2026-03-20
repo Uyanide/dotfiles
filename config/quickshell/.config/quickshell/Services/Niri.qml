@@ -15,6 +15,7 @@ Singleton {
     })
     property bool hasFocusedWindow: focusedWindowIndex >= 0
     property int focusedWindowIndex: -1
+    property int focusedWorkspaceId: -1
     property string focusedWindowAppId: hasFocusedWindow ? windows[focusedWindowIndex].appId : ""
     property string focusedWindowTitle: hasFocusedWindow ? windows[focusedWindowIndex].title : ""
     property string focusedOutput: ""
@@ -38,7 +39,7 @@ Singleton {
     signal workspaceChanged()
     signal activeWindowChanged()
     signal windowListChanged()
-    signal displayScalesChanged()
+    signal outputsChanged()
 
     function initialize() {
         niriEventStream.connected = true;
@@ -111,12 +112,14 @@ Singleton {
                 scales[output.name] = outputData;
             }
         }
+        outputsChanged();
     }
 
     function _recollectWorkspaces(workspacesData) {
         const workspacesList = [];
         workspaceCache = {
         };
+        focusedWorkspaceId = -1;
         for (const ws of workspacesData) {
             const wsData = {
                 "id": ws.id,
@@ -130,9 +133,10 @@ Singleton {
             };
             workspacesList.push(wsData);
             workspaceCache[ws.id] = wsData;
-            if (wsData.isFocused)
+            if (wsData.isFocused) {
                 focusedOutput = wsData.output || "";
-
+                focusedWorkspaceId = wsData.id;
+            }
         }
         workspacesList.sort((a, b) => {
             if (a.output !== b.output)
@@ -234,14 +238,13 @@ Singleton {
                 nextIndex = cachedIndex;
 
         }
-
         if (nextIndex < 0 && focusedWindowIndex >= 0 && focusedWindowIndex < windows.length && windows[focusedWindowIndex].isFocused)
             nextIndex = focusedWindowIndex;
 
         if (nextIndex < 0)
             nextIndex = windows.findIndex((w) => {
-                return w.isFocused;
-            });
+            return w.isFocused;
+        });
 
         const hasChanged = nextIndex !== focusedWindowIndex;
         focusedWindowIndex = nextIndex;
@@ -291,7 +294,6 @@ Singleton {
                 activeWindowChanged();
             }
             windowListChanged();
-            workspaceUpdateTimer.restart();
         } catch (e) {
             Logger.e("NiriService", "Error handling WindowOpenedOrChanged:", e);
         }
@@ -310,7 +312,6 @@ Singleton {
                     activeWindowChanged();
 
                 windowListChanged();
-                workspaceUpdateTimer.restart();
             }
         } catch (e) {
             Logger.e("NiriService", "Error handling WindowClosed:", e);
@@ -323,6 +324,44 @@ Singleton {
             recollectWindows(windowsData);
         } catch (e) {
             Logger.e("NiriService", "Error handling WindowsChanged:", e);
+        }
+    }
+
+    function _handleWorkspaceActivated(eventData) {
+        try {
+            const workspaceId = eventData.id;
+            if (workspaceId === focusedWorkspaceId)
+                return ;
+
+            // update workspaceCache
+            const workspace = workspaceCache[workspaceId];
+            if (!workspace) {
+                workspaceUpdateTimer.restart();
+                return ;
+            }
+            const focusedOutputName = workspace.output;
+            focusedOutput = focusedOutputName || "";
+            const oldWorkspace = workspaceCache[focusedWorkspaceId];
+            if (oldWorkspace) {
+                oldWorkspace.isFocused = false;
+                oldWorkspace.isActive = oldWorkspace.output !== focusedOutputName;
+            }
+            workspace.isFocused = true;
+            workspace.isActive = true;
+            // update workspaces ListModel
+            for (var i = 0; i < workspaces.count; i++) {
+                const ws = workspaces.get(i);
+                if (ws.id === workspaceId) {
+                    workspaces.setProperty(i, "isFocused", true);
+                    workspaces.setProperty(i, "isActive", true);
+                } else if (ws.id === focusedWorkspaceId) {
+                    workspaces.setProperty(i, "isFocused", false);
+                    workspaces.setProperty(i, "isActive", ws.output !== focusedOutputName);
+                }
+            }
+            focusedWorkspaceId = workspaceId;
+        } catch (e) {
+            Logger.e("NiriService", "Error handling WorkspaceActivated:", e);
         }
     }
 
@@ -361,7 +400,6 @@ Singleton {
                     window.position = getWindowPosition(layout);
 
                 hasMatchedWindow = hasMatchedWindow || window !== null;
-
             }
             if (!hasMatchedWindow)
                 return ;
@@ -527,7 +565,7 @@ Singleton {
                     else if (event.WindowsChanged)
                         _handleWindowsChanged(event.WindowsChanged);
                     else if (event.WorkspaceActivated)
-                        workspaceUpdateTimer.restart();
+                        _handleWorkspaceActivated(event.WorkspaceActivated);
                     else if (event.WindowFocusChanged)
                         _handleWindowFocusChanged(event.WindowFocusChanged);
                     else if (event.WindowLayoutsChanged)

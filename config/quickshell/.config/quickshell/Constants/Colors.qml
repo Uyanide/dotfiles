@@ -92,10 +92,11 @@ Singleton {
     }
 
     Connections {
-        target: ShellState
-        onColorStateChanged: {
+        function onColorStateChanged() {
             reloadTimer.restart();
         }
+
+        target: ShellState
     }
 
     Timer {

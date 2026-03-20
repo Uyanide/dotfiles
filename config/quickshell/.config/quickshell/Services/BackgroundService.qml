@@ -10,7 +10,7 @@ Singleton {
     id: root
 
     readonly property string backgroundWidth: "2560"
-    readonly property string backgroundHeight: "1440"
+    readonly property string backgroundHeight: "1600"
     property string cachedPath: ""
     property string previewPath: ""
     property string displayPath: ""

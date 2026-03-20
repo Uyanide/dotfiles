@@ -77,7 +77,7 @@ Singleton {
     }
 
     // -------------------------------------------------
-    // Public API: Get Large Image (scaled to specified dimensions)
+    // Public API: Get Large Image (scaled by max width, preserve aspect ratio)
     // -------------------------------------------------
     function getLarge(sourcePath, width, height, callback) {
         if (!sourcePath || sourcePath === "") {
@@ -89,28 +89,29 @@ Singleton {
             callback(sourcePath, false);
             return ;
         }
-        // Fast dimension check - skip processing if image fits screen AND format is Qt-native
+        if (width <= 0) {
+            callback(sourcePath, false);
+            return ;
+        }
+        const shouldCropToAspect = height > 0;
         getImageDimensions(sourcePath, function(imgWidth, imgHeight) {
-            // const fitsScreen = imgWidth > 0 && imgHeight > 0 && imgWidth <= width && imgHeight <= height;
-            // if (fitsScreen) {
-            //     // Only skip if format is natively supported by Qt
-            //     if (!needsConversion(sourcePath)) {
-            //         Logger.d("ImageCache", `Image ${imgWidth}x${imgHeight} fits screen ${width}x${height}, using original`);
-            //         callback(sourcePath, false);
-            //         return ;
-            //     }
-            //     Logger.d("ImageCache", `Image needs conversion despite fitting screen`);
-            // }
-            // Use actual image dimensions if it fits (convert without upscaling), otherwise use screen dimensions
-            // const targetWidth = fitsScreen ? imgWidth : width;
-            // const targetHeight = fitsScreen ? imgHeight : height;
-            const targetWidth = width;
-            const targetHeight = height;
+            const sourceWidth = imgWidth > 0 ? imgWidth : width;
+            const targetWidth = Math.min(sourceWidth, width);
+            let cropWidth = 0;
+            let cropHeight = 0;
+            if (shouldCropToAspect && imgWidth > 0 && imgHeight > 0) {
+                const sourceRatio = imgWidth / imgHeight;
+                const targetRatio = width / height;
+                if (sourceRatio > targetRatio) {
+                    cropWidth = Math.max(1, Math.floor(imgHeight * targetRatio));
+                    cropHeight = imgHeight;
+                }
+            }
             getMtime(sourcePath, function(mtime) {
-                const cacheKey = generateLargeKey(sourcePath, width, height, mtime);
+                const cacheKey = generateLargeKey(sourcePath, targetWidth, height, mtime);
                 const cachedPath = wpLargeDir + cacheKey + ".png";
                 processRequest(cacheKey, cachedPath, sourcePath, callback, function() {
-                    startLargeProcessing(sourcePath, cachedPath, targetWidth, targetHeight, cacheKey);
+                    startLargeProcessing(sourcePath, cachedPath, targetWidth, cropWidth, cropHeight, cacheKey);
                 });
             });
         });
@@ -187,7 +188,7 @@ Singleton {
     // Cache Key Generation
     // -------------------------------------------------
     function generateLargeKey(sourcePath, width, height, mtime) {
-        const keyString = sourcePath + "@" + width + "x" + height + "@" + (mtime || "unknown");
+        const keyString = sourcePath + "@w" + width + "@h" + height + "@" + (mtime || "unknown");
         return Checksum.sha256(keyString);
     }
 
@@ -249,11 +250,13 @@ Singleton {
     // -------------------------------------------------
     // ImageMagick Processing: Large
     // -------------------------------------------------
-    function startLargeProcessing(sourcePath, outputPath, width, height, cacheKey) {
+    function startLargeProcessing(sourcePath, outputPath, width, cropWidth, cropHeight, cacheKey) {
         const srcEsc = sourcePath.replace(/'/g, "'\\''");
         const dstEsc = outputPath.replace(/'/g, "'\\''");
-        // Use Lanczos filter for high-quality downscaling, subtle unsharp mask, and PNG for lossless output
-        const command = `magick '${srcEsc}' -auto-orient -filter Lanczos -resize '${width}x${height}' -gravity center -unsharp 0x0.5 '${dstEsc}'`;
+        // `${width}x>` means keep aspect ratio, cap by width, and never upscale.
+        // Crop is prepared in QML for compatibility with ImageMagick versions lacking `-if`.
+        const cropStep = (cropWidth > 0 && cropHeight > 0) ? ` -gravity center -crop '${cropWidth}x${cropHeight}+0+0' +repage` : "";
+        const command = `magick '${srcEsc}' -auto-orient${cropStep} -filter Lanczos -resize '${width}x>' -unsharp 0x0.5 '${dstEsc}'`;
         runProcess(command, cacheKey, outputPath, sourcePath);
     }
 

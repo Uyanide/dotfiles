@@ -55,12 +55,30 @@ Item {
 
     }
 
+    function syncWorkspaceFocus() {
+        for (let i = 0; i < localWorkspaces.count; i++) {
+            const ws = localWorkspaces.get(i);
+            const wsData = Niri.workspaceCache[ws.id];
+            if (!wsData) {
+                localWorkspaces.setProperty(i, "isFocused", false);
+                localWorkspaces.setProperty(i, "isActive", false);
+            } else {
+                localWorkspaces.setProperty(i, "isFocused", wsData.isFocused);
+                localWorkspaces.setProperty(i, "isActive", wsData.isActive);
+            }
+        }
+    }
+
     implicitWidth: pillRow.implicitWidth + horizontalPadding * 2
     Component.onCompleted: syncWorkspaces()
 
     Connections {
         function onWorkspaceChanged() {
             syncWorkspaces();
+        }
+
+        function onFocusedWorkspaceIdChanged() {
+            syncWorkspaceFocus();
         }
 
         target: Niri
