@@ -23,7 +23,8 @@ Item {
     readonly property real viewportHeight: outputHeight > 0 ? outputHeight : height
     readonly property real scrollProgress: {
         if (workspaceCount <= 1 || focusedIndex < 0)
-            return 0.5; // Center
+            return 0.5;
+ // Center
         return Math.max(0, Math.min(1, (focusedIndex - 1) / (workspaceCount - 1)));
     }
 
@@ -142,6 +143,7 @@ Item {
         Behavior on blur {
             NumberAnimation {
                 duration: Style.animationSlow
+                easing.type: Easing.InOutCubic
             }
 
         }
@@ -149,6 +151,7 @@ Item {
         Behavior on colorization {
             NumberAnimation {
                 duration: Style.animationSlow
+                easing.type: Easing.InOutCubic
             }
 
         }

@@ -173,7 +173,7 @@ Scope {
 
     Behavior on opacity {
         NumberAnimation {
-            duration: Style.animationSlowest
+            duration: Style.animationSlow
             easing.type: Easing.InOutCubic
         }
 

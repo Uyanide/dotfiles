@@ -32,6 +32,21 @@ Variants {
             }
 
             Rectangle {
+                anchors.fill: parent
+                color: Colors.mSurface
+                opacity: BarService.focusMode ? 1 : 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Style.animationSlow
+                        easing.type: Easing.InOutCubic
+                    }
+
+                }
+
+            }
+
+            Rectangle {
                 id: barBackground
 
                 anchors.fill: parent
@@ -39,30 +54,12 @@ Variants {
                 gradient: Gradient {
                     GradientStop {
                         position: 0
-                        color: Qt.rgba(Colors.mSurface.r, Colors.mSurface.g, Colors.mSurface.b, BarService.focusMode ? 1 : 0.8)
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: Style.animationSlowest
-                                easing.type: Easing.InOutCubic
-                            }
-
-                        }
-
+                        color: Qt.rgba(Colors.mSurface.r, Colors.mSurface.g, Colors.mSurface.b, 0.8)
                     }
 
                     GradientStop {
                         position: 1
-                        color: Qt.rgba(Colors.mSurface.r, Colors.mSurface.g, Colors.mSurface.b, BarService.focusMode ? 1 : 0)
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: Style.animationSlowest
-                                easing.type: Easing.InOutCubic
-                            }
-
-                        }
-
+                        color: Qt.rgba(Colors.mSurface.r, Colors.mSurface.g, Colors.mSurface.b, 0)
                     }
 
                 }
