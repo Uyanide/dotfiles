@@ -1,3 +1,4 @@
+import QtQml
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -20,7 +21,8 @@ Singleton {
         const path = Paths.notesDir + "/" + fileName;
         createProcess.currentNote = {
             "notePath": path,
-            "colorIdx": strToColor(fileName)
+            "colorIdx": strToColor(fileName),
+            "contentPreview": ""
         };
         createProcess.command = ["touch", path];
         createProcess.running = true;
@@ -124,13 +126,32 @@ Singleton {
 
                     root.notesModel.append({
                         "notePath": Paths.notesDir + "/" + fileName,
-                        "colorIdx": strToColor(fileName)
+                        "colorIdx": strToColor(fileName),
+                        "contentPreview": ""
                     });
                     Logger.d("Notes", "Loaded note: " + fileName);
                 }
                 if (root.notesModel.count > 0)
                     root.recentNotePath = root.notesModel.get(0).notePath;
 
+            }
+        }
+
+    }
+
+    Instantiator {
+        model: notesModel
+
+        delegate: FileView {
+            path: model.notePath
+            watchChanges: true
+            onFileChanged: reload()
+            onLoaded: {
+                const content = text();
+                if (!content)
+                    model.contentPreview = "(empty note)";
+                else
+                    model.contentPreview = content.trim().split('\n').slice(0, 5).join('\n');
             }
         }
 

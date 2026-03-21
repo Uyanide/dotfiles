@@ -23,8 +23,7 @@ Item {
     readonly property real viewportHeight: outputHeight > 0 ? outputHeight : height
     readonly property real scrollProgress: {
         if (workspaceCount <= 1 || focusedIndex < 0)
-            return 0;
-
+            return 0.5; // Center
         return Math.max(0, Math.min(1, (focusedIndex - 1) / (workspaceCount - 1)));
     }
 

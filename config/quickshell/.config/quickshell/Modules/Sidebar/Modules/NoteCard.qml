@@ -107,14 +107,6 @@ Rectangle {
                                 onClicked: NotesService.openNote(model.notePath)
                             }
 
-                            FileView {
-                                id: fileView
-
-                                path: model.notePath
-                                watchChanges: true
-                                onFileChanged: reload()
-                            }
-
                             RowLayout {
                                 id: noteLayout
 
@@ -124,13 +116,7 @@ Rectangle {
 
                                 UText {
                                     Layout.fillWidth: true
-                                    text: {
-                                        var t = fileView.text();
-                                        if (!t)
-                                            return "(empty note)";
-
-                                        return t.trim().split('\n').slice(0, 5).join('\n');
-                                    }
+                                    text: model.contentPreview
                                     wrapMode: Text.Wrap
                                     elide: Text.ElideRight
                                     maximumLineCount: 5
