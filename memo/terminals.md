@@ -344,7 +344,7 @@ fi
 如果不想写脚本, 也可以直接在 shell 里执行以下命令:
 
 ```bash
-bash <(curl -fsSL https://tgp.uyani.de/query)
+curl -fsSL https://tgp.uyani.de/query | bash
 ```
 
 这将会根据上述原理检测当前终端模拟器支持的图像协议, 并输出结果. 当然, 这需要联网并且信任该脚本的来源. 请务必先拉取并查看脚本内容以确认无害后再执行.
@@ -352,18 +352,10 @@ bash <(curl -fsSL https://tgp.uyani.de/query)
 将网址中的 `query` 替换为 `kitty` / `iterm` / `sixels` 可以通过显示测试图片的方式验证对应协议的支持情况, 例如:
 
 ```bash
-bash <(curl -fsSL https://tgp.uyani.de/kitty)
+curl -fsSL https://tgp.uyani.de/kitty | bash
 ```
 
-将会尝试用 KGP 显示一张测试图片, 如果显示成功则说明支持 KGP, 反之则(大概率)不支持.
-
-> [!TIP]
->
-> 对于 fish shell, 类似 `cmdA <(cmdB)` 的语法可被替换为 `cmdA (cmdB | psub)`, 因此上述命令在 fish 里可以写为:
->
-> ```fish
-> bash (curl -fsSL https://tgp.uyani.de/query | psub)
-> ```
+将会尝试用 KGP 显示一张测试图片, 如果成功显示则说明支持 KGP, 反之则(大概率)不支持.
 
 ### 显示效果
 

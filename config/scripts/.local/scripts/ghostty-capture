@@ -15,8 +15,8 @@
 #   keybind = ctrl+shift+j=text:ghostty-capture\n
 # Or without wl-paste:
 #   # ctrl+shift+h>j > Enter to open the screen buffer in editor
-#   keybind = ctrl+shift+j=text:ghostty-capture\x20
-#   keybind = ctrl+shift+h=write_screen_file:paste
+#   keybind = ctrl+shift+h=text:ghostty-capture\x20
+#   keybind = ctrl+shift+j=write_screen_file:paste
 
 if [ -z "$1" ] && ! command -v wl-paste &> /dev/null; then
     echo "Error: wl-paste not found." >&2
