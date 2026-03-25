@@ -25,7 +25,7 @@ Rectangle {
             clip: true
 
             UText {
-                text: LyricsService.lyrics[LyricsService.currentIndex] || ""
+                text: LyricsService.lyrics.get(LyricsService.currentIndex)?.line || ""
                 family: Fonts.sans
                 pointSize: Style.fontSizeM
                 maximumLineCount: 1
@@ -42,7 +42,7 @@ Rectangle {
             baseSize: parent.height - Style.marginXS * 2
             iconSize: Style.fontSizeM
             onClicked: {
-                LyricsService.increaseOffset();
+                LyricsService.decreaseOffset();
             }
         }
 
@@ -54,7 +54,7 @@ Rectangle {
             baseSize: parent.height - Style.marginXS * 2
             iconSize: Style.fontSizeM
             onClicked: {
-                LyricsService.decreaseOffset();
+                LyricsService.increaseOffset();
             }
         }
 

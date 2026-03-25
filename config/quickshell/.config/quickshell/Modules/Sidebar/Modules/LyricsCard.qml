@@ -16,27 +16,45 @@ UBox {
         LyricsService.unregisterComponent("LyricsCard");
     }
 
-    ColumnLayout {
-        id: lyricsColumn
+    ListView {
+        id: lyricsList
 
         anchors.fill: parent
         anchors.margins: Style.marginS
+        spacing: Style.marginM
+        model: LyricsService.lyrics
+        currentIndex: LyricsService.currentIndex
+        clip: true
+        onCurrentIndexChanged: {
+            if (currentIndex >= 0)
+                positionViewAtIndex(currentIndex, ListView.Center);
 
-        Repeater {
-            model: LyricsService.lyrics
+        }
+        Component.onCompleted: {
+            Qt.callLater(function() {
+                if (currentIndex >= 0)
+                    positionViewAtIndex(currentIndex, ListView.Center);
 
-            UText {
-                Layout.fillWidth: true
-                text: modelData
-                font.pointSize: index === LyricsService.currentIndex ? Style.fontSizeS : Style.fontSizeXS
-                font.weight: index === LyricsService.currentIndex ? Style.fontWeightBold : Style.fontWeightRegular
-                font.family: Fonts.sans
-                color: index === LyricsService.currentIndex ? Colors.mOnSurface : Colors.mOnSurfaceVariant
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
-                wrapMode: Text.WrapAnywhere
-                maximumLineCount: 1
+            });
+        }
+
+        delegate: UText {
+            width: ListView.view.width
+            text: model.line || ""
+            font.pointSize: ListView.isCurrentItem ? Style.fontSizeS : Style.fontSizeXS
+            font.weight: ListView.isCurrentItem ? Style.fontWeightBold : Style.fontWeightRegular
+            font.family: Fonts.sans
+            color: ListView.isCurrentItem ? Colors.mOnSurface : Colors.mOnSurfaceVariant
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            wrapMode: Text.WrapAnywhere
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    LyricsService.seekToLyric(index);
+                }
             }
 
         }

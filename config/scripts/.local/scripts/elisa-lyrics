@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+url=$(playerctl --player=elisa metadata xesam:url)
+
+if [[ "$url" != file://* ]]; then
+    exit 1
+fi
+
+path="${url#file://}"
+lyrics_path="${path%.*}.lrc"
+
+if [[ ! -e "$lyrics_path" ]]; then
+    exit 1
+fi
+
+cat "$lyrics_path"

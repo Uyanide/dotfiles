@@ -9,46 +9,25 @@ pragma Singleton
 Singleton {
     id: root
 
-    property int linesCount: 3
-    property int linesAhead: linesCount / 2
-    readonly property int currentIndex: linesCount - linesAhead - 1
-    readonly property string offsetFile: Paths.cacheDir + "/spotify-lyrics-offset.txt"
-    property int offset: 0 // in ms
-    readonly property int offsetStep: 500 // in ms
+    property bool isFetchingLyrics: false
+    // Lyrics state
+    // { "time": 0, "line": "lyric line" }
+    // time is in ms
+    property ListModel lyrics
+    property int lyricsOffset: 0 // in ms
+    property int currentIndex: -1
+    // Player state
+    // this property will be updated regardless of shouldRun for simplicity
+    property int internalPosition: 0
+    // Reference counting
     property var _registered: ({
     })
     readonly property int _registeredCount: Object.keys(_registered).length
     readonly property bool shouldRun: _registeredCount > 0
-    // with linesCount=3 and linesAhead=1, lyrics will be like:
-    //   line 1
-    //   line 2 <- current line
-    //   line 3
-    property var lyrics: Array(linesCount).fill(" ")
+    // Bar state
     readonly property bool showLyricsBar: ShellState.lyricsState.showLyricsBar || false
 
-    function toggleLyricsBar() {
-        ShellState.lyricsState = {
-            "showLyricsBar": !root.showLyricsBar
-        };
-    }
-
-    function startSyncing() {
-        Logger.d("Lyrics", "Starting lyrics syncing");
-        // fill lyrics with empty lines
-        lyrics = Array(linesCount).fill(" ");
-        listenProcess.exec(["sh", "-c", `pkill -x spotify-lyrics -u $USER; spotify-lyrics listen -l ${linesCount} -a ${linesAhead} -f ${offsetFile}`]);
-    }
-
-    function stopSyncing() {
-        Logger.d("Lyrics", "Stopping lyrics syncing");
-        // kinda ugly but works, meanwhile:
-        //   listenProcess.signal(9)
-        //   listenProcess.signal(15)
-        //   listenProcess.running = false
-        //   counting on exec() to terminate previous exec()
-        // all don't work
-        Quickshell.execDetached(["sh", "-c", `pkill -x spotify-lyrics -u $USER`]);
-    }
+    signal lyricsUpdated()
 
     function registerComponent(componentId) {
         root._registered[componentId] = true;
@@ -64,105 +43,232 @@ Singleton {
         Logger.d("Lyrics", "Component unregistered:", componentId, "- total:", root._registeredCount);
     }
 
-    function writeOffset() {
-        offsetFileView.setText(String(offset));
+    function _requestFetchLyrics() {
+        if (!root.shouldRun)
+            return ;
+
+        fetchLyricsTimer.restart();
+    }
+
+    function fetchLyrics() {
+        root.lyrics.clear();
+        root.lyricsUpdated();
+        root.currentIndex = -1;
+        if (!root.shouldRun)
+            return ;
+
+        root.isFetchingLyrics = true;
+        if (!MediaService.currentPlayer) {
+            root.isFetchingLyrics = false;
+            return ;
+        } else if (MediaService.currentPlayer.identity.toLowerCase() === "spotify")
+            lyricsProcess.request("spotify");
+        else if (MediaService.currentPlayer.identity.toLowerCase() === "elisa")
+            lyricsProcess.request("elisa");
+        else
+            root.isFetchingLyrics = false;
+    }
+
+    function parseLRC(text) {
+        if (!root.shouldRun)
+            return ;
+
+        const lines = text.split("\n");
+        let newLyrics = [];
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.length === 0)
+                continue;
+
+            const lyricLine = line.replace(/\[.*?]/g, "").trim();
+            const regex = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?]/g;
+            let match;
+            while ((match = regex.exec(line)) !== null) {
+                const minutes = parseInt(match[1], 10);
+                const seconds = parseInt(match[2], 10);
+                const milliseconds = match[3] ? parseInt(match[3].padEnd(3, "0"), 10) : 0;
+                const time = minutes * 60 * 1000 + seconds * 1000 + milliseconds;
+                newLyrics.push({
+                    "time": time,
+                    "line": lyricLine
+                });
+            }
+        }
+        newLyrics.sort((a, b) => {
+            return a.time - b.time;
+        });
+        root.lyrics.clear();
+        root.lyrics.append(newLyrics);
+        root.isFetchingLyrics = false;
+        root.lyricsUpdated();
+        updateIndex();
+    }
+
+    function updateIndex() {
+        if (!root.shouldRun)
+            return ;
+
+        if (root.lyrics.count === 0) {
+            if (root.currentIndex !== -1)
+                root.currentIndex = -1;
+
+            return ;
+        }
+        const effectiveTime = root.internalPosition + root.lyricsOffset;
+        let low = 0;
+        let high = root.lyrics.count - 1;
+        let bestMatch = -1;
+        while (low <= high) {
+            let mid = (low + high) >> 1;
+            let midTime = root.lyrics.get(mid).time;
+            if (midTime <= effectiveTime) {
+                bestMatch = mid;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        if (root.currentIndex !== bestMatch)
+            root.currentIndex = bestMatch;
+
     }
 
     function increaseOffset() {
-        offset += offsetStep;
-        saveState();
+        root.lyricsOffset += 500;
     }
 
     function decreaseOffset() {
-        offset -= offsetStep;
-        saveState();
+        root.lyricsOffset -= 500;
     }
 
     function resetOffset() {
-        offset = 0;
-        saveState();
+        if (root.lyricsOffset !== 0)
+            root.lyricsOffset = 0;
+
     }
 
-    function clearCache() {
-        action.command = ["sh", "-c", "spotify-lyrics clear $(spotify-lyrics trackid)"];
-        action.startDetached();
+    function toggleLyricsBar() {
+        ShellState.lyricsState = {
+            "showLyricsBar": !ShellState.lyricsState.showLyricsBar
+        };
     }
 
-    function showLyricsText() {
-        action.command = ["sh", "-c", "wezterm start -- sh -c 'spotify-lyrics fetch 2>/dev/null | less'"];
-        action.startDetached();
+    function seekToLyric(index) {
+        if (index < 0 || index >= root.lyrics.count)
+            return ;
+
+        const time = root.lyrics.get(index).time - root.lyricsOffset;
+        MediaService.seek(time / 1000);
     }
 
-    onOffsetChanged: {
-        if (root.showLyricsBar)
-            SendNotification.show("Lyrics Offset Changed", `Current offset: ${offset} ms`);
-
-        writeOffset();
-    }
     onShouldRunChanged: {
-        if (shouldRun)
-            startSyncing();
-        else
-            stopSyncing();
+        Logger.d("Lyrics", "Should run changed:", root.shouldRun);
+        if (!root.shouldRun) {
+            root.lyrics.clear();
+            root.isFetchingLyrics = false;
+        } else {
+            root._requestFetchLyrics();
+        }
+    }
+    onInternalPositionChanged: updateIndex()
+    onLyricsOffsetChanged: updateIndex()
+
+    Connections {
+        function onCurrentPlayerChanged() {
+            _requestFetchLyrics();
+        }
+
+        function onTrackTitleChanged() {
+            _requestFetchLyrics();
+        }
+
+        function onTrackArtistChanged() {
+            _requestFetchLyrics();
+        }
+
+        function onTrackAlbumChanged() {
+            _requestFetchLyrics();
+        }
+
+        function onCurrentPositionChanged() {
+            root.internalPosition = MediaService.currentPosition * 1000;
+            if (shouldRun && MediaService.isPlaying)
+                updateInternalTimer.restart();
+
+        }
+
+        target: MediaService
+    }
+
+    Timer {
+        id: fetchLyricsTimer
+
+        interval: 100
+        repeat: false
+        running: false
+        onTriggered: fetchLyrics()
     }
 
     Process {
-        id: listenProcess
+        id: lyricsProcess
+
+        property string queuedPlayer: ""
+
+        function request(player) {
+            this.queuedPlayer = player;
+            if (this.running)
+                this.running = false;
+            else
+                handleQueue();
+        }
+
+        function handleQueue() {
+            if (!this.queuedPlayer) {
+                root.isFetchingLyrics = false;
+                return ;
+            }
+            const player = this.queuedPlayer.toLowerCase();
+            this.queuedPlayer = "";
+            if (player === "spotify") {
+                this.command = ["lrcfetch", "fetch", "--player", "spotify"];
+            } else if (player === "elisa") {
+                this.command = ["lrcfetch", "fetch", "--player", "elisa"];
+            } else {
+                root.isFetchingLyrics = false;
+                root.parseLRC("");
+                return ;
+            }
+            this.running = true;
+        }
 
         running: false
+        onExited: (exitCode, exitStatus) => {
+            if (this.queuedPlayer)
+                Qt.callLater(handleQueue);
+            else
+                root.isFetchingLyrics = false;
+        }
 
-        stdout: SplitParser {
-            splitMarker: ""
-            onRead: (data) => {
-                lyrics = data.split("\n").slice(0, linesCount);
-                if (lyrics.length < linesCount) {
-                    // fill with empty lines if not enough
-                    for (let i = lyrics.length; i < linesCount; i++) {
-                        lyrics[i] = " ";
-                    }
-                }
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.parseLRC(this.text);
             }
         }
 
     }
 
-    Process {
-        id: action
+    Timer {
+        id: updateInternalTimer
 
-        running: false
+        interval: 50
+        repeat: true
+        running: shouldRun && MediaService.isPlaying
+        onTriggered: {
+            root.internalPosition += this.interval;
+        }
     }
 
-    FileView {
-        id: offsetFileView
-
-        path: offsetFile
-        watchChanges: false
-        onLoaded: {
-            try {
-                const fileContents = text();
-                if (fileContents.length > 0) {
-                    const val = parseInt(fileContents);
-                    if (!isNaN(val)) {
-                        offset = val;
-                        Logger.d("Lyrics", "Loaded offset:", offset);
-                    } else {
-                        offset = 0;
-                        writeOffset();
-                    }
-                } else {
-                    offset = 0;
-                    writeOffset();
-                }
-            } catch (e) {
-                Logger.e("Lyrics", "Error reading offset file:", e);
-            }
-        }
-        onLoadFailed: {
-            Logger.e("Lyrics", "Error loading offset file.");
-        }
-        onSaveFailed: {
-            Logger.e("Lyrics", "Error saving offset file.");
-        }
+    lyrics: ListModel {
     }
 
 }

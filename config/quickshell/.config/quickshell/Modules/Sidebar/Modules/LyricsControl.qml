@@ -6,13 +6,27 @@ import qs.Constants
 import qs.Services
 
 ColumnLayout {
+    spacing: Style.marginS
+
     UText {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
         Layout.maximumWidth: buttonsGrid.width
-        Layout.bottomMargin: Style.marginS
+        pointSize: Style.fontSizeS
         horizontalAlignment: Text.AlignHCenter
-        text: (LyricsService.offset > 0 ? "+" + LyricsService.offset : LyricsService.offset) + " ms"
+        text: "Offset (ms)"
+    }
+
+    UText {
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignVCenter
+        Layout.maximumWidth: buttonsGrid.width
+        horizontalAlignment: Text.AlignHCenter
+        text: (LyricsService.lyricsOffset > 0 ? "+" + LyricsService.lyricsOffset : LyricsService.lyricsOffset)
+    }
+
+    UDivider {
+        implicitWidth: buttonsGrid.implicitWidth
     }
 
     GridLayout {
@@ -29,7 +43,7 @@ ColumnLayout {
             colorFg: Colors.mCyan
             iconName: "arrow-bar-up"
             onClicked: {
-                LyricsService.increaseOffset();
+                LyricsService.decreaseOffset();
             }
         }
 
@@ -40,7 +54,7 @@ ColumnLayout {
             colorFg: Colors.mPurple
             iconName: "arrow-bar-down"
             onClicked: {
-                LyricsService.decreaseOffset();
+                LyricsService.increaseOffset();
             }
         }
 
@@ -56,17 +70,6 @@ ColumnLayout {
         }
 
         UIconButton {
-            id: fasterButton
-
-            baseSize: 32
-            colorFg: Colors.mRed
-            iconName: "trash"
-            onClicked: {
-                LyricsService.clearCache();
-            }
-        }
-
-        UIconButton {
             id: barLyricsButton
 
             baseSize: 32
@@ -75,18 +78,6 @@ ColumnLayout {
             iconName: "app-window"
             onClicked: {
                 LyricsService.toggleLyricsBar();
-            }
-        }
-
-        UIconButton {
-            id: textButton
-
-            baseSize: 32
-            colorFg: Colors.mYellow
-            iconName: "align-box-left-bottom"
-            onClicked: {
-                LyricsService.showLyricsText();
-                controlCenterPanel.close();
             }
         }
 
