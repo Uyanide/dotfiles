@@ -25,7 +25,7 @@ Rectangle {
             clip: true
 
             UText {
-                text: LyricsService.lyrics.get(LyricsService.currentIndex)?.line || ""
+                text: LyricsService.isFetchingLyrics ? "Fetching..." : (LyricsService.lyrics.get(LyricsService.currentIndex)?.line ?? "No lyrics available")
                 family: Fonts.sans
                 pointSize: Style.fontSizeM
                 maximumLineCount: 1

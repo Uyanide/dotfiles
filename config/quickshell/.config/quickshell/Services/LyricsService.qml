@@ -23,7 +23,8 @@ Singleton {
     property var _registered: ({
     })
     readonly property int _registeredCount: Object.keys(_registered).length
-    readonly property bool shouldRun: _registeredCount > 0
+    readonly property bool shouldRun: MediaService.currentPlayer && _registeredCount > 0
+    // readonly property bool shouldRun: MediaService.currentPlayer !== null
     // Bar state
     readonly property bool showLyricsBar: ShellState.lyricsState.showLyricsBar || false
 
@@ -58,21 +59,19 @@ Singleton {
             return ;
 
         root.isFetchingLyrics = true;
-        if (!MediaService.currentPlayer) {
+        if (!MediaService.currentPlayer?.identity) {
             root.isFetchingLyrics = false;
             return ;
-        } else if (MediaService.currentPlayer.identity.toLowerCase() === "spotify")
-            lyricsProcess.request("spotify");
-        else if (MediaService.currentPlayer.identity.toLowerCase() === "elisa")
-            lyricsProcess.request("elisa");
-        else
-            root.isFetchingLyrics = false;
+        } else {
+            lyricsProcess.request(MediaService.currentPlayer.identity.toLowerCase());
+        }
     }
 
     function parseLRC(text) {
         if (!root.shouldRun)
             return ;
 
+        // Logger.d("Lyrics", "Parsing :\n" + text);
         const lines = text.split("\n");
         let newLyrics = [];
         for (let i = 0; i < lines.length; i++) {
@@ -165,7 +164,8 @@ Singleton {
         Logger.d("Lyrics", "Should run changed:", root.shouldRun);
         if (!root.shouldRun) {
             root.lyrics.clear();
-            root.isFetchingLyrics = false;
+            root.lyricsUpdated();
+            root.currentIndex = -1;
         } else {
             root._requestFetchLyrics();
         }
@@ -229,15 +229,7 @@ Singleton {
             }
             const player = this.queuedPlayer.toLowerCase();
             this.queuedPlayer = "";
-            if (player === "spotify") {
-                this.command = ["lrcfetch", "fetch", "--player", "spotify"];
-            } else if (player === "elisa") {
-                this.command = ["lrcfetch", "fetch", "--player", "elisa"];
-            } else {
-                root.isFetchingLyrics = false;
-                root.parseLRC("");
-                return ;
-            }
+            this.command = ["lrcfetch", "fetch", "--player", player];
             this.running = true;
         }
 

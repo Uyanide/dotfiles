@@ -16,6 +16,13 @@ UBox {
         LyricsService.unregisterComponent("LyricsCard");
     }
 
+    UText {
+        anchors.centerIn: parent
+        visible: LyricsService.isFetchingLyrics || LyricsService.lyrics.count === 0
+        text: LyricsService.isFetchingLyrics ? "Fetching..." : "No lyrics available"
+        color: Colors.mOnSurfaceVariant
+    }
+
     ListView {
         id: lyricsList
 
@@ -25,6 +32,7 @@ UBox {
         model: LyricsService.lyrics
         currentIndex: LyricsService.currentIndex
         clip: true
+        visible: !LyricsService.isFetchingLyrics && LyricsService.lyrics.count > 0
         onCurrentIndexChanged: {
             if (currentIndex >= 0)
                 positionViewAtIndex(currentIndex, ListView.Center);
