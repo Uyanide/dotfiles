@@ -26,7 +26,9 @@ bindkey '^Z'      undo               # C-z
 
 # A-s to prepend sudo
 uy_prepend_sudo() {
-    if [[ $BUFFER != sudo\ * ]]; then
+    if [[ $BUFFER == sudo\ * ]]; then
+        BUFFER="${BUFFER#sudo }"
+    else
         BUFFER="sudo $BUFFER"
         CURSOR+=5
     fi

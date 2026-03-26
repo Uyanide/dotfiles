@@ -11,3 +11,6 @@ zsh-users/zsh-autosuggestions
 zsh-users/zsh-completions
 
 # Long command done notification — handled by conf.d/10-done.zsh
+
+# Fuzzy tab completion
+Aloxaf/fzf-tab

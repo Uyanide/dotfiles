@@ -3,13 +3,23 @@
 if (( $+commands[fzf] )); then
 	source <(fzf --zsh)
 
-	# auto copy fzf's output
-	if (( $+commands[wl-copy] )); then
-		alias fzf="fzf --bind 'enter:execute-silent(echo {+} | wl-copy --trim-newline)+accept'"
+	# use fd if available (search cwd only, skip vcs/cache junk)
+	if (( $+commands[fd] )); then
+		export FD_CMD="fd"
+	elif (( $+commands[fdfind] )); then
+		export FD_CMD="fdfind"
 	fi
 
-	# fzh: history
-	alias fzh="history -1 0 | fzf"
+	if [[ -n "$FD_CMD" ]]; then
+		export FZF_DEFAULT_COMMAND="$FD_CMD --type f --hidden --exclude .git"
+		export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+		export FZF_ALT_C_COMMAND="$FD_CMD --type d --hidden --exclude .git"
+	fi
+
+	# C-y to copy fzf's output
+	if (( $+commands[wl-copy] )); then
+		export FZF_DEFAULT_OPTS="--bind \"ctrl-y:execute-silent(echo -n {+} | wl-copy)+abort\""
+	fi
 
 	# fz: fuzzy find a file and preview
 	if (( $+commands[bat] )); then
@@ -21,32 +31,40 @@ if (( $+commands[fzf] )); then
 	# fe: fuzzy find a file and edit using $EDITOR
 	fe() {
 		local file
-		file=$(fz "$@")
+		file=$(fz --header "[edit with $EDITOR]")
 		[[ -n "$file" ]] && $EDITOR "$file"
 	}
 
-	# fkill: fuzzy find a process and kill with SIGKILL
-	fkill() {
+	# fkp: fuzzy find a process and kill with SIGKILL
+	fkp() {
 		local pids
-		pids=$(ps -ef | sed 1d | fzf -m --preview 'pstree -p $(echo {} | awk "{print \$2}")' | awk '{print $2}')
-		[[ -n "$pids" ]] && kill -9 ${=pids}
+		pids=$(ps -ef | sed 1d | fzf -m --preview 'pstree -p $(echo {} | awk "{print \$2}")' --header '[kill process]' | awk '{print $2}')
+		[[ -n "$pids" ]] && kill -${1:-9} ${=pids}
+	}
+
+	# fks: fuzzy find a TCP process and kill
+	fks() {
+		local pids
+		pids=$(lsof -Pwni tcp | sed 1d | fzf -m --header '[kill process]' | awk '{print $2}')
+		[[ -n "$pids" ]] && kill -${1:-9} ${=pids}
 	}
 
 	if (( $+commands[yay] )); then
-		# fyq: fuzzy yay query
+		# fyq: fuzzy yay local query
 		alias fyq="yay -Qq | fzf --preview 'yay -Qi {}'"
 
 		# fyi: fuzzy yay install
 		fyi() {
 			local pkg
-			pkg=$(yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' "$@")
+			pkg=$(yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' --header '[install package]' "$@")
+			# yay supports "repo/package" format
 			[[ -n "$pkg" ]] && yay -S ${=pkg}
 		}
 
 		# fyr: fuzzy yay remove
 		fyr() {
 			local pkg
-			pkg=$(yay -Qq | fzf -m --preview 'yay -Qi {}' "$@")
+			pkg=$(yay -Qq | fzf -m --preview 'yay -Qi {}' --header '[remove package]' "$@")
 			[[ -n "$pkg" ]] && yay -Rn ${=pkg}
 		}
 	fi
