@@ -35,19 +35,23 @@ if (( $+commands[fzf] )); then
 		[[ -n "$file" ]] && $EDITOR "$file"
 	}
 
-	# fkp: fuzzy find a process and kill with SIGKILL
+	# fkp: fuzzy find a process and kill
 	fkp() {
 		local pids
-		pids=$(ps -ef | sed 1d | fzf -m --preview 'pstree -p $(echo {} | awk "{print \$2}")' --header '[kill process]' | awk '{print $2}')
-		[[ -n "$pids" ]] && kill -${1:-9} ${=pids}
+		pids=$(ps -ef | fzf -m --header-lines 1 --preview 'pstree -p $(echo {} | awk "{print \$2}")' --header '[kill process]' | awk '{print $2}')
+		echo "$pids" | xargs -r kill -${1:-9}
 	}
 
 	# fks: fuzzy find a TCP process and kill
-	fks() {
-		local pids
-		pids=$(lsof -Pwni tcp | sed 1d | fzf -m --header '[kill process]' | awk '{print $2}')
-		[[ -n "$pids" ]] && kill -${1:-9} ${=pids}
-	}
+	if (( $+commands[ss] )); then
+		fks() {
+			local pids
+			# Call sudo separately since one cannot enter password in fzf's window
+			pids=$(sudo ss -lptn)
+			pids=$(echo "$pids" | fzf -m --header-lines 1 --header '[kill process]' | grep -oP 'pid=\K\d+')
+			echo "$pids" | xargs -r sudo kill -${1:-9}
+		}
+	fi
 
 	if (( $+commands[yay] )); then
 		# fyq: fuzzy yay local query
