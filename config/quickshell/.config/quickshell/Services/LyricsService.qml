@@ -19,6 +19,13 @@ Singleton {
     // Player state
     // this property will be updated regardless of shouldRun for simplicity
     property int internalPosition: 0
+    readonly property var playerBlacklist: [
+        "mpv",
+        "firefox",
+        "zen",
+        "chromium",
+        "chrome"
+    ]
     // Reference counting
     property var _registered: ({
     })
@@ -63,6 +70,14 @@ Singleton {
             root.isFetchingLyrics = false;
             return ;
         } else {
+            // lyricsProcess.request(MediaService.currentPlayer.dbusName);
+            for (const player of root.playerBlacklist) {
+                if (MediaService.currentPlayer.dbusName.toLowerCase().includes(player)) {
+                    Logger.d("Lyrics", "Player is blacklisted, skipping lyrics fetch:", MediaService.currentPlayer.dbusName);
+                    root.isFetchingLyrics = false;
+                    return ;
+                }
+            }
             lyricsProcess.request(MediaService.currentPlayer.dbusName);
         }
     }
@@ -96,6 +111,14 @@ Singleton {
         newLyrics.sort((a, b) => {
             return a.time - b.time;
         });
+
+        // Special case when first lyric dosen't start at 0:00
+        if (newLyrics.length > 0 && newLyrics[0].time > 0) {
+            newLyrics.unshift({
+                "time": 0,
+                "line": ""
+            });
+        }
         root.lyrics.clear();
         root.lyrics.append(newLyrics);
         root.isFetchingLyrics = false;
@@ -129,7 +152,6 @@ Singleton {
         }
         if (root.currentIndex !== bestMatch)
             root.currentIndex = bestMatch;
-
     }
 
     function increaseOffset() {
