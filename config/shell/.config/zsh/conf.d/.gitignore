@@ -1,0 +1,12 @@
+*
+!.gitignore
+!01-options.zsh
+!02-completions.zsh
+!03-plugins.zsh
+!10-done.zsh
+!10-env.zsh
+!10-oops.zsh
+!10-sshs.zsh
+!50-prompt.zsh
+!60-alias.zsh
+!60-fetch.zsh

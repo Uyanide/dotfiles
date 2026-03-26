@@ -12,7 +12,7 @@ keybind = ctrl+shift+h=write_screen_file:copy
 keybind = ctrl+shift+j=text:ghostty-capture\n
 keybind = ctrl+enter=unbind
 
-command = exec fish
+command = exec /bin/zsh
 
 confirm-close-surface = false
 

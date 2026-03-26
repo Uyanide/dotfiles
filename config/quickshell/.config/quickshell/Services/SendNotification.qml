@@ -6,11 +6,17 @@ pragma Singleton
 Singleton {
     id: root
 
-    function show(title, message, icon = "", urgency = "normal") {
+    function show(title, message, nohistory = false, icon = "", urgency = "normal") {
+        const cmds = ["notify-send", "-u", urgency, "-a", "quickshell"];
         if (icon)
-            Quickshell.execDetached(["notify-send", "-u", urgency, "-i", icon, title, message, "-a", "quickshell"]);
-        else
-            Quickshell.execDetached(["notify-send", "-u", urgency, title, message, "-a", "quickshell"]);
+            cmds.push("-i", icon);
+
+        if (nohistory) {
+            cmds.push("--hint", "int:transient:1");
+            cmds.push("--expire-time", "3000");
+        }
+        cmds.push(title, message);
+        Quickshell.execDetached(cmds);
     }
 
 }

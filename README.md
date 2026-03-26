@@ -45,7 +45,7 @@ https://github.com/user-attachments/assets/1fd0f3be-e83f-4d1c-9e4f-16cc77e3981b
 - OS: **Archlinux**
 - WM: Hyprland | **Niri**
 - Bar: Waybar | **Quickshell**
-- Shell: **Fish**
+- Shell: (bash & fish) | **Zsh**
 - Prompt: **Oh My Posh**
 - Terminal: **Kitty** & (**WezTerm** | Ghostty)
 - Power Menu: **Wlogout** & Quickshell

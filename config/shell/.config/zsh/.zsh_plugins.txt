@@ -1,0 +1,13 @@
+# Syntax highlighting
+zsh-users/zsh-syntax-highlighting
+
+# Catppuccin Mocha theme for syntax highlighting
+catppuccin/zsh-syntax-highlighting path:themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
+
+# Fish-like autosuggestions
+zsh-users/zsh-autosuggestions
+
+# Additional completions
+zsh-users/zsh-completions
+
+# Long command done notification — handled by conf.d/10-done.zsh

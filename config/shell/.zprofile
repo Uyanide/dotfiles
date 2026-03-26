@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 
-# From archlinux's /etc/profile
+# Login shell only — runs once per session (like .bash_profile)
+
+# Path helpers (needed before sourcing .profile)
+
 append_path() {
 	[[ -z "$1" ]] && return
 	[[ -d "$1" ]] || return
@@ -22,23 +25,25 @@ prepend_path() {
 	esac
 }
 
-# .profile is not included in the repo
-[ -f "$HOME/.profile" ] && . "$HOME/.profile"
+# XDG, better than not set
 
-# Better than nothing
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
 
-# Better than nothing
+# Locale, better than not set
+
 if [[ -z "$LANG" ]]; then
-	LANG="en_US.UTF-8"
-	export LANG
+	export LANG="en_US.UTF-8"
 fi
 
+# .profile is not included in the repo (private / per-device)
+[[ -f "$HOME/.profile" ]] && . "$HOME/.profile"
+
 # Paths
-[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 prepend_path "$HOME/go/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.local/scripts"
@@ -46,29 +51,29 @@ prepend_path "$HOME/.local/share/fnm"
 export PATH
 
 # fnm
-if type fnm &>/dev/null; then
-	eval "$(fnm env --shell bash)"
+
+if (( $+commands[fnm] )); then
+	eval "$(fnm env --shell zsh)"
 fi
 
-# export UY_ENABLE_GPG_AGENT_SSH=1 in .profile to enable GPG agent for SSH
-if type gpgconf &>/dev/null && type gpg-connect-agent &>/dev/null &&
-	[ -x "$HOME/.local/scripts/gpg-init" ] &&
-   	[ "${UY_ENABLE_GPG_AGENT_SSH:-0}" = "1" ]; then
-	# GPG agent for SSH
+# GPG agent for SSH
+
+if (( $+commands[gpgconf] )) && (( $+commands[gpg-connect-agent] )) &&
+	[[ -x "$HOME/.local/scripts/gpg-init" ]] &&
+	[[ "${UY_ENABLE_GPG_AGENT_SSH:-0}" = "1" ]]; then
 	eval "$($HOME/.local/scripts/gpg-init 2>/dev/null)" &>/dev/null
 fi
 
-if type ssh-add &>/dev/null && type ssh-agent &>/dev/null &&
-	{ [ -z "$SSH_AUTH_SOCK" ] ||
-	  [ "$(ssh-add -l &>/dev/null; echo $?)" -eq 2 ]; } &&
-	[ -x "$HOME/.local/scripts/ssh-init" ]; then
+# SSH agent
+
+if (( $+commands[ssh-add] )) && (( $+commands[ssh-agent] )) &&
+	{ [[ -z "$SSH_AUTH_SOCK" ]] ||
+	  { ssh-add -l &>/dev/null; [[ $? -eq 2 ]]; } } &&
+	[[ -x "$HOME/.local/scripts/ssh-init" ]]; then
 	unset SSH_AUTH_SOCK
-	# SSH with cross-session ssh-agent
 	eval "$($HOME/.local/scripts/ssh-init 2>/dev/null)" &>/dev/null
 	export UY_USING_SSH_AGENT=1
 fi
 
-[ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
-
-unset append_path
-unset prepend_path
+unfunction append_path
+unfunction prepend_path

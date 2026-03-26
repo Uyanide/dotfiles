@@ -18,7 +18,7 @@ UProgressExpand {
 
     onClicked: (mouse) => {
         WriteClipboard.write(displayText);
-        SendNotification.show("Copied to clipboard", displayText);
+        SendNotification.show("Copied to clipboard", displayText, true);
     }
 
     onRightClicked: {
