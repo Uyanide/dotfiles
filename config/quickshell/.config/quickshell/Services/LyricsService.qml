@@ -59,11 +59,11 @@ Singleton {
             return ;
 
         root.isFetchingLyrics = true;
-        if (!MediaService.currentPlayer?.identity) {
+        if (!MediaService.currentPlayer?.dbusName) {
             root.isFetchingLyrics = false;
             return ;
         } else {
-            lyricsProcess.request(MediaService.currentPlayer.identity.toLowerCase());
+            lyricsProcess.request(MediaService.currentPlayer.dbusName);
         }
     }
 
@@ -229,7 +229,7 @@ Singleton {
             }
             const player = this.queuedPlayer.toLowerCase();
             this.queuedPlayer = "";
-            this.command = ["lrcfetch", "fetch", "--player", player];
+            this.command = ["lrcfetch", "--player", player, "fetch"];
             this.running = true;
         }
 
