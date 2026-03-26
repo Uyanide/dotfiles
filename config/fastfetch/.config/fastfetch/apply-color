@@ -6,7 +6,8 @@
 }
 . "$HOME/.local/snippets/apply-color-helper"
 
-file="$HOME/.config/fish/conf.d/60-fetch.fish"
+file_fish="$HOME/.config/fish/conf.d/60-fetch.fish"
+file_zsh="$HOME/.config/zsh/conf.d/60-fetch.zsh"
 
 # "#rrggbb" format is only available in and after fastfetch v2.42.0,
 # so we use the equivalent "ANSI Escape Sequences" format for compatibility.
@@ -14,8 +15,13 @@ file="$HOME/.config/fish/conf.d/60-fetch.fish"
 # into "\033[38;2;rrr;ggg;bbbm", which was meant to be used in log messages.
 colorAnsi=$(color_ansi "$colorHex" | sed -E "s/(.\[)([0-9;\]+)(m)/\2/")
 
-sed -i -E "s/(set -g fetch_color\s+\")([0-9;]+)(\")/\1${colorAnsi}\3/" "$file" || {
-	log_error "Failed to edit ${file}"
+sed -i -E "s/(set -g fetch_color\s+\"?)([0-9;]+)(\"?)/\1${colorAnsi}\3/" "$file_fish" || {
+	log_error "Failed to edit ${file_fish}"
+	exit 1
+}
+
+sed -i -E "s/(uy_fetch_color:=\"?)([0-9;]+)(\"?)/\1${colorAnsi}\3/" "$file_zsh" || {
+	log_error "Failed to edit ${file_zsh}"
 	exit 1
 }
 
