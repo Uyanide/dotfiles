@@ -1,4 +1,4 @@
-_oops_confirm() {
+uy_oops_confirm() {
     if [[ ! -f "$HISTFILE" ]]; then
         print -P "%F{red}Failed to locate history file: $HISTFILE%f"
         return 1
@@ -26,4 +26,4 @@ _oops_confirm() {
     fi
 }
 
-alias oops=' _oops_confirm'
+alias oops=' uy_oops_confirm'

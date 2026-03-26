@@ -20,4 +20,16 @@ WORDCHARS=${WORDCHARS//\//}
 # Rookie keybindings :)
 bindkey '^[[1;5D' backward-word      # C-Left
 bindkey '^[[1;5C' forward-word       # C-Right
-bindkey '^H'      backward-kill-word # C-Backspace
+bindkey '^H'      backward-kill-word # C-Backspace (also C-H)
+bindkey '^Z'      undo               # C-z
+
+
+# A-s to prepend sudo
+uy_prepend_sudo() {
+    if [[ $BUFFER != sudo\ * ]]; then
+        BUFFER="sudo $BUFFER"
+        CURSOR+=5
+    fi
+}
+zle -N uy_prepend_sudo
+bindkey '^[s' uy_prepend_sudo
