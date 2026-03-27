@@ -56,28 +56,37 @@ set -euo pipefail
 [ -z "${1:-}" ] && { echo "Usage: $0 <tarball>"; exit 1; }
 
 tarball=$(realpath "$1")
-top_dir=$(tar -tf "$tarball" | sed -e 's/^\.\///' | cut -d/ -f1 | sort -u)
+top_dir=$(tar -tf "$tarball" | sed -e 's/^\.\///' -e '/^pax_global_header$/d' \
+    | cut -d/ -f1 | sort -u)
 
 if [ "$(echo "$top_dir" | wc -l)" -ne 1 ]; then
     echo "Error: Tarball must contain a single top-level directory."
     exit 1
 fi
 
-mountpoint=$(mktemp -d)
+if [[ -z "$top_dir" || "$top_dir" == "." || "$top_dir" == ".." || "$top_dir" == /* ]]; then
+    echo "Error: Unsafe top-level directory name: '$top_dir'"
+    exit 1
+fi
+
+extract_dir="$(pwd)/$top_dir"
+
 cleanup() {
-    cd /
-    umount "$mountpoint" 2>/dev/null || true
-    rmdir "$mountpoint"
+    echo "Cleaning up '$extract_dir'..."
+    rm -rf "$extract_dir"
 }
 trap cleanup EXIT
 
-sudo mount -t tmpfs -o size=8G tmpfs "$mountpoint"
-tar -xf "$tarball" -C "$mountpoint"
+tar -xf "$tarball"
 
-pushd "$mountpoint/$top_dir" > /dev/null
-echo "Spawning shell in tmpfs. Type 'exit' to finish and cleanup."
+if [ ! -d "$extract_dir" ]; then
+    echo "Error: Expected directory not found: '$extract_dir'"
+    exit 1
+fi
+
+echo "Spawning shell in '$top_dir'. Type 'exit' to finish and cleanup."
+cd "$extract_dir"
 bash
-popd > /dev/null
 ```
 
 它的作用是解压一个只含有一个顶层目录的 tarball, cd 进入解压后得到的目录, 生成一个 shell, 并在这个 shell 退出时清理先前解压得到的文件.
@@ -157,7 +166,7 @@ mkdir -pv "$LFS"/{dev,proc,sys,run}
 
 mountpoint -q "$LFS"/dev || mount -v --bind /dev "$LFS"/dev
 
-mountpoint -q "$LFS"/dev/pts || mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
+mountpoint -q "$LFS"/dev/pts || mount -vt devpts devpts -o gid=5,mode=0620 "$LFS"/dev/pts
 mountpoint -q "$LFS"/proc || mount -vt proc proc "$LFS"/proc
 mountpoint -q "$LFS"/sys || mount -vt sysfs sysfs "$LFS"/sys
 mountpoint -q "$LFS"/run || mount -vt tmpfs tmpfs "$LFS"/run
@@ -176,7 +185,7 @@ cleanup() {
     umount "$LFS"/dev/pts || true
     umount "$LFS"/{sys,proc,run,dev} || true
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
 
 # chroot
 
