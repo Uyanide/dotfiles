@@ -9,7 +9,6 @@ if (( $+commands[fzf] )); then
 	elif (( $+commands[fdfind] )); then
 		export FD_CMD="fdfind"
 	fi
-
 	if [[ -n "$FD_CMD" ]]; then
 		export FZF_DEFAULT_COMMAND="$FD_CMD --type f --hidden --exclude .git"
 		export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
@@ -38,7 +37,7 @@ if (( $+commands[fzf] )); then
 	# fkp: fuzzy find a process and kill
 	fkp() {
 		local pids
-		pids=$(ps -ef | fzf -m --header-lines 1 --preview 'pstree -p $(echo {} | awk "{print \$2}")' --header '[kill process]' | awk '{print $2}')
+		pids=$(ps -ef | fzf -m --header-lines 1 --preview 'pstree -p $(echo {} | awk "{print \$2}")' --header "[kill process]" | awk '{print $2}')
 		echo "$pids" | xargs -r kill -${1:-9}
 	}
 
@@ -48,7 +47,7 @@ if (( $+commands[fzf] )); then
 			local pids
 			# Call sudo separately since one cannot enter password in fzf's window
 			pids=$(sudo ss -lptn)
-			pids=$(echo "$pids" | fzf -m --header-lines 1 --header '[kill process]' | grep -oP 'pid=\K\d+')
+			pids=$(echo "$pids" | fzf -m --header-lines 1 --header "[kill process]" | grep -oP 'pid=\K\d+')
 			echo "$pids" | xargs -r sudo kill -${1:-9}
 		}
 	fi
@@ -60,7 +59,7 @@ if (( $+commands[fzf] )); then
 		# fyi: fuzzy yay install
 		fyi() {
 			local pkg
-			pkg=$(yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' --header '[install package]' "$@")
+			pkg=$(yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' --header "[install package]" "$@")
 			# yay supports "repo/package" format
 			[[ -n "$pkg" ]] && yay -S ${=pkg}
 		}
@@ -68,7 +67,7 @@ if (( $+commands[fzf] )); then
 		# fyr: fuzzy yay remove
 		fyr() {
 			local pkg
-			pkg=$(yay -Qq | fzf -m --preview 'yay -Qi {}' --header '[remove package]' "$@")
+			pkg=$(yay -Qq | fzf -m --preview 'yay -Qi {}' --header "[remove package]" "$@")
 			[[ -n "$pkg" ]] && yay -Rn ${=pkg}
 		}
 	fi
@@ -207,3 +206,16 @@ if (( $+commands[git] )); then
 		}
 	fi
 fi
+
+# Global aliases (can be used as part of a command)
+
+# wl-paste
+if (( $+commands[wl-paste] )); then
+	alias -g C="| wl-copy"
+fi
+
+# Redirects
+alias -g NE="2>/dev/null"
+alias -g NO=">/dev/null"
+alias -g EO="2>&1"
+alias -g NUL="&>/dev/null"

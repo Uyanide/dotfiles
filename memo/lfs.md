@@ -4,77 +4,95 @@
 >
 > 本文中的 LFS 仅指代 12.4 SysV 和 13.0 Systemd 版本.
 
-## LFS
+> [!IMPORTANT]
+>
+> 部分链接可能会随 LFS 更新而过时, 请以 LFS 官方文档为准.
 
-以下内容按照对应章节划分:
+## 总览
 
-### 2.6. Setting the $LFS Variable and the Umask
+### 耗时
 
-`$LFS` 变量很重要! 建议写到 Host 的 `/root/.bash_profile` 或 `/etc/profile.d/...` 或类似作用的配置文件里防止忘记设置.
+除去受硬件性能影响的编译耗时, 构建可以启动的 LFS 系统的耗时大约为数小时. 其实还是蛮快的, 毕竟需要处理的软件包只有百个以内.
 
-### 3. Packages and Patches
+然而, 如果想要构建可以日常使用的 LFS 系统, 包括桌面环境, 网络支持, 以及一些常用工具和应用的话, 那么耗时将会大幅增加, 可能需要数十小时. 最终需要处理的包的数量会达到数百个, 横跨 BLFS, GLFS, SLFS 等多本书, 也包括一些书中没有但确实需要的包 (如 go 官方工具链, dracut 等). 如果自身不够熟练且不巧遇到很多问题的话, 上百小时也是有可能的.
 
-强烈建议通过镜像站下载打包好的所有源代码和 patch, 否则某些源服务器的下载速度即便在非受限的网络环境也很感人.
+### 自动化
 
-### 4.5. About SBUs
+LFS 官方有提供一套名叫 [ALFS](https://www.linuxfromscratch.org/alfs/) 的自动化构建脚本, 但我没有使用过, 因此不做讨论.
 
-SBU 只提供大概的预期耗时范围, 误差是很大的, 尤其对于 BLFS 书中的一些编译时间很长的包 (如 Qt, WebKitGtk, Firefox) 来说.
+不过, 我自己也有一套半自动构建 BLFS 包的脚本, 确实帮我节省了很多时间, 大致思路是这样的:
 
-### 5. Compiling a Cross-Toolchain
+1. **获取书的源码.** 可以是完整的 HTML 文件包, 如 [BLFS 下载界面](https://www.linuxfromscratch.org/blfs/download.html)提供的; 也可以是更纯粹的 XML 源码, 如 [BLFS 仓库镜像](https://github.com/lfs-book/blfs).
+2. **拆分包名.** 大体上可以将每一个文件视作一个包, 但也有的文件是同一类包的组合, 如 [Python Modules](https://www.linuxfromscratch.org/blfs/view/stable-systemd/general/python-modules.html) 和 [Perl Modules](https://www.linuxfromscratch.org/blfs/view/stable-systemd/general/perl-modules.html), 对于这些文件需要特殊处理.
+3. **用户选择包.** 选择一个包开始配置.
+4. **解析包的信息.** 可以分为几个部分:
+   - **依赖关系.** 解析 Required, Recommended, Optional 三个类别的依赖; 随后判断每个依赖的安装来源, 书中是否有涉及; 最后需要根据包名定位对应依赖所在的文件.
+   - **构建命令.** 解析代码块并区分命令类型, 如是否可选, 是否需要 root.
+   - **安装的文件.** 可作为补充信息, 也可以用来判断某个包是否已经安装过.
+5. **交互式配置.** 需要让用户确认是否安装, 需要跟随哪些依赖, 以及每个代码块是否执行, 是否以 root 执行, 是否需要修改等等. 这也是我认为 BLFS 从根本上无法完全自动化构建的原因 - 可选项实在太多了, 脚本难以替用户做所有决定.
+6. **递归解析依赖.** 根据解析出的依赖关系, 递归地解析其他包. 对于可能出现的循环依赖需要特殊处理; 已配置的包也需要记录以防重复安装.
+7. **生成构建脚本.** 根据所有配置好的包生成用于构建的单个 shell 脚本. 生成的脚本包含下载命令, 解压命令, 以及书中涉及的和用户配置的各种命令等等. 之所以不直接安装而是生成脚本, 一是允许用户再细调各种操作, 二是分离配置和构建过程, 二者甚至不需要在同一台机器上运行, 同时也能降低配置错误造成的风险.
+8. **运行.** 只需要将上一步的产物拿到 LFS 环境中运行即可. 如果遇到错误, 可以在脚本中删除已成功安装的包, 调整后重新运行. 这么做还有一个好处, 就是可以在耗时的构建操作进行的同时配置下一个 (或一批) 要安装的软件包. 异步构建? 大致可以这么理解 :)
+
+因为我的~~屎山~~代码实在太丑陋所以这里没有任何链接, 但只要有一定经验相信实现起来也不怎么困难.
+
+### NVIDIA
+
+是的, 在 LFS 中使用 NVIDIA 专有驱动是完全可能的, 并且并不会遇到太大的阻碍. NVIDIA 专有驱动的安装指引在 [GLFS 中](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/drivers-NVIDIA.html)有详细说明. 但其依赖众多, 其中包括很多 BLFS 和 GLFS 中的软件包. 因此不必心急, 可以先按需安装 BLFS 中的其他包, 等到需要 [Mesa](https://www.linuxfromscratch.org/blfs/view/stable-systemd/x/mesa.html) 作为依赖时再去 GLFS 中安装 NVIDIA 驱动, 这将会轻松不少.
+
+更多详细内容将会在后文对应章节中涉及.
+
+### 辅助工具
 
 #### targo
 
-从这一章开始将会手动编译大量的包, 其中有不少操作是重复的, 例如 `tar -xf`, `cd`, `rm -rf` 等, 为此可以写一个小脚本节省时间:
+如果计划手动编译软件包, 有不少操作将会重复的, 例如 `tar -xf`, `cd`, `rm -rf` 等, 为此可以写一个小脚本节省时间:
 
 ```bash
 #!/bin/bash
 
 set -euo pipefail
 
-[ -z "${1:-}" ] && {
-    echo "Usage: $0 <tarball>"
-    exit 1
-}
+[ -z "${1:-}" ] && { echo "Usage: $0 <tarball>"; exit 1; }
 
 tarball=$(realpath "$1")
+top_dir=$(tar -tf "$tarball" | sed -e 's/^\.\///' | cut -d/ -f1 | sort -u)
 
-dir=$(tar -tf "$tarball" | sed -e 's/^\.\///' | cut -d/ -f1 | sort -u)
-
-if [ "$(echo "$dir" | wc -l)" -ne 1 ]; then
+if [ "$(echo "$top_dir" | wc -l)" -ne 1 ]; then
     echo "Error: Tarball must contain a single top-level directory."
     exit 1
 fi
 
+mountpoint=$(mktemp -d)
 cleanup() {
-    echo "Cleaning up..."
-    cd ..
-    if [[ -z "$dir" || "$dir" == "/" || "$dir" == "." ]]; then
-        echo "Error: Unsafe directory for cleanup: $dir"
-        exit 1
-    fi
-    rm -rf "$dir"
+    cd /
+    umount "$mountpoint" 2>/dev/null || true
+    rmdir "$mountpoint"
 }
+trap cleanup EXIT
 
-trap cleanup EXIT INT TERM
-tar -xvf "$tarball"
+sudo mount -t tmpfs -o size=8G tmpfs "$mountpoint"
+tar -xf "$tarball" -C "$mountpoint"
 
-if [ ! -d "$dir" ]; then
-    echo "Error: Failed to extract directory: $dir"
-    exit 1
-fi
-
-cd "$dir"
-
-echo "Spawning shell. Type 'exit' to finish and cleanup."
-
+pushd "$mountpoint/$top_dir" > /dev/null
+echo "Spawning shell in tmpfs. Type 'exit' to finish and cleanup."
 bash
+popd > /dev/null
 ```
 
 它的作用是解压一个只含有一个顶层目录的 tarball, cd 进入解压后得到的目录, 生成一个 shell, 并在这个 shell 退出时清理先前解压得到的文件.
 
+#### xgo
+
+除上文的 [targo](#targo) 外, [本仓库](https://github.com/Uyanide/dotfiles) 中还有一个功能更丰富的版本 [xgo](https://github.com/Uyanide/dotfiles/blob/main/config/scripts/.local/scripts/xgo), 使用 Python 编写, 适合在 BLFS 中使用.
+
+更多小脚本将会在后文对应章节中涉及.
+
+### 通用建议
+
 #### tmpfs
 
-先在目标位置挂载 tmpfs 再解压文件. 编译期间会进行高频的硬盘 IO, 将此过程放到内存上可以减少硬盘损耗也可以稍稍加速. 不过有几点需要注意:
+先在目标位置挂载 tmpfs 再解压文件. 编译期间会进行高频的硬盘 IO, 将此过程放到内存上可以减少硬盘损耗, 也可以稍稍加速. 不过有几点需要注意:
 
 - 部分包(不在少数)的部分测试会依赖文件系统特性. 如 [Python-3.14.3](https://www.linuxfromscratch.org/lfs/view/stable-systemd/chapter08/Python.html) 的 `test_file` 测试, 如果构建目录为 tmpfs, 则会因为缓冲区大小与预期不符而出现 `AssertionError` 断言错误, 而缓冲区大小由底层文件系统的块大小决定, 因此 tmpfs 的环境差异会导致测试失败.
 
@@ -82,7 +100,7 @@ bash
 
 - tmpfs 的环境差异也会导致少数包在 configure 阶段就出现问题. 这属于少数特例, 不过多说明~~主要是忘了具体是哪个包了:/~~
 
-#### 通用建议 (同样适用于其他书如 BLFS)
+#### 其他
 
 1. 通常来说, 应该 (或者说请务必) 在编译和安装一个包后完全删除它的目录, 仅有少数例外:
    - linux (保留构建树可以缩短重新构建耗时, 或至少保留 `.config` 便于复原配置)
@@ -102,12 +120,32 @@ bash
 
    另外也可以看其他发行版是怎么打包这些软件的, 例如 [Archlinux 官方构建仓库](https://gitlab.archlinux.org/archlinux/packaging/packages)中的 PKGBUILD 能为构建流程提供很多参考.
 
+5. 或许反直觉的一点是, LFS 书实在写得太优秀了, 几乎涵盖了所有可能会遇到的问题, 因此如果只是对着一个个代码块无脑复制, 粘贴, 运行, 可能并不会学到太多有用的东西, 而只是白白浪费了时间; 同时, 最终得到的极有可能是一个标准到可以用一个预先编写的通用脚本完整构建的 "制式" Linux 系统. 所以, 如果真的打算学点东西而不只是得到一个可用的 Linux 系统的话, 思考和耐心缺一不可. 否则为什么要想不开折磨自己呢, 数百个成熟的发行版, 总有一个已经能满足需求 :)
+
+## LFS
+
+以下内容按照对应章节划分:
+
+### 2.6. Setting the $LFS Variable and the Umask
+
+`$LFS` 变量很重要! 建议写到 Host 的 `/root/.bash_profile` 或 `/etc/profile.d/...` 或类似作用的配置文件里防止忘记设置.
+
+### 3. Packages and Patches
+
+强烈建议通过镜像站下载打包好的所有源代码和 patch, 否则某些源服务器的下载速度即便在非受限的网络环境也很感人.
+
+### 4.5. About SBUs
+
+SBU 只提供大概的预期耗时范围, 误差是很大的, 尤其对于 BLFS 书中的一些编译时间很长的包 (如 Qt, WebKitGtk, Firefox) 来说.
+
 ### 7.4. Entering the Chroot Environment
 
 完全按照 LFS 书中的 chroot 步骤编写一个小脚本:
 
 ```bash
 #!/bin/bash
+
+[ "$EUID" -ne 0 ] && echo "Please run as root." && exit 1
 
 [ -z "$LFS" ] && exit 1
 
@@ -170,7 +208,7 @@ chroot "$LFS" /usr/bin/env -i \
 
 ### 8.66. GRUB
 
-对于 UEFI 引导的系统, 此时需要跳转 BLFS 安装 GRUB.为避免~~过早地~~陷入依赖地狱, 建议仅按照顺序安装以下包:
+对于 UEFI 引导的系统, 此时需要跳转 BLFS 安装 GRUB. 为避免~~过早地~~陷入依赖地狱, 建议仅按照顺序安装以下包:
 
 1. efivar
 2. Popt
@@ -196,9 +234,9 @@ chroot "$LFS" /usr/bin/env -i \
 - initramfs
 
   LFS 本书并未涉及这部分内容, 而现代成熟发行版几乎无一例外都使用 initramfs 进行引导. 有无 initramfs 对内核配置的影响是巨大的, 例如:
-  - 挂载 RootFS 所需驱动如 `CONFIG_EXT4_FS`, `CONFIG_BTRFS_FS` 必须内置, 否则即使 Bootloader 认识 RootFS, 内核也不认识;
+  - 挂载 RootFS 所需驱动如 `CONFIG_EXT4_FS`, `CONFIG_BTRFS_FS` 在没有 initramfs 时必须全部内置, 否则即使 Bootloader 认识 RootFS, 内核也不认识;
 
-  - 在 RootFS 可用之前就请求固件的内核模块在没有 initramfs 时需要编译为模块或将固件也嵌入内核中.
+  - 在 RootFS 可用之前就请求固件的内核模块在没有 initramfs 时需要编译为模块或将固件也嵌入到内核中.
 
   如果不急于验收的话可以暂时搁置 LFS 本书的后续章节, 先推进 BLFS 直到 [About Initramfs](https://www.linuxfromscratch.org/blfs/view/stable-systemd/postlfs/initramfs.html) 了解相关内容后再回来构建内核. 不过我其实更推荐使用 [Dracut](https://github.com/dracut-ng/dracut-ng/) 构建 initramfs, 比起 BLFS 书中的脚本要省心不少.
 
@@ -236,9 +274,7 @@ chroot "$LFS" /usr/bin/env -i \
 
 - NVIDIA
 
-  NVIDIA 专有驱动的安装指引在 [GLFS 中](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/drivers-NVIDIA.html)有详细说明. 但其依赖众多, 其中包括很多 BLFS 和 GLFS 中的软件包. 因此不必心急, 可以先按需安装 BLFS 中的其他包, 等到需要 [Mesa](https://www.linuxfromscratch.org/blfs/view/stable-systemd/x/mesa.html) 作为依赖时再去 GLFS 中安装 NVIDIA 驱动, 这将会轻松不少.
-
-  关于其对内核配置的影响, 总结出来有以下两点:
+  如果计划安装 NVIDIA 专有驱动:
   - 禁用 nouveau. 除非显卡型号过于老旧, 否则不推荐使用内核中的 nouveau 驱动, 对应配置选项如 `CONFIG_DRM_NOUVEAU` `CONFIG_FB_NVIDIA` 等可留空. [GLFS NVIDIA-590.48.01 页面页脚](https://www.linuxfromscratch.org/glfs/view/stable/shareddeps/nvidia.html)有提到
 
     > NVIDIA's kernel modules will fail to compile with TTY support unless a graphics driver is included in the kernel. Nouveau is used here, though alternate graphics drivers may also work.
@@ -249,10 +285,6 @@ chroot "$LFS" /usr/bin/env -i \
 
 ### 10.4. Using GRUB to Set Up the Boot Process
 
-<!-- 强烈建议使用 PARTUUID 替代 `/dev/sdXN` 设备路径以及 `(hdM,N)` 来指定 `/boot` 所在分区和根分区. 如果已经配置 initramfs, 则也可以使用文件系统 UUID 来指定根分区.
-
-另外, 如果将外置存储设备 (如 USB 硬盘) 上的分区作为 RootFS , 建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 内核参数以防止启动时找不到 RootFS . -->
-
 有两处需要指定分区:
 
 - 通过 `root=` 参数传递给内核的 RootFS 分区位置. 强烈建议使用 PARTUUID 而非 `/dev/sdXN` 这类不稳定的设备路径. 如果已经配置 initramfs, 则也可以使用文件系统 UUID 指定根分区.
@@ -262,6 +294,10 @@ chroot "$LFS" /usr/bin/env -i \
 > [!NOTE]
 >
 > UUID 和 PARTUUID 可以通过 `lsblk -o NAME,FSTYPE,UUID,PARTUUID` 查看.
+
+> [!NOTE]
+>
+> 如果将外置存储设备 (如 USB 硬盘) 上的分区作为 RootFS , 建议在 GRUB 配置中添加 `rootdelay=10` 或 `rootwait` 等内核参数以防止启动时找不到 RootFS.
 
 ## BLFS
 
@@ -276,10 +312,10 @@ BLFS 并不像 LFS 那样有线性的章节顺序, 但仍建议先顺序阅读�
 一个偷懒的方法是把 Host 的 `/lib/firmware` 目录复制到 LFS 的对应目录下:
 
 ```bash
-cp -av /lib/firmware $LFS/lib/
+cp -av /lib/firmware/ "$LFS"/lib/firmware
 ```
 
-其中 `-a` 选项会保留符号链接和文件权限等信息.
+其中 `-a` 选项会保留符号链接和文件权限等信息. 也可用 `rsync -a` 实现相同的效果.
 
 ### Mesa
 
@@ -310,11 +346,7 @@ meson setup build                   \
   - 启用 Vulkan 上下文中的软件渲染驱动“软件光栅化器” `swrast` 以防万一. 注意这里的 `swrast` 实际指 `lavapipe`, 和被废弃的 gallium `swrast` 驱动是不同的东西.
 - `-D glvnd=enabled`: 启用 GLVND 支持.
 
-### Better targo
-
-[上文](#5-compiling-a-cross-toolchain)中有提供一个用于简化构建流程的脚本, 本仓库中还有一个功能更丰富的版本 [xgo](https://github.com/Uyanide/dotfiles/blob/main/config/scripts/.local/scripts/xgo), 使用 Python 编写, 适合在 BLFS 中使用.
-
-### LFS btw
+## LFS btw
 
 <details>
 <summary>🤓</summary>

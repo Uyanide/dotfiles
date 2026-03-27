@@ -2,35 +2,55 @@
 if type -q fzf
     fzf --fish | source
 
-    # auto copy fzf's output
-    if type -q wl-copy
-        alias fzf="fzf --bind 'enter:execute-silent(echo {+} | wl-copy --trim-newline)+accept'"
+    # use fd if available
+    if type -q fd
+        set -x FD_CMD "fd"
+    else if type -q fdfind
+        set -x FD_CMD "fdfind"
+    end
+    if test -n "$FD_CMD"
+        set -x FZF_DEFAULT_COMMAND "$FD_CMD --type f --hidden --exclude .git"
+        set -x FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
+        set -x FZF_ALT_C_COMMAND "$FD_CMD --type d --hidden --exclude .git"
     end
 
-    # fzh: history
-    alias fzh="history | fzf"
+    # C-y to copy fzf's output
+    if type -q wl-copy
+        set -x FZF_DEFAULT_OPTS "--bind \"ctrl-y:execute-silent(echo -n {+} | wl-copy)+abort\""
+    end
 
     # fz: fuzzy find a file and preview
     if type -q bat
-        alias fz="fzf --preview 'bat --style=numbers --color=always {}'"
-    else
-        alias fz="fzf --preview 'cat --number {}'"
+		alias fz="fzf --preview 'bat --style=numbers --color=always {}'"
+	else
+		alias fz="fzf --preview 'cat -n {}'"
     end
 
     # fe: fuzzy find a file and edit using $EDITOR
     function fe
-        set -l file $(fz $argv)
+        set -l file $(fz --header "[edit with $EDITOR]")
         if test -n "$file"
             $EDITOR "$file"
         end
     end
 
-    # fkill: fuzzy find a process and kill with SIGKILL
-    function fkill
-        set -l pids (ps -ef | sed 1d | fzf -m --preview 'pstree -p $(echo {} | awk "{print \$2}")' | awk '{print $2}')
+    # fkp: fuzzy find a process and kill with SIGKILL
+    function fkp
+        set -l pids (ps -ef | sed 1d | fzf -m --preview 'pstree -p $(echo {} | awk "{print \$2}")' --header '[kill process]' | awk '{print $2}')
 
         if test -n "$pids"
             kill -9 $pids
+        end
+    end
+
+    # fks: fuzzy find a TCP process and kill with SIGKILL
+    if type -q ss
+        function fks
+            set -l entries (sudo ss -lptn)
+            set -l pids (echo "$entries" | fzf -m --header-lines 1 --header '[kill process]' | grep -oP 'pid=\K\d+')
+            if test -n "$pids"
+                sudo kill -9 $pids
+            end
         end
     end
 
@@ -40,7 +60,7 @@ if type -q fzf
 
         # fyi: fuzzy yay install
         function fyi
-            set -l pkg (yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' $argv)
+            set -l pkg (yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' --header "[install package]" $argv)
             if test -n "$pkg"
                 yay -S $pkg
             end
@@ -48,7 +68,7 @@ if type -q fzf
 
         # fyr: fuzzy yay remove
         function fyr
-            set -l pkg (yay -Qq | fzf -m --preview 'yay -Qi {}' $argv)
+            set -l pkg (yay -Qq | fzf -m --preview 'yay -Qi {}' --header "[remove package]" $argv)
             if test -n "$pkg"
                 yay -Rn $pkg
             end

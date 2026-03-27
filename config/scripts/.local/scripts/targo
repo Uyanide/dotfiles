@@ -23,6 +23,7 @@ trap cleanup EXIT
 sudo mount -t tmpfs -o size=8G tmpfs "$mountpoint"
 tar -xf "$tarball" -C "$mountpoint"
 
-cd "$mountpoint/$top_dir"
+pushd "$mountpoint/$top_dir" > /dev/null
 echo "Spawning shell in tmpfs. Type 'exit' to finish and cleanup."
 bash
+popd > /dev/null

@@ -13,16 +13,13 @@ setopt HIST_VERIFY
 setopt AUTO_CD EXTENDED_GLOB NOTIFY INTERACTIVE_COMMENTS
 bindkey -e
 
-# Allow word-based navigation and deletion to work on paths
-
-WORDCHARS=${WORDCHARS//\//}
+WORDCHARS=${WORDCHARS//[\/=\*-]/}
 
 # Rookie keybindings :)
 bindkey '^[[1;5D' backward-word      # C-Left
 bindkey '^[[1;5C' forward-word       # C-Right
 bindkey '^H'      backward-kill-word # C-Backspace (also C-H)
-bindkey '^Z'      undo               # C-z
-
+# bindkey '^Z'      undo               # C-z
 
 # A-s to prepend sudo
 uy_prepend_sudo() {
@@ -35,3 +32,15 @@ uy_prepend_sudo() {
 }
 zle -N uy_prepend_sudo
 bindkey '^[s' uy_prepend_sudo
+
+# Edit current command in editor
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X' edit-command-line
+
+# Magic space
+# bindkey ' ' magic-space
+# This is already handled by tab
+
+# zmv
+autoload zmv

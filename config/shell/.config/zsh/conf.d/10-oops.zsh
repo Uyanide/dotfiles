@@ -7,11 +7,11 @@ uy_oops_confirm() {
     local last_line=$(tail -n 1 "$HISTFILE")
 
     if [[ -z "$last_line" ]]; then
-        print -P "%F{yellow}History file is empty, nothing to clean. %f"
+        print -P "%F{yellow}History file is empty, nothing to delete.%f"
         return 0
     fi
 
-    print -P "About to permanently delete the last command from history:"
+    print -P "About to permanently delete the last command from history file:"
     print -P "%F{red}  $last_line%f"
 
     local reply
@@ -20,7 +20,7 @@ uy_oops_confirm() {
 
     if [[ -z "$reply" || "$reply" == [yY]* ]]; then
         sed -i '$d' "$HISTFILE"
-        print -P "%F{green}Command removed from history.%f"
+        print -P "%F{green}Command removed from history file (may still visible in current session).%f"
     else
         print -P "%F{yellow}Operation cancelled.%f"
     fi
