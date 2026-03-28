@@ -139,42 +139,42 @@ format = '[❯ $symbol( $version) ]($style)'
 
 [c]
 symbol = ""
-style  = "fg:green"
+style  = "fg:blue"
 format = '[❯ $symbol( $version) ]($style)'
 
 [rust]
 symbol = ""
-style  = "fg:green"
+style  = "fg:peach"
 format = '[❯ $symbol( $version) ]($style)'
 
 [golang]
 symbol = ""
-style  = "fg:green"
+style  = "fg:sky"
 format = '[❯ $symbol( $version) ]($style)'
 
 [php]
 symbol = ""
-style  = "fg:green"
+style  = "fg:lavender"
 format = '[❯ $symbol( $version) ]($style)'
 
 [java]
 symbol = ""
-style  = "fg:green"
+style  = "fg:maroon"
 format = '[❯ $symbol( $version) ]($style)'
 
 [kotlin]
 symbol = ""
-style  = "fg:green"
+style  = "fg:mauve"
 format = '[❯ $symbol( $version) ]($style)'
 
 [haskell]
 symbol = ""
-style  = "fg:green"
+style  = "fg:pink"
 format = '[❯ $symbol( $version) ]($style)'
 
 [python]
 symbol = ""
-style  = "fg:green"
+style  = "fg:blue"
 format = '[❯ $symbol( $version)(\(#$virtualenv\)) ]($style)'
 
 [docker_context]
