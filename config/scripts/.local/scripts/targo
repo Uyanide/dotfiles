@@ -15,7 +15,7 @@ fi
 mountpoint=$(mktemp -d)
 cleanup() {
     cd /
-    umount "$mountpoint" 2>/dev/null || true
+    sudo umount "$mountpoint" 2>/dev/null || true
     rmdir "$mountpoint"
 }
 trap cleanup EXIT

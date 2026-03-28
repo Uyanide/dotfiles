@@ -1,0 +1,5 @@
+playlists/*
+!playlists/.gitkeep
+
+database
+sticker.sql

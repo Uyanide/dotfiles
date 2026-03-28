@@ -29,6 +29,7 @@ GUI_BASE_PKGS = [
     "kitty",  # terminal emulator
     "ghostty",  # alternative terminal emulator
     "misc",  # miscellaneous GUI configs (e.g. *-flags)
+    "mpd",  # music player daemon
     # "mpv",          # media player
     "wallpaper",  # wallpapers & manager
     "kvantum",  # qt theming
