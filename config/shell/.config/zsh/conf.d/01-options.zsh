@@ -13,7 +13,7 @@ setopt HIST_VERIFY
 setopt AUTO_CD EXTENDED_GLOB NOTIFY INTERACTIVE_COMMENTS
 bindkey -e
 
-WORDCHARS=${WORDCHARS//[\/=\*-]/}
+WORDCHARS=${WORDCHARS//[\/=\*\.-]/}
 
 # Rookie keybindings :)
 bindkey '^[[1;5D' backward-word      # C-Left

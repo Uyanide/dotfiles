@@ -48,7 +48,12 @@ SCRIPTS = {
     "nwg-look": [CONFIG_DIR / "nwg-look" / "apply-color"],
     "mako": [CONFIG_DIR / "mako" / "apply-color"],
     "niri": [CONFIG_DIR / "niri" / "apply-color"],
-    "oh-my-posh": [CONFIG_DIR / "fish" / "apply-color-omp"],  # borrowing fish's directory
+    "oh-my-posh": [
+        CONFIG_DIR / "fish" / "apply-color-omp"
+    ],  # borrowing fish's directory
+    "starship": [
+        CONFIG_DIR / "fish" / "apply-color-starship"
+    ],  # borrowing fish's directory
     "quickshell": [CONFIG_DIR / "quickshell" / "apply-color"],
     "rofi": [CONFIG_DIR / "rofi" / "apply-color"],
     "waybar": [CONFIG_DIR / "waybar" / "apply-color"],
@@ -68,7 +73,7 @@ success_count_lock = Lock()
 
 def hex2rgb(hex_color: str) -> tuple[int, int, int]:
     """#rrggbb to (r, g, b)"""
-    return tuple(int(hex_color[i: i + 2], 16) for i in (0, 2, 4))  # type: ignore
+    return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))  # type: ignore
 
 
 def clamp(x, minimum, maximum) -> float:

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+[ -f "$HOME/.local/snippets/apply-color-helper" ] || {
+    echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
+    exit 1
+}
+. "$HOME/.local/snippets/apply-color-helper"
+
+file="$path"/../starship.toml
+
+sed -i \
+    -e "s/^palette\s*=.*/palette = '${palette}'/" \
+    -e "/^\[palettes\.${palette}\]/,/^\[/{s/^accent\s*=.*/accent    = \"#${colorHex}\"/}" \
+    "$file"
+
+if [ $? -ne 0 ]; then
+    log_error "Failed to edit ${file}"
+    exit 1
+fi
+
+log_success "starship"

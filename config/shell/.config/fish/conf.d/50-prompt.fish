@@ -9,4 +9,6 @@ end
 # oh-my-posh
 if test -f $HOME/.config/posh_theme.omp.json; and type -q oh-my-posh
     eval (oh-my-posh init fish --config $HOME/.config/posh_theme.omp.json)
+else if type -q starship
+    eval (starship init fish)
 end
