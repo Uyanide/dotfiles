@@ -13,7 +13,7 @@ targetTypes=("os" "session" "status")
 if ! python3 - "$file" "$colorHex" "${targetTypes[@]}"; then {
     log_error "Failed to edit ${file}"
     exit 1
-}; fi <<EOF
+}; fi << EOF
 import json
 import sys
 
@@ -54,11 +54,6 @@ if data is not None:
     with open(file, "w") as f:
         json.dump(data, f, indent=4)
 EOF
-
-if [ $? -ne 0 ]; then
-    log_error "Failed to edit ${file}"
-    exit 1
-fi
 
 log_success "oh-my-posh"
 

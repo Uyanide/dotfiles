@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/hint/bash
 
 # From archlinux's /etc/profile
 append_path() {

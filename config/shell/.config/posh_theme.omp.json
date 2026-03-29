@@ -37,7 +37,7 @@
                 },
                 {
                     "foreground": "#a6e3a1",
-                    "powerline_symbol": "❯",
+                    "powerline_symbol": "\u276f",
                     "options": {
                         "branch_icon": "\ue725 ",
                         "fetch_status": true,
@@ -54,7 +54,7 @@
                 },
                 {
                     "foreground": "#f9e2af",
-                    "powerline_symbol": "❯",
+                    "powerline_symbol": "\u276f",
                     "template": " \ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} ",
                     "style": "powerline",
                     "type": "python"

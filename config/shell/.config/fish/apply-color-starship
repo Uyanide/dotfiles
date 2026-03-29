@@ -8,12 +8,10 @@
 
 file="$path"/../starship.toml
 
-sed -i \
+if ! sed -i \
     -e "s/^palette\s*=.*/palette = '${palette}'/" \
     -e "/^\[palettes\.${palette}\]/,/^\[/{s/^accent\s*=.*/accent    = \"#${colorHex}\"/}" \
-    "$file"
-
-if [ $? -ne 0 ]; then
+    "$file"; then
     log_error "Failed to edit ${file}"
     exit 1
 fi

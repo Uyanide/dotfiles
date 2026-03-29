@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/hint/zsh
 
 [[ $- != *i* ]] && return
 

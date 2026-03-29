@@ -6,7 +6,9 @@
 }
 . "$HOME/.local/snippets/apply-color-helper"
 
-qs ipc call colors set mPrimary "$colorHex"
-
+if ! qs ipc call colors set mPrimary "$colorHex"; then
+    log_error "Failed to set quickshell primary color"
+    exit 1
+fi
 
 log_success "quickshell"

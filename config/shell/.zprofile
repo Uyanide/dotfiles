@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/hint/zsh
 
 # Login shell only — runs once per session (like .bash_profile)
 
