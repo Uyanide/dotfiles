@@ -42,28 +42,23 @@ https://github.com/user-attachments/assets/1fd0f3be-e83f-4d1c-9e4f-16cc77e3981b
 >
 > See also [config-stow](./config-stow) for the list of stow packages.
 
-- OS: **Archlinux**
-- WM: Hyprland | **Niri**
-- Bar: Waybar | **Quickshell**
+- OS: **Archlinux** | **Debian**
+- WM: ~~Hyprland~~ | **Niri**
+- Bar: ~~Waybar~~ | **Quickshell**
 - Shell: (bash & fish) | **Zsh**
-- Prompt: **Oh My Posh**
+- Prompt: Oh My Posh | **Starship**
 - Terminal: **Kitty** & (**WezTerm** | Ghostty)
 - Power Menu: **Wlogout** & Quickshell
 - Colorscheme: **Catppuccin Mocha**
-- App Launcher: **Rofi** | Fuzzel
-- Desktop Widgets: Eww | **Quickshell**
-- Wallpaper Daemon: Awww | **Quickshell**
-- Notification Daemon: Mako | **Quickshell**
+- App Launcher: **Rofi** | ~~Fuzzel~~
+- Desktop Widgets: ~~Eww~~ | **Quickshell**
+- Wallpaper Daemon: ~~Awww~~ | **Quickshell**
+- Notification Daemon: ~~Mako~~ | **Quickshell**
 
-(**bold**: currently preferred)
+marked with:
 
-## Hyprland & friends
-
-Based on an old version of [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) but without ags, quickshell, eww and tons of other stuff.
-
-## Niri
-
-Ported from Hyprland, and shares some desktop components such as hyprlock & hypridle, but uses quickshell as bar / desktop widgets / notification daemon / ...
+- **bold**: currently preferred
+- ~~strikethrough~~: previously used but not anymore, moved to `legacy` folder
 
 ## Quickshell
 

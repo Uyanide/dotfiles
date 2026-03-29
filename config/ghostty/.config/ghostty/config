@@ -24,4 +24,4 @@ adjust-cursor-thickness = 3
 
 custom-shader = cursor-shaders/cursor-smear.glsl
 
-# quit-after-last-window-closed = false
+quit-after-last-window-closed = false

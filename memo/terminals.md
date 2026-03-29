@@ -1,4 +1,4 @@
-一些关于终端模拟器(Terminal Emulator)的话题, 持续补充中...
+一些关于终端模拟器(Terminal Emulator)的 memo, 持续补充中...
 
 > 我日常 99% 的时间都在 Wayland (剩下 0.9% 在 Windows, 0.1% 对着 TTY 发呆), 所以本篇内容**完全不会**考虑 X11 环境.
 
@@ -10,7 +10,6 @@
   - [TTY / PTY](#tty--pty)
   - [Shell](#shell)
   - [终端模拟器](#终端模拟器)
-  - [PTY 创建流程](#pty-创建流程)
   - [控制序列](#控制序列)
 - [图像协议](#图像协议)
   - [各终端支持情况](#各终端支持情况)
@@ -35,7 +34,6 @@
   - [Ghostty](#ghostty)
   - [Kmscon](#kmscon)
   - [Terminal Multiplexer](#terminal-multiplexer)
-- [References](#references)
 
 ## 前言
 
@@ -75,34 +73,43 @@
 
 > TTY - Teletypewriter, PTY - Pseudo Terminal
 
-TTY 本质为内核中的双向通信管道与数据处理层. 现代 Linux 系统中, 物理 TTY 几乎完全被 PTY 取代. PTY 是一对虚拟的字符设备, 分为 **Master** 和 **Slave**.
+TTY 本质为内核中的双向通信管道与数据处理层. 在如今的日常使用中, 物理 TTY 几乎完全被 PTY 取代. PTY 是一对虚拟的字符设备, 分为 **Master** 和 **Slave**.
 
-- **Slave** 模拟了传统的硬件串口行为. Shell 和其他命令行程序主要与这一端交互.
+- **Slave**(`/dev/pts/<n>`): Shell 和其他命令行程序主要与这一端交互, stdin / stdout / stderr 默认都被重定向到 Slave 端的文件描述符上.
 
-- **Master** 则由终端模拟器使用, 负责将用户的输入传递给 Slave 端, 并将 Slave 端的输出渲染到屏幕上.
+  因此能看到类似 `foo < /dev/tty` 或 `bar > /dev/tty` 的用法, 其中 `/dev/tty` 是当前进程的控制终端, 也就是 Slave 端. 这可以确保命令直接与终端交互, 而不是通过管道或重定向与其他进程交互.
+
+- **Master**(`/dev/ptmx`): 将用户的输入传递给 Slave 端, 并将 Slave 端的输出发回终端模拟器(或发回网络, 如果在用 sshd)进行显示.
+
+  `/dev/ptmx` 虽看似只有一个设备文件, 但实际上是一个多路复用器. 每当终端模拟器(或 sshd)调用 `open("/dev/ptmx")` 时, 内核会为其分配一个新的 Master-Slave 对, 并返回对应的 Master 端文件描述符. 因此, 每个终端模拟器实例都有自己独立的 Master-Slave 对, 互不干扰.
 
 - **Line Discipline** 是介于 Master 和 Slave 之间的一个中间层, 负责处理"行编辑"逻辑.
-  - **Canonical Mode**: 这是默认模式, Line Discipline 会缓存用户输入的字符, 直到检测到换行符(Enter)或 EOF(通常为 Ctrl+D)时才将整行输入发送给 Slave 端. 在此模式下, Line Discipline 还会处理一些特殊字符, 如退格符(Backspace)用于删除前一个字符, Ctrl+U 用于删除整行等.
 
-  - **Raw Mode**: 在此模式下, Line Discipline 不会对输入进行任何处理, 用户输入的每个字符都会立即传递给 Slave 端. 这对于需要实时响应用户输入的应用程序(如文本编辑器和终端复用器)非常重要.
+  它有两个主要模式:
+  - **Canonical Mode**(`icanon`): 这是默认模式, Line Discipline 会缓存用户输入的字符, 直到检测到换行符(通常通过 Enter 发送)或 EOF(通常通过 Ctrl+D 发送空缓冲区触发)时才将整行输入发送给 Slave 端. 在此模式下, Line Discipline 还会处理一些特殊字符, 如退格符(Backspace)用于删除前一个字符, Ctrl+U 用于删除整行等.
 
+  - **Raw Mode**: 在此模式下, Line Discipline 不会对输入进行任何处理, 用户输入的每个字符都会立即传递给 Slave 端, 包括退格键 `\x08` 和换行键 `\x0a` 等. 这对于需要实时响应用户输入的应用程序(如文本编辑器和终端复用器)非常重要.
+
+  在 `isig` 标志开启的情况下:
   - **Signal Handling**: Line Discipline 还负责处理一些控制字符, 如 Ctrl+C 用于发送中断信号(SIGINT)给前台进程, Ctrl+Z 用于发送挂起信号(SIGTSTP)等.
 
     Line Discipline 通过 termios 结构体维护控制字符映射表, 详细的 termios 配置可参考 [Linux man-pages: termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html).
 
 ### Shell
 
-Shell 是运行在 TTY Slave 端的命令行解释器, 负责:
+Shell 是运行在 TTY **Slave** 端的命令行解释器, 负责:
 
 - 解析用户输入的命令;
 
 - 通过 `fork()` 和 `exec()` 等系统调用来启动子进程或执行内置命令;
 
-- 将子进程的输出通过 TTY Slave 端发送回终端模拟器的 Master 端进行显示;
+- 将子进程的输出通过 TTY **Slave** 端发送回终端模拟器的 **Master** 端进行显示;
 
 - 管理前台和后台进程组, 处理信号传递等.
 
-值得注意的是, Canonical Mode 下 shell 中输入命令后的"回显"并不是 shell 自己完成的, 而必须通过 TTY 的 Line Discipline. 当用户输入字符时, Line Discipline 会将其显示在屏幕上, 从而完成"回显".
+值得注意的是, **Canonical Mode** 下 shell 中输入命令后的"回显"并不是 shell 自己完成的, 而必须通过 TTY 的 **Line Discipline**. 当用户输入字符时, Line Discipline 会将其回显到终端模拟器(或 sshd), 以便用户看到自己输入的内容.
+
+但同时, 很多 TUI 程序以及带有自动补全等高级功能的现代 shell 通常会在启动时将终端设置为 **Raw Mode**, 以便能够更灵活地处理用户输入.
 
 ### 终端模拟器
 
@@ -114,43 +121,21 @@ Shell 是运行在 TTY Slave 端的命令行解释器, 负责:
 
 - **渲染**: 根据解析结果更新屏幕显示, 包括文本内容, 光标位置, 颜色等.
 
-### PTY 创建流程
-
-1. 终端模拟器调用 `posix_openpt` 获取 Master 端 FD.
-
-2. 内核 devpts 文件系统在 `/dev/pts` 下创建对应的 Slave 端设备节点.
-
-3. 终端模拟器调用 `grantpt()` 设置 Slave 端权限, `unlockpt()` 解锁.
-
-4. 终端模拟器 `fork()` 出子进程调用 `setsid()` 创建新会话并成为会话首进程.
-
-5. 子进程打开 Slave 端并通过 `dup2()` 重定向 stdin/stdout/stderr 到 Slave 端 FD.
-
-6. 子进程执行 Shell, Master 端由终端模拟器持有.
-
-可通过 `ls -l /proc/$$/fd/` 查看当前 Shell 的 PTY Slave 端:
-
-```bash
-lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 0 -> /dev/pts/2
-lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 1 -> /dev/pts/2
-lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
-```
-
 ### 控制序列
 
 控制序列是一种特殊的字节序列, 基于不同协议, 用于在终端模拟器中实现各种功能, 如:
 
-- **CSI** (Control Sequence Introducer): 以 `\033[` 开头
+- **CSI** (Control Sequence Introducer): 以 `\033[` 开头, 如
   - 光标移动: `\033[<row>;<col>H` 或 `\033[<row>;<col>f`
   - 清屏: `\033[2J`
   - 颜色设置: `\033[38;2;<r>;<g>;<b>m` (前景色), `\033[48;2;<r>;<g>;<b>m` (背景色)
 
-- **OSC** (Operating System Command): 以 `\033]` 开头
+- **OSC** (Operating System Command): 以 `\033]` 开头, 如
   - 设置窗口标题: `\033]0;title\a`
   - 设置剪贴板内容: `\033]52;c;data\a`
   - ITerm2 图片协议: `\033]1337;File=...;...\a`
 
-- **APC** (Application Program Command): 以 `\033_` 开头
+- **APC** (Application Program Command): 以 `\033_` 开头, 如
   - Kitty 图像协议: `\033_G...;...\033\\`
 
 下一节将会提到的各类图像协议也是通过控制序列实现的.
@@ -165,8 +150,6 @@ lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
 
 > 值得一提的是其中 KGP 甚至能被用来在终端模拟器里播放视频, 只需要给 mpv 加上 `--vo=kitty` 参数即可.
 
-> 此处 KGP 仅指代传统 Kitty 图像协议, 不包括其中关于 Unicode Placeholders 的部分.
-
 ### 各终端支持情况
 
 不完全统计, 只列举我知道并且确实使用过的.
@@ -178,12 +161,14 @@ lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
 | Ghostty       | ✅  | ❌    | ❌     |
 | GNOME Console | ❌  | ❌    | ❌     |
 | Kitty         | ✅  | ❌    | ❌     |
-| Konsole       | ✅  | ✅    | ✅     |
+| Konsole       | ⚠️  | ✅    | ✅     |
 | Rio           | ❌  | ✅    | ❌     |
 | Tabby         | ❌  | ✅    | ❌     |
 | Warp          | ✅  | ❌    | ❌     |
 | WezTerm       | ✅  | ✅    | ✅     |
 | Windows Term. | ❌  | ✅    | ❌     |
+
+其中 ⚠️ 表示虽然支持, 但功能严重缺失. 例如 Konsole 仅支持在控制序列里直接编码图片数据的 KGP 传输方式, 不支持其他传输介质如共享内存和临时文件.
 
 ### 使用方法
 
@@ -215,7 +200,7 @@ lrwx------ 1 kolkas kolkas 64 Feb 13 10:19 2 -> /dev/pts/2
 
 #### 基本模式
 
-正如[基本原理](#基本原理)一节所说, 在 Linux 的 TTY 架构设计中, 终端模拟器和内核之间只有一条双向通信管道. 当内核向终端发送查询序列后, 终端模拟器的响应会通过这唯一一条管道发送给内核, 而用户输入的字符也是通过这条管道发送给内核的, 因此内核会将终端模拟器的响应像用户的输入一样放在输入队列中. 具体表现为终端模拟器的响应出现在输入缓冲区内.
+正如[基本原理](#基本原理)一节所说, 在 Linux 的 TTY 架构设计中, 终端模拟器和内核之间只有一条双向通信管道. 当程序通过 PTY 向终端发送查询序列后, 终端模拟器的响应会通过这唯一一条管道发送给内核, 而用户输入的字符也是通过这条管道发送给内核的, 因此内核会将终端模拟器的响应像用户的输入一样放在输入队列中. 具体表现为终端模拟器的响应出现在输入缓冲区内.
 
 为了读取这些响应, 脚本需要通过 `stty raw -echo` 开启 Raw 模式, 关闭回显, 然后通过 `read` 等命令逐字符读取. 这适用于本节将会涉及的所有控制序列.
 
@@ -233,7 +218,7 @@ KGP 提供了[标准化的检测方法](https://sw.kovidgoyal.net/kitty/graphics
 
 - `\033[c`
 
-  这是大多数终端都会响应的 `DA1` 序列, 用于查询终端特性, 标准响应正则为 `\033\[\?[0-9;]*c`, 但是此处只用于标识 Kitty 图像协议查询序列响应的结束, 其本身具体响应了什么并不重要, 这得益于 KGP "在收到查询序列后必须立即相应, 不能先处理其他输入"的规定. 例如, 如果一次查询返回了 `DA1` 的响应之前没有有效的 KGP 响应, 则可视为该终端模拟器不支持 KGP.
+  这是大多数终端都会响应的 `DA1` 序列, 用于查询终端特性, 标准响应正则为 `\033\[\?[0-9;]*c`, 但是此处只用于标识 Kitty 图像协议查询序列响应的结束, 其本身具体响应了什么并不重要, 这得益于 KGP "在收到查询序列后必须立即响应, 不能先处理其他输入"的规定. 例如, 如果一次查询返回了 `DA1` 的响应之前没有有效的 KGP 响应, 则可视为该终端模拟器不支持 KGP.
 
 关于更多构造 KGP 控制序列的话题, 会在[后面](#实现)单独展开.
 
@@ -361,11 +346,11 @@ curl -fsSL https://tgp.uyani.de/kitty | bash
 
 先说结论, 在大多数终端模拟器上, KGP ≈ ITerm2 >> Sixel.
 
-Sixel 是三者之中最老的, 颜色格式类似 GIF89a, 只支持索引颜色和单色键透明度, 画面有明显的颗粒感和色带. 如此妥协换来的是三者之中最强的兼容性, 甚至连 Windows Terminal 都支持 Sixel, 可见一斑.
+Sixel 是三者之中最老的, 颜色格式类似 GIF89a, 只支持可自定义的最多 256 种索引颜色和(非标准但广泛支持的)单色键透明度, 画面有明显的颗粒感和色带. 如此妥协换来的是三者之中最强的兼容性, 甚至连 Windows Terminal 都支持 Sixel, 可见一斑.
 
-ITerm2 的实现方式很简单粗暴, 它会将图片数据原封不动地交给终端模拟器渲染, 因此实际显示效果极大程度上取决于终端模拟器的实现方式. 不过, 由于终端模拟器能拿到原始的图像二进制数据, 显示效果一般不会比其他二者差.
+ITerm2 的实现方式很简单粗暴, 它会将图片数据原封不动地交给终端模拟器渲染, 因此实际显示效果极大程度上取决于终端模拟器的实现方式. 不过, 由于终端模拟器能拿到原始的图像二进制数据, 显示效果通常是该终端模拟器的上限.
 
-KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit 像素数据, 支持指定 Z-Index 叠加显示, 原生支持动图, 可玩性是三者之中最高的, 显示效果通常也不会差.
+KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit 像素数据 / 支持指定 Z-Index 叠加显示 / 原生支持动图 / ... 可玩性是三者之中最强的, 显示效果也通常是该终端模拟器的上限.
 
 ### 性能测试
 
@@ -428,18 +413,6 @@ KGP 既支持直接传输 PNG 二进制数据, 也支持传输 24bit 与 32bit �
     | -------- | ----------- | --------------- | --------- | ------------ |
     | KGP      | 8,400,484   | 1,182,033       | 24bit RGB | zlib, Base64 |
 
-  - idog (自己写的)
-
-    ```bash
-    idog <IMAGE>
-    ```
-
-    | Protocol | 原始大小(B) | 控制序列大小(B) | 格式 | 编码         |
-    | -------- | ----------- | --------------- | ---- | ------------ |
-    | KGP      | 8,400,484   | 11,152,402      | PNG  | zlib, Base64 |
-
-    该程序在此处的作用为将 PNG 原始数据通过 zlib 压缩后以 4096 字节为单位分块后分为多个控制序列传输.
-
   - wezterm imgcat:
 
     ```bash
@@ -484,7 +457,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
 
 #### 实现
 
-指编码端的实现. 如前文所说, Unicode Placeholders 是 KGP 的一个子功能, 因此 KGP 的基础部分后也可以~~(顺便)~~实现 Unicode Placeholders. 以下摘取[前面](#性能测试)提到的 idog 的部分实现思路. 完整实现可见 [Uyanide/idog](https://github.com/Uyanide/idog).
+指编码端的实现. 如前文所说, Unicode Placeholders 是 KGP 的一个子功能, 因此 KGP 的基础部分后也可以~~(顺便)~~实现 Unicode Placeholders. 以下摘取我自己写的 idog 的部分实现思路. 完整实现可见 [Uyanide/idog](https://github.com/Uyanide/idog).
 
 - 构造 KGP 检测序列
   可以大致分为四个部分:
@@ -503,7 +476,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
     这可以通过测试最通用的传输媒介 `d` 与最平凡的 payload 格式 `24` 来实现.
 
   - 检测是否支持 Unicode Placeholders
-    KGP 并未针对此功能提供专门的查询方法, 但是如[前文](#使用)所说, 支持该功能的终端模拟器很少, 因此可以通过在检测是否支持 KGP 的基础上添加对终端模拟器特有的环境变量的检查来实现:
+    KGP 并未针对此功能提供专门的查询方法, 但是如[前文](#unicode-placeholders)所说, 支持该功能的终端模拟器很少, 因此可以通过在检测是否支持 KGP 的基础上添加对终端模拟器特有的环境变量的检查来实现. 例如 Kitty 会设置 `KITTY_PID` 环境变量, Ghostty 会设置 `TERM_PROGRAM` 环境变量为 `ghostty`, 因此可以通过检查这两个环境变量来间接判断是否支持 Unicode Placeholders.
 
 - 基础序列构造
 
@@ -513,7 +486,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
     - `i=<ID>`: 查询图片编号
     - `s=<width>`: 图片宽度(像素)
     - `v=<height>`: 图片高度(像素)
-    - `f=<format>`: 图片数据格式, 取值为 `24`(24bit RGB) / `32`(32bit RGBA) / `png`(PNG 二进制数据)
+    - `f=<format>`: 图片数据格式, 取值为 `24`(24bit RGB) / `32`(32bit RGBA) / `100`(PNG 二进制数据)
     - `t=<medium>`: 传输介质, 取值为 `d`(直接在控制序列里传输) / `s`(通过共享内存传输) / `t`(通过临时文件传输) / `f`(通过文件传输)
     - `m=<more>`: 是否有更多数据块, 取值为 `1`(有) / `0`(没有), 仅在 payload 超过单条控制序列最大长度时使用, 用于指示后续控制序列是否为同一图片数据的后续块.
 
@@ -576,7 +549,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
       for i in range(self.displayRows):
           line = image_id_str
 
-          # Placehoder + Row Diacritic + Column Diacritic
+          # Placeholder + Row Diacritic + Column Diacritic
           line += f"{KGP_PLACEHOLDER}{KGP_DIACRITICS[i]}{KGP_DIACRITICS[0]}"
           for _ in range(1, self.displayCols):
               # Col index and row index will be automatically determined
@@ -614,7 +587,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
   对于非登录 shell 为 fish 的情况, 则会先加载 `/etc/fish/conf.d` 以及 `/etc/fish/config.fish`,
   然后加载用户的 `~/.config/fish/conf.d` 以及 `~/.config/fish/config.fish`.
 
-  非登录 shell 会继承登录 shell 的环境变量, 但不会加载登录 shell 的配置文件.
+  非登录 shell 会继承其父进程 (如 window manager / session manager) 的环境变量, 大多数情况其中也包含登录 shell 的环境变量, 但不会加载登录 shell 的配置文件.
 
 - **默认 shell** 是指用户通过终端登录系统时默认启动的登录 shell, 通常也将会是大多数终端模拟器默认启动的 shell.
 
@@ -637,7 +610,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
   这适用于不想对每个终端模拟器单独配置的情况或远程 SSH 登录的情况. 具体做法为添加以下内容到 `$HOME/.bashrc` 的**末尾**:
 
   ```bash
-  if grep -qv 'fish' /proc/$PPID/comm && [[ ${SHLVL} == [1,2] ]]; then
+  if grep -qv 'fish' /proc/$PPID/comm && [[ ${SHLVL} == [12] ]]; then
     shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''
     exec fish $LOGIN_OPTION
   fi
@@ -661,7 +634,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
 
 ### Ghostty
 
-如果说终端模拟器也要有自己的原神, 那么 Ghostty 无疑是最合适的候选之一. 关于这个终端模拟器可以聊的东西有很多, 这里先简单列一些 Pro 和 Con.
+如果说终端模拟器也要有自己的原神, 那么 Ghostty 无疑是最合适的候选. 关于这个终端模拟器可以聊的东西有很多, 这里先简单列一些 Pro 和 Con.
 
 - Pros
   - Terminal Inspector
@@ -678,30 +651,44 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
 - Cons
   - 不稳定
 
-    尽管从首个正式 Release 开始计算已经过了一周岁生日, 但 Ghostty 目前仍处于早期版本, 使用过程中还是会遇到各种奇奇怪怪的问题, 并不适合作为主力终端模拟器使用.
+    尽管从首个正式 Release 开始计算已经过了一年, 但 Ghostty 目前仍处于早期版本, 使用过程中还是会遇到各种奇奇怪怪的问题, 并不适合作为主力终端模拟器使用.
 
   - 启动速度
 
-    相比其他相同定位的终端模拟器, Ghostty 的冷启动速度可以说奇慢无比. 尽管[文档](https://ghostty.org/docs/linux/systemd)有提到在启动 `app-com.mitchellh.ghostty.service` 服务的前提下使用 `ghostty +new-window` 加快启动速度, 但这同时放弃了很多灵活性. 例如, `ghostty +new-window` 无法与 `-e` 参数一起使用, 非冷启动的实例也难以同步环境变量, 以 systemd 服务启动的 ghostty 甚至无法自动同步在 WM 如 niri 处配置的环境变量. 虽然这些缺失的灵活性可以通过其他一些方法弥补, 但这确实是使用其他终端模拟器时不曾面对的问题.
+    相比其他相同定位的终端模拟器, Ghostty 的冷启动速度可以说奇慢无比. 尽管[文档](https://ghostty.org/docs/linux/systemd)有提到在启动 `app-com.mitchellh.ghostty.service` 用户级服务的前提下使用 `ghostty +new-window` 加快启动速度, 但这同时放弃了很多灵活性. 例如, 以 systemd 服务启动的 ghostty 无法自动同步在 WM 如 niri 处配置的环境变量. 虽然这些缺失的灵活性可以通过其他一些方法弥补, 但这确实是使用其他终端模拟器时不曾面对的问题.
 
     简单测试:
 
+    (所有终端模拟器均为默认配置; 未启动任何背景服务.)
+
     ```bash
-    hyperfine --warmup 3 'kitty -e echo' 'ghostty -e echo' 'foot -e echo'
+    hyperfine 'kitty -e echo' 'ghostty -e echo' 'alacritty -e echo'
     ```
 
     ```
     Benchmark 1: kitty -e echo
-      Time (mean ± σ):     216.0 ms ±   6.2 ms    [User: 117.9 ms, System: 92.9 ms]
-      Range (min … max):   204.2 ms … 224.6 ms    13 runs
+      Time (mean ± σ):     243.6 ms ±  19.6 ms    [User: 120.3 ms, System: 105.2 ms]
+      Range (min … max):   213.8 ms … 277.4 ms    11 runs
 
     Benchmark 2: ghostty -e echo
-      Time (mean ± σ):     643.5 ms ±  11.4 ms    [User: 561.1 ms, System: 125.7 ms]
-      Range (min … max):   627.3 ms … 660.6 ms    10 runs
+      Time (mean ± σ):     656.4 ms ±  13.8 ms    [User: 557.1 ms, System: 127.8 ms]
+      Range (min … max):   637.7 ms … 674.6 ms    10 runs
 
-    Benchmark 3: foot -e echo
-      Time (mean ± σ):      32.3 ms ±   1.4 ms    [User: 35.6 ms, System: 8.8 ms]
-      Range (min … max):    28.5 ms …  39.3 ms    89 runs
+    Benchmark 3: alacritty -e echo
+      Time (mean ± σ):     158.4 ms ±  16.3 ms    [User: 54.2 ms, System: 88.3 ms]
+      Range (min … max):   144.6 ms … 209.9 ms    14 runs
+    ```
+
+    与之对应的, 如果启动 `app-com.mitchellh.ghostty.service` 服务, 配置文件里添加 `quit-after-last-window-closed = false`, 并使用 `ghostty +new-window` 启动, 则启动时间可以大幅降低:
+
+    ```bash
+    hyperfine 'ghostty +new-window -e echo'
+    ```
+
+    ```
+    Benchmark 1: ghostty +new-window -e echo
+      Time (mean ± σ):      86.2 ms ±  33.1 ms    [User: 26.1 ms, System: 20.6 ms]
+      Range (min … max):    58.8 ms … 242.0 ms    47 runs
     ```
 
 ### Kmscon
@@ -710,24 +697,16 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
 
 ### Terminal Multiplexer
 
-不知道, 没用过, 不感兴趣. 偶尔有需求时会用 Zellij 玩一玩, 但没什么重度使用经验, 因此不展开说了.
+根据我的日常使用习惯, 可以总结出使用终端复用器的两个主要理由:
 
-## References
+- **分屏/标签页**: 在本地环境, 该功能可用平铺窗口管理器完美替代, 一些终端模拟器如 kitty 和 wezterm 等也提供了内置的 tab/pane 支持. 但在 ssh 场景下, 使用终端复用器分屏确实能实现复用 ssh 连接的目的, 仍然具有一定的不可替代性.
 
-- [The TTY demystified](https://www.linusakesson.net/programming/tty/)
+- **会话保持**: 这是我仍然留着 tmux / zellij 的主要原因. 虽然手动用 `nohup` `disown` `setsid` 等命令也能实现类似的效果, 但终端复用器提供了更为方便和可靠的解决方案.
 
-- [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Sixel-Graphics)
+以及一些次要的理由:
 
-- [Kitty Terminal Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
+- **创建 PTY**: 大多数日常使用场景都用不到, 但在一些特殊场景下(如因为 chroot 丢失 TTY 上下文)可能会有用. 该功能可以被 `script /dev/null` 替代. 见 [LFS memo](lfs.md).
 
-- [Sixel - Wikipedia](https://en.wikipedia.org/wiki/Sixel)
+- **共享会话**: 在不同终端之间共享会话, 例如在同一台机器的不同终端模拟器之间共享, 或者通过 ssh 连接到同一台服务器的不同客户端之间共享.
 
-- [Feature Reporting Spec - ITerm2](https://iterm2.com/feature-reporting/)
-
-- [Uyanide / idog](https://github.com/Uyanide/idog)
-
-- [Shell Command Language](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html)
-
-- [Fish - ArchWiki](https://wiki.archlinux.org/title/Fish)
-
-- [Systemd and D-Bus - Linux - Ghostty](https://ghostty.org/docs/linux/systemd)
+总的来说, 虽然某些场景下确实很好用, 但我找不到任何必须使用终端复用器的场景, 所以不多做讨论. 但如果确实需要终端复用器, 推荐 [zellij](https://zellij.dev/), 它的学习成本更低, 需要的时候拿起来就能用, 功能和界面也更现代一些.
