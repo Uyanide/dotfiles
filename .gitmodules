@@ -1,3 +1,6 @@
 [submodule "assets/backgrounds"]
 	path = config/wallpaper/Pictures/backgrounds
 	url = git@github.com:Uyanide/backgrounds.git
+[submodule "assets/yazi-catppuccin"]
+	path = assets/yazi-catppuccin
+	url = https://github.com/catppuccin/yazi.git
