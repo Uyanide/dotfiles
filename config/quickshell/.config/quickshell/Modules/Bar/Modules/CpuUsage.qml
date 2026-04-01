@@ -6,8 +6,6 @@ import qs.Modules.Bar.Services
 import qs.Services
 
 UProgressExpand {
-    // Quickshell.execDetached(["wezterm", "start", "--", "btop"]);
-
     iconName: "cpu"
     fillColor: Colors.mCyan
     critical: SystemStatService.cpuUsage > 90

@@ -39,7 +39,7 @@ Singleton {
 
     function openNote(path) {
         recentNotePath = path;
-        Quickshell.execDetached(["wezterm", "start", "--", "sh", "-c", `exec nvim "${path}"`]);
+        Quickshell.execDetached(["ghostty", "+new-window", "-e", "nvim", path]);
     }
 
     function openRecent() {

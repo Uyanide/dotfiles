@@ -1,0 +1,30 @@
+theme = Catppuccin Mocha
+
+background-opacity = 0.95
+background-blur = true
+
+window-padding-x = 10
+window-padding-y = 10
+
+window-width = 100
+window-height = 36
+
+keybind = ctrl+shift+r=reload_config
+
+keybind = ctrl+shift+h=write_screen_file:copy
+keybind = ctrl+shift+j=text:ghostty-capture\n
+keybind = ctrl+enter=unbind
+
+command = exec /bin/zsh
+
+confirm-close-surface = false
+
+font-family = monospace
+font-size = 12
+
+cursor-style = bar
+adjust-cursor-thickness = 3
+
+custom-shader = cursor-shaders/cursor-smear.glsl
+
+quit-after-last-window-closed = false

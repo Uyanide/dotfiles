@@ -19,6 +19,7 @@ window-rule {
 // FLoating terminal
 window-rule {
     match app-id="org.wezfurlong.wezterm"
+    match app-id="com.mitchellh.ghostty"
     open-floating true
     default-column-width { proportion 0.5; }
 }

@@ -18,7 +18,7 @@ alt() {
 	fi
 }
 
-for item in "kitty" "wlogout"; do
+for item in "kitty" "wlogout" "ghostty"; do
 	if [[ ! -L $HOME/.config/$item ]] && [[ -e $HOME/.config/$item ]]; then
 		echo "Error: $HOME/.config/$item exists and is not a symlink." >&2
 		exit 1

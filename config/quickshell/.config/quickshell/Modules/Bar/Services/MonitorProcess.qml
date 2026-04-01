@@ -18,7 +18,7 @@ Singleton {
         id: process
 
         running: false
-        command: ["wezterm", "start", "--", "btop"]
+        command: ["ghostty", "+new-window", "-e", "btop"]
     }
 
 }
