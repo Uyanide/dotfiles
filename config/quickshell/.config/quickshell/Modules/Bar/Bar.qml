@@ -70,6 +70,7 @@ Variants {
                 id: leftLayout
 
                 height: parent.height - Style.marginXS * 2
+                spacing: Style.marginM
 
                 anchors {
                     left: parent.left
@@ -92,22 +93,20 @@ Variants {
                 }
 
                 Separator {
-                    implicitWidth: Style.marginXL
                 }
 
                 Workspace {
                     screen: modelData
+                    horizontalPadding: 0
                 }
 
                 Separator {
-                    implicitWidth: Style.marginXL
                 }
 
                 CavaBar {
                 }
 
                 Separator {
-                    implicitWidth: Style.marginXL
                 }
 
                 FocusedWindow {
@@ -134,6 +133,7 @@ Variants {
                 id: rightLayout
 
                 height: parent.height - Style.marginXS * 2
+                spacing: Style.marginM
 
                 anchors {
                     right: parent.right
@@ -167,6 +167,7 @@ Variants {
                         y: LyricsService.showLyricsBar ? Style.barHeight : 0
                         opacity: LyricsService.showLyricsBar ? 0 : 1
                         spacing: Style.marginM
+                        anchors.margins: 0
                         Component.onCompleted: {
                             if (!LyricsService.showLyricsBar)
                                 SystemStatService.registerComponent("BarMonitors");
@@ -202,9 +203,6 @@ Variants {
 
                         Brightness {
                             screen: modelData
-                        }
-
-                        Volume {
                         }
 
                         Behavior on y {
@@ -259,6 +257,9 @@ Variants {
 
                     }
 
+                }
+
+                Volume {
                 }
 
                 Separator {

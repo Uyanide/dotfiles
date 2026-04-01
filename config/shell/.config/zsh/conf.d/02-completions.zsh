@@ -14,3 +14,9 @@ zstyle ':completion:*' squeeze-slashes true
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:descriptions' format '%F{cyan}-- %d --%f'
 zstyle ':completion:*:warnings' format '%F{red}-- no matches --%f'
+
+# Jujutsu
+
+if (( $+commands[jj] )); then
+    source <(jj util completion zsh)
+fi

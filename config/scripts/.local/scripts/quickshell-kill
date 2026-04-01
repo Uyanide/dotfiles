@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 
-pid=$(pgrep -x quickshell)
-[ -z "$pid" ] && exit 1
+pids=$(pgrep -x quickshell)
+[ -z "$pids" ] && exit 1
 
 # for child in $(pgrep -P "$pid" 2>/dev/null); do
 # 	kill "$child"
 # done
 
-children=$(pgrep -P "$pid" 2>/dev/null)
+children=()
 
-kill "$pid"
+for pid in $pids; do
+	# children=$(pgrep -P "$pid" 2>/dev/null)
+	children+=($!)
+	kill "$pid" || true
+done
 
 sleep 0.5
 
-for child in $children; do
+for child in "${children[@]}"; do
 	kill "$child" || true
 done

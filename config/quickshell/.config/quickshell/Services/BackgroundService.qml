@@ -15,6 +15,7 @@ Singleton {
     property string previewPath: ""
     property string displayPath: ""
     property bool inPreviewMode: false
+    property bool isProcessing: false
     // Preserved for getBlurredOverview
     readonly property string tintColor: Colors.mSurface
     readonly property real tintOpacity: 0.5
@@ -24,9 +25,12 @@ Singleton {
     function loadBackground() {
         if (!SettingsService.backgroundPath) {
             Logger.w("BackgroundService", "No background path set, skipping loading background.");
+            isProcessing = false;
             return ;
         }
+        isProcessing = true;
         ImageCacheService.getLarge(SettingsService.backgroundPath, backgroundWidth, backgroundHeight, function(path) {
+            isProcessing = false;
             if (!path) {
                 Logger.e("BackgroundService", "Failed to load background image from path: " + SettingsService.backgroundPath);
                 cachedPath = "";
@@ -55,12 +59,13 @@ Singleton {
         if (!path)
             return ;
 
-        previewPath = ""; // clear preview path
-        cachedPath = ""; // clear cached path
+        previewPath = "";
+        isProcessing = true;
         ImageCacheService.checkFileExists(path, function(exists) {
-            if (!exists)
+            if (!exists) {
+                isProcessing = false;
                 return ;
-
+            }
             SettingsService.backgroundPath = path;
             loadTimer.restart();
         });
@@ -103,16 +108,6 @@ Singleton {
         repeat: false
         onTriggered: {
             loadBackground();
-        }
-    }
-
-    Timer {
-        id: setDisplayTimer
-
-        interval: 100
-        running: false
-        repeat: false
-        onTriggered: {
         }
     }
 

@@ -19,7 +19,7 @@ WORDCHARS=${WORDCHARS//[\/=\*\.-]/}
 bindkey '^[[1;5D' backward-word      # C-Left
 bindkey '^[[1;5C' forward-word       # C-Right
 bindkey '^H'      backward-kill-word # C-Backspace (also C-H)
-# bindkey '^Z'      undo               # C-z
+bindkey '^Z'      undo               # C-z
 
 # A-s to prepend sudo
 uy_prepend_sudo() {

@@ -20,7 +20,7 @@ spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 spawn-at-startup "solaar" "-w" "hide"
 
 // Some other heavy apps
-// spawn-at-startup "sunshine"
+spawn-at-startup "sunshine"
 // spawn-at-startup "spotify"
 // spawn-at-startup "thunderbird"
 
@@ -32,3 +32,5 @@ spawn-at-startup "quickshell"
 
 // According to (https://ghostty.org/docs/linux/systemd#starting-ghostty-at-login)
 // spawn-sh-at-startup "systemctl start --user app-com.mitchellh.ghostty.service"
+//
+// spawn-at-startup "flatpak" "run" "com.gopeed.Gopeed" "--hidden"

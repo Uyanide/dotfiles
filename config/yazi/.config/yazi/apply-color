@@ -6,7 +6,16 @@
 }
 . "$HOME/.local/snippets/apply-color-helper"
 
-cp -f "$path"/../../../../assets/yazi-themes/catppuccin-mocha-"$colorName".toml "$path"/../yazi/theme.toml || {
+dir="$path"/../../../../assets
+
+file=$(find "$dir" -type f -name "catppuccin-mocha-${colorName}.toml" | head -n 1)
+
+[[ -z "$file" ]] && {
+    log_error "Theme file not found for color: $colorName"
+    exit 1
+}
+
+cp -f "$file" "$path"/../yazi/theme.toml || {
     log_error "Failed to copy theme file"
     exit 1
 }

@@ -106,6 +106,10 @@ Singleton {
         running: false
         repeat: false
         onTriggered: {
+            if (BackgroundService.isProcessing) {
+                reloadTimer.restart();
+                return ;
+            }
             reloadColors(ShellState.colorState);
         }
     }

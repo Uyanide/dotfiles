@@ -251,7 +251,7 @@ Singleton {
             }
             const player = this.queuedPlayer.toLowerCase();
             this.queuedPlayer = "";
-            this.command = ["lrcfetch", "--player", player, "fetch"];
+            this.command = ["lrx", "--player", player, "fetch"];
             this.running = true;
         }
 
