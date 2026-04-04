@@ -2,6 +2,16 @@
 
 [[ $- == *i* ]] || return
 
+if type fish &>/dev/null; then
+	alias f="exec fish"
+
+	if [[ ${UY_ENABLE_FISH_AUTO_LOGIN:-0} == 1 ]] &&
+		[[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
+		shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''
+		exec fish $LOGIN_OPTION
+	fi
+fi
+
 HISTCONTROL=ignoreboth
 HISTSIZE=16384
 HISTFILESIZE=32768
@@ -50,16 +60,6 @@ if [[ ${UY_USING_SSH_AGENT:-0} == 1 ]]; then
 		fi
 		ssh "$@"
 	}
-fi
-
-if type fish &>/dev/null; then
-	alias f="exec fish"
-
-	if [[ ${UY_ENABLE_FISH_AUTO_LOGIN:-0} == 1 ]] &&
-		[[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
-		shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''
-		exec fish $LOGIN_OPTION
-	fi
 fi
 
 if type starship &>/dev/null; then

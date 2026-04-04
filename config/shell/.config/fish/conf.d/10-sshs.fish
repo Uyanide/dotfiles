@@ -1,7 +1,7 @@
 # ssh with encrypted private keys
 # $ssh_keys should be set in advance or left empty to use the default keys
 
-if set -q ENABLE_GPG_AGENT_SSH; and test $ENABLE_GPG_AGENT_SSH != "0";\
+if set -q UY_ENABLE_GPG_AGENT_SSH; and test $UY_ENABLE_GPG_AGENT_SSH != "0";\
    and type -q gpg-init; and type -q gpgconf
 
    true # do nothing

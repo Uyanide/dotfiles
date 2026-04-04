@@ -1,4 +1,10 @@
-fpath=(~/.zfunc $fpath)
+if [ -d "$HOME/.zfunc" ]; then
+	fpath=($HOME/.zfunc $fpath)
+fi
+
+if [ -d "$HOME/.zsh/completions" ]; then
+    fpath=($HOME/.zsh/completions $fpath)
+fi
 
 # Cache compinit: only regenerate dump once daily
 autoload -Uz compinit

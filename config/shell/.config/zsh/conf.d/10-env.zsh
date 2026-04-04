@@ -29,3 +29,9 @@ fi
 # Catppuccin Mocha — autosuggestions color
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#6c7086"
+
+# Vscode shell integration
+
+if (( $+commands[code] )) && [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    source "$(code --locate-shell-integration-path zsh)"
+fi
