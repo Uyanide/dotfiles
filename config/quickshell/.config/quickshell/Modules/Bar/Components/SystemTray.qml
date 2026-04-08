@@ -14,6 +14,7 @@ Rectangle {
   id: root
 
   property ShellScreen screen
+  property var activeTrayItem: null
 
   implicitWidth: trayFlow.implicitWidth + 20
   implicitHeight: parent.height
@@ -90,10 +91,15 @@ Rectangle {
 
                          modelData.secondaryActivate && modelData.secondaryActivate()
                        } else if (mouse.button === Qt.RightButton) {
-                         // Close the menu if it was visible
                          if (trayPanel && trayPanel.visible) {
+                           // Right-click the same icon toggles menu off.
+                           if (root.activeTrayItem === modelData) {
+                             trayPanel.close()
+                             return
+                           }
+
+                           // Switch directly to another tray item's menu.
                            trayPanel.close()
-                           return
                          }
 
                          if (modelData.hasMenu && modelData.menu && trayMenu.item) {
@@ -105,15 +111,13 @@ Rectangle {
                              menuX = (width / 2) - (trayMenu.item.width / 2)
                              menuY = root.height
                            trayMenu.item.menu = modelData.menu
+                           root.activeTrayItem = modelData
                            trayMenu.item.showAt(parent, menuX, menuY)
                          } else {
                            Logger.d("Tray", "No menu available for", modelData.id, "or trayMenu not set")
                          }
                        }
                      }
-          onEntered: {
-            trayPanel.close()
-          }
         }
       }
     }
@@ -136,6 +140,7 @@ Rectangle {
 
     function close() {
       visible = false
+      root.activeTrayItem = null
       if (trayMenu.item) {
         trayMenu.item.hideMenu()
       }

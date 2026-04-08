@@ -14,7 +14,6 @@ PopupWindow {
   property real anchorX
   property real anchorY
   property bool isSubMenu: false
-  property bool isHovered: rootMouseArea.containsMouse
   property ShellScreen screen
 
   readonly property int menuWidth: 180
@@ -67,11 +66,15 @@ PopupWindow {
     }
   }
 
-  // Full-sized, transparent MouseArea to track the mouse.
-  MouseArea {
-    id: rootMouseArea
-    anchors.fill: parent
-    hoverEnabled: true
+  function closeSiblingSubMenus(currentEntry) {
+    for (var i = 0; i < columnLayout.children.length; i++) {
+      const sibling = columnLayout.children[i]
+      if (sibling !== currentEntry && sibling?.subMenu) {
+        sibling.subMenu.hideMenu()
+        sibling.subMenu.destroy()
+        sibling.subMenu = null
+      }
+    }
   }
 
   Item {
@@ -176,66 +179,46 @@ PopupWindow {
               anchors.fill: parent
               hoverEnabled: true
               enabled: (modelData?.enabled ?? true) && !(modelData?.isSeparator ?? false) && root.visible
+              acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-              onClicked: {
-                if (modelData && !modelData.isSeparator && !modelData.hasChildren) {
-                  modelData.triggered()
-                  root.hideMenu()
-                }
-              }
-
-              onEntered: {
-                if (!root.visible)
+              onClicked: mouse => {
+                if (!modelData || modelData.isSeparator) {
                   return
-
-                // Close all sibling submenus
-                for (var i = 0; i < columnLayout.children.length; i++) {
-                  const sibling = columnLayout.children[i]
-                  if (sibling !== entry && sibling?.subMenu) {
-                    sibling.subMenu.hideMenu()
-                    sibling.subMenu.destroy()
-                    sibling.subMenu = null
-                  }
                 }
 
-                // Create submenu if needed
-                if (modelData?.hasChildren) {
+                if (modelData.hasChildren) {
                   if (entry.subMenu) {
                     entry.subMenu.hideMenu()
                     entry.subMenu.destroy()
+                    entry.subMenu = null
+                    return
                   }
 
-                  // Need a slight overlap so that menu don't close when moving the mouse to a submenu
-                  const submenuWidth = menuWidth // Assuming a similar width as the parent
-                  const overlap = 4 // A small overlap to bridge the mouse path
+                  root.closeSiblingSubMenus(entry)
 
-                  // Position with overlap
-                  const anchorX = -submenuWidth + overlap
+                  const submenuWidth = menuWidth
+                  const overlap = 12
+                  const subAnchorX = -submenuWidth + overlap
 
-                  // Create submenu
                   entry.subMenu = Qt.createComponent("TrayMenu.qml").createObject(root, {
                                                                                     "menu": modelData,
                                                                                     "anchorItem": entry,
-                                                                                    "anchorX": anchorX,
+                                                                                    "anchorX": subAnchorX,
                                                                                     "anchorY": 0,
                                                                                     "isSubMenu": true,
                                                                                     "screen": root.screen
                                                                                   })
 
                   if (entry.subMenu) {
-                    entry.subMenu.showAt(entry, anchorX, 0)
+                    entry.subMenu.showAt(entry, subAnchorX, 0)
                   }
+                  return
                 }
-              }
 
-              onExited: {
-                Qt.callLater(() => {
-                               if (entry.subMenu && !entry.subMenu.isHovered) {
-                                 entry.subMenu.hideMenu()
-                                 entry.subMenu.destroy()
-                                 entry.subMenu = null
-                               }
-                             })
+                if (mouse.button === Qt.LeftButton || mouse.button === Qt.RightButton) {
+                  modelData.triggered()
+                  root.hideMenu()
+                }
               }
             }
           }
