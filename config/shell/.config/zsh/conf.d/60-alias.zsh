@@ -207,6 +207,22 @@ if (( $+commands[git] )); then
 	fi
 fi
 
+# jj
+if (( $+commands[jj] )); then
+	jjc() {
+		jj describe -m "$*"
+		jj new
+	}
+
+	jjp() {
+		local branch pos
+		branch=${1:-master}
+		pos=${2:-@-}
+		jj bookmark move "$branch" --to "$pos"
+		jj git push
+	}
+fi
+
 # Global aliases (can be used as part of a command)
 
 # wl-paste
