@@ -50,12 +50,6 @@ prepend_path "$HOME/.local/scripts"
 prepend_path "$HOME/.local/share/fnm"
 export PATH
 
-# fnm
-
-if (( $+commands[fnm] )); then
-	eval "$(fnm env --shell zsh)"
-fi
-
 # GPG agent for SSH
 
 if (( $+commands[gpgconf] )) && (( $+commands[gpg-connect-agent] )) &&

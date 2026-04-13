@@ -35,3 +35,10 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#6c7086"
 if (( $+commands[code] )) && [[ "$TERM_PROGRAM" == "vscode" ]]; then
     source "$(code --locate-shell-integration-path zsh)"
 fi
+
+# fnm
+
+if (( $+commands[fnm] )); then
+	eval "$(fnm env --shell zsh --use-on-cd)"
+fi
+

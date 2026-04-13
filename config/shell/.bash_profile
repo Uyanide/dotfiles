@@ -45,22 +45,20 @@ prepend_path "$HOME/.local/scripts"
 prepend_path "$HOME/.local/share/fnm"
 export PATH
 
-# fnm
-if type fnm &>/dev/null; then
-	eval "$(fnm env --shell bash)"
-fi
-
 # export UY_ENABLE_GPG_AGENT_SSH=1 in .profile to enable GPG agent for SSH
 if type gpgconf &>/dev/null && type gpg-connect-agent &>/dev/null &&
 	[ -x "$HOME/.local/scripts/gpg-init" ] &&
-   	[ "${UY_ENABLE_GPG_AGENT_SSH:-0}" = "1" ]; then
+	[ "${UY_ENABLE_GPG_AGENT_SSH:-0}" = "1" ]; then
 	# GPG agent for SSH
 	eval "$($HOME/.local/scripts/gpg-init 2>/dev/null)" &>/dev/null
 fi
 
 if type ssh-add &>/dev/null && type ssh-agent &>/dev/null &&
 	{ [ -z "$SSH_AUTH_SOCK" ] ||
-	  [ "$(ssh-add -l &>/dev/null; echo $?)" -eq 2 ]; } &&
+		[ "$(
+			ssh-add -l &>/dev/null
+			echo $?
+		)" -eq 2 ]; } &&
 	[ -x "$HOME/.local/scripts/ssh-init" ]; then
 	unset SSH_AUTH_SOCK
 	# SSH with cross-session ssh-agent

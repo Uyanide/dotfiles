@@ -49,6 +49,10 @@ if type gpg &>/dev/null; then
 	export GPG_TTY
 fi
 
+if type fnm &>/dev/null; then
+	eval "$(fnm env --shell bash --use-on-cd)"
+fi
+
 if [[ ${UY_USING_SSH_AGENT:-0} == 1 ]]; then
 	function sshs() {
 		if ! ssh-add -l &>/dev/null; then
@@ -63,5 +67,5 @@ if [[ ${UY_USING_SSH_AGENT:-0} == 1 ]]; then
 fi
 
 if type starship &>/dev/null; then
-	eval $(starship init bash)
+	eval "$(starship init bash)"
 fi

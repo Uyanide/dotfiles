@@ -26,3 +26,8 @@ set -x -g GPG_TTY (tty)
 # done
 set -U __done_min_cmd_duration 10000
 set -U __done_notification_urgency_level low
+
+# fnm
+if type -q fnm
+    fnm env --shell fish --use-on-cd | source
+end
