@@ -1,0 +1,95 @@
+i     - Insert before the selection.
+a     - Insert after the selection. (a means 'append')
+I     - Insert at the start of the line.
+A     - Insert at the end of the line.
+
+o     - Add a newline and insert below the cursor.
+O     - Add a newline and insert above the cursor.
+
+w     - Move forward to before the beginning of the next word.
+e     - Move forward to the end of the current word.
+b     - Move backward to the beginning of the current word.
+W     - Move forward to before the beginning of the next WORD.
+E     - Move forward to the end of the current WORD.
+B     - Move backward to the beginning of the current WORD.
+
+c     - Change the current selection.
+
+x     - Select the whole line.
+X     - Select the whole line whithout extending to subsequent lines.
+
+;     - Collapse selections to single cursors.
+A--   - Flips the direction of the selection.
+
+u     - Undo.
+U     - Redo.
+
+y     - Copy the selection.
+p     - Paste after cursor.
+P     - Paste before cursor.
+
+
+/     - Search forwards.
+?     - Search backwards.
+n     - Next search result.
+N     - Previous search result.
+
+C     - Duplicate the cursor to the next suitable line.
+,     - Remove the other cursors.
+
+s     - Select matches in the selection.
+A-s   - Split the selections on newlines.
+
+&     - Align "head"s (nor "anchor"s) of the selections.
+
+f<ch> - Select up to and including a charater.
+F<ch> - Same, but backwards.
+t<ch> - Select up to a charater.
+T<ch> - Same, but backwards.
+
+r<ch> - Replace all selected characters with <ch>.
+R     - Replace with yanked text.
+
+.     - Repeat last insert command.
+A-.   - Repeat the last f/t selection.
+
+J     - Join together lines in selection.
+
+<     - Indent left
+>     - Indent right
+
+C-a   - Increment the number under selection.
+C-x   - Decrement the number under selection.
+
+"<ch> - Select register <ch>, can be followed by y / R / p / P / q / Q ...
+*     - Copy the selection into register /
+
+Q     - Start/Stop recording a macro.
+q     - Repeat the macro.
+
+C-s   - Save current position to jumplist.
+C-i   - Move forward in the jumplist.
+C-o   - Move backward in the jumplist.
+
+gw    - Jump using 2-character labels.
+
+)     - Cycle the primary selection forward.
+(     - Cycle the primary selection backward.
+Alt-, - Remove the primary selection.
+Alt-) - Cycle the content of the selections forward.
+Alt-( - Cycle the content of the selections backward.
+
+~     - Switch the case of all selected letters.
+`     - Set all selected letters to lowercase.
+Alt-` - Set all selected letters to uppercase.
+
+C-c   - Toggle comment the lines.
+
+mm    - Jump to the matching bracket.
+mi    - Select inside object (parentheses excluded).
+ma    - Select around object (parentheses included).
+ms    - Add surrounding around the current selection.
+md    - Delete surrounding pair of delimiters, selection not required.
+mr    - Replace surrounding pair of delimiters, selection not required.
+
+C-w   - Window menu.

@@ -22,7 +22,7 @@ Text {
         id: action
 
         running: false
-        command: ["rofi", "-show", "drun"]
+        command: ["vicinae", "toggle"]
     }
 
 }

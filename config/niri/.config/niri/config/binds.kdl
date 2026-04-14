@@ -36,13 +36,13 @@ binds {
     Mod+X               repeat=false    { spawn "qs" "ipc" "call" "notes" "openRecent"; }
     Mod+Shift+X         repeat=false    { spawn "qs" "ipc" "call" "notes" "create"; }
 
-    // Rofi
-    Mod+D               repeat=false    { spawn-sh "pkill -x rofi || rofi -show run"; }
-    Alt+Space           repeat=false    { spawn-sh "pkill -x rofi || rofi -show drun"; }
+    // Launcher
+    Alt+Space           repeat=false    { spawn "vicinae" "toggle"; }
+    Mod+V               repeat=false    { spawn "vicinae" "vicinae://launch/clipboard/history?toggle=true"; }
+    Mod+Period          repeat=false    { spawn "vicinae" "vicinae://launch/core/search-emojis?toggle=true"; }
+    Mod+D               repeat=false    { spawn "vicinae" "vicinae://launch/system/run?toggle=true"; }
 
     // Actions
-    Mod+V               repeat=false    { spawn-sh "ghostty +new-window -e fzfclip-wrap"; }
-    Mod+Period          repeat=false    { spawn-sh "pkill -x rofi || rofi-emoji"; }
     Print               repeat=false    { screenshot-screen; }
     Mod+Shift+S         repeat=false    { screenshot; }
     Mod+Ctrl+Shift+S    repeat=false    { screenshot-window; }

@@ -17,7 +17,6 @@ TUI_PKGS = [
     *BASE_PKGS,
     "fastfetch",  # sys info,
     "helix",  # editor
-    "nvim",  # editor
     "shell",  # fish & .bash_profile & shell prompt
     "yazi",  # terminal file manager
 ]
@@ -55,7 +54,7 @@ NIRI_PKGS = [
     "hypr",  # for hyprlock & hypridle
     "niri",  # wm config
     "quickshell",  # widgets & status bar & notifications & ...
-    "rofi",  # application launcher
+    "vicinae",  # application launcher
     "wlogout",  # logout menu
 ]
 
@@ -103,7 +102,8 @@ def stow(pkg: str):
 
 def unstow(pkg: str):
     subprocess.run(
-        ["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), "-D", pkg], check=True,
+        ["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), "-D", pkg],
+        check=True,
     )
 
 
