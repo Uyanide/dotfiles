@@ -280,6 +280,9 @@ Singleton {
             currentPosition = 0;
 
     }
+    onTrackTitleChanged: {
+        TempNotificationService.showWithIcon("music", trackArtist + " - " + trackTitle, 3000);
+    }
 
     // Update progress bar every second while playing
     Timer {

@@ -633,4 +633,20 @@ Singleton {
     }
     Pipewire.preferredDefaultAudioSource = newSource;
   }
+
+  onMutedChanged: {
+    if (root.muted) {
+      TempNotificationService.showWithIcon("volume-mute", "Muted");
+    } else {
+      TempNotificationService.showWithIcon(root.getOutputIcon(), Math.round(root.volume * 100) + "%");
+    }
+  }
+
+  onInputMutedChanged: {
+    if (root.inputMuted) {
+      TempNotificationService.showWithIcon("microphone-mute", "Input Muted");
+    } else {
+      TempNotificationService.showWithIcon("microphone", "Input Unmuted");
+    }
+  }
 }

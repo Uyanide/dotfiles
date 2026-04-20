@@ -153,4 +153,16 @@ Item {
         target: "notes"
     }
 
+    IpcHandler {
+        function showMsg(message: string, duration: int) {
+            TempNotificationService.show(message, duration);
+        }
+
+        function showWithIcon(iconName: string, message: string, duration: int) {
+            TempNotificationService.showWithIcon(iconName, message, duration);
+        }
+
+        target: "tempNotification"
+    }
+
 }

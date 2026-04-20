@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Services
 import qs.Utils
 pragma Singleton
 
@@ -160,6 +161,9 @@ Singleton {
     // Clean up on shutdown
     Component.onDestruction: {
         stopInhibition();
+    }
+    onIsInhibitedChanged: {
+        TempNotificationService.showWithIcon("mug-filled", isInhibited ? "Inhibition active: " + reason : "Inhibition stopped");
     }
 
     // Process for maintaining the inhibition (subprocess fallback only)

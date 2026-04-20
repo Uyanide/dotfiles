@@ -46,8 +46,10 @@ Singleton {
             if (!sunsetProcess.running) {
                 temperature = 0;
                 Logger.i("Sunset", "Stopped sunset process");
+                TempNotificationService.showWithIcon("sunset-2-filled", "Sunset disabled");
             } else {
                 Logger.i("Sunset", "Started sunset process");
+                TempNotificationService.showWithIcon("sunset-2-filled", "Sunset enabled");
             }
         }
 

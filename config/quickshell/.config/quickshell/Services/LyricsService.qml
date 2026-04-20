@@ -193,7 +193,10 @@ Singleton {
         }
     }
     onInternalPositionChanged: updateIndex()
-    onLyricsOffsetChanged: updateIndex()
+    onLyricsOffsetChanged: () => {
+        TempNotificationService.showWithIcon("hourglass-empty", root.lyricsOffset + "ms");
+        updateIndex()
+    }
 
     Connections {
         function onCurrentPlayerChanged() {
