@@ -18,7 +18,7 @@ Singleton {
         id: capslockMonitorProcess
 
         running: true
-        command: ["led_monitor", "-l", "capslock"]
+        command: ["led-monitor", "-l", "capslock"]
 
         stdout: SplitParser {
             splitMarker: "\n"
