@@ -64,10 +64,15 @@ prefer-no-csd
 animations {
     // off
     // slowdown 3.0
-    
+
     workspace-switch {
-       duration-ms 300
-       curve "ease-out-cubic"
+        duration-ms 300
+        curve "ease-out-cubic"
+    }
+
+    overview-open-close {
+        duration-ms 300
+        curve "ease-out-cubic"
     }
 }
 

@@ -42,3 +42,8 @@ if (( $+commands[fnm] )); then
 	eval "$(fnm env --shell zsh --use-on-cd)"
 fi
 
+# bat
+
+if (( $+commands[bat] )); then
+	export BAT_THEME="Catppuccin Mocha"
+fi

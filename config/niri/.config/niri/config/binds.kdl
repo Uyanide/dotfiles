@@ -12,6 +12,7 @@ binds {
     // Apps
     Mod+C               repeat=false    { spawn "code"; }
     Mod+E               repeat=false    { spawn "dolphin" "--new-window"; }
+    Mod+Shift+E         repeat=false    { spawn "nautilus" "--new-window"; }
     Mod+W               repeat=false    { spawn-sh "zen || zen-browser"; }
     Mod+B               repeat=false    { spawn-sh "pkill -x -n btop || ghostty +new-window -e btop"; }
     Mod+Shift+T         repeat=false    { spawn "ghostty" "+new-window"; }
@@ -22,6 +23,7 @@ binds {
     Mod+O               repeat=false    { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
     Ctrl+Alt+Delete     repeat=false    { spawn-sh "pkill -x wlogout || wlogout"; }
     Mod+P               repeat=false    { spawn-sh "wl-mirror $(niri msg --json focused-output | jq -r .name)"; }
+    Mod+H               repeat=false    { spawn "hexecute"; }
 
 
     // Quickshell
@@ -32,7 +34,7 @@ binds {
     Mod+I               repeat=false    { spawn "qs" "ipc" "call" "idleInhibitor" "toggle"; }
     Mod+Alt+R           repeat=false    { spawn "qs" "ipc" "call" "recording" "startOrStop"; }
     Mod+Alt+G           repeat=false    { spawn "qs" "ipc" "call" "recording" "saveReplay"; }
-    Mod+Shift+E         repeat=false    { spawn "qs" "ipc" "call" "sunset" "toggle"; }
+    Mod+S               repeat=false    { spawn "qs" "ipc" "call" "sunset" "toggle"; }
     Mod+X               repeat=false    { spawn "qs" "ipc" "call" "notes" "openRecent"; }
     Mod+Shift+X         repeat=false    { spawn "qs" "ipc" "call" "notes" "create"; }
 

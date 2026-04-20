@@ -44,6 +44,7 @@ fi
 # Paths
 
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+(( $+commands[opam] )) && eval "$(opam env)"
 prepend_path "$HOME/go/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.local/scripts"

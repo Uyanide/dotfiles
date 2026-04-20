@@ -187,7 +187,7 @@ if (( $+commands[git] )); then
 		}
 
 		pingo() {
-			cd "$HOME/Repositories/PGdP" || return 1
+			cd "$HOME/Repositories/Uni" || return 1
 			local repo
 			repo=$(uy_git_repo_from_clipboard) || return 1
 			local dir_name="${repo:t:r}"
