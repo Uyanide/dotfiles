@@ -10,10 +10,6 @@ import qs.Services
 ShellRoot {
     id: root
 
-    Component.onCompleted: {
-        ImageCacheService.init();
-    }
-
     Loader {
         id: loader
 
@@ -24,6 +20,7 @@ ShellRoot {
                 SunsetService;
                 NotesService;
                 WallpaperCycle;
+                CapslockService;
             }
 
             IPCService {

@@ -634,6 +634,28 @@ Singleton {
     Pipewire.preferredDefaultAudioSource = newSource;
   }
 
+  onVolumeChanged: {
+    if (root.consumeOutputOSDSuppression()) {
+        return;
+    }
+    if (root.muted) {
+      TempNotificationService.showWithIcon("volume-mute", "Muted");
+      return;
+    }
+    TempNotificationService.showWithIcon(root.getOutputIcon(), Math.round(root.volume * 100) + "%");
+  }
+
+  onInputVolumeChanged: {
+    if (root.consumeInputOSDSuppression()) {
+      return;
+    }
+    if (root.inputMuted) {
+      TempNotificationService.showWithIcon("volume-mute", "Muted");
+      return;
+    }
+    TempNotificationService.showWithIcon(root.getInputIcon(), Math.round(root.inputVolume * 100) + "%");
+  }
+
   onMutedChanged: {
     if (root.muted) {
       TempNotificationService.showWithIcon("volume-mute", "Muted");

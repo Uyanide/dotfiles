@@ -11,7 +11,7 @@ Singleton {
     property bool dirsLoaded: false
     property bool initialized: dirsLoaded && ImageCacheService.initialized && ShellState.isLoaded && SettingsService.isLoaded
 
-    Component.onCompleted: {
+    function mkdirs() {
         let mkdirs = "";
         for (const dir of [Paths.cacheDir, Paths.configDir, Paths.recordingDir, Paths.notesDir]) {
             mkdirs += `mkdir -p "${dir}" && `;
@@ -20,6 +20,11 @@ Singleton {
         Logger.d("Init", `Creating necessary directories with command: ${mkdirs}`);
         process.command = ["sh", "-c", mkdirs];
         process.running = true;
+    }
+
+    Component.onCompleted: {
+        ImageCacheService.init();
+        root.mkdirs();
     }
 
     Process {
