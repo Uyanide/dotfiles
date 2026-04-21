@@ -10,8 +10,7 @@ pids=$(pgrep -x quickshell)
 children=()
 
 for pid in $pids; do
-	# children=$(pgrep -P "$pid" 2>/dev/null)
-	children+=($!)
+	mapfile -t -O "${#children[@]}" children < <(pgrep -P "$pid" 2>/dev/null)
 	kill "$pid" || true
 done
 
