@@ -20,8 +20,8 @@ hash = "771af2becc575a3f43d0542de823969d"
 
 [[plugin.deps]]
 use = "llanosrocas/yaziline"
-rev = "d9cc2cb"
-hash = "b6073aadf2f9a1d5389a6d389f33f69c"
+rev = "cc0314c"
+hash = "b937c5c8e2d9fa314d4532489176814e"
 
 [[plugin.deps]]
 use = "Rolv-Apneseth/starship"

@@ -11,7 +11,11 @@ Singleton {
     property bool isCapslockOn: false
 
     onIsCapslockOnChanged: {
-        TempNotificationService.showWithIcon("letter-case", root.isCapslockOn ? "CAPS LOCK ON" : "caps lock off");
+        if (root.isCapslockOn) {
+            TempNotificationService.showWithIcon("letter-case-toggle", "CAPS LOCK ON");
+        } else {
+            TempNotificationService.showWithIcon("letter-case", "caps lock off");
+        }
     }
 
     Process {
