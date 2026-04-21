@@ -271,6 +271,10 @@ Singleton {
         }
     }
 
+    function notifyTrackChange() {
+        TempNotificationService.showWithIcon("music", (trackArtist ? trackArtist + " - " : "") + trackTitle, 3000);
+    }
+
     Component.onCompleted: {
         updateCurrentPlayer();
     }
@@ -280,9 +284,8 @@ Singleton {
             currentPosition = 0;
 
     }
-    onTrackTitleChanged: {
-        TempNotificationService.showWithIcon("music", trackArtist + " - " + trackTitle, 3000);
-    }
+    onTrackTitleChanged: Qt.callLater(notifyTrackChange)
+    onTrackArtistChanged: Qt.callLater(notifyTrackChange)
 
     // Update progress bar every second while playing
     Timer {
