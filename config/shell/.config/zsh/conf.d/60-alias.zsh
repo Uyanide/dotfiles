@@ -54,12 +54,12 @@ if (( $+commands[fzf] )); then
 
 	if (( $+commands[yay] )); then
 		# fyq: fuzzy yay local query
-		alias fyq="yay -Qq | fzf --preview 'yay -Qi {}'"
+		alias fyq="yay -Qq | fzf --preview 'yay -Qi {}' --preview-window='right,70%,wrap'"
 
 		# fyi: fuzzy yay install
 		fyi() {
 			local pkg
-			pkg=$(yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' --header "[install package]" "$@")
+			pkg=$(yay -Sl | awk '{print $1"/"$2}' | fzf -m --preview 'yay -Si {}' --preview-window='right,70%,wrap' --header "[install package]" "$@")
 			# yay supports "repo/package" format
 			[[ -n "$pkg" ]] && yay -S ${=pkg}
 		}
@@ -67,7 +67,7 @@ if (( $+commands[fzf] )); then
 		# fyr: fuzzy yay remove
 		fyr() {
 			local pkg
-			pkg=$(yay -Qq | fzf -m --preview 'yay -Qi {}' --header "[remove package]" "$@")
+			pkg=$(yay -Qq | fzf -m --preview 'yay -Qi {}' --preview-window='right,70%,wrap' --header "[remove package]" "$@")
 			[[ -n "$pkg" ]] && yay -Rn ${=pkg}
 		}
 	fi
