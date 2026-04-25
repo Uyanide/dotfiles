@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Description:
+#   Updates configurations of several apps according to the current (or given as parameter) desktop environment.
+
+desktop=${1:-${XDG_CURRENT_DESKTOP:-default}}
+
+alt() {
+	local item profile
+	item=$1
+	profile=$2
+	if [[ -e $HOME/.config/.alt/${item}-${profile} ]]; then
+		ln -svfT ".alt/${item}-${profile}" "$HOME/.config/$item"
+	elif [[ -e $HOME/.config/.alt/${item}-default ]]; then
+		ln -svfT ".alt/${item}-default" "$HOME/.config/$item"
+	fi
+}
+
+for item in "kitty" "wlogout" "ghostty"; do
+	if [[ ! -L $HOME/.config/$item ]] && [[ -e $HOME/.config/$item ]]; then
+		echo "Error: $HOME/.config/$item exists and is not a symlink." >&2
+		exit 1
+	fi
+
+	case "$desktop" in
+	niri | GNOME)
+		alt "$item" niri
+		;;
+	*)
+		alt "$item" default
+		;;
+	esac
+done

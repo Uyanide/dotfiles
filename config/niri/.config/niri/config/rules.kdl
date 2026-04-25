@@ -63,7 +63,7 @@ window-rule {
 
 // Block from recording
 window-rule {
-    match app-id="thunderbird"
+    match app-id="org.mozilla.Thunderbird"
 
     block-out-from "screen-capture"
 }

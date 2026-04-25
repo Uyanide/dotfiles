@@ -45,9 +45,9 @@ binds {
     Mod+D               repeat=false    { spawn "vicinae" "vicinae://launch/system/run?toggle=true"; }
 
     // Actions
-    Print               repeat=false    { screenshot-screen; }
-    Mod+Shift+S         repeat=false    { screenshot; }
-    Mod+Ctrl+Shift+S    repeat=false    { screenshot-window; }
+    Print               repeat=false    { screenshot-screen show-pointer=false; }
+    Mod+Shift+S         repeat=false    { screenshot show-pointer=false; }
+    Mod+Ctrl+Shift+S    repeat=false    { screenshot-window show-pointer=false; }
     Mod+Shift+C         repeat=false    { spawn "hyprpicker" "-a"; }
 
     // Media

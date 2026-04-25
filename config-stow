@@ -66,12 +66,6 @@ PKGS = {
     "niri": NIRI_PKGS,
 }
 
-SESSION_NAME = {
-    "hyprland": "Hyprland",
-    "niri": "niri",
-    "default": "default",
-}
-
 
 PKGS_PATH = Path(__file__).resolve().parent.resolve() / "config"
 DEST_PATH = Path.home().expanduser()
@@ -104,12 +98,6 @@ def unstow(pkg: str):
     subprocess.run(
         ["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), "-D", pkg],
         check=True,
-    )
-
-
-def switch(session: str):
-    subprocess.run(
-        [str(Path("~/.local/scripts/config-switch").expanduser()), session], check=True
     )
 
 
@@ -146,17 +134,6 @@ def main():
 
     if is_unstow:
         return  # No need to switch session if we're just unstowing
-
-    if args.package in SESSION_NAME:
-        session = SESSION_NAME[args.package]
-    else:
-        session = SESSION_NAME["default"]
-
-    try:
-        switch(session)
-        _log("INFO", f"Switched to session profile '{session}'.")
-    except subprocess.CalledProcessError as e:
-        _log("ERROR", f"Failed to switch session profile '{session}': {e}")
 
 
 if __name__ == "__main__":

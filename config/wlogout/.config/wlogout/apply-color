@@ -21,4 +21,4 @@ sed -i -E "s/(border-color:\s*#)([0-9A-Fa-f]{6})(;)/\1${colorHex}\3/" "$file" ||
     exit 1
 }
 
-log_success "wlogout"
+log_success "wlogout (niri version)"

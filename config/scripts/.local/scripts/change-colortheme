@@ -40,13 +40,9 @@ CONFIG_DIR = Path("~/.config").expanduser()
 
 # An application may have multiple scripts (e.g. due to config-switch)
 SCRIPTS = {
-    "eww": [CONFIG_DIR / "eww" / "apply-color"],
     "fastfetch": [CONFIG_DIR / "fastfetch" / "apply-color"],
-    "fuzzel": [CONFIG_DIR / "fuzzel" / "apply-color"],
-    "hypr": [CONFIG_DIR / "hypr" / "apply-color"],
     "kvantum": [CONFIG_DIR / "Kvantum" / "apply-color"],
     "nwg-look": [CONFIG_DIR / "nwg-look" / "apply-color"],
-    "mako": [CONFIG_DIR / "mako" / "apply-color"],
     "niri": [CONFIG_DIR / "niri" / "apply-color"],
     "oh-my-posh": [
         CONFIG_DIR / "fish" / "apply-color-omp"
@@ -55,12 +51,7 @@ SCRIPTS = {
         CONFIG_DIR / "fish" / "apply-color-starship"
     ],  # borrowing fish's directory
     "quickshell": [CONFIG_DIR / "quickshell" / "apply-color"],
-    "rofi": [CONFIG_DIR / "rofi" / "apply-color"],
-    "waybar": [CONFIG_DIR / "waybar" / "apply-color"],
-    "wlogout": [
-        CONFIG_DIR / ".alt" / "wlogout-default" / "apply-color",
-        CONFIG_DIR / ".alt" / "wlogout-niri" / "apply-color",
-    ],
+    "wlogout": [CONFIG_DIR / "wlogout" / "apply-color"],
     "yazi": [CONFIG_DIR / "yazi" / "apply-color"],
 }
 # or simply `find [-L] <CONFIG_DIR> -type f -name 'apply-color*'` to get all available scripts,

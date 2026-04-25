@@ -1,6 +1,3 @@
-// Switch configs
-spawn-at-startup "config-switch" "niri"
-
 // Core
 spawn-at-startup "nm-applet"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
