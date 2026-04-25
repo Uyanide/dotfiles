@@ -35,11 +35,16 @@ Singleton {
     })
     property var workspaceCache: ({
     })
+    property var castCache: ({
+    })
+    property var castOutputs: []
+    property bool isCasting: false
 
     signal workspaceChanged()
     signal activeWindowChanged()
     signal windowListChanged()
     signal outputsChanged()
+    signal castOutputsListChanged()
 
     function initialize() {
         niriEventStream.connected = true;
@@ -434,6 +439,79 @@ Singleton {
         }
     }
 
+    function _syncCasts() {
+        isCasting = Object.keys(castCache).length > 0;
+        castOutputs = [];
+        for (const castId in castCache) {
+            const cast = castCache[castId];
+            if (cast.output) {
+                if (!castOutputs.includes(cast.output))
+                    castOutputs.push(cast.output);
+            }
+        }
+        castOutputsListChanged();
+    }
+
+    function _handleCastsChanged(eventData) {
+        try {
+            const casts = eventData.casts || [];
+            castCache = {
+            };
+            castOutputs = [];
+            for (const cast of casts) {
+                const castData = {
+                    "id": cast.stream_id,
+                    "stream_id": cast.stream_id,
+                    "session_id": cast.session_id,
+                    "kind": cast.kind,
+                    "output": cast.target?.Output?.name,
+                    "pid": cast.pid
+                };
+                castCache[castData.id] = castData;
+            }
+            _syncCasts();
+        } catch (e) {
+            Logger.e("NiriService", "Error handling CastsChanged:", e);
+        }
+    }
+
+    function _handleCastStopped(eventData) {
+        try {
+            const castId = eventData.stream_id;
+            delete castCache[castId];
+            _syncCasts();
+        } catch (e) {
+            Logger.e("NiriService", "Error handling CastStopped:", e);
+        }
+    }
+
+    function _handleCastStartedOrChanged(eventData) {
+        try {
+            const cast = eventData.cast;
+            if (!cast)
+                return ;
+            if (cast.is_active === true) {
+                // If the cast is active, we can treat it as a new or updated cast
+                const castData = {
+                    "id": cast.stream_id,
+                    "stream_id": cast.stream_id,
+                    "session_id": cast.session_id,
+                    "kind": cast.kind,
+                    "output": cast.target?.Output?.name,
+                    "pid": cast.pid
+                };
+                castCache[castData.id] = castData;
+            } else {
+                // If the cast is not active, we should remove it from the cache
+                const castId = cast.stream_id;
+                delete castCache[castId];
+            }
+            _syncCasts();
+        } catch (e) {
+            Logger.e("NiriService", "Error handling CastStartedOrChanged:", e);
+        }
+    }
+
     function switchToWorkspace(workspace) {
         try {
             Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", workspace.idx.toString()]);
@@ -578,6 +656,12 @@ Singleton {
                         _queryDisplayScales();
                     else if (event.ScreenshotCaptured)
                         _handleScreenshotCaptured(event.ScreenshotCaptured);
+                    else if (event.CastsChanged)
+                        _handleCastsChanged(event.CastsChanged);
+                    else if (event.CastStopped)
+                        _handleCastStopped(event.CastStopped);
+                    else if (event.CastStartedOrChanged)
+                        _handleCastStartedOrChanged(event.CastStartedOrChanged);
                 } catch (e) {
                     Logger.e("NiriService", "Error parsing event stream:", e, data);
                 }

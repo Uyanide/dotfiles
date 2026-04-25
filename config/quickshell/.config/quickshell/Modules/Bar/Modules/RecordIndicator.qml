@@ -11,15 +11,23 @@ Item {
     property color fillColor: Colors.mRed
     property color _actualColor: Colors.mRed
     property bool _expand: mouseArea.containsMouse
+    property string displayText: Niri.castOutputs.length > 0 ? Niri.castOutputs.join(", ") : "Casting"
 
-    visible: RecordService.isRecording
+    visible: Niri.isCasting
     implicitHeight: Math.max(symbolIcon.implicitHeight, textLabel.implicitHeight)
     implicitWidth: height + expander.implicitWidth
+
+    Connections {
+        target: Niri
+        onCastOutputsListChanged: {
+            root.displayText = Niri.castOutputs.length > 0 ? Niri.castOutputs.join(", ") : "Casting";
+        }
+    }
 
     SequentialAnimation {
         id: blinkAnimation
 
-        running: RecordService.isRecording
+        running: root.visible
         loops: Animation.Infinite
 
         ColorAnimation {
@@ -70,7 +78,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: 5
-                text: RecordService.recordingDisplay || "Recording"
+                text: root.displayText
                 color: root.fillColor
             }
 
@@ -92,12 +100,6 @@ Item {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
-        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-        onClicked: (mouse) => {
-            if (mouse.button === Qt.LeftButton)
-                RecordService.startOrStop();
-
-        }
     }
 
     Behavior on _actualColor {
