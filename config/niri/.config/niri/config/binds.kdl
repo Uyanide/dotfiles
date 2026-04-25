@@ -65,10 +65,11 @@ binds {
     XF86MonBrightnessDown   allow-when-locked=true  { spawn "qs" "ipc" "call" "brightness" "down"; }
 
     // Window management
-    Mod+Tab repeat=false    { toggle-overview; }
+    Mod+Tab     repeat=false    { toggle-overview; }
 
-    Mod+Q   repeat=false    { close-window; }
-    Alt+F4  repeat=false    { close-window; } // can't imagine this does not come as default
+    Mod+Q       repeat=false    { close-window; }
+    Mod+Shift+Q repeat=false    { spawn "niri-force-kill-window"; }
+    Alt+F4      repeat=false    { close-window; } // can't imagine this does not come as default
 
     Mod+Left                { focus-column-left; }
     Mod+Down                { focus-window-or-workspace-down; }
@@ -161,7 +162,7 @@ binds {
     Mod+Escape          allow-inhibiting=false repeat=false     { toggle-keyboard-shortcuts-inhibit; }
 
     // Session
-    Mod+Shift+Q         allow-inhibiting=false repeat=false     { quit; }
+    Mod+K               allow-inhibiting=false repeat=false     { quit; }
     Mod+Shift+P         allow-inhibiting=false repeat=false     { spawn-sh "hyprlock & niri msg action power-off-monitors"; }
     Mod+L               allow-inhibiting=false repeat=false     { spawn "loginctl" "lock-session"; }
 
