@@ -4,3 +4,6 @@
 [submodule "assets/yazi-catppuccin"]
 	path = assets/yazi-catppuccin
 	url = https://github.com/catppuccin/yazi.git
+[submodule "config/ghostty/.config/ghostty/shaders"]
+	path = config/ghostty/.config/ghostty/shaders
+	url = https://github.com/0xhckr/ghostty-shaders.git
