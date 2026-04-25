@@ -91,16 +91,23 @@ layer-rule {
     }
 }
 
-cursor {
-    xcursor-theme "Bibata-Modern-Ice"
-    xcursor-size 24
-    hide-when-typing
+window-rule {
+    match is-floating=true
+    background-effect {
+        xray false
+    }
 }
 
 // I love rounded corners
 window-rule {
     geometry-corner-radius 14
     clip-to-geometry true
+}
+
+cursor {
+    xcursor-theme "Bibata-Modern-Ice"
+    xcursor-size 24
+    hide-when-typing
 }
 
 recent-windows {
