@@ -180,17 +180,20 @@ if (( $+commands[git] )); then
 			print -r -- "$repo"
 		}
 
-		gc() {
-			local repo
-			repo=$(uy_git_repo_from_clipboard) || return 1
-			git clone "$repo"
-		}
+		# gc() {
+		# 	local repo
+		# 	repo=$(uy_git_repo_from_clipboard) || return 1
+		# 	git clone "$repo"
+		# }
 
 		pingo() {
-			cd "$HOME/Repositories/Uni" || return 1
+			builtin cd "$HOME/Repositories/Uni" || return 1
 			local repo
 			repo=$(uy_git_repo_from_clipboard) || return 1
 			local dir_name="${repo:t:r}"
+			local course="${${dir_name%%[^[:lower:]]*}:u}"
+			mkdir -p "$course"
+			builtin cd "$course" || return 1
 			if [[ ! -d "$dir_name" ]]; then
 				git clone "$repo" || return 1
 			fi
@@ -201,7 +204,7 @@ if (( $+commands[git] )); then
 				disown
 			else
 				echo "Opening method missing or invalid"
-				cd "$dir_name"
+				builtin cd "$dir_name"
 			fi
 		}
 	fi
