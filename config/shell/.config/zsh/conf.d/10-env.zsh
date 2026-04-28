@@ -46,4 +46,5 @@ fi
 
 if (( $+commands[bat] )); then
 	export BAT_THEME="Catppuccin Mocha"
+	export BAT_STYLE="default,-numbers"
 fi

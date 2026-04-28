@@ -180,11 +180,11 @@ if (( $+commands[git] )); then
 			print -r -- "$repo"
 		}
 
-		# gc() {
-		# 	local repo
-		# 	repo=$(uy_git_repo_from_clipboard) || return 1
-		# 	git clone "$repo"
-		# }
+		gcl() {
+			local repo
+			repo=$(uy_git_repo_from_clipboard) || return 1
+			git clone "$repo"
+		}
 
 		pingo() {
 			builtin cd "$HOME/Repositories/Uni" || return 1

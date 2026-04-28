@@ -108,6 +108,7 @@ archlinuxcn-keyring
 ark
 awww
 axel
+azure-cli
 base
 base-devel
 bash-completion
@@ -143,6 +144,7 @@ cloc
 cmake
 cmatrix-git
 composer
+compsize
 corectrl
 cowfortune
 cpu-x
@@ -274,8 +276,8 @@ lib32-nvidia-utils
 lib32-opencl-nvidia
 lib32-vulkan-icd-loader
 lib32-vulkan-intel
+libc++
 libdbusmenu-lxqt
-libggml-git
 libguestfs
 libreoffice-still-zh-cn
 libva-intel-driver
@@ -289,8 +291,8 @@ linux-cachyos-headers
 linux-firmware
 linux-lts
 linux-lts-headers
-linuxqq-nt
-llama-cpp-git
+linuxqq
+llama.cpp-cuda-git
 llmfit-bin
 localsend
 lolcat
@@ -304,7 +306,6 @@ man-pages
 mangohud
 matugen
 meson
-mission-center
 modprobed-db
 moonlight-qt
 moreutils
@@ -407,6 +408,7 @@ quickshell-git
 qutebrowser
 rclone
 reflector
+resources
 riscv64-linux-gnu-binutils
 riscv64-linux-gnu-gcc
 rsync
