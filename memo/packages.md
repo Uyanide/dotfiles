@@ -333,6 +333,7 @@ nvidia-prime
 nvidia-settings
 nvidia-utils
 nvme-cli
+nvtop
 nwg-look
 obs-studio
 obsidian

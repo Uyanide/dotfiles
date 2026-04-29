@@ -37,7 +37,7 @@ https://github.com/user-attachments/assets/2550607a-48ea-4662-98ba-d26722b26b1b
 - Bar: ~~Waybar~~ | **Quickshell**
 - Shell: (bash & fish) | **Zsh**
 - Prompt: Oh My Posh | **Starship**
-- Terminal: **Kitty** & (WezTerm | **Ghostty**)
+- Terminal: **Kitty** | WezTerm | Ghostty
 - Power Menu: **Wlogout** & Quickshell
 - Colorscheme: **Catppuccin Mocha**
 - App Launcher: ~~Rofi~~ | ~~Fuzzel~~ | **vicinae**
@@ -100,7 +100,7 @@ This feature is only enabled in Niri. Swww also manages wallpapers of the Hyprla
 ## Wallpaper & Colortheme
 
 The most suitable primary color (or so-called flavor) will be chosen from the [Catppuccin Mocha](https://catppuccin.com/palette/) palette and applied to various apps automatically after changing wallpaper. And also:
-    
+
 - [wallpaper-chooser](https://github.com/Uyanide/Wallpaper_Chooser) to select wallpaper, which implements an Image Carousel with Qt Widgets.
 - [backgrounds collection](https://github.com/Uyanide/backgrounds) for personal use.
 

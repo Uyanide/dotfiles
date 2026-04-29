@@ -14,9 +14,9 @@ binds {
     Mod+E               repeat=false    { spawn "dolphin" "--new-window"; }
     Mod+Shift+E         repeat=false    { spawn "nautilus" "--new-window"; }
     Mod+W               repeat=false    { spawn-sh "zen || zen-browser"; }
-    Mod+B               repeat=false    { spawn-sh "pkill -x -n btop || ghostty +new-window -e btop"; }
-    Mod+Shift+T         repeat=false    { spawn "ghostty" "+new-window"; }
-    Mod+Shift+Return    repeat=false    { spawn "ghostty" "+new-window"; }
+    Mod+B               repeat=false    { spawn-sh "pkill -x -n btop || kitty-floating -e btop"; }
+    Mod+Shift+T         repeat=false    { spawn "kitty-floating"; }
+    Mod+Shift+Return    repeat=false    { spawn "kitty-floating"; }
     Mod+T               repeat=false    { spawn "kitty"; }
     Mod+Return          repeat=false    { spawn "kitty"; }
     Mod+Shift+W         repeat=false    { spawn "wallreel"; }
@@ -163,7 +163,7 @@ binds {
 
     // Session
     Mod+K               allow-inhibiting=false repeat=false     { quit; }
-    Mod+Shift+P         allow-inhibiting=false repeat=false     { spawn-sh "hyprlock & niri msg action power-off-monitors"; }
+    Mod+Shift+P         allow-inhibiting=false repeat=false     { spawn-sh "loginctl lock-session; niri msg action power-off-monitors"; }
     Mod+L               allow-inhibiting=false repeat=false     { spawn "loginctl" "lock-session"; }
 
 }

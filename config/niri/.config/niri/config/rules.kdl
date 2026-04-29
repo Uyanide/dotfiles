@@ -20,6 +20,7 @@ window-rule {
 window-rule {
     match app-id="org.wezfurlong.wezterm"
     match app-id="com.mitchellh.ghostty"
+    match app-id="kitty-floating"
     open-floating true
     default-column-width { proportion 0.5; }
 }
@@ -59,6 +60,13 @@ window-rule {
     match app-id="be.alexandervanhee.gradia"
     match title="^(图片查看器)(.*)$" // QQ
     open-floating true
+}
+
+// QQ
+window-rule {
+    match app-id="QQ" title="资料卡"
+    match app-id="QQ" title="天气"
+    open-focused false
 }
 
 // Block from recording

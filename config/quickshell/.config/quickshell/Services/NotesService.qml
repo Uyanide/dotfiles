@@ -39,7 +39,7 @@ Singleton {
 
     function openNote(path) {
         recentNotePath = path;
-        Quickshell.execDetached(["ghostty", "+new-window", "-e", "helix", path]);
+        Quickshell.execDetached(["kitty-floating", "-e", "helix", path]);
     }
 
     function openRecent() {

@@ -1,7 +1,0 @@
-things I have installed:
-
-in addition to everything in `./hyprland-ricing.txt`:
-
-xwayland-satellite
-wlsunset
-wezterm             # replaces ghostty

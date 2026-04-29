@@ -18,7 +18,7 @@ Singleton {
         id: process
 
         running: false
-        command: ["ghostty", "+new-window", "-e", "btop"]
+        command: ["kitty-floating", "-e", "btop"]
     }
 
 }
