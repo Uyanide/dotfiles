@@ -139,6 +139,7 @@ chafa
 chaotic-keyring
 chaotic-mirrorlist
 chromium
+chwd
 claude-code
 cloc
 cmake
@@ -199,6 +200,7 @@ frei0r-plugins
 fuzzel
 fzf
 gamemode
+gcc14
 gdb
 gdu
 gearlever
@@ -292,7 +294,6 @@ linux-firmware
 linux-lts
 linux-lts-headers
 linuxqq
-llama.cpp-cuda-git
 llmfit-bin
 localsend
 lolcat
@@ -306,6 +307,7 @@ man-pages
 mangohud
 matugen
 meson
+mkvtoolnix-cli
 modprobed-db
 moonlight-qt
 moreutils
