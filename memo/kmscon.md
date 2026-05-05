@@ -60,7 +60,7 @@ font-size=14
 如果想让 kmscon 在自动登录的同时启动非登陆 shell (例如 fish)，可以将配置改为：
 
 ```conf
-login=/usr/bin/su - kolkas -s /usr/local/bin/fish-login-wrapper
+login=/usr/bin/su -s /usr/local/bin/fish-login-wrapper - kolkas
 ```
 
 其中 `fish-login-wrapper` 内容为：

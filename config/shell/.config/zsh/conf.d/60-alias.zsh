@@ -197,14 +197,12 @@ if (( $+commands[git] )); then
 			if [[ ! -d "$dir_name" ]]; then
 				git clone "$repo" || return 1
 			fi
+			builtin cd "$dir_name"
 			local app="$1"
 			if [[ -n "$app" ]] && (( $+commands[$app] )); then
 				echo "Opening project with $app"
-				nohup "$app" "$dir_name" >/dev/null 2>&1 &
+				nohup "$app" . >/dev/null 2>&1 &
 				disown
-			else
-				echo "Opening method missing or invalid"
-				builtin cd "$dir_name"
 			fi
 		}
 	fi

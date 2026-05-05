@@ -3,22 +3,22 @@
       xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
       xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
 >
-  <bookmark href="smb://deccenia/default/" added="2026-03-27T08:04:42.401527Z" modified="2026-03-27T08:04:42.401531Z" visited="2026-03-27T08:04:42.401528Z">
-    <title>default on deccenia</title>
+  <bookmark href="smb://100.64.0.2/documents/" added="2026-05-06T10:05:54.879153Z" modified="2026-05-06T10:05:54.879156Z" visited="2026-05-06T10:05:54.879154Z">
+    <title>documents auf 100.64.0.2</title>
     <info>
       <metadata owner="http://freedesktop.org">
         <bookmark:applications>
-          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2026-03-27T08:04:42.401530Z" count="1"/>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2026-05-06T10:05:54.879155Z" count="1"/>
         </bookmark:applications>
       </metadata>
     </info>
   </bookmark>
-  <bookmark href="smb://deccenia/documents/" added="2026-03-27T08:04:57.185422Z" modified="2026-03-27T08:04:57.185426Z" visited="2026-03-27T08:04:57.185423Z">
-    <title>documents on deccenia</title>
+  <bookmark href="smb://100.64.0.2/default/" added="2026-05-06T10:06:20.264480Z" modified="2026-05-06T10:06:20.264483Z" visited="2026-05-06T10:06:20.264481Z">
+    <title>default auf 100.64.0.2</title>
     <info>
       <metadata owner="http://freedesktop.org">
         <bookmark:applications>
-          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2026-03-27T08:04:57.185424Z" count="1"/>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2026-05-06T10:06:20.264482Z" count="1"/>
         </bookmark:applications>
       </metadata>
     </info>

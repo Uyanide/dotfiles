@@ -22,7 +22,21 @@
 
   所以不会出问题. 主要影响范围是打包者或上游硬编码插件安装路径为 `/usr/lib/vapoursynth` 的包, 其中包括少数 extra 仓库的包如 `extra/ffms2` 和众多 AUR 包.
 
-- vapoursynth 不再在编译器 link libpython, 而必须在加载 libvsscript.so 时选择 python. 选哪个 python 由 `$HOME/.config/vapoursynth/vapoursynth.toml` 维护的映射关系决定, 格式类似:
+  临时修复方法:
+
+  ```bash
+  old_dir="/usr/lib/vapoursynth"
+  new_dir="$(python -c 'import vapoursynth;print(vapoursynth.get_plugin_dir())')"
+  if [ "$(realpath "$old_dir" 2>/dev/null)" != "$(realpath "$new_dir")" ] && [ -d "$old_dir" ]; then
+    for f in "$old_dir"/*.so; do
+      if [ -L "$f" ]; then p="$(readlink -m "$f")"; elif [ -f "$f" ]; then p="$f"; else continue; fi
+      ln -svr "$p" "$new_dir/$(basename "$f")"
+    done
+  fi
+  unset old_dir new_dir f p
+  ```
+
+- vapoursynth 不再在编译期链接 libpython, 而必须在加载 libvsscript.so 时选择 python. 选哪个 python 由 `$HOME/.config/vapoursynth/vapoursynth.toml` 维护的映射关系决定, 格式类似:
 
   ```toml
   "/usr/lib/python3.14/site-packages/vapoursynth/libvsscript.so" = ["/usr/bin/python","/usr/lib/libpython3.14.so.1.0"]

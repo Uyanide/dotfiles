@@ -295,9 +295,8 @@ lightdm
 linux-cachyos
 linux-cachyos-headers
 linux-firmware
-linux-lts
-linux-lts-headers
 linuxqq
+llama.cpp-cuda-git
 llmfit-bin
 localsend
 lolcat
@@ -342,7 +341,7 @@ nvidia-utils
 nvme-cli
 nvtop
 nwg-look
-oavif
+oavif-git
 obs-studio
 obsidian
 okular
@@ -379,6 +378,7 @@ python-chardet
 python-colorthief
 python-darkdetect
 python-fonttools
+python-huggingface-hub
 python-lxml
 python-opencv-cuda
 python-pygments
@@ -583,6 +583,7 @@ zellij
 zen-browser-bin
 zenity
 zig
+zig0.15-bin
 zoxide
 zram-generator
 zsh
