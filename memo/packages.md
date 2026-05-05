@@ -7,49 +7,6 @@ grab
 | bash -s -- "$0"
 exit $?
 
-> [!NOTE]
-> The gibberish above is **NOT** meant to be copy-pasted into the terminal. It is a script that updates the [Full list](#full-list) section below, and should be run as:
->
-> ```bash
-> bash /path/to/dotfiles/memo/packages.md
-> ```
-
-## Notes
-
-|           |                              |
-| --------- | ---------------------------- |
-| alass     | Subtitle sync; used in mpv   |
-| axel      | CLI download accelerator     |
-| figlet    | Draw large letters           |
-| foliate   | GTK eBook reader             |
-| gearlever | AppImage manager             |
-| gping     | Ping with better looking TUI |
-| jp2a      | JPEG to ASCII                |
-| nethogs   | Network top                  |
-| picard    | Music tagger (MusicBrainz)   |
-| toilet    | Better FIGlet                |
-| wev       | Debug wayland events         |
-| yad       | Fork of zenity               |
-| zenity    | Display dialog boxes via cli |
-
-## Some useful commands
-
-Show packages sorted by size, with a preview of their info:
-
-```bash
-expac -H M '%m\t%n' \
-| sort -hr \
-| fzf --delimiter='\t' --with-nth=1,2 --multi \
-		--preview 'yay -Qi {2}' \
-		--preview-window='right,70%,wrap'
-```
-
-Update the list below:
-
-```bash
-bash /path/to/dotfiles/memo/packages.md
-```
-
 <!-- update-full-list:start
 
 set -euo pipefail
@@ -94,6 +51,49 @@ echo "Updated Full list in: $script_path"
 
 update-full-list:end -->
 
+> [!NOTE]
+> The gibberish above is **NOT** meant to be copy-pasted into the terminal. It is a script that updates the [Full list](#full-list) section below, and should be run as:
+>
+> ```bash
+> bash /path/to/dotfiles/memo/packages.md
+> ```
+
+## Notes
+
+|           |                              |
+| --------- | ---------------------------- |
+| alass     | Subtitle sync; used in mpv   |
+| axel      | CLI download accelerator     |
+| figlet    | Draw large letters           |
+| foliate   | GTK eBook reader             |
+| gearlever | AppImage manager             |
+| gping     | Ping with better looking TUI |
+| jp2a      | JPEG to ASCII                |
+| nethogs   | Network top                  |
+| picard    | Music tagger (MusicBrainz)   |
+| toilet    | Better FIGlet                |
+| wev       | Debug wayland events         |
+| yad       | Fork of zenity               |
+| zenity    | Display dialog boxes via cli |
+
+## Some useful commands
+
+Show packages sorted by size, with a preview of their info:
+
+```bash
+expac -H M '%m\t%n' \
+| sort -hr \
+| fzf --delimiter='\t' --with-nth=1,2 --multi \
+		--preview 'yay -Qi {2}' \
+		--preview-window='right,70%,wrap'
+```
+
+Update the list below:
+
+```bash
+bash /path/to/dotfiles/memo/packages.md
+```
+
 ## Full list
 
 ```
@@ -106,6 +106,7 @@ archiso
 archlinux-contrib
 archlinuxcn-keyring
 ark
+av1an
 awww
 axel
 azure-cli
@@ -184,7 +185,9 @@ fcitx5-qt
 fd
 fdkaac
 ffmpeg-full
+ffms2
 ffnvcodec-headers
+ffvship
 figlet
 filelight
 fish
@@ -282,6 +285,7 @@ libc++
 libdbusmenu-lxqt
 libguestfs
 libreoffice-still-zh-cn
+libspng
 libva-intel-driver
 libva-nvidia-driver
 libva-utils
@@ -317,6 +321,7 @@ mpd-mpris
 mpv-full
 mpv-mpris
 msedit
+namcap
 nasm
 nautilus
 nautilus-share
@@ -337,6 +342,7 @@ nvidia-utils
 nvme-cli
 nvtop
 nwg-look
+oavif
 obs-studio
 obsidian
 okular
@@ -385,6 +391,8 @@ python-yaml
 qbittorrent-enhanced
 qdiskinfo
 qemu-full
+qemu-user-static
+qemu-user-static-binfmt
 qt5-graphicaleffects
 qt5-quickcontrols
 qt5-quickcontrols2
@@ -491,6 +499,7 @@ unrar
 usbip
 uv
 valgrind
+vapoursynth-plugin-vship-cuda-git
 ventoy-bin
 vesktop-bin
 vicinae
@@ -573,6 +582,7 @@ yt-dlp
 zellij
 zen-browser-bin
 zenity
+zig
 zoxide
 zram-generator
 zsh

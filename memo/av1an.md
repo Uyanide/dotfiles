@@ -2,15 +2,25 @@
 
 ### VapourSynth 破坏性更新
 
-> Mon May 4 19:25:48 CEST 2026
+> Tue May 5 09:08:30 CEST 2026
 
-- `vapoursynth` 包更新至 75 版本后 (此问题其实是 R74 引入的, 但他们似乎跳过了 R74 直接在今天更新至 R75), vsscript 库文件符号链接关系如下:
+- `extra/vapoursynth` 包更新至 75 版本后 (此问题其实是 R74 引入的, 但他们似乎跳过了 R74 直接在近几天更新至 R75), vsscript 库文件符号链接关系如下:
   - `/usr/lib/libvapoursynth-script.so` -> `python3.14/site-packages/vapoursynth/libvsscript.so`
   - `/usr/lib/libvapoursynth-script.so.0` -> `python3.14/site-packages/vapoursynth/libvsscript.so`
 
-  这导致 ldconfig 根据 SONAME 字段建立的缓存条目变化, 例如从 `libvapoursynth-script.so.0 (libc,x86-64) => /usr/lib/libvapoursynth-script.so.0` 变为 `libvsscript.so (libc6,x86-64) => /usr/lib/libvsscript.so`, 从而使其他未能重新链接的程序找不到对应库.
+  这导致 ldconfig 根据 SONAME 字段建立的缓存条目变化, 例如从 `libvapoursynth-script.so.0 (libc,x86-64) => /usr/lib/libvapoursynth-script.so.0` 变为 `libvsscript.so (libc6,x86-64) => /usr/lib/libvsscript.so`, 可能会使其他未能重新链接的程序找不到对应库.
+
+  但该问题影响范围比较有限, 因为动态库并不完全根据 ldconfig 缓存条目加载 —— 如果文件名完全匹配也能正确加载, 毕竟 `/usr/lib/libvapoursynth-script.so.0` 仍然存在.
 
 - 同时, 插件目录也从 `/usr/lib/vapoursynth/` 改为 `/usr/lib/python3.14/site-packages/vapoursynth/plugins/`, 很多包未能及时更新插件安装路径, 导致 vapoursynth 插件丢失.
+
+  extra 仓库中的 vapoursynth-plugin-\* 包均已改为类似如下动态查找插件安装路径的方式:
+
+  ```bash
+  install -Dm 755 libxxx.so -t "${pkgdir}"/$(python -c 'import vapoursynth;print(vapoursynth.get_plugin_dir())')/
+  ```
+
+  所以不会出问题. 主要影响范围是打包者或上游硬编码插件安装路径为 `/usr/lib/vapoursynth` 的包, 其中包括少数 extra 仓库的包如 `extra/ffms2` 和众多 AUR 包.
 
 - vapoursynth 不再在编译器 link libpython, 而必须在加载 libvsscript.so 时选择 python. 选哪个 python 由 `$HOME/.config/vapoursynth/vapoursynth.toml` 维护的映射关系决定, 格式类似:
 
@@ -31,6 +41,14 @@
   ```toml
   "/usr/lib/libvsscript.so" = ["/usr/bin/python","/usr/lib/libpython3.14.so.1.0"]
   ```
+
+  如果运行 vapoursynth 此次更新前构建并链接的程序, 可能同样需要为 `/usr/lib/libvapoursynth-script.so.0` 准备对应条目:
+
+  ```toml
+  "/usr/lib/libvapoursynth-script.so.0" = ["/usr/bin/python","/usr/lib/libpython3.14.so.1.0"]
+  ```
+
+  影响范围为所有动态链接 vapoursynth 的二进制文件.
 
 ### CUDA 13.2 不兼容 GCC 16.1
 
