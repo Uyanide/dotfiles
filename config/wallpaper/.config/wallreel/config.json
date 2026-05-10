@@ -14,7 +14,7 @@
     },
     "action": {
         "onSelected": "qs ipc call background set '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
-        "onPreview": "qs ipc call background preview '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
+        "onPreview": "exit 0; qs ipc call background preview '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
         "quitOnSelected": true,
         "saveState": [
             {
@@ -23,7 +23,7 @@
                 "command": "qs ipc call colors get mPrimary"
             }
         ],
-        "onRestore": "qs ipc call background preview ''; change-colortheme -c '{{ flavor }}' quickshell niri"
+        "onRestore": "exit 0; qs ipc call background preview ''; change-colortheme -c '{{ flavor }}' quickshell niri"
     },
     "cache": {
         "maxImageEntries": 300
