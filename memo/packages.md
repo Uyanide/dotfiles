@@ -121,6 +121,7 @@ bluez-tools
 bluez-utils
 bootconfig
 bpf
+bpftrace
 bridge-utils
 brightnessctl
 bsd-games
@@ -200,10 +201,10 @@ font-manager
 fontforge
 foot
 frei0r-plugins
+fssimu2
 fuzzel
 fzf
 gamemode
-gcc14
 gdb
 gdu
 gearlever
@@ -220,6 +221,7 @@ glaze
 gnome-keyring
 gnome-text-editor
 go
+gpac
 gping
 gradia
 gradle
@@ -250,6 +252,7 @@ intel-gpu-tools
 intel-media-sdk
 intel-speed-select
 intel-ucode
+inxi
 iperf3
 jdk-openjdk
 jdk17-openjdk
@@ -297,6 +300,7 @@ linux-cachyos-headers
 linux-firmware
 linuxqq
 llama.cpp-cuda-git
+lldb
 llmfit-bin
 localsend
 lolcat
@@ -309,6 +313,7 @@ man-db
 man-pages
 mangohud
 matugen
+mesa
 meson
 mkvtoolnix-cli
 modprobed-db
@@ -424,8 +429,9 @@ riscv64-linux-gnu-binutils
 riscv64-linux-gnu-gcc
 rsync
 ruff
-rust
 rustdesk
+rustup
+scnlib
 scrcpy
 sd
 seahorse
@@ -446,6 +452,7 @@ stow
 sudo
 sunshine
 sushi
+svt-av1-hdr-git
 sysbench
 systemc
 tailscale
@@ -514,6 +521,7 @@ vulkan-extra-tools
 vulkan-gfxstream
 vulkan-headers
 vulkan-intel
+vulkan-mesa-implicit-layers
 vulkan-mesa-layers
 vulkan-swrast
 vvenc

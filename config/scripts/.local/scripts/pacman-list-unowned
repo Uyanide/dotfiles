@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+follow_symlink=0
+target_dir="/usr"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -L)
+            follow_symlink=1
+            shift
+            ;;
+        *)
+            target_dir="$1"
+            shift
+            ;;
+    esac
+done
+
+if [[ ! -d  $target_dir ]]; then
+    echo "${target_dir} is not a directory" >&2
+    exit 1
+fi
+
+export LC_ALL=C
+export LANG=C
+
+owned_list="$(mktemp)"
+trap 'rm "$owned_list"' EXIT
+
+pacman -Qlq | sort -u > "$owned_list"
+
+comm -23 <(find "$target_dir" ! -type d | sort) "$owned_list" | while read -r f; do
+    if [[ $follow_symlink -eq 1 && -L "$f" ]]; then
+        target=$(realpath -m "$f")
+        if grep -qxF "$target" "$owned_list"; then
+            continue
+        fi
+    fi
+    echo "$f"
+done
