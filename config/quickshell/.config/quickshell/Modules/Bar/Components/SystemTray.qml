@@ -15,8 +15,10 @@ Rectangle {
 
   property ShellScreen screen
   property var activeTrayItem: null
+  property var pinnedIds: []
+  property var excludeIds: []
 
-  implicitWidth: trayFlow.implicitWidth + 20
+  implicitWidth: trayFlow.implicitWidth > 0 ? trayFlow.implicitWidth + 20 : 0
   implicitHeight: parent.height
   radius: 0
   color: Colors.transparent
@@ -36,7 +38,12 @@ Rectangle {
       delegate: Item {
         width: 18
         height: 18
-        visible: modelData
+        visible: {
+          if (!modelData) return false
+          if (pinnedIds.length > 0) return pinnedIds.includes(modelData.id)
+          if (excludeIds.length > 0) return !excludeIds.includes(modelData.id)
+          return true
+        }
 
         IconImage {
           id: trayIcon

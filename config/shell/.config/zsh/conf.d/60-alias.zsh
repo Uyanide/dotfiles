@@ -156,7 +156,7 @@ if (( $+commands[git] )); then
 	gcp() {
 		git add -A || return 1
 		if [[ $# -eq 0 ]]; then
-			git commit -m "👐 foo: too lazy to come up with a helpful commit message :)" || return 1
+			git commit -m "👐 foo:)" || return 1
 		else
 			git commit -m "$*" || return 1
 		fi
@@ -201,8 +201,14 @@ if (( $+commands[git] )); then
 			local app="$1"
 			if [[ -n "$app" ]] && (( $+commands[$app] )); then
 				echo "Opening project with $app"
-				nohup "$app" . >/dev/null 2>&1 &
-				disown
+				# nohup "$app" . >/dev/null 2>&1 &
+				# disown
+				if [[ ${XDG_CURRENT_DESKTOP:-} = "niri" ]]; then
+				  niri msg action spawn -- "$app" "$HOME/Repositories/Uni/$course/$dir_name"
+				else
+				  nohup "$app" . >/dev/null 2>&1 &
+				  disown
+				fi
 			fi
 		}
 	fi

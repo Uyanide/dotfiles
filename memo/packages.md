@@ -233,7 +233,6 @@ gucharmap
 gvfs-smb
 gwenview
 handbrake
-hashclash-cuda-git
 helix
 hmcl
 htop
@@ -454,7 +453,7 @@ sunshine
 sushi
 svt-av1-hdr-git
 sysbench
-systemc
+systemc2.3.4
 tailscale
 tcpdump
 telegram-desktop
@@ -532,7 +531,7 @@ waydroid-helper
 waypaper
 wev
 wezterm
-wf-recorder
+wf-recorder-git
 wget
 whisper.cpp-model-large-v3-turbo
 wine
@@ -542,6 +541,7 @@ wl-clipboard
 wl-mirror
 wlogout
 wlsunset
+words
 wqy-bitmapfont
 wqy-microhei
 wqy-zenhei

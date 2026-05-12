@@ -11,7 +11,10 @@ import qs.Modules.Bar.Modules
 import qs.Services
 
 Variants {
+    id: root
     model: Quickshell.screens
+
+    property var pinnedTrayIds
 
     Item {
         property var modelData
@@ -133,7 +136,7 @@ Variants {
                 id: rightLayout
 
                 height: parent.height - Style.marginXS * 2
-                spacing: Style.marginM
+                spacing: Style.marginS
 
                 anchors {
                     right: parent.right
@@ -186,8 +189,8 @@ Variants {
                         RecordIndicator {
                         }
 
-                        Ip {
-                        }
+                        // Ip {
+                        // }
 
                         CpuTemp {
                         }
@@ -265,6 +268,21 @@ Variants {
                 Separator {
                 }
 
+                Loader {
+                    Layout.fillHeight: true
+                    active: NukeKded6.done
+
+                    sourceComponent: SystemTray {
+                        screen: modelData
+                        pinnedIds: root.pinnedTrayIds
+                        height: parent.height
+                    }
+
+                }
+
+                Separator {
+                }
+
                 RowLayout {
                     Layout.fillHeight: true
                     spacing: Style.marginS
@@ -275,6 +293,7 @@ Variants {
                         sourceComponent: TrayExpander {
                             screen: modelData
                             baseSize: rightLayout.height - Style.marginXS * 2
+                            excludeIds: root.pinnedTrayIds
                         }
 
                     }

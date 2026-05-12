@@ -16,13 +16,13 @@ Singleton {
     property bool isReplayStarted: false
     property bool isStopping: false
     property bool isReplayStopping: false
-    readonly property string codec: "libx264"
-    readonly property string container: "mkv"
-    readonly property string pixelFormat: "yuv420p"
+    readonly property string codec: "av1_nvenc"
+    readonly property string container: "mp4"
+    readonly property string pixelFormat: "p010le"
     property string recordingDisplay: ""
     readonly property int replayDuration: 15
     readonly property int framerate: 60
-    readonly property var codecParams: Object.freeze(["preset=ultrafast", "crf=15", "tune=zerolatency", "color_range=tv"])
+    readonly property var codecParams: Object.freeze(["preset=p4", "rc=constqp", "qp=18", "color_range=tv"])
     readonly property var filterArgs: ""
 
     function getFilename(prefix = "recording") {

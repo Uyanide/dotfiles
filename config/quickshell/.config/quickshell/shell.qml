@@ -29,6 +29,8 @@ ShellRoot {
 
             Bar {
                 id: bar
+
+                pinnedTrayIds: ["Fcitx", "nm-applet", "blueman"]
             }
 
             Corners {

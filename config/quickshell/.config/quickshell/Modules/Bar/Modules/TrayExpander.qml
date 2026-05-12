@@ -11,6 +11,7 @@ Item {
 
     property ShellScreen screen
     property int baseSize: Style.baseWidgetSize
+    property var excludeIds: []
 
     implicitWidth: baseSize + trayContainer.implicitWidth
     implicitHeight: layout.implicitHeight
@@ -40,6 +41,7 @@ Item {
                 id: expandedTray
 
                 screen: root.screen
+                excludeIds: root.excludeIds
             }
 
             Behavior on implicitWidth {
