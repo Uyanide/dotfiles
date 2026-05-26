@@ -1,5 +1,5 @@
 if [ -d "$HOME/.zfunc" ]; then
-	fpath=($HOME/.zfunc $fpath)
+    fpath=($HOME/.zfunc $fpath)
 fi
 
 if [ -d "$HOME/.zsh/completions" ]; then
@@ -9,9 +9,9 @@ fi
 # Cache compinit: only regenerate dump once daily
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
-	compinit
+    compinit
 else
-	compinit -C
+    compinit -C
 fi
 
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'

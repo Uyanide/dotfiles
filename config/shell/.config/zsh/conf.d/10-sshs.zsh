@@ -3,17 +3,17 @@
 
 if [[ "${UY_ENABLE_GPG_AGENT_SSH:-0}" = "1" ]] &&
    (( $+commands[gpg-init] )) && (( $+commands[gpgconf] )); then
-	: # GPG agent handles SSH — nothing to do
+    : # GPG agent handles SSH — nothing to do
 
 elif [[ "${UY_USING_SSH_AGENT:-0}" = "1" ]]; then
-	sshs() {
-		if ! ssh-add -l &>/dev/null; then
-			if [[ -n "${uy_ssh_keys[*]}" ]]; then
-				ssh-add "${uy_ssh_keys[@]}"
-			else
-				ssh-add
-			fi
-		fi
-		ssh "$@"
-	}
+    sshs() {
+        if ! ssh-add -l &>/dev/null; then
+            if [[ -n "${uy_ssh_keys[*]}" ]]; then
+                ssh-add "${uy_ssh_keys[@]}"
+            else
+                ssh-add
+            fi
+        fi
+        ssh "$@"
+    }
 fi
