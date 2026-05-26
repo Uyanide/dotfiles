@@ -223,8 +223,12 @@ if (( $+commands[jj] )); then
 	}
 
 	jjp() {
+		default_branch() {
+			git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|.*/||' \
+			|| git remote show origin | awk '/HEAD branch/ {print $NF}' || echo "master"
+		}
 		local branch pos
-		branch=${1:-master}
+		branch=${1:-$(default_branch)}
 		pos=${2:-@-}
 		jj bookmark move "$branch" --to "$pos"
 		jj git push
