@@ -143,6 +143,7 @@ chaotic-mirrorlist
 chromium
 chwd
 claude-code
+cli11
 cloc
 cmake
 cmatrix-git
@@ -150,6 +151,7 @@ composer
 compsize
 corectrl
 cowfortune
+cpptrace
 cpu-x
 cpupower
 cuda
@@ -180,6 +182,7 @@ fcitx5
 fcitx5-chinese-addons
 fcitx5-configtool
 fcitx5-gtk
+fcitx5-mozc
 fcitx5-pinyin-moegirl
 fcitx5-pinyin-zhwiki
 fcitx5-qt
@@ -496,7 +499,6 @@ ttf-lxgw-wenkai-tc
 ttf-maplemono-nf-cn
 ttf-meslo-nerd
 ttf-noto-sans-cjk-vf
-ttf-sarasa-gothic
 ttf-symbola
 tty-clock
 turbostat
@@ -525,7 +527,6 @@ vulkan-mesa-layers
 vulkan-swrast
 vvenc
 wallreel
-waybar
 waydroid
 waydroid-helper
 waypaper
