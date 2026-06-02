@@ -1,7 +1,7 @@
 theme = "catppuccin_mocha"
 
 [editor]
-default-yank-register = "+"
+# default-yank-register = "+"
 shell = ["bash", "-c"]
 line-number = "relative"
 indent-guides.render = true

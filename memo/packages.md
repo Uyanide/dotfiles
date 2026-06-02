@@ -288,7 +288,6 @@ lib32-vulkan-icd-loader
 lib32-vulkan-intel
 libc++
 libdbusmenu-lxqt
-libguestfs
 libreoffice-still-zh-cn
 libspng
 libva-intel-driver
@@ -300,7 +299,7 @@ lightdm
 linux-cachyos
 linux-cachyos-headers
 linux-firmware
-linuxqq
+linuxqq-nt
 llama.cpp-cuda-git
 lldb
 llmfit-bin
@@ -328,6 +327,7 @@ mpv-full
 mpv-mpris
 msedit
 namcap
+nano
 nasm
 nautilus
 nautilus-share
@@ -340,6 +340,7 @@ niri
 nmap
 nordvpn-bin
 noto-fonts-cjk
+ntfsprogs-plus
 nvidia-container-toolkit
 nvidia-open-dkms
 nvidia-prime
@@ -490,6 +491,7 @@ tmon
 tmux
 toilet
 tombi
+tpm2-tools
 trash-cli
 tree
 ttf-comic-shanns-nerd
@@ -498,6 +500,7 @@ ttf-lxgw-wenkai
 ttf-lxgw-wenkai-tc
 ttf-maplemono-nf-cn
 ttf-meslo-nerd
+ttf-ms-fonts
 ttf-noto-sans-cjk-vf
 ttf-symbola
 tty-clock
@@ -525,6 +528,7 @@ vulkan-intel
 vulkan-mesa-implicit-layers
 vulkan-mesa-layers
 vulkan-swrast
+vulkan-validation-layers
 vvenc
 wallreel
 waydroid

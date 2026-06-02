@@ -72,7 +72,6 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# --- Nested Partition Logic ---
 OUTER_MOUNT_POINT=""
 handle_nested_partition() {
 	local uuid="$1"
@@ -89,14 +88,20 @@ handle_nested_partition() {
 
 	echo "[INFO] Found outer device: $outer_device" >&2
 
-	# Create a temporary mount point for the outer partition
-	OUTER_MOUNT_POINT=$(mktemp -d -t luks_outer_XXXXXX)
+	# Check if already mounted
+	if findmnt -n "$outer_device" >/dev/null; then
+		echo "[INFO] Outer device is already mounted." >&2
+		OUTER_MOUNT_POINT=$(findmnt -n -o TARGET "$outer_device")
+	else
+		# Create a temporary mount point for the outer partition
+		OUTER_MOUNT_POINT=$(mktemp -d -t luks_outer_XXXXXX)
 
-	echo "[INFO] Mounting outer device to $OUTER_MOUNT_POINT..." >&2
-	if ! sudo mount "$outer_device" "$OUTER_MOUNT_POINT"; then
-		echo "[ERROR] Failed to mount outer device." >&2
-		rmdir "$OUTER_MOUNT_POINT"
-		exit 1
+		echo "[INFO] Mounting outer device to $OUTER_MOUNT_POINT..." >&2
+		if ! sudo mount "$outer_device" "$OUTER_MOUNT_POINT"; then
+			echo "[ERROR] Failed to mount outer device." >&2
+			rmdir "$OUTER_MOUNT_POINT"
+			exit 1
+		fi
 	fi
 
 	local luks_image="$OUTER_MOUNT_POINT/$NESTED_path"

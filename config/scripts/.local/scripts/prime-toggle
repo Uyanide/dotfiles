@@ -2,15 +2,15 @@
 
 set -euo pipefail
 
-[[ "$XDG_CURRENT_DESKTOP" != "niri" ]] && exit 1
+# [[ "$XDG_CURRENT_DESKTOP" != "niri" ]] && exit 1
 
 # if grep -q 'prefer_order=(nvidia intel)' "$HOME/.local/snippets/set_display"; then
 if grep -q '[^[:space:]]' "$HOME/.config/niri/config/prime.kdl"; then
-	# sed -i 's/prefer_order=(nvidia intel)/prefer_order=(intel nvidia)/' "$HOME/.local/snippets/set_display"
+	sed -i -E 's/prefer_order=\([^)]*\)/prefer_order=(intel nvidia)/' "$HOME/.local/snippets/set_display"
 	echo "" >"$HOME/.config/niri/config/prime.kdl"
 	echo "Disabled global Nvidia Prime offloading."
 else
-	# sed -i 's/prefer_order=(intel nvidia)/prefer_order=(nvidia intel)/' "$HOME/.local/snippets/set_display"
+	sed -i -E 's/prefer_order=\([^)]*\)/prefer_order=(nvidia intel)/' "$HOME/.local/snippets/set_display"
 	cat >"$HOME/.config/niri/config/prime.kdl" <<EOF
 environment {
     __NV_PRIME_RENDER_OFFLOAD "1"
@@ -23,8 +23,10 @@ fi
 
 # Restart session
 
-printf "Session restart is required to apply changes.\nDo it now? (Y/n): "
-read -r answer
-if [[ "$answer" =~ ^[Yy]$ || -z "$answer" ]]; then
-	niri msg action quit
+if [[ $XDG_CURRENT_DESKTOP == niri ]]; then
+	printf "Session restart is required to apply changes.\nDo it now? (Y/n): "
+	read -r answer
+	if [[ $answer =~ ^[Yy]$ || -z $answer ]]; then
+		niri msg action quit
+	fi
 fi

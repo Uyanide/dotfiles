@@ -97,3 +97,12 @@ window-rule {
     // open-maximized-to-edges true
     // open-on-output "HDMI-A-1"
 }
+
+// Steam toasts
+window-rule {
+    match app-id="^steam$" title=r#"^notificationtoasts_\d+_desktop$"#
+
+    open-floating true
+    open-focused false
+    default-floating-position x=2 y=3 relative-to="bottom-right"
+}
