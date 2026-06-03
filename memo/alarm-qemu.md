@@ -22,7 +22,7 @@
 > sudo bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /var/lib/machines/{{ rootfs-name }}
 > ```
 >
-> 解压的 aarch64 架构的 archlinux rootfs. 但要不要提醒用户应该取消注释 `cat /etc/pacman.conf` 中的
+> 解压的 aarch64 架构的 archlinux rootfs. 但要不要提醒用户应该取消注释 `/etc/pacman.conf` 中的
 >
 > ```conf
 > [options]

@@ -9,15 +9,15 @@ set -euo pipefail
 QUERY_CODE=$(printf "\033[c")
 
 # Set terminal to raw mode with timeout as 0.5s
-stty_orig=$(stty -g)
-trap 'stty "$stty_orig"' EXIT INT TERM HUP
+stty_orig=$(stty -g < /dev/tty)
+trap 'stty "$stty_orig" < /dev/tty' EXIT INT TERM HUP
 stty -echo -icanon min 1 time 0
 
 printf "%s" "$QUERY_CODE" >/dev/tty
 
 response=""
 while true; do
-	IFS= read -r -N 1 -t 0.3 char || {
+	IFS= read -r -N 1 -t 0.3 char < /dev/tty || {
 		[ -z "$char" ] && break
 	}
 

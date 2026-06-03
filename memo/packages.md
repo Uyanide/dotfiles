@@ -98,7 +98,6 @@ bash /path/to/dotfiles/memo/packages.md
 
 ```
 7zip
-aarch64-linux-gnu-gcc
 alacritty
 alass
 arch-install-scripts
@@ -109,7 +108,6 @@ ark
 av1an
 awww
 axel
-azure-cli
 base
 base-devel
 bash-completion
@@ -122,7 +120,6 @@ bluez-utils
 bootconfig
 bpf
 bpftrace
-bridge-utils
 brightnessctl
 bsd-games
 btop
@@ -160,12 +157,15 @@ cython
 deno
 devtools
 digital
+discord
 dnsmasq
 docker
+docker-buildx
 docker-compose
 dolphin
 dotnet-sdk
 doxygen
+drawio-desktop
 drm-info
 dwarfs
 ed
@@ -232,6 +232,7 @@ grim
 grub
 grub-btrfs
 gst-plugins-bad
+gtkwave
 gucharmap
 gvfs-smb
 gwenview
@@ -294,7 +295,6 @@ libva-intel-driver
 libva-nvidia-driver
 libva-utils
 libvips
-libvirt
 lightdm
 linux-cachyos
 linux-cachyos-headers
@@ -325,9 +325,7 @@ mpd
 mpd-mpris
 mpv-full
 mpv-mpris
-msedit
 namcap
-nano
 nasm
 nautilus
 nautilus-share
@@ -354,10 +352,8 @@ obs-studio
 obsidian
 okular
 opam
-openbsd-netcat
 opencl-headers
 opencl-nvidia
-openlist-bin
 openssh
 os-prober
 pacman-contrib
@@ -423,6 +419,7 @@ qt6-serialbus
 qt6ct
 qtcreator
 qtrvsim
+quickemu
 quickshell-git
 qutebrowser
 rclone
@@ -515,8 +512,6 @@ ventoy-bin
 vesktop-bin
 vicinae
 vim
-virt-install
-virt-manager
 visual-studio-code-bin
 vk-hdr-layer-kwin6-git
 vlc
@@ -589,14 +584,12 @@ xpadneo-dkms
 xwayland-satellite
 yad
 yay
-yay-debug
 yazi
 yt-dlp
 zellij
 zen-browser-bin
 zenity
 zig
-zig0.15-bin
 zoxide
 zram-generator
 zsh

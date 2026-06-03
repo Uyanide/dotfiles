@@ -1,18 +1,18 @@
 ### Font packages (involved in fontconfig)
 
-- `aur/ttf-symbola`
 - `extra/noto-fonts`
 - `extra/noto-fonts-cjk`
 - `extra/noto-fonts-emoji`
 - `extra/ttf-nerd-fonts-symbols`
 - `aur/maplemono-nf-cn`
+- `aur/ttf-lxgw-wenkai`
+- `aur/ttf-symbola`
 
 ### Other fonts (used but not involved in fontconfig)
 
-- Sour Gummy (from [Google Fonts](https://fonts.google.com/specimen/Sour+Gummy))
-- Font Awesome 6 Free (extracted from an AUR package that no longer exists)
-- `extra/ttf-meslo-nerd`
-- `archlinuxcn/ttf-lxgw-wenkai`
+- [Sour Gummy](https://fonts.google.com/specimen/Sour+Gummy): used in quickshell
+- Font Awesome 6 Free: used in waybar & some other desktop components
+- `extra/ttf-meslo-nerd`: for its `Mono` variant, nerd-font icons with 1-cell width
 
 ### Font configuration
 
@@ -38,7 +38,6 @@
  <alias>
   <family>sans-serif</family>
   <prefer>
-   <!-- <family>LXGW WenKai</family> -->
    <family>Noto Sans</family>
    <family>Noto Sans CJK SC</family>
    <family>Noto Sans CJK JP</family>
@@ -77,7 +76,6 @@
  <alias>
   <family>monospace</family>
   <prefer>
-   <!-- <family>ComicShanns Nerd Font</family> -->
    <family>Maple Mono NF CN</family>
    <family>Noto Sans Mono</family>
    <family>Noto Sans Mono CJK SC</family>

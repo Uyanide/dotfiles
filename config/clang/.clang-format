@@ -4,38 +4,12 @@ AccessModifierOffset: -2
 
 AlignConsecutiveAssignments: true
 
-AllowAllArgumentsOnNextLine: false
-
-AllowAllParametersOfDeclarationOnNextLine: false
-
-AllowShortBlocksOnASingleLine: Empty
-
 AllowShortCaseLabelsOnASingleLine: true
-
-AllowShortFunctionsOnASingleLine: Inline
-
-AllowShortLambdasOnASingleLine: All
-
-# BreakAfterReturnType: All
 
 BinPackArguments: false
 
 BinPackParameters: false
 
-ColumnLimit: 0
-
-CompactNamespaces: false
-
-ContinuationIndentWidth: 4
-
-Cpp11BracedListStyle: true
-
-EmptyLineBeforeAccessModifier: LogicalBlock
-
-FixNamespaceComments: true
-
-IncludeBlocks: Regroup
-SortIncludes: true
 IncludeCategories:
   - Regex: '^<ext/.*\.h>'
     Priority: 2
@@ -48,16 +22,10 @@ IncludeCategories:
 
 IndentWidth: 4
 
-KeepEmptyLinesAtTheStartOfBlocks: true
-
 InsertNewlineAtEOF: true
-
-MaxEmptyLinesToKeep: 1
 
 TabWidth: 4
 
-UseTab: Never
-
 SeparateDefinitionBlocks: Always
 
-QualifierAlignment: Left
+ColumnLimit: 0
