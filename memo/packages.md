@@ -163,7 +163,6 @@ docker
 docker-buildx
 docker-compose
 dolphin
-dotnet-sdk
 doxygen
 drawio-desktop
 drm-info
@@ -197,7 +196,6 @@ filelight
 fish
 fisher
 flatpak
-flutter-bin
 fnm
 foliate
 font-manager
@@ -224,7 +222,6 @@ glaze
 gnome-keyring
 gnome-text-editor
 go
-gpac
 gping
 gradia
 gradle
@@ -258,7 +255,6 @@ intel-ucode
 inxi
 iperf3
 jdk-openjdk
-jdk17-openjdk
 jdk21-graalvm-ee-bin
 jetbrains-toolbox
 jp2a
@@ -316,6 +312,7 @@ mangohud
 matugen
 mesa
 meson
+mixtapes-git
 mkvtoolnix-cli
 modprobed-db
 moonlight-qt
@@ -333,12 +330,13 @@ nethogs
 network-manager-applet
 networkmanager
 networkmanager-openvpn
+nextcloud-client
 nfs-utils
 niri
 nmap
 nordvpn-bin
 noto-fonts-cjk
-ntfsprogs-plus
+ntfsprogs
 nvidia-container-toolkit
 nvidia-open-dkms
 nvidia-prime
@@ -354,6 +352,7 @@ okular
 opam
 opencl-headers
 opencl-nvidia
+opencode
 openssh
 os-prober
 pacman-contrib
@@ -370,6 +369,7 @@ picard
 pipes.c
 pipewire-alsa
 plasma-meta
+playerctl
 polkit-gnome
 power-profiles-daemon
 protonplus
@@ -495,7 +495,7 @@ ttf-comic-shanns-nerd
 ttf-jetbrains-mono-nerd
 ttf-lxgw-wenkai
 ttf-lxgw-wenkai-tc
-ttf-maplemono-nf-cn
+ttf-maplemono-nf-cn-unhinted
 ttf-meslo-nerd
 ttf-ms-fonts
 ttf-noto-sans-cjk-vf
@@ -549,6 +549,7 @@ x86_energy_perf_policy
 xclip
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
+xmake
 xone-dkms
 xorg-bdftopcf
 xorg-font-util
@@ -586,6 +587,7 @@ yad
 yay
 yazi
 yt-dlp
+ytmdesktop-bin
 zellij
 zen-browser-bin
 zenity

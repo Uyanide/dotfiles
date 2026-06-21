@@ -234,6 +234,8 @@ if (( $+commands[jj] )); then
         jj bookmark move "$branch" --to "$pos"
         jj git push
     }
+
+    alias jja="jj log -r 'all()' -T builtin_log_detailed"
 fi
 
 # Global aliases (can be used as part of a command)

@@ -28,7 +28,6 @@ y     - Copy the selection.
 p     - Paste after cursor.
 P     - Paste before cursor.
 
-
 /     - Search forwards.
 ?     - Search backwards.
 n     - Next search result.
