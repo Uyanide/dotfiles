@@ -10,7 +10,7 @@ ScrollView {
   property color handleHoverColor: handleColor
   property color handlePressedColor: handleColor
   property color trackColor: "transparent"
-  property real handleWidth: Math.round(6 * Style.uiScaleRatio)
+  property real handleWidth: 6
   property real handleRadius: Style.radiusM
   property int verticalPolicy: ScrollBar.AsNeeded
   property int horizontalPolicy: ScrollBar.AsNeeded

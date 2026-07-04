@@ -11,7 +11,7 @@ import qs.Utils
 UBox {
     id: root
 
-    property int forecastDays: 6
+    property int forecastDays: 5
     property bool showLocation: true
     property bool showEffects: true
     readonly property bool weatherReady: LocationService.data.weather !== null

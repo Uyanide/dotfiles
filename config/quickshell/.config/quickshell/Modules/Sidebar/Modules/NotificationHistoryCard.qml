@@ -729,11 +729,15 @@ Rectangle {
 
                                                 // Header row with app name and timestamp
                                                 Row {
+                                                    id: notificationHeaderRow
+
                                                     width: parent.width
                                                     spacing: Style.marginS
 
                                                     // Urgency indicator
                                                     Rectangle {
+                                                        id: urgencyIndicator
+
                                                         width: 6
                                                         height: 6
                                                         anchors.verticalCenter: parent.verticalCenter
@@ -754,9 +758,13 @@ Rectangle {
                                                         pointSize: Style.fontSizeXS
                                                         font.weight: Style.fontWeightBold
                                                         color: Colors.mPrimary
+                                                        elide: Text.ElideRight
+                                                        width: Math.max(0, Math.min(implicitWidth, notificationHeaderRow.width - (urgencyIndicator.visible ? urgencyIndicator.width + notificationHeaderRow.spacing : 0) - notificationHeaderRow.spacing - notificationTimestampText.implicitWidth))
                                                     }
 
                                                     UText {
+                                                        id: notificationTimestampText
+
                                                         textFormat: Text.PlainText
                                                         text: " " + Time.formatRelativeTime(model.timestamp)
                                                         pointSize: Style.fontSizeXXS

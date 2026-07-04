@@ -38,9 +38,11 @@ UBox {
                     }
 
                     ColumnLayout {
+                        Layout.fillWidth: true
                         spacing: Style.marginXS
 
                         UText {
+                            Layout.fillWidth: true
                             text: `${HostService.username} @ ${HostService.hostname}`
                             font.weight: Style.fontWeightBold
                             font.pointSize: Style.fontSizeL

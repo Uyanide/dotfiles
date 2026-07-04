@@ -255,6 +255,7 @@ intel-ucode
 inxi
 iperf3
 jdk-openjdk
+jdk17-graalvm-ee-bin
 jdk21-graalvm-ee-bin
 jetbrains-toolbox
 jp2a
@@ -294,7 +295,10 @@ libvips
 lightdm
 linux-cachyos
 linux-cachyos-headers
-linux-firmware
+linux-firmware-intel
+linux-firmware-other
+linux-firmware-realtek
+linux-firmware-whence
 linuxqq-nt
 llama.cpp-cuda-git
 lldb
@@ -312,7 +316,6 @@ mangohud
 matugen
 mesa
 meson
-mixtapes-git
 mkvtoolnix-cli
 modprobed-db
 moonlight-qt
@@ -495,7 +498,7 @@ ttf-comic-shanns-nerd
 ttf-jetbrains-mono-nerd
 ttf-lxgw-wenkai
 ttf-lxgw-wenkai-tc
-ttf-maplemono-nf-cn-unhinted
+ttf-maplemono-nf-cn
 ttf-meslo-nerd
 ttf-ms-fonts
 ttf-noto-sans-cjk-vf
@@ -587,7 +590,6 @@ yad
 yay
 yazi
 yt-dlp
-ytmdesktop-bin
 zellij
 zen-browser-bin
 zenity

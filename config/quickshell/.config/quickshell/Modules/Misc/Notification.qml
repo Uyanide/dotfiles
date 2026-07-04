@@ -628,14 +628,19 @@ Variants {
                     spacing: Style.marginS
 
                     // Header with urgency indicator
-                    RowLayout {
+                    Row {
+                      id: notificationHeaderRow
+
                       Layout.fillWidth: true
+                      Layout.rightMargin: Style.marginXL
                       spacing: Style.marginS
 
                       Rectangle {
-                        Layout.preferredWidth: 6
-                        Layout.preferredHeight: 6
-                        Layout.alignment: Qt.AlignVCenter
+                        id: urgencyDot
+
+                        width: 6
+                        height: 6
+                        anchors.verticalCenter: parent.verticalCenter
                         radius: Style.radiusXS
                         color: model.urgency === 2 ? Colors.mError : model.urgency === 0 ? Colors.mOnSurface : Colors.mPrimary
                       }
@@ -645,18 +650,18 @@ Variants {
                         pointSize: Style.fontSizeXS
                         font.weight: Style.fontWeightBold
                         color: Colors.mPrimary
+                        elide: Text.ElideRight
+                        width: Math.max(0, Math.min(implicitWidth, notificationHeaderRow.width - urgencyDot.width - notificationHeaderRow.spacing * 2 - notificationTimestampText.implicitWidth))
                       }
 
                       UText {
+                        id: notificationTimestampText
+
                         textFormat: Text.PlainText
                         text: " " + Time.formatRelativeTime(model.timestamp)
                         pointSize: Style.fontSizeXXS
                         color: Colors.mOnSurfaceVariant
-                        Layout.alignment: Qt.AlignBottom
-                      }
-
-                      Item {
-                        Layout.fillWidth: true
+                        anchors.bottom: parent.bottom
                       }
                     }
 
