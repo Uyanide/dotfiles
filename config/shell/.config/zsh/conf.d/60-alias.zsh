@@ -83,14 +83,14 @@ fi
 # ls
 
 if (( $+commands[eza] )); then
-    alias ls="eza --color=auto --hyperlink"
-    alias ll="eza -lh --group-directories-first --icons=auto --hyperlink"
-    alias la="eza -lh --group-directories-first --icons=auto --hyperlink --all"
-    alias lt="eza --tree --level=2 --long --icons --git"
+    alias ls="eza --color=auto --hyperlink=auto"
+    alias ll="eza -lh --group-directories-first --icons=auto --hyperlink=auto"
+    alias la="eza -lh --group-directories-first --icons=auto --hyperlink=auto --all"
+    alias lt="eza --tree --level=2 --long --icons --git --hyperlink=auto"
 else
-    alias ls="ls --color=auto --hyperlinko"
-    alias ll="ls -lh --group-directories-first --color=auto --hyperlink"
-    alias la="ls -lah --group-directories-first --color=auto --hyperlink"
+    alias ls="ls --color=auto --hyperlink=auto"
+    alias ll="ls -lh --group-directories-first --color=auto --hyperlink=auto"
+    alias la="ls -lah --group-directories-first --color=auto --hyperlink=auto"
 fi
 
 # directories

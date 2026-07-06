@@ -113,6 +113,7 @@ base-devel
 bash-completion
 bat
 bc
+bear
 bind
 blueman
 bluez-tools
@@ -512,6 +513,7 @@ uv
 valgrind
 vapoursynth-plugin-vship-cuda-git
 ventoy-bin
+verilator
 vesktop-bin
 vicinae
 vim
@@ -589,11 +591,13 @@ xwayland-satellite
 yad
 yay
 yazi
+yosys
 yt-dlp
 zellij
 zen-browser-bin
 zenity
 zig
+zig0.15-bin
 zoxide
 zram-generator
 zsh
