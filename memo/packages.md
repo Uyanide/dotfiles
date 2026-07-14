@@ -64,14 +64,20 @@ update-full-list:end -->
 | --------- | ---------------------------- |
 | alass     | Subtitle sync; used in mpv   |
 | axel      | CLI download accelerator     |
+| bear      | Generate files for clangd    |
 | figlet    | Draw large letters           |
 | foliate   | GTK eBook reader             |
 | gearlever | AppImage manager             |
 | gping     | Ping with better looking TUI |
+| hyperfine | CLI Benchmarking tool        |
+| inxi      | More professional fastfetch  |
 | jp2a      | JPEG to ASCII                |
+| namcap    | Pacman package analyzer      |
 | nethogs   | Network top                  |
 | picard    | Music tagger (MusicBrainz)   |
+| tmon      | Thermal monitor              |
 | toilet    | Better FIGlet                |
+| tokei     | Better CLOC                  |
 | wev       | Debug wayland events         |
 | yad       | Fork of zenity               |
 | zenity    | Display dialog boxes via cli |
@@ -158,6 +164,7 @@ cython
 deno
 devtools
 digital
+direnv
 discord
 dnsmasq
 docker
@@ -202,6 +209,7 @@ foliate
 font-manager
 fontforge
 foot
+freeze-bin
 frei0r-plugins
 fssimu2
 fuzzel
@@ -220,6 +228,7 @@ git-filter-repo
 git-sizer
 github-cli
 glaze
+gnome-connections
 gnome-keyring
 gnome-text-editor
 go
@@ -245,7 +254,6 @@ hypridle
 hyprlock
 hyprpicker
 hyprpolkitagent
-hyprsunset
 hyprutils
 imagemagick
 inetutils
@@ -292,8 +300,6 @@ libspng
 libva-intel-driver
 libva-nvidia-driver
 libva-utils
-libvips
-lightdm
 linux-cachyos
 linux-cachyos-headers
 linux-firmware-intel
@@ -353,7 +359,9 @@ oavif-git
 obs-studio
 obsidian
 okular
+omp-bin
 opam
+openbsd-netcat
 opencl-headers
 opencl-nvidia
 opencode
@@ -361,7 +369,6 @@ openssh
 os-prober
 pacman-contrib
 pacman-utils
-pamixer
 pandoc-bin
 papirus-icon-theme
 perf
@@ -425,12 +432,12 @@ qtcreator
 qtrvsim
 quickemu
 quickshell-git
-qutebrowser
 rclone
 reflector
 resources
 riscv64-linux-gnu-binutils
 riscv64-linux-gnu-gcc
+rmpc
 rsync
 ruff
 rustdesk
@@ -491,6 +498,7 @@ tk
 tmon
 tmux
 toilet
+tokei
 tombi
 tpm2-tools
 trash-cli
@@ -513,7 +521,6 @@ uv
 valgrind
 vapoursynth-plugin-vship-cuda-git
 ventoy-bin
-verilator
 vesktop-bin
 vicinae
 vim
@@ -591,7 +598,6 @@ xwayland-satellite
 yad
 yay
 yazi
-yosys
 yt-dlp
 zellij
 zen-browser-bin
