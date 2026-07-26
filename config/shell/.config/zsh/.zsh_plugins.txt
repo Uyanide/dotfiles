@@ -1,17 +1,18 @@
-# Syntax highlighting
-zsh-users/zsh-syntax-highlighting
+# Loaded by conf.d/95-plugins.zsh, AFTER compinit and after every conf.d file
+# that defines a ZLE widget. The order below is the load order and is required.
+#
+# Completions live in .zsh_plugins_pre.txt — they must reach $fpath before
+# compinit, so they cannot be listed here.
 
-# Catppuccin Mocha theme for syntax highlighting
-# catppuccin/zsh-syntax-highlighting path:themes/catppuccin_latte-zsh-syntax-highlighting.zsh
-catppuccin/zsh-syntax-highlighting path:themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
+# Fuzzy tab completion — after compinit, before anything that wraps widgets
+Aloxaf/fzf-tab
 
 # Fish-like autosuggestions
 zsh-users/zsh-autosuggestions
 
-# Additional completions
-zsh-users/zsh-completions
+# Syntax highlighting — must stay last, it wraps every widget defined so far
+zsh-users/zsh-syntax-highlighting
 
-# Long command done notification — handled by conf.d/10-done.zsh
-
-# Fuzzy tab completion
-Aloxaf/fzf-tab
+# Catppuccin Mocha theme, layered on top of zsh-syntax-highlighting
+# catppuccin/zsh-syntax-highlighting path:themes/catppuccin_latte-zsh-syntax-highlighting.zsh
+catppuccin/zsh-syntax-highlighting path:themes/catppuccin_mocha-zsh-syntax-highlighting.zsh

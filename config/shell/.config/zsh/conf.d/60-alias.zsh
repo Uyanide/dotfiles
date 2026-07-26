@@ -121,7 +121,7 @@ copy() {
 # wget
 
 if (( $+commands[wget] )); then
-    alias wget="wget -c "
+    alias wget="wget -c"
 fi
 
 # pacman
@@ -233,6 +233,7 @@ if (( $+commands[jj] )); then
         pos=${2:-@-}
         jj bookmark move "$branch" --to "$pos"
         jj git push
+        unfunction default_branch
     }
 
     alias jja="jj log -r 'all()' -T builtin_log_detailed"
@@ -242,7 +243,7 @@ fi
 
 # wl-paste
 if (( $+commands[wl-paste] )); then
-    alias -g C="| wl-copy"
+    alias -g COPY="| wl-copy"
 fi
 
 # Redirects

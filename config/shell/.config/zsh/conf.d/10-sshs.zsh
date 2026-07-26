@@ -2,7 +2,7 @@
 # $uy_ssh_keys should be set in a device-specific file or left empty for defaults
 
 if [[ "${UY_ENABLE_GPG_AGENT_SSH:-0}" = "1" ]] &&
-   (( $+commands[gpg-init] )) && (( $+commands[gpgconf] )); then
+   [[ -x "$HOME/.local/scripts/gpg-init" ]] && (( $+commands[gpgconf] )); then
     : # GPG agent handles SSH — nothing to do
 
 elif [[ "${UY_USING_SSH_AGENT:-0}" = "1" ]]; then

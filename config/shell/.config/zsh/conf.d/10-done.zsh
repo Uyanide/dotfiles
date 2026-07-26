@@ -7,11 +7,29 @@
 zmodload zsh/datetime
 
 : ${uy_done_min_cmd_duration:=10}
-: ${uy_done_exclude:='^(nvim|helix|hx|vim|vi|nano|less|more|man|ssh|top|htop|btop)$'}
+: ${uy_done_exclude:='^(nvim|helix|hx|vim|vi|nano|less|more|man|ssh|top|htop|btop|sudoedit)$'}
 
 uy_done_get_focused_window_id() {
     (( $+commands[jq] )) || return
     niri msg --json focused-window 2>/dev/null | jq -r '.id // empty'
+}
+
+uy_done_cmd_name() {
+    local -a words
+    words=(${(z)1})
+
+    while (( $#words )); do
+        case $words[1] in
+            *=*) ;;
+            -*) ;;
+            sudo|doas|env|command|builtin|exec|nohup|nice|ionice|time|stdbuf|setsid) ;;
+            *) REPLY=${words[1]:t}; return ;;
+        esac
+        shift words
+    done
+
+    # Nothing but wrappers — fall back to the first word.
+    REPLY=${1%% *}
 }
 
 uy_done_preexec() {
@@ -30,8 +48,9 @@ uy_done_precmd() {
     (( elapsed >= uy_done_min_cmd_duration )) || return
 
     # skip excluded commands
-    local cmd_name="${uy_done_cmd%% *}"
-    [[ "$cmd_name" =~ $uy_done_exclude ]] && return
+    local REPLY
+    uy_done_cmd_name "$uy_done_cmd"
+    [[ "$REPLY" =~ $uy_done_exclude ]] && return
 
     # skip if window is still focused
     local current_id

@@ -23,7 +23,7 @@ fi
 # GPG
 
 if (( $+commands[gpg] )); then
-    export GPG_TTY=$(tty)
+    export GPG_TTY=$TTY
 fi
 
 # Catppuccin Mocha — autosuggestions color

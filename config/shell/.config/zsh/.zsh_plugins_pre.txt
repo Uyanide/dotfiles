@@ -1,0 +1,8 @@
+# Loaded by conf.d/02-fpath.zsh, BEFORE compinit.
+# kind:fpath only appends to $fpath — nothing here gets sourced.
+#
+# path:src is required: kind:fpath appends the repo root, but the _* files
+# live in src/, so without it compinit finds nothing.
+
+# Additional completions
+zsh-users/zsh-completions path:src kind:fpath

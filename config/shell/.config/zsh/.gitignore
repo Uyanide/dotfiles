@@ -1,3 +1,4 @@
 # antidote generated/cache files
 .zsh_plugins.zsh
+.zsh_plugins_pre.zsh
 .antidote/

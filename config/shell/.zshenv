@@ -45,7 +45,6 @@ fi
 # Paths
 
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
-(( $+commands[opam] )) && eval "$(opam env)"
 prepend_path "$HOME/.local/share/fnm/aliases/default/bin" # 'fnm env' is eval'ed in .zshrc
 prepend_path "$HOME/.cargo/bin"
 prepend_path "$HOME/go/bin"

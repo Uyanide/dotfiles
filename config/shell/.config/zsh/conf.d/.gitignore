@@ -1,8 +1,8 @@
 *
 !.gitignore
 !01-options.zsh
-!02-completions.zsh
-!03-plugins.zsh
+!02-fpath.zsh
+!03-compinit.zsh
 !10-done.zsh
 !10-env.zsh
 !10-oops.zsh
@@ -11,3 +11,4 @@
 !60-alias.zsh
 !60-direnv.zsh
 !60-fetch.zsh
+!95-plugins.zsh
