@@ -5,9 +5,9 @@ if (( $+commands[fzf] )); then
 
     # use fd if available (search cwd only, skip vcs/cache junk)
     if (( $+commands[fd] )); then
-        export FD_CMD="fd"
+        FD_CMD="fd"
     elif (( $+commands[fdfind] )); then
-        export FD_CMD="fdfind"
+        FD_CMD="fdfind"
     fi
     if [[ -n "$FD_CMD" ]]; then
         export FZF_DEFAULT_COMMAND="$FD_CMD --type f --hidden --exclude .git"
@@ -225,8 +225,14 @@ if (( $+commands[jj] )); then
 
     jjp() {
         default_branch() {
-            git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|.*/||' \
-            || git remote show origin | awk '/HEAD branch/ {print $NF}' || echo "master"
+            local ref
+            ref=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null)
+            if [[ -n "$ref" ]]; then
+                print -r -- "${ref:t}"
+                return
+            fi
+            ref=$(git remote show origin 2>/dev/null | awk '/HEAD branch/ {print $NF}')
+            print -r -- "${ref:-master}"
         }
         local branch pos
         branch=${1:-$(default_branch)}

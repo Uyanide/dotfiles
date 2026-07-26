@@ -9,10 +9,33 @@ zmodload zsh/datetime
 : ${uy_done_min_cmd_duration:=10}
 : ${uy_done_exclude:='^(nvim|helix|hx|vim|vi|nano|less|more|man|ssh|top|htop|btop|sudoedit)$'}
 
-uy_done_get_focused_window_id() {
-    (( $+commands[jq] )) || return
-    niri msg --json focused-window 2>/dev/null | jq -r '.id // empty'
-}
+# Returns the id in $REPLY, empty if there is none or niri did not answer.
+if zmodload zsh/net/socket 2>/dev/null; then
+    uy_done_get_focused_window_id() {
+        setopt local_options extended_glob
+        local fd line
+        local -a match mbegin mend
+        REPLY=
+
+        zsocket "$NIRI_SOCKET" 2>/dev/null || return
+        fd=$REPLY
+        REPLY=
+
+        if print -u $fd -r -- '"FocusedWindow"' 2>/dev/null; then
+            read -t 1 -u $fd -r line 2>/dev/null
+        fi
+        exec {fd}>&-
+
+        # With no focused window the payload is null, so the id is simply absent.
+        [[ $line == (#b)*'"FocusedWindow":'*'"id":'(<->)* ]] && REPLY=$match[1]
+    }
+elif (( $+commands[jq] )); then
+    uy_done_get_focused_window_id() {
+        REPLY=$(niri msg --json focused-window 2>/dev/null | jq -r '.id // empty')
+    }
+else
+    return
+fi
 
 uy_done_cmd_name() {
     local -a words
@@ -33,9 +56,11 @@ uy_done_cmd_name() {
 }
 
 uy_done_preexec() {
+    local REPLY
     uy_done_cmd="$1"
     uy_done_start=$EPOCHSECONDS
-    uy_done_window_id=$(uy_done_get_focused_window_id)
+    uy_done_get_focused_window_id
+    uy_done_window_id=$REPLY
 }
 
 uy_done_precmd() {
@@ -54,7 +79,8 @@ uy_done_precmd() {
 
     # skip if window is still focused
     local current_id
-    current_id=$(uy_done_get_focused_window_id)
+    uy_done_get_focused_window_id
+    current_id=$REPLY
     [[ -n "$uy_done_window_id" && "$uy_done_window_id" = "$current_id" ]] && return
 
     # humanize duration

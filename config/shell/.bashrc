@@ -53,11 +53,15 @@ if type fnm &>/dev/null; then
 	eval "$(fnm env --shell bash --use-on-cd)"
 fi
 
-if [[ ${UY_USING_SSH_AGENT:-0} == 1 ]]; then
+# $uy_ssh_keys should be set in a device-specific file or left empty for defaults
+if [[ ${UY_ENABLE_GPG_AGENT_SSH:-0} == 1 ]] &&
+	[ -x "$HOME/.local/scripts/gpg-init" ] && type gpgconf &>/dev/null; then
+	: # GPG agent handles SSH — nothing to do
+elif [[ ${UY_USING_SSH_AGENT:-0} == 1 ]]; then
 	function sshs() {
 		if ! ssh-add -l &>/dev/null; then
-			if [ -n "$ssh_keys" ]; then
-				ssh-add "${ssh_keys[@]}"
+			if [ ${#uy_ssh_keys[@]} -gt 0 ]; then
+				ssh-add "${uy_ssh_keys[@]}"
 			else
 				ssh-add
 			fi

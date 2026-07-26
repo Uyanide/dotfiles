@@ -17,7 +17,7 @@ uy_oops_confirm() {
     # when the current one ends in a backslash; zsh writes a command that itself
     # ends in a backslash as "\ " (trailing space), so the marker is unambiguous.
     # Walking forward and remembering the start of each entry is exact for
-    # entries of any length — scanning backwards over a fixed window is not.
+    # entries of any length.
     local start
     start=$(awk '{ if (!cont) start = NR; cont = /\\$/ } END { print start + 0 }' "$HISTFILE")
 
@@ -49,11 +49,20 @@ uy_oops_confirm() {
         # one) correctly leaves an empty file.
         local n=${#ordered[@]}
         head -n $(( start - 1 )) "$HISTFILE" > "$HISTFILE.tmp" && mv "$HISTFILE.tmp" "$HISTFILE"
-        # Replace the in-memory history with the updated file.
-        # `fc -R` would *append* the file on top of what is already in memory,
-        # which both duplicates every entry and leaves the deleted command in
-        # memory — the next `fc -W` (e.g. the one at the top of this function
-        # on a second `oops`) would then write it straight back to the file.
+        # Replace the in-memory history with the updated file. `fc -p` is the
+        # only primitive that replaces it: `fc -R` *appends* the file on top of
+        # what is already in memory, which both duplicates every entry and
+        # leaves the deleted command there for the next `fc -W` to write back.
+        #
+        # `fc -p` pushes a history layer, and each layer retains a full copy of
+        # the history, so pop the layer the previous call left behind first —
+        # that keeps exactly one live no matter how often `oops` runs. `fc -P`
+        # only restores the old in-memory list, it does not write to $HISTFILE,
+        # so it cannot undo the deletion above; and the push on the very next
+        # line replaces that stale list immediately. Both must stay in this
+        # branch: on the cancel path nothing was deleted, so memory already
+        # matches the file and popping would corrupt it.
+        fc -P 2>/dev/null
         fc -p "$HISTFILE" $HISTSIZE $SAVEHIST
         print -P "%F{green}Deleted ($n line(s) removed).%f"
     else

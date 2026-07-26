@@ -7,7 +7,7 @@ fi
 
 # Editor
 
-for _uy_app in nvim helix vim vi nano; do
+for _uy_app in helix nvim vim vi nano; do
     if (( $+commands[$_uy_app] )); then
         export EDITOR=$_uy_app
         export VISUAL=$_uy_app
@@ -29,12 +29,6 @@ fi
 # Catppuccin Mocha — autosuggestions color
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#6c7086"
-
-# Vscode shell integration
-
-if (( $+commands[code] )) && [[ "$TERM_PROGRAM" == "vscode" ]]; then
-    source "$(code --locate-shell-integration-path zsh)"
-fi
 
 # fnm
 

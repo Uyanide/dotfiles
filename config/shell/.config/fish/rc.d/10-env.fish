@@ -7,7 +7,7 @@ if type -q bat
 end
 
 # Editor
-for app in nvim helix vim vi nano
+for app in helix nvim vim vi nano
     if type -q $app
         set -x -g EDITOR $app
         set -x -g VISUAL $app
@@ -30,4 +30,10 @@ set -U __done_notification_urgency_level low
 # fnm
 if type -q fnm
     fnm env --shell fish --use-on-cd | source
+end
+
+# bat
+if type -q bat
+    set -xg BAT_THEME "Catppuccin Mocha"
+    set -xg BAT_STYLE "default,-numbers"
 end

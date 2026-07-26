@@ -52,6 +52,10 @@ sixel)
     uy_fetch_args=(--logo-type raw --logo-width 42 --logo "$HOME/.config/fastfetch/logo_ros/42x.sixel" --color "$uy_fetch_color")
     uy_fetch_args_brief=(--logo-type raw --logo-width 28 --logo "$HOME/.config/fastfetch/logo_ros/28x.sixel" --color "$uy_fetch_color")
     ;;
+unicode)
+    uy_fetch_args=(--logo-type raw --logo-width 42 --logo "$HOME/.config/fastfetch/logo_ros/42x.unicode" --color "$uy_fetch_color")
+    uy_fetch_args_brief=(--logo-type raw --logo-width 28 --logo "$HOME/.config/fastfetch/logo_ros/28x.unicode" --color "$uy_fetch_color")
+    ;;
 *) # kitty, auto, etc.
     uy_fetch_args=(--logo-type "$uy_fetch_logo_type" --logo-width 42 --logo "$HOME/.config/fastfetch/logo_ros/ros.png" --color "$uy_fetch_color")
     uy_fetch_args_brief=(--logo-type "$uy_fetch_logo_type" --logo-width 28 --logo "$HOME/.config/fastfetch/logo_ros/ros.png" --color "$uy_fetch_color")
