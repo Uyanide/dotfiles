@@ -59,7 +59,7 @@ uy_done_precmd() {
         --urgency="$urgency" \
         --icon=utilities-terminal \
         --app-name=zsh \
-        "$title" "$wd/ $uy_done_cmd" &
+        "$title" "$wd/ $uy_done_cmd" & disown
 }
 
 autoload -Uz add-zsh-hook

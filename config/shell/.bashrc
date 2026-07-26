@@ -31,7 +31,7 @@ if ! shopt -oq posix; then
 	fi
 fi
 
-for app in nvim helix vim vi nano; do
+for app in helix nvim vim vi nano; do
 	if type "$app" &>/dev/null; then
 		EDITOR="$app"
 		VISUAL="$app"
@@ -68,4 +68,25 @@ fi
 
 if type starship &>/dev/null; then
 	eval "$(starship init bash)"
+fi
+
+if type fzf &>/dev/null; then
+  source <(fzf --bash)
+
+  # use fd if available (search cwd only, skip vcs/cache junk)
+  if type fd &>/dev/null; then
+      export FD_CMD="fd"
+  elif type fdfind &>/dev/null; then
+      export FD_CMD="fdfind"
+  fi
+  if [[ -n "$FD_CMD" ]]; then
+      export FZF_DEFAULT_COMMAND="$FD_CMD --type f --hidden --exclude .git"
+      export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+      export FZF_ALT_C_COMMAND="$FD_CMD --type d --hidden --exclude .git"
+  fi
+
+  # C-y to copy fzf's output
+  if type wl-copy &>/dev/null; then
+      export FZF_DEFAULT_OPTS="--bind \"ctrl-y:execute-silent(echo -n {+} | wl-copy)+abort\""
+  fi
 fi

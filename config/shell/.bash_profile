@@ -22,9 +22,6 @@ prepend_path() {
 	esac
 }
 
-# .profile is not included in the repo
-[ -f "$HOME/.profile" ] && . "$HOME/.profile"
-
 # Better than nothing
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
@@ -37,8 +34,15 @@ if [[ -z "$LANG" ]]; then
 	export LANG
 fi
 
+# .profile is not included in the repo
+[ -f "$HOME/.profile" ] && . "$HOME/.profile"
+
 # Paths
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+if type opam &>/dev/null; then
+  eval "$(opam env)"
+fi
+prepend_path "$HOME/.cargo/bin"
 prepend_path "$HOME/go/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.local/scripts"

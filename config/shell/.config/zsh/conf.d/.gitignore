@@ -9,4 +9,5 @@
 !10-sshs.zsh
 !50-prompt.zsh
 !60-alias.zsh
+!60-direnv.zsh
 !60-fetch.zsh
