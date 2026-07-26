@@ -1,14 +1,14 @@
-### Font packages (involved in fontconfig)
+### Font packages (included in fontconfig)
 
 - `extra/noto-fonts`
 - `extra/noto-fonts-cjk`
 - `extra/noto-fonts-emoji`
 - `extra/ttf-nerd-fonts-symbols`
 - `aur/maplemono-nf-cn`
-- `aur/ttf-lxgw-wenkai`
+- `aur/ttf-lxgw-wenkai-tc`
 - `aur/ttf-symbola`
 
-### Other fonts (used but not involved in fontconfig)
+### Other fonts (used but not included in fontconfig)
 
 - [Sour Gummy](https://fonts.google.com/specimen/Sour+Gummy): used in quickshell
 - Font Awesome 6 Free: used in waybar & some other desktop components
@@ -88,7 +88,7 @@
  <alias>
   <family>標楷體</family>
   <prefer>
-   <family>LXGW WenKai</family>
+   <family>LXGW WenKai TC</family>
   </prefer>
  </alias>
  <dir>~/.local/share/fonts</dir>
