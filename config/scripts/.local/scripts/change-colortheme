@@ -7,12 +7,12 @@
 # Requirements:
 #   - colorthief (python3 package) # too lazy to implement color extraction myself :D
 
-import os
-import sys
 import argparse
+import os
 import subprocess
-from pathlib import Path
+import sys
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from threading import Lock
 
 MAX_WORKERS = 8
@@ -112,7 +112,7 @@ def extract_color(image_path: str) -> str:
     max_score = -1.0
 
     for color in palette:
-        h, s, v = rgb2hsv(*color)
+        _, s, v = rgb2hsv(*color)
 
         # Filter out undesirable colors
         # Too dark
@@ -140,7 +140,7 @@ def match_color(color: str, palette: dict[str, str]) -> str:
     """Match the given #rrggbb color to the closest flavor in the palette."""
     color = color.lower().strip().removeprefix("#")
     target_rgb = hex2rgb(color)
-    target_h, target_s, target_v = rgb2hsv(*target_rgb)
+    target_h, target_s, _ = rgb2hsv(*target_rgb)
 
     # Warn if not representative (nearly grayscale)
     if target_s < 5:
@@ -150,7 +150,7 @@ def match_color(color: str, palette: dict[str, str]) -> str:
 
     def get_weighted_distance(hex_val: str) -> float:
         p_rgb = hex2rgb(hex_val)
-        p_h, p_s, p_v = rgb2hsv(*p_rgb)
+        p_h, _, _ = rgb2hsv(*p_rgb)
 
         # RGB distance with weighting
         rmean = (target_rgb[0] + p_rgb[0]) / 2

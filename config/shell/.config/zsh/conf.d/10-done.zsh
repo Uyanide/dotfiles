@@ -7,7 +7,7 @@
 zmodload zsh/datetime
 
 : ${uy_done_min_cmd_duration:=10}
-: ${uy_done_exclude:='^(nvim|helix|hx|vim|vi|nano|less|more|man|ssh|top|htop|btop|sudoedit)$'}
+: ${uy_done_exclude:='^(nvim|helix|hx|vim|vi|nano|less|more|man|ssh|top|htop|btop|sudoedit|yazi)$'}
 
 # Returns the id in $REPLY, empty if there is none or niri did not answer.
 if zmodload zsh/net/socket 2>/dev/null; then

@@ -7,8 +7,8 @@ import shlex
 import shutil
 import subprocess
 import sys
-import tempfile
 import tarfile
+import tempfile
 import zipfile
 from pathlib import Path
 
@@ -20,14 +20,15 @@ SIZE_PATTERN = re.compile(r"^[1-9][0-9]*[KMGkmg]?$")
 def download_to(url: str, dest_dir: Path) -> Path:
     # Import when needed
     import requests
-    local_filename = url.split('/')[-1]
+
+    local_filename = url.split("/")[-1]
     dest_path = dest_dir / local_filename
 
     print(f"Downloading '{url}' to '{dest_path}'...")
     try:
         with requests.get(url, stream=True) as r:
             r.raise_for_status()
-            with open(dest_path, 'wb') as f:
+            with open(dest_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
     except Exception as e:
@@ -59,7 +60,9 @@ def get_strip_count(archive_path: Path, is_tar: bool, is_zip: bool) -> int:
 
     if is_tar:
         cmd = ["tar", "-tf", str(archive_path)]
-        with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, bufsize=1) as proc:
+        with subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, bufsize=1
+        ) as proc:
             if proc is None or proc.stdout is None:
                 sys.exit("Error: Failed to list archive contents.")
             for line in proc.stdout:
@@ -67,7 +70,7 @@ def get_strip_count(archive_path: Path, is_tar: bool, is_zip: bool) -> int:
                 if not line:
                     continue
 
-                current_top = line.split('/', 1)[0]
+                current_top = line.split("/", 1)[0]
 
                 if top_level is None:
                     top_level = current_top
@@ -78,9 +81,9 @@ def get_strip_count(archive_path: Path, is_tar: bool, is_zip: bool) -> int:
             proc.wait()
 
     elif is_zip:
-        with zipfile.ZipFile(archive_path, 'r') as zf:
+        with zipfile.ZipFile(archive_path, "r") as zf:
             for name in zf.namelist():
-                current_top = name.split('/', 1)[0]
+                current_top = name.split("/", 1)[0]
                 if top_level is None:
                     top_level = current_top
                 elif top_level != current_top:
@@ -101,29 +104,56 @@ def extract_archive(archive_path: Path, dest_dir: Path, strip_components: int = 
     elif zipfile.is_zipfile(archive_path):
         if strip_components > 0:
             with tempfile.TemporaryDirectory() as tmp_ext:
-                subprocess.run(["unzip", "-q", str(archive_path), "-d", tmp_ext], check=True)
+                subprocess.run(
+                    ["unzip", "-q", str(archive_path), "-d", tmp_ext], check=True
+                )
                 top_dir = next(Path(tmp_ext).iterdir())
                 for item in top_dir.iterdir():
                     shutil.move(str(item), str(dest_dir))
         else:
-            subprocess.run(["unzip", "-q", str(archive_path), "-d", str(dest_dir)], check=True)
+            subprocess.run(
+                ["unzip", "-q", str(archive_path), "-d", str(dest_dir)], check=True
+            )
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract an archive to a directory and spawn a shell.")
+    parser = argparse.ArgumentParser(
+        description="Extract an archive to a directory and spawn a shell."
+    )
     parser.add_argument("archive", type=str, help="Path to the tarball or zip file")
-    parser.add_argument("--exec", "-e", dest="cmd", default=DEFAULT_SHELL,
-                        help=f"Command to spawn (default: '{DEFAULT_SHELL}')")
-    parser.add_argument("--target", "-t", type=Path, help="Target directory for extraction.")
-    parser.add_argument("--disable-tmpfs", "-d", action="store_true", help="Disable tmpfs mounting, extract directly to dir")
-    parser.add_argument("--size", "-s", default=DEFAULT_TMPFS_SIZE,
-                        help=f"Size of the tmpfs if used (default: {DEFAULT_TMPFS_SIZE})")
-    parser.add_argument("--no-cleanup", "-n", action="store_true", help="Disable cleanup (unmount and remove dir)")
+    parser.add_argument(
+        "--exec",
+        "-e",
+        dest="cmd",
+        default=DEFAULT_SHELL,
+        help=f"Command to spawn (default: '{DEFAULT_SHELL}')",
+    )
+    parser.add_argument(
+        "--target", "-t", type=Path, help="Target directory for extraction."
+    )
+    parser.add_argument(
+        "--disable-tmpfs",
+        "-d",
+        action="store_true",
+        help="Disable tmpfs mounting, extract directly to dir",
+    )
+    parser.add_argument(
+        "--size",
+        "-s",
+        default=DEFAULT_TMPFS_SIZE,
+        help=f"Size of the tmpfs if used (default: {DEFAULT_TMPFS_SIZE})",
+    )
+    parser.add_argument(
+        "--no-cleanup",
+        "-n",
+        action="store_true",
+        help="Disable cleanup (unmount and remove dir)",
+    )
 
     args = parser.parse_args()
     archive = args.archive.strip()
 
-    if archive.startswith(('https://', 'http://')):
+    if archive.startswith(("https://", "http://")):
         archive = download_to(archive, Path.cwd())
     else:
         archive = Path(args.archive).resolve()
@@ -132,7 +162,9 @@ def main():
         sys.exit(f"Error: Archive '{archive}' does not exist or is not a file.")
 
     if not SIZE_PATTERN.match(args.size):
-        sys.exit(f"Error: Invalid size format '{args.size}'. Expected format like '4G', '500M'.")
+        sys.exit(
+            f"Error: Invalid size format '{args.size}'. Expected format like '4G', '500M'."
+        )
 
     is_tar = tarfile.is_tarfile(archive)
     is_zip = zipfile.is_zipfile(archive)
@@ -155,14 +187,26 @@ def main():
     else:
         target_dir.mkdir(parents=True, exist_ok=True)
 
-    strip_components = strip_components = get_strip_count(archive, is_tar, is_zip)
+    strip_components = get_strip_count(archive, is_tar, is_zip)
 
     try:
         if use_tmpfs:
             print(f"Mounting tmpfs at '{target_dir}' with size {args.size}...")
             uid, gid = os.getuid(), os.getgid()
             mount_opts = f"size={args.size},uid={uid},gid={gid},mode=0700"
-            subprocess.run(["sudo", "mount", "-t", "tmpfs", "-o", mount_opts, "tmpfs", str(target_dir)], check=True)
+            subprocess.run(
+                [
+                    "sudo",
+                    "mount",
+                    "-t",
+                    "tmpfs",
+                    "-o",
+                    mount_opts,
+                    "tmpfs",
+                    str(target_dir),
+                ],
+                check=True,
+            )
 
         print(f"Extracting '{archive}' to '{target_dir}'...")
         extract_archive(archive, target_dir, strip_components)
@@ -170,19 +214,26 @@ def main():
         print(f"Spawning '{args.cmd}' in {target_dir}...")
 
         parsed_cmd = shlex.split(args.cmd)
-        subprocess.run(parsed_cmd, cwd=str(target_dir))
+        subprocess.run(parsed_cmd, cwd=str(target_dir), check=True)
 
     finally:
         if do_cleanup:
             print("Cleaning up...")
             if use_tmpfs:
-                subprocess.run(["sudo", "umount", str(target_dir)], stderr=subprocess.DEVNULL)
+                subprocess.run(
+                    ["sudo", "umount", str(target_dir)],
+                    stderr=subprocess.DEVNULL,
+                    check=True,
+                )
             if not dir_existed_before:
                 try:
                     shutil.rmtree(target_dir)
                 except PermissionError:
-                    if shutil.which("sudo"):
-                        subprocess.run(["sudo", "rm", "-rf", str(target_dir)], stderr=subprocess.DEVNULL)
+                    subprocess.run(
+                        ["sudo", "rm", "-rf", str(target_dir)],
+                        stderr=subprocess.DEVNULL,
+                        check=True,
+                    )
         else:
             print(f"Cleanup disabled. Extracted contents are left at: {target_dir}")
 

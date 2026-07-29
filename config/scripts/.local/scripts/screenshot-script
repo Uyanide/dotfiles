@@ -11,12 +11,12 @@
 # - glib bindings for python
 
 import argparse
+import fcntl
 import subprocess
 import time
-import fcntl
-from os import environ
 from datetime import datetime
 from enum import Enum
+from os import environ
 from pathlib import Path
 from shutil import copy2
 
@@ -52,7 +52,7 @@ def take_screenshot(filepath: Path, typeStr: str):
     lockFD = open("/tmp/screenshot-script.lock", "w")
     try:
         fcntl.flock(lockFD, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except IOError:
+    except OSError:
         lockFD.close()
         raise RuntimeError("Another screenshot is currently being taken.")
 
@@ -66,11 +66,11 @@ def take_screenshot(filepath: Path, typeStr: str):
                 ScreenshotType.AREA: f"hyprshot -z -m region -o {SCREENSHOT_DIR} -f ",
                 ScreenshotType.WINDOW: f"hyprshot -z -m window -o {SCREENSHOT_DIR} -f ",
             }
-            process = subprocess.run(f"{cmd[type]}{filepath.name}", shell=True)
-            if process.returncode != 0:
-                raise RuntimeError("Failed to take screenshot: hyprshot command failed.")
+            subprocess.run(f"{cmd[type]}{filepath.name}", shell=True, check=True)
             if not wait_until_file_exists(filepath):
-                raise RuntimeError("Failed to take screenshot: output file not found after hyprshot command.")
+                raise RuntimeError(
+                    "Failed to take screenshot: output file not found after hyprshot command."
+                )
 
         elif "niri" in currentDesktop:
             niriScreenshotPath = SCREENSHOT_DIR / ".niri_screenshot.png"
@@ -79,23 +79,24 @@ def take_screenshot(filepath: Path, typeStr: str):
                 # and the selection ui is drawn inside of niri without its state exposed to external programs.
                 # so we use grim + slurp for area mode and niri's built-in commands for others.
                 ScreenshotType.FULL: "niri msg action screenshot-screen",
-                ScreenshotType.AREA: f" grim -g \"$(slurp)\" -t png {niriScreenshotPath} && cat {niriScreenshotPath} | wl-copy",
+                ScreenshotType.AREA: f' grim -g "$(slurp)" -t png {niriScreenshotPath} && cat {niriScreenshotPath} | wl-copy',
                 ScreenshotType.WINDOW: "niri msg action screenshot-window",
             }
             if niriScreenshotPath.exists():
                 niriScreenshotPath.unlink()
-            process = subprocess.run(cmd[type], shell=True)
-            if process.returncode != 0:
-                print(process.returncode)
-                raise RuntimeError("Failed to take screenshot: niri screenshot command failed.")
+            subprocess.run(cmd[type], shell=True, check=True)
 
             if wait_until_file_exists(niriScreenshotPath):
                 # niriScreenshotPath.rename(filepath)
                 copy2(niriScreenshotPath, filepath)
             else:
-                raise RuntimeError("Failed to take screenshot: output file not found after niri command.")
+                raise RuntimeError(
+                    "Failed to take screenshot: output file not found after niri command."
+                )
             if not wait_until_file_exists(filepath):
-                raise RuntimeError("Failed to take screenshot: output file not found after copying.")
+                raise RuntimeError(
+                    "Failed to take screenshot: output file not found after copying."
+                )
 
         else:
             # print("Unsupported desktop environment.")
@@ -106,12 +107,11 @@ def take_screenshot(filepath: Path, typeStr: str):
 
 
 def edit_screenshot(filepath: Path):
-    subprocess.run(f"gradia {filepath}", shell=True)
-    # subprocess.run(f"spectacle -l --edit-existing {filepath}", shell=True)
+    subprocess.run(f"gradia {filepath}", shell=True, check=True)
 
 
 def gen_file_name(prefix="screenshot", ext=".png"):
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.now(tz=datetime.now().astimezone().tzinfo).strftime("%Y-%m-%d_%H-%M-%S")
     return f"{prefix}_{timestamp}{ext}"
 
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
         args = parser.parse_args()
 
         filepath: Path = Path()
-        if not args.type == ScreenshotType.EDIT.value:
+        if args.type != ScreenshotType.EDIT.value:
             # file path
             SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
             filename = gen_file_name()
@@ -166,7 +166,6 @@ if __name__ == "__main__":
 
         # callback on close
         def close_callback(n):
-            global editing
             if not editing:
                 loop.quit()
 
@@ -175,6 +174,7 @@ if __name__ == "__main__":
             "Click to edit",
             str(filepath),
         )
+        n.set_hint("transient", GLib.Variant("i", 1))
         n.add_action(
             # so default action is used, which will be triggered on simply clicking the notification card
             "default",
@@ -193,5 +193,6 @@ if __name__ == "__main__":
         n = Notify.Notification.new(
             "Screenshot Error",
             str(e),
+            history=False,
         )
         n.show()
