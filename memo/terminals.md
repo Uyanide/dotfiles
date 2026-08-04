@@ -97,17 +97,17 @@ TTY 本质为内核中的双向通信管道与数据处理层. 在如今的日�
 
 ### Shell
 
-Shell 是运行在 TTY **Slave** 端的命令行解释器, 负责:
+Shell 是运行在 PTY **Slave** 端的命令行解释器, 负责:
 
 - 解析用户输入的命令;
 
 - 通过 `fork()` 和 `exec()` 等系统调用来启动子进程或执行内置命令;
 
-- 将子进程的输出通过 TTY **Slave** 端发送回终端模拟器的 **Master** 端进行显示;
+- 将子进程的输出通过 PTY **Slave** 端发送回终端模拟器的 **Master** 端进行显示;
 
 - 管理前台和后台进程组, 处理信号传递等.
 
-值得注意的是, **Canonical Mode** 下 shell 中输入命令后的"回显"并不是 shell 自己完成的, 而必须通过 TTY 的 **Line Discipline**. 当用户输入字符时, Line Discipline 会将其回显到终端模拟器(或 sshd), 以便用户看到自己输入的内容.
+值得注意的是, **Canonical Mode** 下 shell 中输入命令后的"回显"并不是 shell 自己完成的, 而必须通过 PTY 的 **Line Discipline**. 当用户输入字符时, Line Discipline 会将其回显到终端模拟器(或 sshd), 以便用户看到自己输入的内容.
 
 但同时, 很多 TUI 程序以及带有自动补全等高级功能的现代 shell 通常会在启动时将终端设置为 **Raw Mode**, 以便能够更灵活地处理用户输入.
 
@@ -273,7 +273,7 @@ support_sixel=0
 
 response=""
 while true; do
-    IFS= read -r -N 1 -t "$TIMEOUT" char || {
+    IFS= read -r -N 1 -t "$TIMEOUT" char < /dev/tty || {
         [ -z "$char" ] && break
     }
 
@@ -603,7 +603,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
 
   绝大多数终端模拟器都提供了类似的选项, 如 Kitty 可以通过设置 `shell fish` 自动启动 fish, 对于 WezTerm 则为 `config.default_prog = { "/usr/bin/fish" }`.
 
-  这是兼容性最好的方法, 因为它完全不会影响原有登录终端的任何配置, 同时也完全不影响日常使用. 唯一的麻烦点在于对于每个终端模拟器(也包括 TTY 与 Kmscon 之类, 如果用到的话)需要单独配置.
+  这是兼容性最好的方法, 因为它完全不会影响原有登录终端的任何配置, 同时也完全不影响日常使用. 唯一的麻烦点在于对于每个终端模拟器(也包括 VT 与 Kmscon 之类, 如果用到的话)需要单独配置.
 
 - 在 .bashrc 中自动启用 fish
 
@@ -628,7 +628,7 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
 
 ## GPU 加速
 
-虽然听起来高大上, 也是很多终端模拟器写在 Description 里的核心特性之一, 但是在实际使用场景中就我个人经验而言影响并没有想象中那么巨大. 终端模拟器所主要面对的仍然是纯文本场景, 最多换一换颜色, 滚一滚屏幕, 这对于现代 CPU 来说并没有很吃力. 但"更好的渲染性能"甚至不是 GPU 加速的唯一目的, 例如 Ghostty 可以通过 shader 实现各种炫酷的视觉效果, 渲染性能反而是次要的. 因此, 在选择终端模拟器时, 是否支持 GPU 加速可以作为一个参考因素, 但并不应该是唯一的决定因素.
+虽然听起来高大上, 也是很多终端模拟器写在 Description 里的核心特性之一, 但是在实际使用场景中就我个人经验而言影响并没有想象中那么巨大. 终端模拟器所主要面对的仍然是纯文本场景, 最多换一换颜色, 滚一滚屏幕, 这对于现代 CPU 来说并没有很吃力. 但"更好的渲染性能"并非 GPU 加速的唯一目的, 例如 Ghostty 可以通过 shader 实现各种炫酷的视觉效果, 渲染性能反而是次要的. 因此, 在选择终端模拟器时, 是否支持 GPU 加速可以作为一个参考因素, 但并不应该是唯一的决定因素.
 
 ## 单独聊聊
 
@@ -643,10 +643,10 @@ Unicode Placeholders 是 Kitty 图像协议中处理如何放置图像的方法�
 
   - 自定义 Shader
 
-    简单如光标跳转动画, 复杂如全局光效, 从 CRT 到 Glitchy, 可玩性极高.
+    简单如光标跳转动画, 复杂如全局光效, 也有 CRT 和 Glitchy 等经典视效, 可玩性极高.
     - [0xhckr/ghostty-shaders](https://github.com/0xhckr/ghostty-shaders) 包含很多现成的 shader, 可以直接拿来使用.
 
-    - [KroneCorylus/ghostty-shader-playground](https://github.com/KroneCorylus/ghostty-shader-playground) 是一个 shader 预览和编辑器, 同时提供了包括光标跳转动画在内的 shader.
+    - [KroneCorylus/ghostty-shader-playground](https://github.com/KroneCorylus/ghostty-shader-playground) 是一个 shader 预览和编辑器, 同时提供了包括光标跳转动画在内的常用 shader.
 
 - Cons
   - 不稳定

@@ -40,7 +40,7 @@ if (( $+commands[starship] )); then
         uy_starship_accent "${STARSHIP_CONFIG:-$HOME/.config/starship.toml}" &&
             uy_accent=$REPLY
 
-        PROMPT="%F{${uy_accent:-blue}}#%f " zle .reset-prompt
+        PROMPT="%F{${uy_accent:-blue}}$%f " zle .reset-prompt
     }
 
     autoload -Uz add-zle-hook-widget
