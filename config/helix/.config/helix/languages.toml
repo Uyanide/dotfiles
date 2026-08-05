@@ -11,6 +11,10 @@ name = "python"
 formatter = { command = "ruff", args = ["format", "-"] }
 language-servers = ["ruff"]
 
+[[language]]
+name = "rust"
+formatter = { command = "rustfmt" }
+
 [language-server.ruff]
 command = "ruff"
 args = ["server"]

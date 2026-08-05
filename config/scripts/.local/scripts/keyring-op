@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+
+"""Store and retrieve arbitrary key-value secrets in the Secret Service keyring."""
+
+import argparse
+import sys
+from enum import IntEnum
+from typing import NoReturn
+
+import secretstorage
+from jeepney.io.blocking import DBusConnection  # type: ignore[import-untyped]
+from secretstorage.collection import Collection
+from secretstorage.exceptions import (
+    ItemNotFoundException,
+    LockedException,
+    PromptDismissedException,
+    SecretStorageException,
+)
+from secretstorage.item import Item
+
+SCHEMA = "de.uyani.keyring-op"
+KEY_ATTRIBUTE = "key"
+UNLOCK_TIMEOUT = 120.0
+
+
+class Exit(IntEnum):
+    """Process exit codes. USAGE matches the value argparse exits with."""
+
+    OK = 0
+    NOT_FOUND = 1
+    USAGE = 2
+    LOCKED = 3
+    BACKEND = 4
+    AMBIGUOUS = 5
+    INPUT = 6
+
+
+def fail(message: str, code: Exit) -> NoReturn:
+    print(message, file=sys.stderr)
+    raise SystemExit(code)
+
+
+def attributes_for(key: str) -> dict[str, str]:
+    return {"xdg:schema": SCHEMA, KEY_ATTRIBUTE: key}
+
+
+def validate_key(key: str) -> str:
+    """Reject keys that would make list output ambiguous."""
+    if not key or "\n" in key:
+        fail("key must be non-empty and must not contain a newline", Exit.USAGE)
+    return key
+
+
+def open_collection(connection: DBusConnection) -> Collection:
+    """Return the default collection, unlocking it if needed."""
+    try:
+        collection = secretstorage.get_collection_by_alias(connection, "default")
+    except ItemNotFoundException:
+        fail("no default keyring collection exists", Exit.BACKEND)
+    if collection.is_locked():
+        print("keyring is locked, requesting unlock", file=sys.stderr)
+        try:
+            # unlock returns True when the prompt was dismissed, False on success.
+            dismissed = collection.unlock(timeout=UNLOCK_TIMEOUT)
+        except TimeoutError:
+            fail(f"unlock request timed out after {UNLOCK_TIMEOUT:g}s", Exit.LOCKED)
+        if dismissed:
+            fail("unlock request was dismissed", Exit.LOCKED)
+    return collection
+
+
+def find_item(collection: Collection, key: str) -> Item | None:
+    """Return the single item matching key, or None. Ambiguity is fatal."""
+    matches = list(collection.search_items(attributes_for(key)))
+    if len(matches) > 1:
+        fail(f"{len(matches)} entries match key: {key}", Exit.AMBIGUOUS)
+    return matches[0] if matches else None
+
+
+def require_item(collection: Collection, key: str) -> Item:
+    item = find_item(collection, key)
+    if item is None:
+        fail(f"key not found: {key}", Exit.NOT_FOUND)
+    return item
+
+
+def cmd_list(collection: Collection) -> None:
+    items = collection.search_items({"xdg:schema": SCHEMA})
+    for key in sorted(item.get_attributes().get(KEY_ATTRIBUTE, "") for item in items):
+        print(key)
+
+
+def cmd_add(collection: Collection, key: str, strip: bool) -> None:
+    if sys.stdin.isatty():
+        print("reading secret from terminal, end with Ctrl-D", file=sys.stderr)
+    secret = sys.stdin.buffer.read()
+    if strip:
+        secret = secret.removesuffix(b"\n")
+    if not secret:
+        fail("refusing to store an empty secret", Exit.INPUT)
+    collection.create_item(
+        f"keyring-op: {key}", attributes_for(key), secret, replace=True
+    )
+
+
+def cmd_get(collection: Collection, key: str) -> None:
+    sys.stdout.buffer.write(require_item(collection, key).get_secret())
+    sys.stdout.buffer.flush()
+
+
+def cmd_remove(collection: Collection, key: str) -> None:
+    require_item(collection, key).delete()
+
+
+def make_parser(prog: str) -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog)
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    commands.add_parser("list", help="List all keys")
+
+    add = commands.add_parser(
+        "add", help="Add a new key or update the value of an existing key"
+    )
+    add.add_argument("key", help="Key name")
+    add.add_argument(
+        "--strip",
+        action="store_true",
+        help="Drop one trailing newline from stdin before storing",
+    )
+
+    get = commands.add_parser("get", help="Get value of a key")
+    get.add_argument("key", help="Key name")
+
+    remove = commands.add_parser("remove", help="Remove a key")
+    remove.add_argument("key", help="Key name")
+
+    return parser
+
+
+def dispatch(collection: Collection, args: argparse.Namespace) -> None:
+    if args.command == "list":
+        cmd_list(collection)
+    elif args.command == "add":
+        cmd_add(collection, validate_key(args.key), args.strip)
+    elif args.command == "get":
+        cmd_get(collection, validate_key(args.key))
+    elif args.command == "remove":
+        cmd_remove(collection, validate_key(args.key))
+
+
+def main() -> int:
+    args = make_parser("keyring-op").parse_args()
+    try:
+        with secretstorage.dbus_init() as connection:
+            dispatch(open_collection(connection), args)
+    except (LockedException, PromptDismissedException) as error:
+        fail(f"keyring is locked: {error}", Exit.LOCKED)
+    except SecretStorageException as error:
+        fail(f"keyring backend error: {error}", Exit.BACKEND)
+    except BrokenPipeError:
+        # The reader went away. Silence the interpreter's shutdown warning.
+        sys.stderr.close()
+        return Exit.OK
+    return Exit.OK
+
+
+if __name__ == "__main__":
+    sys.exit(main())

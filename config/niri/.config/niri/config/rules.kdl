@@ -90,7 +90,7 @@ window-rule {
 }
 
 window-rule {
-    match app-id="Spotify"
+    match app-id="^[Ss]potify$"
 
     open-on-output "eDP-1"
 }

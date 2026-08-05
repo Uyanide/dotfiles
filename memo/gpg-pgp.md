@@ -169,7 +169,7 @@ PGP (Pretty Good Privacy) 是一种数据加密和解密的程序, GnuPG (GNU Pr
 
    进入交互式界面后, 使用以下命令:
 
-   - `trust`: 选择 `5 = I trust ultimately` 作为信任等级.
+   - `trust`: 选择信任等级, 例如 `5 = I trust ultimately`.
    - `save`: 保存并退出.
 
 ## Why?
@@ -194,7 +194,7 @@ PGP (Pretty Good Privacy) 是一种数据加密和解密的程序, GnuPG (GNU Pr
    enable-ssh-support
    ```
 
-   可选地, 设置缓存有效期 (这对于拥有密码管理系统的桌面来说用处不大):
+   可选地, 设置缓存有效期 (这对于拥有密码管理系统的桌面环境来说用处不大):
 
    ```plain
    default-cache-ttl 600

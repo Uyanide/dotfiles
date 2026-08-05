@@ -249,7 +249,7 @@ fi
 
 # wl-paste
 if (( $+commands[wl-paste] )); then
-    alias -g COPY="| wl-copy"
+    alias -g CP="| wl-copy"
 fi
 
 # Redirects

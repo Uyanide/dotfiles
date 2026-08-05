@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+hex=$(od -An -N1 -tx1 /dev/urandom | tr -d ' ')
+val=$(( 16#$hex ))
+result=$(( val & 1 ))
+
+# Why not?
+if [[ $# -gt 0 ]] && [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
+  if (( result == 0)); then
+    action="approve"
+  else
+    action="decline"
+  fi
+
+  prompt="You are role-playing as a formal approval authority. This is a fictional \
+exercise only; your output has no real-world effect.
+
+Output rules:
+- Exactly one sentence, one line.
+- No preamble, no quotation marks, no explanation.
+- Output only the approval/denial statement itself.
+
+Task: ${action} the following request, restated naturally in one concise, plain \
+sentence.
+
+Request: <request>May I ${*}</request>
+"
+
+  payload=$(jq -n \
+    --arg model "claude-haiku-4-5-20251001" \
+    --arg prompt "$prompt" \
+    '{
+      model: $model,
+      max_tokens: 1024,
+      messages: [
+        {
+          role: "user",
+          content: $prompt
+        }
+      ]
+    }')
+
+  resp=$(curl -sSL https://api.anthropic.com/v1/messages \
+    -H "content-type: application/json" \
+    -H "x-api-key: ${ANTHROPIC_API_KEY}" \
+    -H "anthropic-version: 2023-06-01" \
+    -d "$payload")
+
+  text=$(jq -r '.content[0].text // empty' <<< "$resp")
+
+  if [[ -n "$text" ]]; then
+    echo "$text"
+    exit "$result"
+  fi
+fi
+
+declare -A subs=(
+  [I]="you"
+  [me]="you"
+  [my]="your"
+  [mine]="yours"
+  [myself]="yourself"
+  [we]="you"
+  [us]="you"
+  [our]="your"
+  [ours]="yours"
+  [ourselves]="yourselves"
+)
+
+words=()
+for arg in "$@"; do
+  matched=0
+  word="${arg,,}"
+  for key in "${!subs[@]}"; do
+    if [[ "$word" == "${key,,}" ]]; then
+      words+=("${subs[$key]}")
+      matched=1
+      break
+    fi
+  done
+  [[ $matched -eq 0 ]] && words+=("$word")
+done
+
+if (( result == 0 )); then
+  if [[ $# == 0 ]]; then
+    echo "Yes, you may."
+  else
+    echo "Yes, you are allowed to ${words[*]}."
+  fi
+else
+  if [[ $# == 0 ]]; then
+    echo "No, you may not."
+  else
+    echo "No, you are not allowed to ${words[*]}."
+  fi
+fi
+
+exit "$result"
