@@ -26,7 +26,7 @@ right_format = """
 $status\
 $cmd_duration"""
 
-palette = "catppuccin-mocha"
+palette = 'catppuccin-mocha'
 
 add_newline = false
 
@@ -251,7 +251,7 @@ surface0 = "#313244"
 base = "#1e1e2e"
 mantle = "#181825"
 crust = "#11111b"
-accent = "#89b4fa"
+accent    = "#89b4fa"
 
 [palettes.catppuccin-frappe]
 rosewater = "#f2d5cf"

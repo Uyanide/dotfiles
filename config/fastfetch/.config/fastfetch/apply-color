@@ -6,7 +6,7 @@
 }
 . "$HOME/.local/snippets/apply-color-helper"
 
-file_fish="$HOME/.config/fish/conf.d/60-fetch.fish"
+file_fish="$HOME/.config/fish/rc.d/60-fetch.fish"
 file_zsh="$HOME/.config/zsh/conf.d/60-fetch.zsh"
 
 # "#rrggbb" format is only available in and after fastfetch v2.42.0,
