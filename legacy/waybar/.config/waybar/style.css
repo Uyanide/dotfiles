@@ -6,8 +6,8 @@
 
 /* Font(s) */
 * {
-  /*           main font           icons                       CJK                    fallback              */
-  font-family: 'Sour Gummy Light', 'Meslo LGM Nerd Font Mono', 'Sarasa UI SC', 'Noto Sans', sans-serif;
+  /*           main font      icons                       fallback */
+  font-family: 'LXGW WenKai', 'Meslo LGM Nerd Font Mono', sans-serif;
   font-size: 16px;
 }
 

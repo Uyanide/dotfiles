@@ -8,14 +8,13 @@ environment {
 
     // Themes
     QT_QPA_PLATFORM "wayland"
-    QT_QPA_PLATFORMTHEME "kde" // looks nicer than kvantum
-    QT_STYLE_OVERRIDE "Kvantum"
+    QT_QPA_PLATFORMTHEME "kde"
+    // QT_STYLE_OVERRIDE "kvantum"
 
     // Nvidia
     LIBVA_DRIVER_NAME "nvidia"
     NVD_BACKEND "nvidia"
     GBM_BACKEND "nvidia-drm"
-    WLR_NO_HARDWARE_CURSORS "1"
 
     // Fix Swing
     _JAVA_AWT_WM_NONREPARENTING "1"

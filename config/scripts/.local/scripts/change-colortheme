@@ -41,7 +41,7 @@ CONFIG_DIR = Path("~/.config").expanduser()
 # An application may have multiple scripts (e.g. due to config-switch)
 SCRIPTS = {
     "fastfetch": [CONFIG_DIR / "fastfetch" / "apply-color"],
-    "kvantum": [CONFIG_DIR / "Kvantum" / "apply-color"],
+    "qt6": [CONFIG_DIR / "kdeglobals.apply" / "apply-color"],
     "nwg-look": [CONFIG_DIR / "nwg-look" / "apply-color"],
     "niri": [CONFIG_DIR / "niri" / "apply-color"],
     "oh-my-posh": [

@@ -11,8 +11,8 @@ recent-windows {
 binds {
     // Apps
     Mod+C               repeat=false    { spawn "code"; }
-    Mod+E               repeat=false    { spawn "dolphin" "--new-window"; }
-    Mod+Shift+E         repeat=false    { spawn "nautilus" "--new-window"; }
+    Mod+E               repeat=false    { spawn "nautilus" "--new-window"; }
+    Mod+Shift+E         repeat=false    { spawn "dolphin" "--new-window"; }
     Mod+W               repeat=false    { spawn-sh "zen || zen-browser"; }
     Mod+B               repeat=false    { spawn-sh "pkill -x -n btop || kitty-floating -e btop"; }
     Mod+Shift+T         repeat=false    { spawn "kitty-floating"; }

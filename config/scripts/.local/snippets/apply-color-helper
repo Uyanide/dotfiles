@@ -35,6 +35,10 @@ function log_info {
     printf "\033[0;32mInfo:\033[0m $1\n" >&2
 }
 
+function log_warn {
+    printf "\033[0;33mWarning:\033[0m $1\n" >&2
+}
+
 function color_ansi {
     colorHex="$1"
 

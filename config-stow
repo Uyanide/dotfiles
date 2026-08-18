@@ -29,24 +29,19 @@ GUI_BASE_PKGS = [
     "ghostty",  # alternative terminal emulator
     "misc",  # miscellaneous GUI configs (e.g. *-flags)
     "mpd",  # music player daemon
-    # "mpv",          # media player
     "wallpaper",  # wallpapers & manager
-    "kvantum",  # qt theming
+    "qt6",  # qt theming
     "nwg-look",  # gtk theming
     "wezterm",  # alternative terminal emulator
 ]
 
 # for Hyprland setup
-# HYPRLAND_PKGS = [
-#     *GUI_BASE_PKGS,
-#     "eww",  # widgets
-#     "hypr",  # hypr family
-#     "hyprland",  # wm config
-#     "mako",  # notifications
-#     "rofi",  # application launcher
-#     "waybar",  # status bar
-#     "wlogout",  # logout menu
-# ]
+HYPRLAND_PKGS = [
+    *GUI_BASE_PKGS,
+    "hypr",  # hypr family
+    "hyprland",  # wm config
+    "vicinae",  # application launcher
+]
 
 # for Niri setup
 NIRI_PKGS = [
@@ -62,7 +57,7 @@ PKGS = {
     "base": BASE_PKGS,
     "tui": TUI_PKGS,
     "gui": GUI_BASE_PKGS,
-    # "hyprland": HYPRLAND_PKGS,
+    "hyprland": HYPRLAND_PKGS,
     "niri": NIRI_PKGS,
 }
 

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+[ -f "$HOME/.local/snippets/apply-color-helper" ] || {
+    echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
+    exit 1
+}
+. "$HOME/.local/snippets/apply-color-helper"
+
+scheme=$(echo "${palette}-${colorName}" | sed -E 's/(^|-)([a-z])/\U\2/g')
+
+[ -f "$HOME/.local/share/color-schemes/${scheme}.colors" ] || {
+    log_error "No such color scheme: ${scheme}"
+    exit 1
+}
+
+plasma-apply-colorscheme "$scheme" >/dev/null 2>&1 || {
+    log_error "Failed to apply ${scheme}"
+    exit 1
+}
+
+plasma-apply-colorscheme -a "#${colorHex}" >/dev/null 2>&1
+
+kwriteconfig6 --notify --file kdeglobals --group KDE --key widgetStyle Breeze >/dev/null 2>&1 || {
+    log_error "Failed to set widget style"
+    exit 1
+}
+
+log_success "qt6"
