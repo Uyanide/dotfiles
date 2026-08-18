@@ -23,7 +23,7 @@ fi
 
 # Restart session
 
-if [[ $XDG_CURRENT_DESKTOP == niri ]]; then
+if [[ ${XDG_CURRENT_DESKTOP:-} == niri ]]; then
 	printf "Session restart is required to apply changes.\nDo it now? (Y/n): "
 	read -r answer
 	if [[ $answer =~ ^[Yy]$ || -z $answer ]]; then

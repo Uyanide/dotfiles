@@ -162,6 +162,7 @@ cuda
 curl
 cython
 deno
+device-manager-linux-git
 devtools
 digital
 direnv
@@ -315,9 +316,11 @@ llmfit
 localsend
 lolcat
 lua-socket
+lua52-socket
 luarocks
 lutris
 lzip
+maa-cli
 magiskboot-bin
 man-db
 man-pages
@@ -382,7 +385,6 @@ pipes.c
 pipewire-alsa
 plasma-meta
 playerctl
-polkit-gnome
 power-profiles-daemon
 protonplus
 pwvucontrol
@@ -452,6 +454,7 @@ slirp4netns
 slurp
 snapper
 solaar
+soteria
 spicetify-cli
 spicetify-marketplace-bin
 spike
@@ -529,7 +532,7 @@ vim
 visual-studio-code-bin
 vk-hdr-layer-kwin6-git
 vlc
-voicefox-bin
+voicefox
 vulkan-extra-layers
 vulkan-extra-tools
 vulkan-gfxstream

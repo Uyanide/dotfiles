@@ -1,8 +1,9 @@
 // Core
 spawn-at-startup "nm-applet"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
-spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+// spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 // spawn-at-startup "/usr/lib/hyprpolkitagent/hyprpolkitagent"
+spawn-at-startup "/usr/lib/soteria-polkit/soteria"
 
 // Logitech
 spawn-at-startup "solaar" "-w" "hide"

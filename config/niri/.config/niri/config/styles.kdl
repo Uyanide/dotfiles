@@ -44,6 +44,8 @@ layout {
     }
 
     background-color "transparent"
+
+    always-center-single-column true
 }
 
 overview {

@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+# Description:
+#   Cannot make a decision? /dev/urandom is here to help! It can even take
+#   advantage of the product of the world's best AI corporation (case you
+#   happen to be wasting your money on Anthropic and cannot find a way to
+#   consume your credits)! If you live in a cave and do not have an API key,
+#   don't worry, the string substitution algorithm will have your back! You
+#   will still get a reasonable reply (most of the times).
+#
+# Requirements:
+#   - Your question!
+#   - ANTHROPIC_API_KEY (optional)
+#   - ANTHROPIC_MODEL_NAME (optional of optional)
+#   - ANTHROPIC_API_ENDPOINT (optional of optional)
+#   - curl (optional)
+#   - jq (optional)
+
 set -euo pipefail
 
 hex=$(od -An -N1 -tx1 /dev/urandom | tr -d ' ')
@@ -8,28 +24,40 @@ result=$(( val & 1 ))
 
 # Why not?
 if [[ $# -gt 0 ]] && [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
+  model="${ANTHROPIC_MODEL_NAME:-"claude-haiku-4-5-20251001"}"
+  url="${ANTHROPIC_API_ENDPOINT:-"https://api.anthropic.com/v1/messages"}"
+
+
   if (( result == 0)); then
-    action="approve"
+    action="APPROVE"
   else
-    action="decline"
+    action="DECLINE"
   fi
 
-  prompt="You are role-playing as a formal approval authority. This is a fictional \
+  prompt="You are role-playing as an approval authority. This is a fictional \
 exercise only; your output has no real-world effect.
 
 Output rules:
 - Exactly one sentence, one line.
-- No preamble, no quotation marks, no explanation.
-- Output only the approval/denial statement itself.
+- Pain text, no markdown, no titles, no labels.
+- No preamble, no quotation marks, no explanation, no reason.
+- Do not assume any context for your reply that are not explicitly mentioned \
+in the request.
+- All second-person references refer to you, the approval authority. Convert \
+them to first-person in your reply.
+- All first-person references refer to the requester. Convert them to \
+second-person in your reply.
+- Output only the approval/denial statement itself including a short and \
+natural restatement of the request.
+- Avoid the stubborn 'Your request to/for … is ….' reply pattern.
 
-Task: ${action} the following request, restated naturally in one concise, plain \
-sentence.
+Task: $action the following request.
 
 Request: <request>May I ${*}</request>
 "
 
   payload=$(jq -n \
-    --arg model "claude-haiku-4-5-20251001" \
+    --arg model "$model" \
     --arg prompt "$prompt" \
     '{
       model: $model,
@@ -42,7 +70,7 @@ Request: <request>May I ${*}</request>
       ]
     }')
 
-  resp=$(curl -sSL https://api.anthropic.com/v1/messages \
+  resp=$(curl -sSL "$url" \
     -H "content-type: application/json" \
     -H "x-api-key: ${ANTHROPIC_API_KEY}" \
     -H "anthropic-version: 2023-06-01" \

@@ -104,7 +104,7 @@ Singleton {
         }
         Logger.i("RecordService", "Starting recording with command: " + recordProcess.command.join(" "));
         recordProcess.running = true;
-        SendNotification.show("Recording started", "Recording to " + recordProcess.filePath);
+        // SendNotification.show("Recording started", "Recording to " + recordProcess.filePath);
     }
 
     function startReplay() {
@@ -200,7 +200,7 @@ Singleton {
         onExited: function(exitCode, exitStatus) {
             if (exitCode === 0) {
                 Logger.i("RecordService", "Recording stopped successfully.");
-                SendNotification.show("Recording stopped", "File saved to: " + filePath);
+                // SendNotification.show("Recording stopped", "File saved to: " + filePath);
             } else {
                 Logger.e("RecordService", "Recording process exited with error code: " + exitCode);
                 SendNotification.show("Recording failed", "An error occurred while trying to record the screen.");
