@@ -47,7 +47,7 @@
         // "on-click-right": "fuzzel -l 0 -p '>> ' | xargs -r sh -c",
         // "on-click": "fuzzel",
         // "on-click-middle": "pkill -9 fuzzel",
-        "on-click": "eww open main --toggle",
+        // "on-click": "eww open main --toggle",
         "on-click-right": "pkill rofi || rofi -show drun",
         "min-length": 2,
         "max-length": 2
@@ -71,7 +71,6 @@
     "group/monitors": {
         "modules": [
             "network#speed",
-            "custom/publicip",
             "temperature",
             "memory",
             "cpu",
@@ -93,16 +92,6 @@
         "tooltip-format-ethernet": "{ifname} 󰌘",
         "tooltip-format-disconnected": "󰌙 Disconnected",
         "min-length": 20
-    },
-    "custom/publicip": {
-        "interval": 30,
-        "return-type": "json",
-        "format": " {text}",
-        "tooltip-format": "{alt}",
-        "max-length": 6,
-        "min-length": 6,
-        "exec": "$HOME/.config/waybar/modules/publicip.sh",
-        "on-click": "rm -f $HOME/.config/waybar/modules/publicip.cache && sleep 0.1"
     },
     "temperature": {
         "interval": 5,

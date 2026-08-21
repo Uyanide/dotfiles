@@ -16,8 +16,9 @@ spawn-at-startup "sunshine"
 // Idle
 spawn-at-startup "hypridle"
 
-// QuickShell
+// Desktop
 spawn-at-startup "quickshell"
+spawn-at-startup "parra" "daemon"
 
 // Vicinae
 spawn-at-startup "vicinae" "server"

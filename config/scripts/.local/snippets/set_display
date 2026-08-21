@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/hint/bash
 
 # Description:
 #   Select which GPU to use for rendering by Hyprland and Niri.
@@ -12,8 +12,11 @@ niri_config_file="$HOME/.config/niri/config/misc.kdl"
 prefer_order=(nvidia intel)
 
 # Get vendor and path of each GPU
-default_card_path="$(find /dev/dri/card* 2>/dev/null | head -n 1)"
-default_render_path="$(find /dev/dri/renderD* 2>/dev/null | head -n 1)"
+# NOTE: use 'find' instead of globs. This file is sourced by both bash and zsh,
+#       and zsh's NOMATCH aborts the rest of the file on an unmatched glob
+#       (e.g. a machine with no /dev/dri/by-path), leaving nothing exported.
+default_card_path="$(find /dev/dri -maxdepth 1 -name 'card*' 2>/dev/null | sort | head -n 1)"
+default_render_path="$(find /dev/dri -maxdepth 1 -name 'renderD*' 2>/dev/null | sort | head -n 1)"
 [[ -z "$default_card_path" ]] && default_card_path="/dev/dri/card0"
 [[ -z "$default_render_path" ]] && default_render_path="/dev/dri/renderD128"
 intel_card_path=""
@@ -23,7 +26,7 @@ intel_render_path=""
 nvidia_render_path=""
 amd_render_path=""
 
-for link in /dev/dri/by-path/*-card; do
+for link in $(find /dev/dri/by-path -maxdepth 1 -name '*-card' 2>/dev/null | sort); do
 	[[ -e "$link" ]] || continue
 	card="$(readlink -f "$link")"
 	vfile="/sys/class/drm/$(basename "$card")/device/vendor"
@@ -36,7 +39,7 @@ for link in /dev/dri/by-path/*-card; do
 	esac
 done
 
-for link in /dev/dri/by-path/*-render; do
+for link in $(find /dev/dri/by-path -maxdepth 1 -name '*-render' 2>/dev/null | sort); do
 	[[ -e "$link" ]] || continue
 	render="$(readlink -f "$link")"
 	vfile="/sys/class/drm/$(basename "$render")/device/vendor"
@@ -108,3 +111,5 @@ function update_niri_config() {
 }
 
 update_niri_config "$niri_config_file" "$primary_render_device"
+
+unset -f update_niri_config

@@ -162,9 +162,7 @@ cuda
 curl
 cython
 deno
-device-manager-linux-git
 devtools
-digital
 direnv
 discord
 dnsmasq
@@ -179,7 +177,6 @@ dwarfs
 ed
 efibootmgr
 element-desktop
-elisa
 ethtool
 euphonica-git
 eww
@@ -256,8 +253,13 @@ hwinfo
 hyperfine
 hyperv
 hypridle
+hyprland
+hyprland-protocols
+hyprlax-bin
 hyprlock
 hyprpicker
+hyprshot
+hyprshutdown
 hyprutils
 imagemagick
 inetutils
@@ -291,7 +293,6 @@ kpeople
 kplotting
 krdc
 ktexttemplate
-kvantum
 lazygit
 lib32-nvidia-utils
 lib32-opencl-nvidia
@@ -348,6 +349,7 @@ networkmanager-openvpn
 nfs-utils
 niri
 nmap
+nodejs-dummy
 nordvpn-bin
 noto-fonts-cjk
 ntfsprogs
@@ -469,7 +471,6 @@ sunshine
 sushi
 svt-av1-hdr-git
 sysbench
-systemc2.3.4
 tailscale
 tcpdump
 telegram-desktop
@@ -523,6 +524,7 @@ unrar
 upx
 usbip
 uv
+uwsm
 valgrind
 vapoursynth-plugin-vship-cuda-git
 ventoy-bin
@@ -530,7 +532,6 @@ vesktop-bin
 vicinae
 vim
 visual-studio-code-bin
-vk-hdr-layer-kwin6-git
 vlc
 voicefox
 vulkan-extra-layers
@@ -544,6 +545,7 @@ vulkan-swrast
 vulkan-validation-layers
 vvenc
 wallreel
+waybar
 waydroid
 waydroid-helper
 waypaper
@@ -569,6 +571,7 @@ x86_energy_perf_policy
 xclip
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
+xdg-desktop-portal-hyprland
 xmake
 xone-dkms
 xorg-bdftopcf

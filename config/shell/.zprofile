@@ -2,6 +2,59 @@
 
 # Login shell only — runs once per session
 
+append_path() {
+	[[ -z "$1" ]] && return
+	[[ -d "$1" ]] || return
+	case ":$PATH:" in
+	*:"$1":*) ;;
+	*)
+		PATH="${PATH:+$PATH:}$1"
+		;;
+	esac
+}
+prepend_path() {
+	[[ -z "$1" ]] && return
+	[[ -d "$1" ]] || return
+	case ":$PATH:" in
+	*:"$1":*) ;;
+	*)
+		PATH="$1${PATH:+:$PATH}"
+		;;
+	esac
+}
+
+# .profile shared between shells
+
+[[ -f "$HOME/.profile" ]] && . "$HOME/.profile"
+
+# XDG, better than not set
+
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
+
+# Locale, better than not set
+
+if [[ -z "$LANG" ]]; then
+	export LANG="en_US.UTF-8"
+fi
+
+# OCaml env
+
+(( $+commands[opam] )) && eval "$(opam env)"
+
+# Other paths
+
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+prepend_path "$HOME/.local/share/fnm/aliases/default/bin" # 'fnm env' is eval'ed in .zshrc
+prepend_path "$HOME/.cargo/bin"
+prepend_path "$HOME/go/bin"
+prepend_path "$HOME/.local/bin"
+prepend_path "$HOME/.local/scripts"
+prepend_path "$HOME/.local/share/fnm"
+export PATH
+
 # GPG agent for SSH
 
 if (( $+commands[gpgconf] )) && (( $+commands[gpg-connect-agent] )) &&

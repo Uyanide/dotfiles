@@ -15,6 +15,16 @@ language-servers = ["ruff"]
 name = "rust"
 formatter = { command = "rustfmt" }
 
+[[language]]
+name = "json"
+auto-format = false
+formatter = { command = "prettier", args = ["--parser", "json"] }
+
+[[language]]
+name = "yaml"
+auto-format = false
+formatter = { command = "prettier", args = ["--parser", "yaml"] }
+
 [language-server.ruff]
 command = "ruff"
 args = ["server"]

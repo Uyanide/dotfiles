@@ -45,9 +45,9 @@ ShellRoot {
                 id: notification
             }
 
-            Background {
-                id: background
-            }
+            // Background {
+            //     id: background
+            // }
 
         }
 

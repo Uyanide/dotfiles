@@ -1,31 +1,27 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Uyanide/WallReel/refs/heads/master/config.schema.json",
-    "wallpaper": {
-        "dirs": [
-            {
-                "path": "~/Pictures/backgrounds"
-            }
-        ],
-        "excludes": [
-            "nao-stars-crop-adjust-flop.jpg",
-            "miku-gate.jpg",
-            "\\.md$"
-        ]
-    },
-    "action": {
-        "onSelected": "qs ipc call background set '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
-        "onPreview": "exit 0; qs ipc call background preview '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
-        "quitOnSelected": true,
-        "saveState": [
-            {
-                "key": "flavor",
-                "fallback": "#89b4fa",
-                "command": "qs ipc call colors get mPrimary"
-            }
-        ],
-        "onRestore": "exit 0; qs ipc call background preview ''; change-colortheme -c '{{ flavor }}' quickshell niri"
-    },
-    "cache": {
-        "maxImageEntries": 300
-    }
+  "$schema": "https://raw.githubusercontent.com/Uyanide/WallReel/refs/heads/master/config.schema.json",
+  "wallpaper": {
+    "dirs": [
+      {
+        "path": "~/Pictures/backgrounds"
+      }
+    ],
+    "excludes": ["nao-stars-crop-adjust-flop.jpg", "miku-gate.jpg", "\\.md$"]
+  },
+  "action": {
+    "onSelected": "parra set '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
+    "onPreview": "parra set --no-save '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
+    "onRestore": "parra restore; change-colortheme -c '{{ flavor }}' quickshell niri",
+    "quitOnSelected": true,
+    "saveState": [
+      {
+        "key": "flavor",
+        "fallback": "#89b4fa",
+        "command": "qs ipc call colors get mPrimary"
+      }
+    ]
+  },
+  "cache": {
+    "maxImageEntries": 300
+  }
 }
