@@ -20,5 +20,14 @@
          "name": "catppuccin-mocha",
          "icon_theme": "Papirus"
       }
+   },
+   "providers": {
+      "files": {
+         "preferences": {
+            "autoIndexing": false,
+            "excludedIndexingPaths": [],
+            "indexingPaths": []
+         }
+      }
    }
 }

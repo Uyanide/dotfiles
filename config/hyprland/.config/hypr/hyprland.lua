@@ -14,3 +14,4 @@ require("hyprland/gestures")
 require("hyprland/binds")
 
 require("hyprland/execs")
+require("parra")

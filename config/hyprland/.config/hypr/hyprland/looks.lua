@@ -19,7 +19,7 @@ hl.config({
         no_focus_fallback                 = true,
         allow_tearing                     = true, -- gates the `immediate` rule
 
-        layout                            = "dwindle",
+        layout                            = "scrolling",
 
         snap                              = {
             enabled      = true,
