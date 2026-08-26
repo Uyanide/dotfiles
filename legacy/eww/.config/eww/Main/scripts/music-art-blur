@@ -1,8 +1,0 @@
-#!/bin/bash
-
-tmp_dir="$HOME/.cache/eww/music-art"
-cache_blur_path="$tmp_dir/cache-blur.conf"
-
-. "$cache_blur_path"
-
-echo "$path"

@@ -14,7 +14,7 @@ spawn-at-startup "sunshine"
 // spawn-at-startup "thunderbird"
 
 // Idle
-spawn-at-startup "hypridle"
+spawn-at-startup "exec hypridle 2>&1 | systemd-cat -t hypridle"
 
 // Desktop
 spawn-at-startup "quickshell"

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if systemd-run --user --quiet --collect \
+      --unit=hyprlock --property=TimeoutStopSec=5 \
+      hyprlock --immediate-render 2>/dev/null
+then
+  sleep 3
+fi

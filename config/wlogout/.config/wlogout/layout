@@ -1,6 +1,6 @@
 {
     "label": "lock",
-    "action": "loginctl lock-session",
+    "action": "/home/kolkas/.local/scripts/lock-now",
     "text": "Lock",
     "keybind": "l"
 }
