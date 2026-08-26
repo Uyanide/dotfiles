@@ -1,0 +1,15 @@
+[compositor]
+horizontal = "none"
+vertical   = "workspace"
+
+[output."eDP-1".compositor]
+span = 2
+
+[output."DP-1".compositor]
+span = ["3-7"]
+
+[zoom]
+crop-ratio = 0.8
+
+[blur]
+tint = "#1e1e2e"

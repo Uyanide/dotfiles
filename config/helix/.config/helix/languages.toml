@@ -9,7 +9,7 @@ indent = { tab-width = 4, unit = "    " }
 [[language]]
 name = "python"
 formatter = { command = "ruff", args = ["format", "-"] }
-language-servers = ["ruff"]
+language-servers = ["ruff", "pyright"]
 
 [[language]]
 name = "rust"
