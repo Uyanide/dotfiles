@@ -105,6 +105,10 @@ class DeviceMonitor:
         fds_to_remove = []
 
         for fd, event in events:
+            if event & (select.POLLERR | select.POLLHUP | select.POLLNVAL):
+                fds_to_remove.append(fd)
+                continue
+
             if event & select.POLLIN:
                 try:
                     while True:

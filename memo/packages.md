@@ -177,6 +177,7 @@ dwarfs
 ed
 efibootmgr
 element-desktop
+elvish
 ethtool
 euphonica-git
 eww
@@ -321,6 +322,7 @@ lua52-socket
 luarocks
 lutris
 lzip
+maa-assistant-arknights
 maa-cli
 magiskboot-bin
 man-db
@@ -366,10 +368,11 @@ oavif
 obs-studio
 obsidian
 okular
+omp-bin
+openai-codex
 openbsd-netcat
 opencl-headers
 opencl-nvidia
-opencode
 openlist-bin
 openssh
 os-prober
@@ -377,6 +380,7 @@ pacman-contrib
 pacman-utils
 pandoc-bin
 papirus-icon-theme
+parra-bin
 perf
 perl-file-homedir
 perl-image-exiftool
@@ -529,11 +533,11 @@ valgrind
 vapoursynth-plugin-vship-cuda-git
 ventoy-bin
 vesktop-bin
-vicinae
+vicinae-bin
 vim
 visual-studio-code-bin
 vlc
-voicefox
+voicefox-bin
 vulkan-extra-layers
 vulkan-extra-tools
 vulkan-gfxstream
