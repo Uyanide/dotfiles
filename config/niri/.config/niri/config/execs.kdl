@@ -1,5 +1,5 @@
 // Core
-spawn-at-startup "nm-applet"
+// spawn-at-startup "nm-applet"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
 // spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 // spawn-at-startup "/usr/lib/hyprpolkitagent/hyprpolkitagent"
@@ -9,16 +9,25 @@ spawn-at-startup "/usr/lib/soteria-polkit/soteria"
 spawn-at-startup "solaar" "-w" "hide"
 
 // Some other heavy apps
-spawn-at-startup "sunshine"
-// spawn-at-startup "spotify"
-// spawn-at-startup "thunderbird"
+// spawn-at-startup "sunshine"
 
 // Idle
-spawn-at-startup "exec hypridle 2>&1 | systemd-cat -t hypridle"
+// spawn-at-startup "exec hypridle 2>&1 | systemd-cat -t hypridle"
 
 // Desktop
 spawn-at-startup "quickshell"
-spawn-at-startup "parra" "daemon"
+// spawn-at-startup "parra" "daemon"
 
 // Vicinae
-spawn-at-startup "vicinae" "server"
+// spawn-at-startup "vicinae" "server"
+
+// Shipped with a service and enabled by add-wants:
+// - hypridle
+// - parra
+// - sunshine
+// - vicinae
+//
+// Autostarted by /etc/xdg/autostart/*.desktop:
+// - blueman-applet
+// - fcitx5
+// - nm-applet

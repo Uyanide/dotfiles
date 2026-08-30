@@ -135,14 +135,14 @@ UBox {
                     }
                 }, {
                     "name": "Suspend",
-                    "icon": "moon",
+                    "icon": "bed",
                     "isError": false,
                     "clicked": function() {
                         PowerService.suspend();
                     }
                 }, {
                     "name": "Hibernate",
-                    "icon": "bed",
+                    "icon": "moon",
                     "isError": false,
                     "clicked": function() {
                         PowerService.hibernate();
