@@ -30,7 +30,7 @@ bindkey '^Z'      undo               # C-z
 uy_prepend_sudo() {
     if [[ $BUFFER == sudo\ * ]]; then
         BUFFER="${BUFFER#sudo }"
-        (( CURSOR -= 5 ))
+        # (( CURSOR -= 5 ))
     else
         BUFFER="sudo $BUFFER"
         CURSOR+=5

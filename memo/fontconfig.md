@@ -10,8 +10,6 @@
 
 ### Other fonts (used but not included in fontconfig)
 
-- [Sour Gummy](https://fonts.google.com/specimen/Sour+Gummy): used in quickshell
-- Font Awesome 6 Free: used in waybar & some other desktop components
 - `extra/ttf-meslo-nerd`: for its `Mono` variant, nerd-font icons with 1-cell width
 
 ### Font configuration
@@ -33,7 +31,6 @@
   <edit mode="assign" name="rgba">
    <const>none</const>
   </edit>
-  <!-- <edit mode="assign" name="embeddedbitmap"><bool>false</bool></edit> -->
  </match>
  <alias>
   <family>sans-serif</family>

@@ -104,6 +104,7 @@ bash /path/to/dotfiles/memo/packages.md
 
 ```
 7zip
+adw-gtk-theme
 alacritty
 alass
 arch-install-scripts
@@ -139,14 +140,15 @@ cachyos-mirrorlist
 cachyos-rate-mirrors
 cachyos-v3-mirrorlist
 cachyos-v4-mirrorlist
+catppuccin-gtk-theme-latte
 catppuccin-gtk-theme-mocha
 cava
 cbonsai
+cc-switch-bin
 chafa
 chaotic-keyring
 chaotic-mirrorlist
 chwd
-claude-code
 cli11
 cloc
 cmake
@@ -170,11 +172,13 @@ docker
 docker-buildx
 docker-compose
 dolphin
+dotnet-sdk
 doxygen
 drawio-desktop
 drm-info
 dwarfs
 ed
+ediary-bin
 efibootmgr
 element-desktop
 elvish
@@ -193,6 +197,7 @@ fcitx5-mozc
 fcitx5-pinyin-moegirl
 fcitx5-pinyin-zhwiki
 fcitx5-qt
+fcitx5-themes-macos-git
 fd
 fdkaac
 ffmpeg-full
@@ -215,6 +220,7 @@ fssimu2
 fvm
 fzf
 gamemode
+gamescope
 gdb
 gdu
 gearlever
@@ -455,6 +461,9 @@ scrcpy
 sd
 seahorse
 shellcheck-bin
+sing-box
+sing-geoip-rule-set
+sing-geosite-rule-set
 sl
 slirp4netns
 slurp
@@ -521,6 +530,7 @@ ttf-meslo-nerd
 ttf-ms-fonts
 ttf-noto-sans-cjk-vf
 ttf-symbola
+ttf-tabler-icons
 tty-clock
 turbostat
 unarchiver
@@ -537,7 +547,7 @@ vicinae-bin
 vim
 visual-studio-code-bin
 vlc
-voicefox-bin
+voicefox
 vulkan-extra-layers
 vulkan-extra-tools
 vulkan-gfxstream
@@ -550,9 +560,8 @@ vulkan-validation-layers
 vvenc
 wallreel
 waybar
-waydroid
 waydroid-helper
-waypaper
+waydroid-nvidia-bin
 wev
 wezterm
 wf-recorder-git

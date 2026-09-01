@@ -1,0 +1,291 @@
+#!/usr/bin/env python3
+# pyright: strict
+
+import argparse
+import fcntl
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+from collections.abc import Sequence
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Final, Literal, NoReturn, cast
+
+Environment = dict[str, str]
+Command = Literal["enter", "leave", "status"]
+
+NAME_RE: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+SESSION_RE: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z0-9_.:@-]+$")
+ASSIGNMENT_RE: Final[re.Pattern[str]] = re.compile(
+    r"^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)$"
+)
+
+
+class SessionEnvironmentError(Exception):
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class State:
+    owner: str
+    names: tuple[str, ...]
+    previous: Environment
+
+
+@dataclass(frozen=True, slots=True)
+class Arguments:
+    command: Command
+    session_id: str | None = None
+    files: tuple[Path, ...] = ()
+
+
+def fail(message: str) -> NoReturn:
+    raise SessionEnvironmentError(message)
+
+
+def run_systemctl(*arguments: str, capture: bool = False) -> str:
+    command = ["systemctl", "--user", *arguments]
+    try:
+        result: subprocess.CompletedProcess[str] = subprocess.run(
+            command,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE if capture else None,
+        )
+    except FileNotFoundError:
+        fail("required command not found: systemctl")
+    except subprocess.CalledProcessError:
+        fail(f"command failed: {' '.join(command)}")
+    return result.stdout or ""
+
+
+def read_manager_environment() -> Environment:
+    output = run_systemctl(
+        "--no-pager", "--output=json", "show-environment", capture=True
+    )
+    try:
+        decoded: object = json.loads(output)
+    except json.JSONDecodeError as error:
+        fail(f"systemctl returned invalid JSON: {error}")
+    if not isinstance(decoded, dict):
+        fail("systemctl returned an invalid environment document")
+    environment: Environment = {}
+    for key, value in cast(dict[object, object], decoded).items():
+        if not isinstance(key, str) or not isinstance(value, str):
+            fail("systemctl returned an invalid environment document")
+        environment[key] = value
+    return environment
+
+
+def read_environment_files(paths: Sequence[Path]) -> Environment:
+    environment: Environment = {}
+    for path in paths:
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeError) as error:
+            fail(f"cannot read environment file {path}: {error}")
+        for line_number, line in enumerate(lines, 1):
+            stripped = line.lstrip()
+            if not stripped or stripped.startswith(("#", ";")):
+                continue
+            match = ASSIGNMENT_RE.fullmatch(line)
+            if not match:
+                fail(f"{path}:{line_number}: expected NAME=VALUE")
+            environment[match.group(1)] = match.group(2)
+    return environment
+
+
+def validate_session_id(session_id: str) -> None:
+    if not SESSION_RE.fullmatch(session_id):
+        fail(f"invalid session identifier: {session_id}")
+
+
+def validate_state(decoded: object) -> State:
+    if not isinstance(decoded, dict):
+        fail("invalid state document")
+    state = cast(dict[object, object], decoded)
+    if state.get("version") != 1:
+        fail("invalid state document")
+
+    owner = state.get("owner")
+    raw_names = state.get("names")
+    raw_previous = state.get("previous")
+    if not isinstance(owner, str) or not SESSION_RE.fullmatch(owner):
+        fail("invalid state owner")
+    if not isinstance(raw_names, list):
+        fail("invalid state variable list")
+    names: list[str] = []
+    for name in cast(list[object], raw_names):
+        if not isinstance(name, str) or not NAME_RE.fullmatch(name):
+            fail("invalid state variable list")
+        names.append(name)
+    if len(names) != len(set(names)):
+        fail("duplicate variables in state")
+
+    if not isinstance(raw_previous, dict):
+        fail("invalid previous environment in state")
+    previous: Environment = {}
+    for name, value in cast(dict[object, object], raw_previous).items():
+        if (
+            not isinstance(name, str)
+            or not NAME_RE.fullmatch(name)
+            or name not in names
+            or not isinstance(value, str)
+        ):
+            fail("invalid previous environment in state")
+        previous[name] = value
+    return State(owner, tuple(names), previous)
+
+
+def read_state(state_file: Path) -> State:
+    try:
+        decoded: object = json.loads(state_file.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        fail(f"cannot read state file {state_file}: {error}")
+    return validate_state(decoded)
+
+
+def write_state(state_file: Path, state: State) -> None:
+    temporary_path: Path | None = None
+    payload: dict[str, object] = {
+        "version": 1,
+        "owner": state.owner,
+        "names": state.names,
+        "previous": state.previous,
+    }
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=state_file.parent,
+            prefix=".state.",
+            delete=False,
+        ) as temporary:
+            temporary_path = Path(temporary.name)
+            json.dump(payload, temporary, ensure_ascii=False, separators=(",", ":"))
+            temporary.write("\n")
+            temporary.flush()
+            os.fsync(temporary.fileno())
+        os.replace(temporary_path, state_file)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+
+def enter_session(session_id: str, files: Sequence[Path], state_file: Path) -> None:
+    validate_session_id(session_id)
+    if state_file.exists():
+        state = read_state(state_file)
+        fail(f"environment is already owned by session: {state.owner}")
+
+    desired = read_environment_files(files)
+    manager = read_manager_environment()
+    names = list(desired)
+    state = State(
+        session_id,
+        tuple(names),
+        {name: manager[name] for name in names if name in manager},
+    )
+    write_state(state_file, state)
+
+    assignments = [f"{name}={value}" for name, value in desired.items()]
+    if assignments:
+        run_systemctl("set-environment", *assignments)
+    print(f"Environment entered for session {session_id} ({len(names)} variables).")
+
+
+def leave_session(session_id: str, state_file: Path) -> None:
+    validate_session_id(session_id)
+    if not state_file.exists():
+        print("No active session environment.")
+        return
+
+    state = read_state(state_file)
+    if state.owner != session_id:
+        fail(f"environment is owned by session '{state.owner}', not '{session_id}'")
+
+    if state.names:
+        run_systemctl("unset-environment", *state.names)
+    if state.previous:
+        run_systemctl(
+            "set-environment",
+            *(f"{name}={value}" for name, value in state.previous.items()),
+        )
+    state_file.unlink()
+    print(f"Environment restored for session {session_id}.")
+
+
+def show_status(state_file: Path) -> None:
+    if not state_file.exists():
+        print("No active session environment.")
+        return
+    state = read_state(state_file)
+    print(f"Active session: {state.owner} ({len(state.names)} variables)")
+
+
+def parse_arguments() -> Arguments:
+    description = (
+        "Temporarily overlay the systemd user-manager environment. "
+        "Files use literal NAME=VALUE lines; blank lines and # or ; comments are ignored."
+    )
+    parser = argparse.ArgumentParser(description=description)
+    commands = parser.add_subparsers(dest="command", required=True)
+    enter = commands.add_parser("enter")
+    enter.add_argument("session_id")
+    enter.add_argument("files", nargs="+", type=Path)
+    leave = commands.add_parser("leave")
+    leave.add_argument("session_id")
+    commands.add_parser("status")
+    namespace: argparse.Namespace = parser.parse_args()
+    command = cast(str, namespace.command)
+    if command == "enter":
+        return Arguments(
+            command,
+            cast(str, namespace.session_id),
+            tuple(cast(list[Path], namespace.files)),
+        )
+    if command == "leave":
+        return Arguments(command, cast(str, namespace.session_id))
+    if command == "status":
+        return Arguments(command)
+    fail(f"invalid command: {command}")
+
+
+def main() -> None:
+    arguments = parse_arguments()
+    runtime = os.environ.get("XDG_RUNTIME_DIR", "")
+    runtime_dir = Path(runtime)
+    if not runtime or not runtime_dir.is_absolute() or not runtime_dir.is_dir():
+        fail("XDG_RUNTIME_DIR is not an absolute directory")
+    if not os.access(runtime_dir, os.W_OK):
+        fail("XDG_RUNTIME_DIR is not writable")
+
+    os.umask(0o077)
+    state_dir = runtime_dir / "graphical-session-env"
+    state_dir.mkdir(mode=0o700, exist_ok=True)
+    state_dir.chmod(0o700)
+    state_file = state_dir / "state.json"
+
+    with (state_dir / "lock").open("a", encoding="utf-8") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if arguments.command == "enter":
+            if arguments.session_id is None:
+                fail("missing session identifier")
+            enter_session(arguments.session_id, arguments.files, state_file)
+        elif arguments.command == "leave":
+            if arguments.session_id is None:
+                fail("missing session identifier")
+            leave_session(arguments.session_id, state_file)
+        else:
+            show_status(state_file)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except SessionEnvironmentError as error:
+        print(f"{Path(sys.argv[0]).name}: {error}", file=sys.stderr)
+        raise SystemExit(1)

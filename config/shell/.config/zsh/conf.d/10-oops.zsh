@@ -19,7 +19,7 @@ uy_oops_confirm() {
     # Walking forward and remembering the start of each entry is exact for
     # entries of any length.
     local start
-    start=$(awk '{ if (!cont) start = NR; cont = /\\$/ } END { print start + 0 }' "$HISTFILE")
+    start=$(LC_ALL='C.UTF-8' awk '{ if (!cont) start = NR; cont = /\\$/ } END { print start + 0 }' "$HISTFILE")
 
     if [[ -z "$start" ]] || (( start < 1 )); then
         print -P "%F{yellow}Could not parse last history entry.%f"

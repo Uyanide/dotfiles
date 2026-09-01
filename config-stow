@@ -38,6 +38,7 @@ GUI_BASE_PKGS = [
 # for Hyprland setup
 HYPRLAND_PKGS = [
     *GUI_BASE_PKGS,
+    "env",
     "hypr",  # hypr family
     "hyprland",  # wm config
     "vicinae",  # application launcher
@@ -46,6 +47,7 @@ HYPRLAND_PKGS = [
 # for Niri setup
 NIRI_PKGS = [
     *GUI_BASE_PKGS,
+    "env",
     "hypr",  # for hyprlock & hypridle
     "niri",  # wm config
     "quickshell",  # widgets & status bar & notifications & ...
@@ -115,9 +117,12 @@ def main():
 
     selected_pkgs = PKGS[args.package]
     is_unstow = args.unstow
+    do_reload = False
 
     for pkg in selected_pkgs:
         try:
+            if pkg in ["env"]:
+                do_reload = True
             if is_unstow:
                 unstow(pkg)
                 _log("INFO", f"Successfully unstowed package '{pkg}'.")
@@ -126,6 +131,10 @@ def main():
                 _log("INFO", f"Successfully stowed package '{pkg}'.")
         except subprocess.CalledProcessError as e:
             _log("ERROR", f"Failed to stow package '{pkg}': {e}")
+
+    if do_reload:
+        _log("INFO", "Reloading systemd user daemon...")
+        subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
 
     if is_unstow:
         return  # No need to switch session if we're just unstowing
