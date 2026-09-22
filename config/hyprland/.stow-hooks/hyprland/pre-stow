@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -eu
+
+# systemd won't recoganize drop-in if the directory is a symlink
+mkdir -p "$HOME/.config/systemd/user/wayland-wm@hyprland.desktop.service.d"

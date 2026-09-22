@@ -86,9 +86,18 @@ def check_deps() -> bool:
 
 
 def stow(pkg: str):
+    dir = Path(PKGS_PATH) / pkg / ".stow-hooks" / pkg
+    pre = dir / "pre-stow"
+    if pre.exists():
+        _log("INFO", f"Running pre-stow script for package '{pkg}'...")
+        subprocess.run(["bash", str(pre)], check=True)
     subprocess.run(
         ["stow", "-v", "-d", str(PKGS_PATH), "-t", str(DEST_PATH), pkg], check=True
     )
+    post = dir / "post-stow"
+    if post.exists():
+        _log("INFO", f"Running post-stow script for package '{pkg}'...")
+        subprocess.run(["bash", str(post)], check=True)
 
 
 def unstow(pkg: str):
@@ -135,9 +144,6 @@ def main():
     if do_reload:
         _log("INFO", "Reloading systemd user daemon...")
         subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
-
-    if is_unstow:
-        return  # No need to switch session if we're just unstowing
 
 
 if __name__ == "__main__":
