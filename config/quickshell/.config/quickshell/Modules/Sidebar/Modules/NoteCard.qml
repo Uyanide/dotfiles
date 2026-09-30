@@ -89,7 +89,7 @@ Rectangle {
                         delegate: UBox {
                             property color accentColor: Colors.noteList[model.colorIdx % Colors.noteList.length]
 
-                            width: notesColumn.width
+                            Layout.fillWidth: true
                             implicitHeight: noteLayout.implicitHeight + Style.marginM * 2
 
                             Rectangle {

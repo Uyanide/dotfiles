@@ -112,3 +112,12 @@ window-rule {
     open-focused false
     default-floating-position x=2 y=3 relative-to="bottom-right"
 }
+
+window-rule {
+    match app-id="^openlogi-action-ring$"
+
+    open-floating true
+    focus-ring {
+        off
+    }
+}

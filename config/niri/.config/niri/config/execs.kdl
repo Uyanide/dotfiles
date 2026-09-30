@@ -6,7 +6,7 @@ spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
 spawn-at-startup "/usr/lib/soteria-polkit/soteria"
 
 // Logitech
-spawn-at-startup "solaar" "-w" "hide"
+// spawn-at-startup "solaar" "-w" "hide"
 
 // Some other heavy apps
 // spawn-at-startup "sunshine"
