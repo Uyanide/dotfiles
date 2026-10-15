@@ -9,7 +9,7 @@
 
 # Constants
 niri_config_file="$HOME/.config/niri/config/misc.kdl"
-prefer_order=(intel nvidia)
+prefer_order=(nvidia intel)
 
 # Get vendor and path of each GPU
 # NOTE: use 'find' instead of globs. This file is sourced by both bash and zsh,

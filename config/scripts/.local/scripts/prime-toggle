@@ -11,11 +11,9 @@ if grep -q '[^[:space:]]' "$HOME/.config/envs/prime.env"; then
 else
 	sed -i -E 's/prefer_order=\([^)]*\)/prefer_order=(nvidia intel)/' "$HOME/.local/snippets/set_display"
 	cat > "$HOME/.config/envs/prime.env" <<EOF
-environment {
-    __NV_PRIME_RENDER_OFFLOAD "1"
-    __VK_LAYER_NV_optimus "NVIDIA_only"
-    __GLX_VENDOR_LIBRARY_NAME "nvidia"
-}
+__NV_PRIME_RENDER_OFFLOAD=1
+__VK_LAYER_NV_optimus=NVIDIA_only
+__GLX_VENDOR_LIBRARY_NAME=nvidia
 EOF
 	echo "Enabled global Nvidia Prime offloading."
 fi
