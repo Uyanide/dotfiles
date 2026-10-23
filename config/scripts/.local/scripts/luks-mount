@@ -37,10 +37,9 @@ LUKS_SHELL="${LUKS_SHELL:-${SHELL:-/bin/bash}}"
 LUKS_SHELL_COMMAND="${LUKS_SHELL_COMMAND:-}"
 LUKS_KEYFILE="${LUKS_KEYFILE:-}"
 
-# Flag to track if we created the mount point directory
+mount_new=0
 mountpoint_created=0
 
-# --- Cleanup Logic ---
 cleanup() {
 	echo "[INFO] Cleaning up..." >&2
 	# Make sure we are not in the mount point when unmounting
@@ -58,7 +57,7 @@ cleanup() {
 		sudo rmdir "$LUKS_MOUNT_POINT" || echo "[WARNING] Failed to remove mount point." >&2
 	fi
 	# Cleanup Outer Partition if it exists
-	if [ -n "$OUTER_MOUNT_POINT" ]; then
+	if [ $mount_new -eq 1 ] && [ -n "$OUTER_MOUNT_POINT" ]; then
 		if mountpoint -q "$OUTER_MOUNT_POINT"; then
 			echo "[INFO] Unmounting outer partition..." >&2
 			sudo umount "$OUTER_MOUNT_POINT" || echo "[WARNING] Failed to unmount outer partition." >&2
@@ -90,21 +89,28 @@ handle_nested_partition() {
 
 	# Check if already mounted
 	if findmnt -n "$outer_device" >/dev/null; then
-		echo "[INFO] Outer device is already mounted." >&2
-		OUTER_MOUNT_POINT=$(findmnt -n -o TARGET "$outer_device")
+		echo "[INFO] Outer device is already mounted" >&2
+		local mnts
+		mnts=$(findmnt -n -o TARGET "$outer_device")
+    if [[ $mnts == *$'\n'* ]]; then
+    	echo "[ERROR] Outer device is mounted to multiple targets"
+    	exit 1
+    fi
+		OUTER_MOUNT_POINT="$mnts"
 	else
 		# Create a temporary mount point for the outer partition
 		OUTER_MOUNT_POINT=$(mktemp -d -t luks_outer_XXXXXX)
 
 		echo "[INFO] Mounting outer device to $OUTER_MOUNT_POINT..." >&2
 		if ! sudo mount "$outer_device" "$OUTER_MOUNT_POINT"; then
-			echo "[ERROR] Failed to mount outer device." >&2
+			echo "[ERROR] Failed to mount outer device" >&2
 			rmdir "$OUTER_MOUNT_POINT"
 			exit 1
 		fi
+		mount_new=1
 	fi
 
-	local luks_image="$OUTER_MOUNT_POINT/$NESTED_path"
+	local luks_image="$OUTER_MOUNT_POINT/$LUKS_NESTED_PATH"
 	if [ ! -f "$luks_image" ]; then
 		echo "[ERROR] LUKS image not found at: $luks_image" >&2
 		sudo umount "$OUTER_MOUNT_POINT"
@@ -131,7 +137,7 @@ find_luks_device() {
 		if command -v fzf >/dev/null; then
 			printf "%s\n" "${devices[@]}" | fzf --prompt="Select LUKS device: "
 		else
-			echo "[ERROR] Multiple LUKS devices found. Please set LUKS_PARTITION env var." >&2
+			echo "[ERROR] Multiple LUKS devices found. Please set LUKS_PARTITION env var" >&2
 			printf "%s\n" "${devices[@]}" >&2
 			return 1
 		fi
@@ -140,7 +146,7 @@ find_luks_device() {
 
 if [ -n "$LUKS_NESTED_UUID" ]; then
 	if [ -z "$LUKS_NESTED_PATH" ]; then
-		echo "[ERROR] LUKS_NESTED_PATH must be set when using LUKS_NESTED_UUID." >&2
+		echo "[ERROR] LUKS_NESTED_PATH must be set when using LUKS_NESTED_UUID" >&2
 		exit 1
 	fi
 	handle_nested_partition "$LUKS_NESTED_UUID" "$LUKS_NESTED_PATH"
@@ -169,14 +175,14 @@ if [ -n "$LUKS_KEYFILE" ]; then
 fi
 
 if ! sudo cryptsetup open "${CRYPT_ARGS[@]}" "$LUKS_PARTITION" "$LUKS_MAPPER_NAME"; then
-	echo "[ERROR] Failed to open device." >&2
+	echo "[ERROR] Failed to open device" >&2
 	exit 1
 fi
 
 sudo mount "/dev/mapper/$LUKS_MAPPER_NAME" "$LUKS_MOUNT_POINT"
 
 echo "[INFO] Successfully mounted at $LUKS_MOUNT_POINT." >&2
-echo "[INFO] Exit this shell to unmount and close the LUKS volume." >&2
+echo "[INFO] Exit this shell to unmount and close the LUKS volume" >&2
 
 pushd "$LUKS_MOUNT_POINT" &>/dev/null
 if [[ -n "$LUKS_SHELL_COMMAND" ]]; then
