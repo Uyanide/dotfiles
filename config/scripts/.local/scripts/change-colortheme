@@ -50,7 +50,7 @@ SCRIPTS = {
     "starship": [
         CONFIG_DIR / "fish" / "apply-color-starship"
     ],  # borrowing fish's directory
-    "quickshell": [CONFIG_DIR / "quickshell" / "apply-color"],
+    "noctalia": [CONFIG_DIR / "noctalia" / "apply-color"],
     "wlogout": [CONFIG_DIR / "wlogout" / "apply-color"],
     "yazi": [CONFIG_DIR / "yazi" / "apply-color"],
 }

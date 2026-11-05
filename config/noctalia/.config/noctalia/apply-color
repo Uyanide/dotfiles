@@ -1,0 +1,21 @@
+#!/bin/bash
+
+[ -f "$HOME/.local/snippets/apply-color-helper" ] || {
+    echo "Missing helper script: $HOME/.local/snippets/apply-color-helper"
+    exit 1
+}
+. "$HOME/.local/snippets/apply-color-helper"
+
+name="${palette}-${colorName}"
+
+[ -f "$path/palettes/${name}.json" ] || {
+    log_error "No such palette: ${name}"
+    exit 1
+}
+
+noctalia msg color-scheme-set custom "$name" >/dev/null || {
+    log_error "Failed to set Noctalia palette ${name}"
+    exit 1
+}
+
+log_success "noctalia"

@@ -1,30 +1,5 @@
 <img src="https://raw.githubusercontent.com/Uyanide/dotfiles/refs/heads/main/assets/works-on-my-machines.png" alt="Works on my machine(s)" width="200" />
 
-## How it looks like...
-
-<details>
-<summary>Niri & Quickshell</summary>
-
-https://github.com/user-attachments/assets/2550607a-48ea-4662-98ba-d26722b26b1b
-
-<figure>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.webp?raw=true"/>
-</figure>
-
-<figure>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.webp?raw=true"/>
-</figure>
-
-</details>
-
-<details>
-<summary>Grub menu</summary>
-
-<figure>
-    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
-</figure>
-
-</details>
 
 ## Setup Overview
 
@@ -32,33 +7,28 @@ https://github.com/user-attachments/assets/2550607a-48ea-4662-98ba-d26722b26b1b
 >
 > See also [config-stow](./config-stow) for the list of stow packages.
 
-- OS: **Archlinux** | **Debian**
-- WM: ~~Hyprland~~ | **Niri**
-- Bar: ~~Waybar~~ | **Quickshell**
+- OS: Archlinux | Debian
+- WM: ~~Hyprland~~ | Niri
+- Bar: ~~Waybar~~ | ~~Quickshell~~ | Noctalia
 - Shell: (bash & fish) | **Zsh**
 - Prompt: Oh My Posh | **Starship**
 - Terminal: **Kitty** | WezTerm | Ghostty
-- Power Menu: **Wlogout** & Quickshell
-- Colorscheme: **Catppuccin Mocha**
-- App Launcher: ~~Rofi~~ | ~~Fuzzel~~ | **vicinae**
-- Desktop Widgets: ~~Eww~~ | **Quickshell**
-- Wallpaper Daemon: ~~Awww~~ | **Quickshell**
-- Notification Daemon: ~~Mako~~ | **Quickshell**
+- Power Menu: **Wlogout** & (~~Quickshell~~ | Noctalia)
+- Colorscheme: Catppuccin Mocha
+- App Launcher: ~~Rofi~~ | ~~Fuzzel~~ | ~~vicinae~~ | Noctalia
+- Desktop Widgets: ~~Eww~~ | ~~Quickshell~~ | Noctalia
+- Wallpaper Daemon: ~~Awww~~ | ~~Quickshell~~ | Parra
+- Notification Daemon: ~~Mako~~ | ~~Quickshell~~ | Noctalia
 
 marked with:
 
 - **bold**: currently preferred
 - ~~strikethrough~~: previously used but not anymore, moved to `legacy` folder
 
-## Quickshell
-
-Not based on, but heavily depends on many modules from (an old version of) [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). A thousand thanks to their great work.
-
-This setup is currently only adapted for Niri.
-
 ## Wallpaper & Colortheme
 
-- [WallReel](https://github.com/Uyanide/WallReel): an Image Carousel implemented with QtQuick to browse and set wallpapers from.
+- [WallReel](https://github.com/Uyanide/WallReel): image carousel implemented with QtQuick to browse and set wallpapers.
+- [Parra](https://github.com/Uyanide/Parra): wallpaper daemon that supports compositor-driven effects.
 - [change-colortheme](./config/scripts/.local/scripts/change-colortheme): script that extract colors from the current wallpaper and generate a catppuccin color scheme accordingly.
 - [backgrounds](https://github.com/Uyanide/backgrounds) collection for personal use (mostly waifus).
 
@@ -72,10 +42,39 @@ See [fontconfig.md](https://github.com/Uyanide/dotfiles/blob/main/memo/fontconfi
 
 ---
 
-<details>
-<summary>Previous setup</summary>
+## Legacy setups
 
-## How it looks like...
+<details>
+<summary>Niri & Quickshell</summary>
+
+## How it ~~looks~~ looked like...
+
+https://github.com/user-attachments/assets/2550607a-48ea-4662-98ba-d26722b26b1b
+
+<figure>
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop-alt.webp?raw=true"/>
+</figure>
+
+<figure>
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/backdrop.webp?raw=true"/>
+</figure>
+
+<figure>
+    <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/grub.jpg?raw=true"/>
+</figure>
+
+## Quickshell
+
+Not based on, but heavily depends on many modules from (an old version of) [noctalia-shell](https://github.com/noctalia-dev/noctalia-shell). A thousand thanks to their great work.
+
+This setup is currently only adapted for Niri.
+
+</details>
+
+<details>
+<summary>Hyprland & Eww</summary>
+
+## How it ~~looks~~ looked like...
 
 <figure>
     <img src="https://github.com/Uyanide/backgrounds/blob/master/screenshots/desktop.jpg?raw=true"/>

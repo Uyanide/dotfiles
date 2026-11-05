@@ -25,24 +25,20 @@ binds {
     Mod+P               repeat=false    { spawn-sh "wl-mirror $(niri msg --json focused-output | jq -r .name)"; }
     Mod+H               repeat=false    { spawn "hexecute"; }
 
-
-    // Quickshell
-    Mod+Space           repeat=false    { spawn "qs" "ipc" "call" "bars" "toggleLeft"; }
-    Mod+N               repeat=false    { spawn "qs" "ipc" "call" "bars" "toggleRight"; }
-    Mod+Shift+L         repeat=false    { spawn "qs" "ipc" "call" "bars" "toggleLyrics"; }
-    Mod+Shift+K         repeat=false    { spawn-sh "quickshell-kill || quickshell"; }
-    Mod+I               repeat=false    { spawn "qs" "ipc" "call" "idleInhibitor" "toggle"; }
-    Mod+Alt+R           repeat=false    { spawn "qs" "ipc" "call" "recording" "startOrStop"; }
-    Mod+Alt+G           repeat=false    { spawn "qs" "ipc" "call" "recording" "saveReplay"; }
-    Mod+S               repeat=false    { spawn "qs" "ipc" "call" "sunset" "toggle"; }
-    Mod+X               repeat=false    { spawn "qs" "ipc" "call" "notes" "openRecent"; }
-    Mod+Shift+X         repeat=false    { spawn "qs" "ipc" "call" "notes" "create"; }
+    // Noctalia
+    Mod+Space           repeat=false    { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+N               repeat=false    { spawn "noctalia" "msg" "panel-toggle" "control-center" "notifications"; }
+    Mod+Shift+K         repeat=false    { spawn-sh "pkill -x noctalia || noctalia"; }
+    Mod+I               repeat=false    { spawn "noctalia" "msg" "caffeine-toggle"; }
+    Mod+Alt+R           repeat=false    { spawn "noctalia" "msg" "plugin" "noctalia/screen_recorder:service" "all" "toggle"; }
+    Mod+Alt+G           repeat=false    { spawn "noctalia" "msg" "plugin" "noctalia/screen_recorder:service" "all" "replay-save"; }
+    Mod+S               repeat=false    { spawn "noctalia" "msg" "nightlight-toggle"; }
+    Mod+X               repeat=false    { spawn "noctalia" "msg" "panel-toggle" "noctalia/notes:panel"; }
 
     // Launcher
-    Alt+Space           repeat=false    { spawn "vicinae" "toggle"; }
-    Mod+V               repeat=false    { spawn "vicinae" "vicinae://launch/clipboard/history?toggle=true"; }
-    Mod+Period          repeat=false    { spawn "vicinae" "vicinae://launch/core/search-emojis?toggle=true"; }
-    Mod+D               repeat=false    { spawn "vicinae" "vicinae://launch/system/run?toggle=true"; }
+    Alt+Space           repeat=false    { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+V               repeat=false    { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    Mod+Period          repeat=false    { spawn "noctalia" "msg" "panel-toggle" "launcher" "/emo"; }
 
     // Actions
     Print               repeat=false    { screenshot-screen show-pointer=false; }
@@ -51,18 +47,18 @@ binds {
     Mod+Shift+C         repeat=false    { spawn "hyprpicker" "-a"; }
 
     // Media
-    XF86AudioRaiseVolume    allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "volumeUp"; }
-    XF86AudioLowerVolume    allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "volumeDown"; }
-    XF86AudioMute           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "toggleOutputMute"; }
-    XF86AudioMicMute        allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "toggleInputMute"; }
-    XF86AudioPlay           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "playPause"; }
-    XF86AudioPause          allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "playPause"; }
-    XF86AudioNext           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "next"; }
-    XF86AudioPrev           allow-when-locked=true  { spawn "qs" "ipc" "call" "media" "previous"; }
+    XF86AudioRaiseVolume    allow-when-locked=true  { spawn "noctalia" "msg" "volume-up"; }
+    XF86AudioLowerVolume    allow-when-locked=true  { spawn "noctalia" "msg" "volume-down"; }
+    XF86AudioMute           allow-when-locked=true  { spawn "noctalia" "msg" "volume-mute"; }
+    XF86AudioMicMute        allow-when-locked=true  { spawn "noctalia" "msg" "mic-mute"; }
+    XF86AudioPlay           allow-when-locked=true  { spawn "noctalia" "msg" "media" "toggle"; }
+    XF86AudioPause          allow-when-locked=true  { spawn "noctalia" "msg" "media" "toggle"; }
+    XF86AudioNext           allow-when-locked=true  { spawn "noctalia" "msg" "media" "next"; }
+    XF86AudioPrev           allow-when-locked=true  { spawn "noctalia" "msg" "media" "previous"; }
 
     // Brightness
-    XF86MonBrightnessUp     allow-when-locked=true  { spawn "qs" "ipc" "call" "brightness" "up"; }
-    XF86MonBrightnessDown   allow-when-locked=true  { spawn "qs" "ipc" "call" "brightness" "down"; }
+    XF86MonBrightnessUp     allow-when-locked=true  { spawn "noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessDown   allow-when-locked=true  { spawn "noctalia" "msg" "brightness-down"; }
 
     // Window management
     Mod+Tab     repeat=false    { toggle-overview; }

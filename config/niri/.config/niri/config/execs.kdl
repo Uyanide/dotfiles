@@ -15,7 +15,7 @@ spawn-at-startup "/usr/lib/soteria-polkit/soteria"
 // spawn-at-startup "exec hypridle 2>&1 | systemd-cat -t hypridle"
 
 // Desktop
-spawn-at-startup "quickshell"
+spawn-at-startup "noctalia"
 // spawn-at-startup "parra" "daemon"
 
 // Vicinae
@@ -25,7 +25,6 @@ spawn-at-startup "quickshell"
 // - hypridle
 // - parra
 // - sunshine
-// - vicinae
 //
 // Autostarted by /etc/xdg/autostart/*.desktop:
 // - blueman-applet

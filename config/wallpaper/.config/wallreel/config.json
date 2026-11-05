@@ -10,14 +10,14 @@
   },
   "action": {
     "onSelected": "parra set '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
-    "onPreview": "parra set --no-save '{{ path }}'; change-colortheme -c '{{ colorHex }}' quickshell niri",
-    "onRestore": "parra restore; change-colortheme -c '{{ flavor }}' quickshell niri",
+    "onPreview": "parra set --no-save '{{ path }}'; change-colortheme -c '{{ colorHex }}' noctalia niri",
+    "onRestore": "parra restore; change-colortheme -c '{{ flavor }}' noctalia niri",
     "quitOnSelected": true,
     "saveState": [
       {
         "key": "flavor",
         "fallback": "#89b4fa",
-        "command": "qs ipc call colors get mPrimary"
+        "command": "jq -r \".$(noctalia msg theme-mode-get).mPrimary // empty\" \"$HOME/.config/noctalia/palettes/$(noctalia msg color-scheme-get | cut -d' ' -f2-).json\""
       }
     ]
   },

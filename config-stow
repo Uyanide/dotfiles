@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import subprocess
 import shutil
+import subprocess
+import sys
 from argparse import ArgumentParser
 from pathlib import Path
 
@@ -50,8 +51,7 @@ NIRI_PKGS = [
     "env",
     "hypr",  # for hyprlock & hypridle
     "niri",  # wm config
-    "quickshell",  # widgets & status bar & notifications & ...
-    "vicinae",  # application launcher
+    "noctalia",
     "wlogout",  # logout menu
 ]
 
@@ -109,7 +109,7 @@ def unstow(pkg: str):
 
 def main():
     if not check_deps():
-        exit(1)
+        sys.exit(1)
 
     parser = ArgumentParser(
         description="Stow configuration packages in this repository."
