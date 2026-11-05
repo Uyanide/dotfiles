@@ -11,18 +11,11 @@ spawn-at-startup "gnome-keyring-daemon" "--start" "--components=secrets"
 // Some other heavy apps
 // spawn-at-startup "sunshine"
 
-// Idle
-// spawn-at-startup "exec hypridle 2>&1 | systemd-cat -t hypridle"
-
 // Desktop
 spawn-at-startup "noctalia"
 // spawn-at-startup "parra" "daemon"
 
-// Vicinae
-// spawn-at-startup "vicinae" "server"
-
 // Shipped with a service and enabled by add-wants:
-// - hypridle
 // - parra
 // - sunshine
 //

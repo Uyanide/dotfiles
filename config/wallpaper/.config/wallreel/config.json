@@ -10,8 +10,8 @@
   },
   "action": {
     "onSelected": "parra set '{{ path }}'; change-colortheme -c '{{ colorHex }}'",
-    "onPreview": "parra set --no-save '{{ path }}'; change-colortheme -c '{{ colorHex }}' noctalia niri",
-    "onRestore": "parra restore; change-colortheme -c '{{ flavor }}' noctalia niri",
+    "onPreview": "parra set --no-save '{{ path }}'; change-colortheme -c '{{ colorHex }}' noctalia niri hyprland",
+    "onRestore": "parra restore; change-colortheme -c '{{ flavor }}' noctalia niri hyprland",
     "quitOnSelected": true,
     "saveState": [
       {

@@ -17,7 +17,6 @@ hl.config({
         -- 2560px stays "wide" through several splits, so stack sooner.
         split_width_multiplier = 1.35,
 
-        special_scale_factor   = 1.0,
     },
 
     master = {
@@ -37,7 +36,6 @@ hl.config({
 
         slave_count_for_center_master = 2,
         center_master_fallback        = "left",
-        special_scale_factor          = 1.0,
     },
 
     scrolling = {

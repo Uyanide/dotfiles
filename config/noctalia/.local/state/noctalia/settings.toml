@@ -1,0 +1,191 @@
+config_version = 16
+
+[bar.default]
+capsule = true
+center = [ "audio_visualizer", "clock", "recorder", "notes" ]
+compositor_blur = false
+end = [ "ram", "temp", "volume", "brightness", "battery", "tray", "nightlight", "caffeine", "session" ]
+margin_ends = 0
+start = [ "launcher", "workspaces", "active_window", "media" ]
+thickness = 40
+
+[hooks]
+wallpaper_changed = "wallreel -a \"$NOCTALIA_WALLPAPER_PATH\""
+
+[idle]
+behavior_order = [ "lock", "screen-off", "lock-and-suspend" ]
+
+    [idle.behavior.lock]
+    action = "lock"
+    enabled = true
+    timeout = 300.0
+
+    [idle.behavior.lock-and-suspend]
+    action = "lock_and_suspend"
+    enabled = false
+    timeout = 900.0
+
+    [idle.behavior.screen-off]
+    action = "screen_off"
+    enabled = true
+    locked_timeout = 30.0
+    timeout = 0.0
+
+[location]
+address = "Munich, Germany"
+
+[lockscreen]
+blurred_desktop = true
+fingerprint = false
+grace_period_seconds = 5
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@eDP-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1280.0
+    cy = 1258.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1024.0
+    cy = 1098.0
+    output = "eDP-1"
+    placement_height = 1280.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[nightlight]
+enabled = true
+
+[plugin_settings."noctalia/screen_recorder"]
+directory = "~/Videos/recordings"
+filename_pattern = "noctalia_recording_%Y%m%d_%H%M%S"
+video_codec = "av1"
+video_qp = 18
+
+[plugins]
+enabled = [ "noctalia/notes", "noctalia/screen_recorder" ]
+
+[shell]
+font_family = "LXGW WenKai"
+lang = "en"
+polkit_agent = true
+
+    [shell.screen_corners]
+    enabled = true
+
+[theme]
+builtin = "Catppuccin"
+community_palette = "Oxocarbon"
+custom_palette = "catppuccin-mocha-blue"
+mode = "dark"
+source = "custom"
+
+    [theme.templates]
+    enable_builtin_templates = false
+
+[wallpaper]
+enabled = false
+
+    [wallpaper.default]
+    path = "/home/kolkas/Pictures/backgrounds/reimu-wind.png"
+
+    [wallpaper.last]
+    path = "/home/kolkas/Pictures/backgrounds/reimu-wind.png"
+
+    [wallpaper.monitors.DP-1]
+    path = "/home/kolkas/Pictures/backgrounds/reimu-wind.png"
+
+    [wallpaper.monitors.eDP-1]
+    path = "/home/kolkas/Pictures/backgrounds/reimu-wind.png"
+
+[widget.active_window]
+max_length = 360
+min_length = 0
+title_scroll = "on_hover"
+
+[widget.audio_visualizer]
+color_1 = "outline_variant"
+show_wave = true
+
+[widget.caffeine]
+color = "secondary"
+
+[widget.clock]
+format = "{:L%H:%M | %a. %d.%b.}"
+
+[widget.media]
+min_length = 0
+rotate_album_art = true
+title_scroll = "on_hover"
+
+[widget.network]
+show_vpn_label = true
+
+[widget.notes]
+type = "noctalia/notes:notes"
+
+[widget.recorder]
+type = "noctalia/screen_recorder:recorder"
+
+[widget.session]
+color = "error"
+
+[widget.tray]
+drawer = true
+drawer_item_size = 18.0
+
+[widget.workspaces]
+empty_color = "surface_container"
+occupied_color = "surface_container_highest"

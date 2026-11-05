@@ -1,6 +1,6 @@
 -- https://wiki.hypr.land/Configuring/Start/
 
--- require("hyprland/envs") -- managed by uwsm
+require("hyprland/envs")
 
 require("hyprland/monitors")
 require("hyprland/permissions")

@@ -11,6 +11,9 @@ local M = {
     subtext0 = "a6adc8",
     text     = "cdd6f4",
 
+    -- Rewritten by ../apply-color.
+    accent   = "89b4fa",
+
     blue     = "89b4fa",
     lavender = "b4befe",
     mauve    = "cba6f7",

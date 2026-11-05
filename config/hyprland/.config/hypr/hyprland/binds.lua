@@ -1,5 +1,6 @@
 local mod = "SUPER"
 local L = require("hyprland/layout-actions")
+local ipc = "noctalia msg "
 
 -- Applications
 
@@ -12,17 +13,29 @@ hl.bind(mod .. " + C", hl.dsp.exec_cmd("code"), { description = "Editor" })
 hl.bind(mod .. " + E", hl.dsp.exec_cmd("nautilus --new-window"), { description = "File manager (GTK)" })
 hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd("dolphin --new-window"), { description = "File manager" })
 hl.bind(mod .. " + W", hl.dsp.exec_cmd("zen || zen-browser"), { description = "Browser" })
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("wallreel"), { description = "Wallpaper picker" })
 
-hl.bind(mod .. " + B", hl.dsp.exec_cmd("pkill -x -n btop || kitty-floating -e btop"), { description = "System monitor" })
+hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("pkill -x -n btop || kitty-floating -e btop"), { description = "System monitor" })
 hl.bind(mod .. " + O", hl.dsp.exec_cmd("pkill -x -n pwvucontrol || pwvucontrol"), { description = "Audio mixer" })
-hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("pkill -x wlogout || wlogout"), { description = "Session menu" })
 
--- Launcher. URLs are quoted: `?` is a glob to the `sh -c` exec_cmd runs.
+-- Noctalia
 
-hl.bind("ALT + space", hl.dsp.exec_cmd("vicinae toggle"), { description = "Launcher" })
-hl.bind(mod .. " + D", hl.dsp.exec_cmd("vicinae 'vicinae://launch/system/run?toggle=true'"), { description = "Run command" })
-hl.bind(mod .. " + V", hl.dsp.exec_cmd("vicinae 'vicinae://launch/clipboard/history?toggle=true'"), { description = "Clipboard history" })
-hl.bind(mod .. " + period", hl.dsp.exec_cmd("vicinae 'vicinae://launch/core/search-emojis?toggle=true'"), { description = "Emoji picker" })
+hl.bind(mod .. " + space", hl.dsp.exec_cmd(ipc .. "panel-toggle control-center"), { description = "Control center" })
+hl.bind(mod .. " + N", hl.dsp.exec_cmd(ipc .. "panel-toggle control-center notifications"), { description = "Notifications" })
+hl.bind(mod .. " + B", hl.dsp.exec_cmd(ipc .. "panel-toggle control-center system"), { description = "System panel" })
+hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd(ipc .. "panel-toggle session"), { description = "Session menu" })
+hl.bind(mod .. " + X", hl.dsp.exec_cmd(ipc .. "panel-toggle noctalia/notes:panel"), { description = "Notes" })
+hl.bind(mod .. " + SHIFT + K", hl.dsp.exec_cmd("pkill -x noctalia || noctalia"), { description = "Toggle the shell" })
+hl.bind(mod .. " + I", hl.dsp.exec_cmd(ipc .. "caffeine-toggle"), { description = "Toggle idle inhibit" })
+hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd(ipc .. "nightlight-toggle"), { description = "Night light" })
+hl.bind(mod .. " + ALT + R", hl.dsp.exec_cmd(ipc .. "plugin noctalia/screen_recorder:service all toggle"), { description = "Toggle recording" })
+hl.bind(mod .. " + ALT + G", hl.dsp.exec_cmd(ipc .. "plugin noctalia/screen_recorder:service all replay-save"), { description = "Save replay" })
+
+-- Launcher
+
+hl.bind("ALT + space", hl.dsp.exec_cmd(ipc .. "panel-toggle launcher"), { description = "Launcher" })
+hl.bind(mod .. " + V", hl.dsp.exec_cmd(ipc .. "panel-toggle clipboard"), { description = "Clipboard history" })
+hl.bind(mod .. " + period", hl.dsp.exec_cmd(ipc .. "panel-toggle launcher /emo"), { description = "Emoji picker" })
 
 -- Screenshots and colour
 
@@ -33,46 +46,22 @@ hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"), { description =
 
 -- Utilities
 
-hl.bind(mod .. " + N", hl.dsp.exec_cmd("sunset"), { description = "Night light" })
-hl.bind(mod .. " + SHIFT + K", hl.dsp.exec_cmd("pkill -x waybar; waybar"), { description = "Restart the bar" })
 hl.bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("hyprctl reload"), { description = "Reload config" })
 
--- hypridle has no runtime toggle, and probing for it would mean a blocking
--- popen, which must not happen in a bind callback.
-local idle_inhibited = false
-hl.bind(mod .. " + I", function()
-    idle_inhibited = not idle_inhibited
-    if idle_inhibited then
-        hl.exec_cmd("pkill -x hypridle")
-    else
-        hl.exec_cmd("hypridle")
-    end
-    hl.notification.create({
-        text = idle_inhibited and "Idle inhibited" or "Idle timers active",
-        timeout = 1500,
-    })
-end, { description = "Toggle idle inhibit" })
+-- Media and brightness
 
--- Media and brightness. BRIGHTNESSCTL_DEVICE comes from set_display.
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(ipc .. "volume-up"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(ipc .. "volume-down"), { locked = true, repeating = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd(ipc .. "volume-mute"), { locked = true })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(ipc .. "mic-mute"), { locked = true })
 
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"),
-    { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
-    { locked = true, repeating = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd(ipc .. "media toggle"), { locked = true })
+hl.bind("XF86AudioPause", hl.dsp.exec_cmd(ipc .. "media toggle"), { locked = true })
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd(ipc .. "media next"), { locked = true })
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd(ipc .. "media previous"), { locked = true })
 
-hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
-hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
-
-hl.bind("XF86MonBrightnessUp",
-    hl.dsp.exec_cmd('brightnessctl -d "${BRIGHTNESSCTL_DEVICE:-intel_backlight}" -e4 -n2 set 5%+'),
-    { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown",
-    hl.dsp.exec_cmd('brightnessctl -d "${BRIGHTNESSCTL_DEVICE:-intel_backlight}" -e4 -n2 set 5%-'),
-    { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(ipc .. "brightness-up"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. "brightness-down"), { locked = true, repeating = true })
 
 -- Window management
 

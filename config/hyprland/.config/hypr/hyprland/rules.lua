@@ -77,6 +77,9 @@ end
 -- QQ's image viewer has no useful class, only a title.
 hl.window_rule({ match = { title = "^(图片查看器)(.*)$" }, float = true, center = true })
 
+-- Noctalia settings
+hl.window_rule({ match = { class = "^(dev\\.noctalia\\.Noctalia)$" }, float = true, size = { 1080, 920 }, center = true })
+
 -- Terminals
 
 hl.window_rule({
@@ -130,10 +133,17 @@ hl.workspace_rule({ workspace = "special:scratchpad", gaps_out = 40, gaps_in = 6
 
 -- Layer rules
 
-hl.layer_rule({ name = "blur-bar", match = { namespace = "^waybar$" }, blur = true, ignore_alpha = 0.4 })
-hl.layer_rule({ name = "blur-launcher", match = { namespace = "^vicinae$" }, blur = true, ignore_alpha = 0.4 })
-hl.layer_rule({ name = "blur-logout", match = { namespace = "^logout_dialog$" }, blur = true })
-hl.layer_rule({ name = "blur-notifications", match = { namespace = "^notifications$" }, blur = true, ignore_alpha = 0.6 })
+-- Noctalia animates its own surfaces. The bar stays unblurred to match
+-- `compositor_blur = false`, which a compositor-side rule would override.
+hl.layer_rule({
+    name = "noctalia",
+    match = { namespace = "^noctalia-(notification|dock|panel|attached-panel|osd|window-switcher)$" },
+    no_anim = true,
+    ignore_alpha = 0.5,
+    blur = true,
+    blur_popups = true,
+})
+hl.layer_rule({ name = "noctalia-bar", match = { namespace = "^noctalia-bar-.+$" }, no_anim = true })
 
 -- The colour picker must see the screen exactly as it is.
 hl.layer_rule({ name = "no-anim-picker", match = { namespace = "^hyprpicker$" }, no_anim = true })

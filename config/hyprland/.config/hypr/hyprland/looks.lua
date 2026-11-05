@@ -8,7 +8,7 @@ hl.config({
 
         border_size                       = 2,
         col                               = {
-            active_border   = c.gradient(c.blue, c.mauve, 45),
+            active_border   = c.rgb(c.accent),
             inactive_border = c.rgba(c.surface0, "cc"),
         },
 
@@ -79,7 +79,7 @@ hl.config({
         merge_groups_on_drag = true,
 
         col                  = {
-            border_active          = c.gradient(c.blue, c.mauve, 45),
+            border_active          = c.rgb(c.accent),
             border_inactive        = c.rgba(c.surface0, "cc"),
             border_locked_active   = c.gradient(c.peach, c.red, 45),
             border_locked_inactive = c.rgba(c.surface0, "cc"),
@@ -103,7 +103,7 @@ hl.config({
             gaps_out            = 2,
 
             col                 = {
-                active          = c.rgb(c.blue),
+                active          = c.rgb(c.accent),
                 inactive        = c.rgba(c.surface0, "dd"),
                 locked_active   = c.rgb(c.peach),
                 locked_inactive = c.rgba(c.surface0, "dd"),

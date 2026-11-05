@@ -40,9 +40,8 @@ GUI_BASE_PKGS = [
 HYPRLAND_PKGS = [
     *GUI_BASE_PKGS,
     "env",
-    "hypr",  # hypr family
     "hyprland",  # wm config
-    "vicinae",  # application launcher
+    "noctalia",
 ]
 
 # for Niri setup

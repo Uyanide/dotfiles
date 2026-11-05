@@ -34,7 +34,7 @@ binds {
     Mod+I               repeat=false    { spawn "noctalia" "msg" "caffeine-toggle"; }
     Mod+Alt+R           repeat=false    { spawn "noctalia" "msg" "plugin" "noctalia/screen_recorder:service" "all" "toggle"; }
     Mod+Alt+G           repeat=false    { spawn "noctalia" "msg" "plugin" "noctalia/screen_recorder:service" "all" "replay-save"; }
-    Mod+S               repeat=false    { spawn "noctalia" "msg" "nightlight-toggle"; }
+    Mod+Shift+N         repeat=false    { spawn "noctalia" "msg" "nightlight-toggle"; }
 
     // Launcher
     Alt+Space           repeat=false    { spawn "noctalia" "msg" "panel-toggle" "launcher"; }

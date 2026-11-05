@@ -8,7 +8,7 @@
 > See also [config-stow](./config-stow) for the list of stow packages.
 
 - OS: Archlinux | Debian
-- WM: ~~Hyprland~~ | Niri
+- WM: Hyprland | **Niri**
 - Bar: ~~Waybar~~ | ~~Quickshell~~ | Noctalia
 - Shell: (bash & fish) | **Zsh**
 - Prompt: Oh My Posh | **Starship**
