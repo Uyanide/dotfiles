@@ -49,10 +49,8 @@ HYPRLAND_PKGS = [
 NIRI_PKGS = [
     *GUI_BASE_PKGS,
     "env",
-    "hypr",  # for hyprlock & hypridle
     "niri",  # wm config
     "noctalia",
-    "wlogout",  # logout menu
 ]
 
 PKGS = {

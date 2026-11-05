@@ -13,7 +13,7 @@
 - Shell: (bash & fish) | **Zsh**
 - Prompt: Oh My Posh | **Starship**
 - Terminal: **Kitty** | WezTerm | Ghostty
-- Power Menu: **Wlogout** & (~~Quickshell~~ | Noctalia)
+- Power Menu: ~~Wlogout~~ | ~~Quickshell~~ | Noctalia
 - Colorscheme: Catppuccin Mocha
 - App Launcher: ~~Rofi~~ | ~~Fuzzel~~ | ~~vicinae~~ | Noctalia
 - Desktop Widgets: ~~Eww~~ | ~~Quickshell~~ | Noctalia

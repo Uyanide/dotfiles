@@ -14,26 +14,27 @@ binds {
     Mod+E               repeat=false    { spawn "nautilus" "--new-window"; }
     Mod+Shift+E         repeat=false    { spawn "dolphin" "--new-window"; }
     Mod+W               repeat=false    { spawn-sh "zen || zen-browser"; }
-    Mod+B               repeat=false    { spawn-sh "pkill -x -n btop || kitty-floating -e btop"; }
+    Mod+Shift+B         repeat=false    { spawn-sh "pkill -x -n btop || kitty-floating -e btop"; }
     Mod+Shift+T         repeat=false    { spawn "kitty-floating"; }
     Mod+Shift+Return    repeat=false    { spawn "kitty-floating"; }
     Mod+T               repeat=false    { spawn "kitty"; }
     Mod+Return          repeat=false    { spawn "kitty"; }
     Mod+Shift+W         repeat=false    { spawn "wallreel"; }
     Mod+O               repeat=false    { spawn-sh "pkill -x -n pwvucontrol || pwvucontrol"; }
-    Ctrl+Alt+Delete     repeat=false    { spawn-sh "pkill -x wlogout || wlogout"; }
     Mod+P               repeat=false    { spawn-sh "wl-mirror $(niri msg --json focused-output | jq -r .name)"; }
     Mod+H               repeat=false    { spawn "hexecute"; }
 
     // Noctalia
     Mod+Space           repeat=false    { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
     Mod+N               repeat=false    { spawn "noctalia" "msg" "panel-toggle" "control-center" "notifications"; }
+    Mod+B               repeat=false    { spawn "noctalia" "msg" "panel-toggle" "control-center" "system"; }
+    Ctrl+Alt+Delete     repeat=false    { spawn "noctalia" "msg" "panel-toggle" "session"; }
+    Mod+X               repeat=false    { spawn "noctalia" "msg" "panel-toggle" "noctalia/notes:panel"; }
     Mod+Shift+K         repeat=false    { spawn-sh "pkill -x noctalia || noctalia"; }
     Mod+I               repeat=false    { spawn "noctalia" "msg" "caffeine-toggle"; }
     Mod+Alt+R           repeat=false    { spawn "noctalia" "msg" "plugin" "noctalia/screen_recorder:service" "all" "toggle"; }
     Mod+Alt+G           repeat=false    { spawn "noctalia" "msg" "plugin" "noctalia/screen_recorder:service" "all" "replay-save"; }
     Mod+S               repeat=false    { spawn "noctalia" "msg" "nightlight-toggle"; }
-    Mod+X               repeat=false    { spawn "noctalia" "msg" "panel-toggle" "noctalia/notes:panel"; }
 
     // Launcher
     Alt+Space           repeat=false    { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
