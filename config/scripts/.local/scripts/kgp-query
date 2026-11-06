@@ -2,49 +2,52 @@
 
 # Ref: https://sw.kovidgoyal.net/kitty/graphics-protocol/#querying-support-and-available-transmission-mediums
 
+
 set -euo pipefail
 
-# Ensure in a interactive terminal
-[ ! -t 0 ] && exit 1
+if ! [ -t 1 ] || ! { : </dev/tty; } 2>/dev/null; then
+    exit 1
+fi
+
+# Increase timeout for SSH sessions
+TIMEOUT=1
+[[ -n "${SSH_CONNECTION:-}" ]] && TIMEOUT=3
+
+exec 3<>/dev/tty
 
 # Construct query
-QUERY_ID=$RANDOM
-QUERY_CODE=$(printf "\033_Gi=%d,s=1,v=1,a=q,t=d,f=24;AAAA\033\\" "$QUERY_ID")
-EXPECTED_RESPONSE=$(printf "\033_Gi=%d;OK\033\\" "$QUERY_ID")
-# Construct fence code that most terminals will respond to
-# to ensure that at least something will be sent back and
-# to detect the end of the response
+KGP_QUERY_ID=$((RANDOM + 1)) # id 0 means "no id" and gets no reply
+KGP_QUERY_CODE=$(printf "\033_Gi=%d,s=1,v=1,a=q,t=d,f=24;AAAA\033\\" "$KGP_QUERY_ID")
+KGP_EXPECTED_RESPONSE=$(printf "\033_Gi=%d;OK\033\\" "$KGP_QUERY_ID")
 FENCE_CODE=$(printf "\033[c")
+FENCE_RESPONSE_RE=$'\033\\[\\?([0-9;]*)c'
 
 # Set terminal to raw mode with timeout
-stty_orig=$(stty -g < /dev/tty)
-trap 'stty "$stty_orig" < /dev/tty' EXIT INT TERM HUP
-stty -echo -icanon min 1 time 0
+stty_orig=$(stty -g <&3)
+trap 'stty "$stty_orig" <&3' EXIT
+trap 'exit 130' INT TERM HUP
+stty -echo -icanon min 1 time 0 <&3
 
-printf "%s%s" "$QUERY_CODE" "$FENCE_CODE" > /dev/tty
+printf "%s%s%s" "$KGP_QUERY_CODE" "$FENCE_CODE" >&3
+
+support_kgp=0
 
 response=""
-ret=1
-while true; do
-    IFS= read -r -N 1 -t 0.3 char < /dev/tty || {
-        [ -z "$char" ] && break
-    }
+while [ ${#response} -le 1024 ]; do
+    IFS= read -r -n 1 -d '' -t "$TIMEOUT" -u 3 char || break
 
     response+="$char"
 
-    if [[ "$response" == *"$EXPECTED_RESPONSE"* ]]; then
-        ret=0
-        # Keep reading until response is complete to
-        # avoid leaving unread data in the terminal
-    fi
-
-    if [[ "$response" == *$'\033['*'c' ]]; then
-        break
-    fi
-
-    if [ ${#response} -gt 1024 ]; then
+    if [[ "$response" =~ $FENCE_RESPONSE_RE ]]; then
         break
     fi
 done
 
-exit $ret
+if [[ "$response" == *"$KGP_EXPECTED_RESPONSE"* ]]; then
+    support_kgp=1
+fi
+
+# Terminals that don't parse APC print the query as text
+printf "\r\033[K" >&3
+
+[[ $support_kgp -eq 1 ]]

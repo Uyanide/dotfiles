@@ -53,6 +53,8 @@ prepend_path "$HOME/go/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.local/scripts"
 prepend_path "$HOME/.local/share/fnm"
+prepend_path "$HOME/fvm/default/bin"
+prepend_path "$HOME/.pub-cache/bin"
 export PATH
 
 # GPG agent for SSH

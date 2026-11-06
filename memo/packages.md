@@ -240,6 +240,7 @@ gnome-text-editor
 go
 google-chrome
 gping
+gpu-screen-recorder
 gradia
 gradle
 grim
@@ -259,11 +260,9 @@ hunspell-en_us
 hwinfo
 hyperfine
 hyperv
-hypridle
 hyprland
 hyprland-protocols
-hyprlock
-hyprpicker
+hyprpicker-zwlr
 hyprshot
 hyprshutdown
 hyprutils
@@ -276,6 +275,7 @@ intel-ucode
 inxi
 iperf3
 jdk-openjdk
+jdk8-openjdk
 jetbrains-toolbox
 jp2a
 jujutsu
@@ -291,7 +291,6 @@ kdiskmark
 kdoctools
 kid3
 kitty
-kmines
 kmscon
 konsole
 kpeople
@@ -446,7 +445,6 @@ qt6-serialbus
 qt6ct
 qtcreator
 quickemu
-quickshell-git
 rclone
 reflector
 resources
@@ -468,8 +466,6 @@ sl
 slirp4netns
 slurp
 snapper
-solaar
-soteria
 spike
 spotify
 squashfs-tools-ng
@@ -540,7 +536,6 @@ uwsm
 valgrind
 vapoursynth-plugin-vship-cuda-git
 ventoy-bin
-vicinae-bin
 vim
 visual-studio-code-bin
 vlc
@@ -556,12 +551,10 @@ vulkan-swrast
 vulkan-validation-layers
 vvenc
 wallreel
-waybar
 waydroid-helper
 waydroid-nvidia-bin
 wev
 wezterm
-wf-recorder-git
 wget
 whisper.cpp-model-large-v3-turbo
 whois
@@ -571,8 +564,6 @@ wireless-regdb
 wireshark-qt
 wl-clipboard
 wl-mirror
-wlogout
-wlsunset
 words
 wqy-bitmapfont
 wqy-microhei

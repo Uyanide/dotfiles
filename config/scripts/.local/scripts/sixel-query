@@ -1,47 +1,55 @@
 #!/usr/bin/env bash
 
+
 set -euo pipefail
 
-# Ensure in a interactive terminal
-[ ! -t 0 ] && exit 1
-
-# Construct query
-QUERY_CODE=$(printf "\033[c")
-
-# Set terminal to raw mode with timeout as 0.5s
-stty_orig=$(stty -g < /dev/tty)
-trap 'stty "$stty_orig" < /dev/tty' EXIT INT TERM HUP
-stty -echo -icanon min 1 time 0
-
-printf "%s" "$QUERY_CODE" >/dev/tty
-
-response=""
-while true; do
-	IFS= read -r -N 1 -t 0.3 char < /dev/tty || {
-		[ -z "$char" ] && break
-	}
-
-	response+="$char"
-
-	if [[ "$char" = "c" ]]; then
-		break
-	fi
-
-	if [ ${#response} -gt 1024 ]; then
-		break
-	fi
-done
-
-if [[ "$response" =~ $'\x1b'\[\?([0-9;]*)c ]]; then
-    params="${BASH_REMATCH[1]}"
-
-    IFS=';' read -ra codes <<< "$params"
-
-    for code in "${codes[@]}"; do
-        if [[ "$code" == "4" ]]; then
-            exit 0
-        fi
-    done
+if ! [ -t 1 ] || ! { : </dev/tty; } 2>/dev/null; then
+    exit 1
 fi
 
-exit 1
+# Increase timeout for SSH sessions
+TIMEOUT=1
+[[ -n "${SSH_CONNECTION:-}" ]] && TIMEOUT=3
+
+exec 3<>/dev/tty
+
+# Construct query
+FENCE_CODE=$(printf "\033[c")
+FENCE_RESPONSE_RE=$'\033\\[\\?([0-9;]*)c'
+
+# Set terminal to raw mode with timeout
+stty_orig=$(stty -g <&3)
+trap 'stty "$stty_orig" <&3' EXIT
+trap 'exit 130' INT TERM HUP
+stty -echo -icanon min 1 time 0 <&3
+
+printf "%s%s%s" "$FENCE_CODE" >&3
+
+support_sixel=0
+
+response=""
+while [ ${#response} -le 1024 ]; do
+    IFS= read -r -n 1 -d '' -t "$TIMEOUT" -u 3 char || break
+
+    response+="$char"
+
+    if [[ "$response" =~ $FENCE_RESPONSE_RE ]]; then
+        params="${BASH_REMATCH[1]}"
+
+        IFS=';' read -ra codes <<<"$params"
+
+        for code in "${codes[@]}"; do
+            if [[ "$code" == "4" ]]; then
+                support_sixel=1
+                break
+            fi
+        done
+
+        break
+    fi
+done
+
+# Terminals that don't parse APC print the query as text
+printf "\r\033[K" >&3
+
+[[ $support_sixel -eq 1 ]]
