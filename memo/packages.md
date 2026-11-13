@@ -170,9 +170,9 @@ direnv
 discord
 dnsmasq
 docker
+docker-buildx
 docker-compose
 dolphin
-dotnet-sdk
 doxygen
 drawio-desktop
 drm-info
@@ -184,6 +184,7 @@ element-desktop
 elvish
 ethtool
 euphonica-git
+evtest
 eww
 expac
 extra-cmake-modules
@@ -281,6 +282,7 @@ jp2a
 jujutsu
 kalk
 kate
+kazumi-bin
 kcalendarcore
 kcolorchooser
 kcontacts
@@ -297,7 +299,6 @@ kpeople
 kplotting
 krdc
 ktexttemplate
-kwi-git
 lazygit
 lib32-nvidia-utils
 lib32-opencl-nvidia
@@ -352,6 +353,7 @@ network-manager-applet
 networkmanager
 networkmanager-openvpn
 nfs-utils
+nipaplay-reload-bin
 niri
 nmap
 noctalia
@@ -454,10 +456,8 @@ riscv64-linux-gnu-gcc
 rmpc
 rsync
 ruff
-rustdesk
 rustup
 scnlib
-scrcpy
 screen
 sd
 seahorse

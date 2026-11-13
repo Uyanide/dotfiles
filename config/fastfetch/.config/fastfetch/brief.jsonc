@@ -12,8 +12,13 @@
             "type": "os"
         },
         {
-            "key": "└ kernel",
+            "key": "├󰀘 kernel",
             "type": "kernel"
+        },
+        {
+            "key": "└ os age",
+            "type": "command",
+            "text": "echo $(($(($(date +%s) - $(stat -c %W /))) / 86400)) days"
         },
         {
             "type": "separator"

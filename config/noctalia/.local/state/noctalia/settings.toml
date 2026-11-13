@@ -1,13 +1,16 @@
-config_version = 16
+config_version = 20
 
 [bar.default]
 capsule = true
-center = [ "audio_visualizer", "clock", "recorder", "notes" ]
+center = [ "audio_visualizer", "clock", "cat" ]
 compositor_blur = false
-end = [ "ram", "temp", "volume", "brightness", "battery", "tray", "nightlight", "caffeine", "session" ]
+end = [ "ram", "temp", "volume", "brightness", "battery", "recorder", "notes", "tray", "nightlight", "caffeine", "session" ]
 margin_ends = 0
 start = [ "launcher", "workspaces", "active_window", "media" ]
 thickness = 40
+
+[brightness]
+enable_ddcutil = true
 
 [hooks]
 wallpaper_changed = "wallreel -a \"$NOCTALIA_WALLPAPER_PATH\""
@@ -41,12 +44,17 @@ fingerprint = false
 grace_period_seconds = 5
 
 [lockscreen_widgets]
-enabled = false
+enabled = true
 schema_version = 2
-widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@eDP-1" ]
+widget_order = [
+    "lockscreen-login-box@DP-1",
+    "lockscreen-login-box@eDP-1",
+    "lockscreen-widget-0000000000000001",
+    "lockscreen-widget-0000000000000002"
+]
 
     [lockscreen_widgets.grid]
-    cell_size = 16
+    cell_size = 8
     major_interval = 4
     visible = true
 
@@ -73,6 +81,7 @@ widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@eDP-1" ]
         show_keyboard_layout = true
         show_login_button = true
         show_media = true
+        show_media_controls = true
         show_password_reveal = true
         show_session_buttons = true
         show_unlock_hint = true
@@ -101,10 +110,52 @@ widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@eDP-1" ]
         show_keyboard_layout = true
         show_login_button = true
         show_media = true
+        show_media_controls = true
         show_password_reveal = true
         show_session_buttons = true
         show_unlock_hint = true
         show_weather = true
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000001]
+    box_height = 112.0
+    box_width = 480.0
+    cx = 1115.0
+    cy = 1048.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "clock"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000001.settings]
+        background = true
+        background_color = "surface_container"
+        background_opacity = 0.88
+        center_text = true
+        clock_style = "digital"
+        color = "on_surface"
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000002]
+    box_height = 112.0
+    box_width = 320.0
+    cx = 1525.0
+    cy = 1048.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "audio_visualizer"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000002.settings]
+        background = true
+        background_color = "surface_container"
+        background_opacity = 0.88
+        bands = 32
+        color_1 = "on_surface"
+        color_2 = "primary"
+        mirrored = true
+        show_wave = false
+        show_when_idle = true
 
 [nightlight]
 enabled = true
@@ -116,12 +167,20 @@ video_codec = "av1"
 video_qp = 18
 
 [plugins]
-enabled = [ "noctalia/notes", "noctalia/screen_recorder" ]
+enabled = [ "noctalia/notes", "noctalia/screen_recorder", "noctalia/bongocat" ]
 
 [shell]
 font_family = "LXGW WenKai"
-lang = "en"
 polkit_agent = true
+
+    [shell.panel]
+    clipboard_placement = "attached"
+    clipboard_position = "auto"
+    launcher_placement = "attached"
+    launcher_position = "auto"
+    open_near_click_launcher = true
+    polkit_placement = "attached"
+    polkit_position = "auto"
 
     [shell.screen_corners]
     enabled = true
@@ -135,6 +194,7 @@ source = "custom"
 
     [theme.templates]
     enable_builtin_templates = false
+    enable_community_templates = false
 
 [wallpaper]
 enabled = false
@@ -152,7 +212,7 @@ enabled = false
     path = "/home/kolkas/Pictures/backgrounds/reimu-wind.png"
 
 [widget.active_window]
-max_length = 360
+max_length = 320
 min_length = 0
 title_scroll = "on_hover"
 
@@ -169,10 +229,16 @@ show_when_idle = true
 [widget.caffeine]
 color = "secondary"
 
+[widget.cat]
+capsule_padding = 20
+input_devices = [ "/dev/input/by-id/usb-CHERRY_CHERRY_Keyboard-event-kbd" ]
+type = "noctalia/bongocat:cat"
+
 [widget.clock]
-format = "{:L%H:%M | %a. %d.%b.}"
+format = "{:L%H:%M | %a %d. %b}"
 
 [widget.media]
+max_length = 320
 min_length = 0
 rotate_album_art = true
 title_scroll = "on_hover"
@@ -195,4 +261,4 @@ drawer_item_size = 18.0
 
 [widget.workspaces]
 empty_color = "surface_container"
-occupied_color = "surface_container_highest"
+occupied_color = "primary_container"
