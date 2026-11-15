@@ -12,6 +12,14 @@ thickness = 40
 [brightness]
 enable_ddcutil = true
 
+[dock]
+auto_hide = true
+enabled = true
+launcher_position = "start"
+pinned = [ "spotify", "org.mozilla.Thunderbird", "zen", "kitty" ]
+reserve_space = false
+show_dots = true
+
 [hooks]
 wallpaper_changed = "wallreel -a \"$NOCTALIA_WALLPAPER_PATH\""
 
@@ -220,6 +228,8 @@ title_scroll = "on_hover"
     left = "exec [ \"$XDG_CURRENT_DESKTOP\" = niri ] && niri msg action center-column"
     middle = "exec [ \"$XDG_CURRENT_DESKTOP\" = niri ] && niri msg action close-window"
     right = "exec [ \"$XDG_CURRENT_DESKTOP\" = niri ] && niri msg action maximize-window-to-edges"
+    scroll_down = "exec [ \"$XDG_CURRENT_DESKTOP\" = niri ] && niri msg action set-column-width -10%"
+    scroll_up = "exec [ \"$XDG_CURRENT_DESKTOP\" = niri ] && niri msg action set-column-width +10%"
 
 [widget.audio_visualizer]
 color_1 = "outline_variant"

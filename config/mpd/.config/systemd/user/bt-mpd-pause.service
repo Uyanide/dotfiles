@@ -1,10 +1,11 @@
 [Unit]
 Description=Pause MPD when Bluetooth sink disconnects
-After=pipewire-pulse.service
+After=mpd.service
 
 [Service]
 ExecStart=%h/.config/mpd/bt-mpd-pause.py
 Restart=always
+RestartSec=2
 
 [Install]
 WantedBy=default.target
