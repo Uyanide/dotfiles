@@ -105,13 +105,14 @@ bash /path/to/dotfiles/memo/packages.md
 ```
 7zip
 adw-gtk-theme
+age
 alacritty
-alass
 arch-install-scripts
 archiso
 archlinux-contrib
 archlinuxcn-keyring
 ark
+ast-grep
 av1an
 awww
 axel
@@ -146,6 +147,7 @@ catppuccin-gtk-theme-latte
 catppuccin-gtk-theme-mocha
 cava
 cbonsai
+cc-switch-bin
 chafa
 chaotic-keyring
 chaotic-mirrorlist
@@ -253,6 +255,7 @@ gucharmap
 gvfs-smb
 gwenview
 handbrake
+hashclash-cuda-git
 helix
 hmcl
 htop
@@ -277,6 +280,7 @@ inxi
 iperf3
 jdk-openjdk
 jdk8-openjdk
+jellyfin-mpv-shim
 jetbrains-toolbox
 jp2a
 jujutsu
@@ -348,10 +352,12 @@ nasm
 nautilus
 nautilus-open-any-terminal
 nautilus-share
+neovim
 nethogs
 network-manager-applet
 networkmanager
 networkmanager-openvpn
+nextcloud-client
 nfs-utils
 nipaplay-reload-bin
 niri
@@ -360,6 +366,7 @@ noctalia
 nodejs-dummy
 nordvpn-bin
 noto-fonts-cjk
+npm-dummy
 ntfsprogs
 nvchecker
 nvidia-container-toolkit
@@ -374,6 +381,7 @@ oavif
 obs-studio
 obsidian
 okular
+omp-bin
 openbsd-netcat
 opencl-headers
 opencl-nvidia

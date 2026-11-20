@@ -199,6 +199,7 @@ community_palette = "Oxocarbon"
 custom_palette = "catppuccin-mocha-blue"
 mode = "dark"
 source = "custom"
+wallpaper_scheme = "m3-content"
 
     [theme.templates]
     enable_builtin_templates = false

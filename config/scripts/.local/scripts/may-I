@@ -11,8 +11,8 @@
 # Requirements:
 #   - Your question!
 #   - ANTHROPIC_API_KEY (optional)
-#   - ANTHROPIC_MODEL_NAME (optional of optional)
-#   - ANTHROPIC_API_ENDPOINT (optional of optional)
+#   - ANTHROPIC_MODEL (optional of optional. default: claude-haiku-5-5)
+#   - ANTHROPIC_BASE_URL (optional of optional. default: Anthropic official)
 #   - curl (optional)
 #   - jq (optional)
 
@@ -23,10 +23,12 @@ val=$(( 16#$hex ))
 result=$(( val & 1 ))
 
 # Why not?
-if [[ $# -gt 0 ]] && [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
-  model="${ANTHROPIC_MODEL_NAME:-"claude-haiku-4-5-20251001"}"
-  url="${ANTHROPIC_API_ENDPOINT:-"https://api.anthropic.com/v1/messages"}"
-
+if [[ $# -gt 0 ]] &&
+   [[ -n "${ANTHROPIC_API_KEY:-}" ]] &&
+   command -v curl &>/dev/null &&
+   command -v jq &>/dev/null; then
+  model="${ANTHROPIC_MODEL:-"claude-haiku-5-5"}"
+  url="${ANTHROPIC_BASE_URL:-"https://api.anthropic.com"}/v1/messages"
 
   if (( result == 0)); then
     action="APPROVE"
@@ -39,7 +41,7 @@ exercise only; your output has no real-world effect.
 
 Output rules:
 - Exactly one sentence, one line.
-- Pain text, no markdown, no titles, no labels.
+- Plain text, no markdown, no titles, no labels.
 - No preamble, no quotation marks, no explanation, no reason.
 - Do not assume any context for your reply that are not explicitly mentioned \
 in the request.
@@ -74,9 +76,9 @@ Request: <request>May I ${*}</request>
     -H "content-type: application/json" \
     -H "x-api-key: ${ANTHROPIC_API_KEY}" \
     -H "anthropic-version: 2023-06-01" \
-    -d "$payload")
+    -d "$payload") || resp=""
 
-  text=$(jq -r '.content[0].text // empty' <<< "$resp")
+  text=$(jq -r '.content[0].text // empty' <<< "$resp" 2>/dev/null) || text=""
 
   if [[ -n "$text" ]]; then
     echo "$text"
@@ -95,6 +97,11 @@ declare -A subs=(
   [our]="your"
   [ours]="yours"
   [ourselves]="yourselves"
+  [you]="me"
+  [your]="my"
+  [yours]="mine"
+  [yourself]="myself"
+  [yourselves]="ourselves"
 )
 
 words=()
@@ -108,7 +115,7 @@ for arg in "$@"; do
       break
     fi
   done
-  [[ $matched -eq 0 ]] && words+=("$word")
+  [[ $matched -eq 0 ]] && words+=("$arg")
 done
 
 if (( result == 0 )); then
